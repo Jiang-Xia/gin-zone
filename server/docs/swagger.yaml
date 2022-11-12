@@ -1,4 +1,3 @@
-basePath: /api/v1
 definitions:
   base.User:
     properties:
@@ -9,12 +8,8 @@ definitions:
         description: 用户名
         type: string
     type: object
-host: localhost:9600
 info:
   contact: {}
-  description: zone服务端API服务
-  title: Gin-Zone-Api
-  version: "1.0"
 paths:
   /base/delete/{id}:
     delete:
@@ -121,7 +116,4 @@ paths:
       summary: 用户信息
       tags:
       - 用户模块
-securityDefinitions:
-  BasicAuth:
-    type: basic
 swagger: "2.0"

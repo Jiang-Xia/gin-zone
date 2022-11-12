@@ -1,13 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "zone服务端API服务",
-        "title": "Gin-Zone-Api",
-        "contact": {},
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "localhost:9600",
-    "basePath": "/api/v1",
     "paths": {
         "/base/delete/{id}": {
             "delete": {
@@ -185,11 +180,6 @@
                     "type": "string"
                 }
             }
-        }
-    },
-    "securityDefinitions": {
-        "BasicAuth": {
-            "type": "basic"
         }
     }
 }
