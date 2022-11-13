@@ -4,7 +4,11 @@ import (
 	"net/http"
 
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
+	"gitee.com/jiang-xia/gin-zone/server/app/service"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 // User类，go类的写法
@@ -23,7 +27,24 @@ type User struct {
 // @Success 	200 {object} User
 // @Router       /base/register [post]
 func (u *User) Register(c *gin.Context) {
-	c.JSON(http.StatusOK, "注册")
+	user := &model.User{}
+
+	if err := c.ShouldBind(&user); err != nil {
+		c.JSON(400, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+
+	err := service.User.Create(user)
+
+	if err != nil {
+		logrus.Error("新增失败", err)
+		response.Fail(c, tip.ErrorInsert)
+		return
+	}
+
+	response.Success(c, user)
 }
 
 // Login godoc
