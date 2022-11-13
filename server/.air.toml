@@ -10,7 +10,7 @@ tmp_dir = "tmp"
   # 如果文件更改过于频繁，则没有必要在每次更改时都触发构建。可以设置触发构建的延迟时间
   delay = 1000
   # 忽略这些文件扩展名或目录
-  exclude_dir = ["assets", "tmp","docs" "vendor", "testdata", "public", "public/uploads"]
+  exclude_dir = ["assets", "tmp","docs", "vendor", "testdata", "public", "public/uploads"]
   # 忽略以下文件
   exclude_file = []
   exclude_regex = ["_test.go"]

@@ -1,8 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "zone服务端API服务",
+        "title": "Gin-Zone-Api1",
+        "contact": {},
+        "version": "1.0"
     },
+    "host": "localhost:9600",
+    "basePath": "/api/v1",
     "paths": {
         "/base/delete/{id}": {
             "delete": {
@@ -171,8 +176,21 @@
         "base.User": {
             "type": "object",
             "properties": {
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isAdmin": {
+                    "description": "是否管理员",
+                    "type": "boolean"
+                },
                 "password": {
                     "description": "密码",
+                    "type": "string"
+                },
+                "update_time": {
                     "type": "string"
                 },
                 "username": {

@@ -1,15 +1,29 @@
+basePath: /api/v1
 definitions:
   base.User:
     properties:
+      create_time:
+        type: string
+      id:
+        type: integer
+      isAdmin:
+        description: 是否管理员
+        type: boolean
       password:
         description: 密码
+        type: string
+      update_time:
         type: string
       username:
         description: 用户名
         type: string
     type: object
+host: localhost:9600
 info:
   contact: {}
+  description: zone服务端API服务
+  title: Gin-Zone-Api1
+  version: "1.0"
 paths:
   /base/delete/{id}:
     delete:

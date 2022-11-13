@@ -183,8 +183,21 @@ const docTemplate = `{
         "base.User": {
             "type": "object",
             "properties": {
+                "create_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isAdmin": {
+                    "description": "是否管理员",
+                    "type": "boolean"
+                },
                 "password": {
                     "description": "密码",
+                    "type": "string"
+                },
+                "update_time": {
                     "type": "string"
                 },
                 "username": {
@@ -198,12 +211,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "localhost:9600",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Gin-Zone-Api1",
+	Description:      "zone服务端API服务",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

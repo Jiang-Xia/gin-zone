@@ -36,19 +36,18 @@ var (
 
 // JWTAuth jwt中间件
 func JWTAuth() gin.HandlerFunc {
+	logrus.Info("+++++++++++ ")
 	return func(c *gin.Context) {
-		tokenHeader, err := c.Cookie("milu.blog.token")
-
-		if tokenHeader == "" {
-			// response.Fail(c, e.AuthTokenNoEmpty)
+		token := c.GetHeader("Authorization")
+		// 没有token 直接中断
+		if len(token) == 0 {
 			c.Abort()
-			return
 		}
 
-		logrus.Error("打印的token: ", tokenHeader)
+		logrus.Error("打印的token: ", token)
 
 		j := NewJWT()
-		claims, err := j.ParseToken(tokenHeader)
+		claims, err := j.ParseToken(token)
 
 		if err != nil {
 			logrus.Error(err)
