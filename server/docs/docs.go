@@ -18,6 +18,11 @@ const docTemplate = `{
     "paths": {
         "/base/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "删除用户接口",
                 "consumes": [
                     "application/json"

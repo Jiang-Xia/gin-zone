@@ -43,6 +43,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/base.User'
+      security:
+      - Authorization: []
       summary: 删除用户
       tags:
       - 用户模块

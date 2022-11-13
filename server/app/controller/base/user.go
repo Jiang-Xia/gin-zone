@@ -96,6 +96,7 @@ func (u *User) UserList(c *gin.Context) {
 // @Summary     删除用户
 // @Description 删除用户接口
 // @Tags        用户模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       id  path     int true "用户id" (param name,param type,data type,is mandatory（是否鉴权）?,comment attribute(optional))

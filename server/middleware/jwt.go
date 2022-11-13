@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
@@ -34,25 +35,33 @@ var (
 	TokenInvalid     error = errors.New("这不是一个token,请重新登录")
 )
 
+// JwtAuthMiddleware 登录验证中间件
+// func JwtAuthMiddleware() func(c *gin.Context) {
+// 	return func(c *gin.Context) {
+// 		authHeader := c.Request.Header.Get("Authorization")
+// 		fmt.Println("======== ", authHeader)
+// 		c.Next()
+// 	}
+// }
+
 // JWTAuth jwt中间件
 func JWTAuth() gin.HandlerFunc {
-	println("============")
-	logrus.Info("+++++++++++ ")
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
+		fmt.Println("============", token)
 		// 没有token 直接中断
 		if len(token) == 0 {
 			c.Abort()
 		}
 
 		logrus.Error("打印的token: ", token)
-
+		// 解析token
 		j := NewJWT()
 		claims, err := j.ParseToken(token)
 
 		if err != nil {
 			logrus.Error(err)
-			// response.Fail(c, code, "token授权已过期,请重新登录")
+			response.Fail(c, tip.AuthCheckTokenFail, tip.AuthCheckTokenFail)
 			c.Abort()
 			return
 		}

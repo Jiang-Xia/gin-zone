@@ -35,12 +35,13 @@ func RouterApp() (r *gin.Engine) {
 		// baseGroup.Use(middleware.JWTAuth())
 		{
 			userController := new(base.User)
+
 			baseGroup.POST("login", userController.Login)
 			baseGroup.POST("register", userController.Register)
-			baseGroup.Use(middleware.JWTAuth())
-			baseGroup.GET("users", userController.UserList)
+			// baseGroup.Use(middleware.JWTAuth())
+			baseGroup.GET("users", middleware.JWTAuth(), userController.UserList)
 			baseGroup.GET("users/:id", userController.UserInfo)
-			baseGroup.DELETE("delete", userController.DeleteUser)
+			baseGroup.DELETE("delete/:id", userController.DeleteUser)
 		}
 
 		// 管理端路由
