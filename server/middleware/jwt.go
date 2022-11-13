@@ -36,6 +36,7 @@ var (
 
 // JWTAuth jwt中间件
 func JWTAuth() gin.HandlerFunc {
+	println("============")
 	logrus.Info("+++++++++++ ")
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")

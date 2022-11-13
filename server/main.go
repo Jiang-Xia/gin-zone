@@ -29,18 +29,18 @@ func Init(startTime string, machineId int64) (err error) {
 
 /* 整个项目的swagger文档说明需要写在main.go中，不然执行swag init 生成的docs.go 中的SwaggerInfo都为空，导致信息和鉴权之类用不了 */
 
-// @title       Gin-Zone-Api1
+// @title       Gin-Zone-Api
 // @version     1.0
 // @description zone服务端API服务
 // @host        localhost:9600
 // @BasePath    /api/v1
 
-//  @securityDefinitions.basic  BasicAuth
+/* @securityDefinitions.basic  BasicAuth */
 
-//  @securityDefinitions.apikey  ApiKeyAuth
-//  @in                          header
-//  @name                        Authorization
-//  @description                 jwt token 鉴权
+// @securityDefinitions.apikey  Authorization
+// @in                          header
+// @name                        Authorization
+// @description                 jwt token 鉴权
 
 func main() {
 	if err := Init(time.Now().Format("2006-01-02"), 1); err != nil {

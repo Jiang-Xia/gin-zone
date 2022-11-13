@@ -59,6 +59,7 @@ func RouterApp() (r *gin.Engine) {
 		}
 
 		// swagger 文档
+		ginSwagger.PersistAuthorization(true)
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 

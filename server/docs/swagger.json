@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "zone服务端API服务",
-        "title": "Gin-Zone-Api1",
+        "title": "Gin-Zone-Api",
         "contact": {},
         "version": "1.0"
     },
@@ -109,6 +109,11 @@
         },
         "/base/users": {
             "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "用户列表接口",
                 "consumes": [
                     "application/json"
@@ -141,6 +146,11 @@
         },
         "/base/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "用户信息接口",
                 "consumes": [
                     "application/json"
@@ -198,6 +208,14 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Authorization": {
+            "description": "jwt token 鉴权",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

@@ -116,6 +116,11 @@ const docTemplate = `{
         },
         "/base/users": {
             "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "用户列表接口",
                 "consumes": [
                     "application/json"
@@ -148,6 +153,11 @@ const docTemplate = `{
         },
         "/base/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "用户信息接口",
                 "consumes": [
                     "application/json"
@@ -206,6 +216,14 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "Authorization": {
+            "description": "jwt token 鉴权",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -215,7 +233,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:9600",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "Gin-Zone-Api1",
+	Title:            "Gin-Zone-Api",
 	Description:      "zone服务端API服务",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

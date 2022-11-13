@@ -66,6 +66,7 @@ func (u *User) Login(c *gin.Context) {
 // @Summary     用户信息
 // @Description 用户信息接口
 // @Tags        用户模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       id  path     int true "用户id"
@@ -80,6 +81,7 @@ func (u *User) UserInfo(c *gin.Context) {
 // @Summary     用户列表
 // @Description 用户列表接口
 // @Tags        用户模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       q   query    string false "username search by q" Format(email)

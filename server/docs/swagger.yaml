@@ -22,7 +22,7 @@ host: localhost:9600
 info:
   contact: {}
   description: zone服务端API服务
-  title: Gin-Zone-Api1
+  title: Gin-Zone-Api
   version: "1.0"
 paths:
   /base/delete/{id}:
@@ -106,6 +106,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/base.User'
+      security:
+      - Authorization: []
       summary: 用户列表
       tags:
       - 用户模块
@@ -127,7 +129,15 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/base.User'
+      security:
+      - Authorization: []
       summary: 用户信息
       tags:
       - 用户模块
+securityDefinitions:
+  Authorization:
+    description: jwt token 鉴权
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
