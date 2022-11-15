@@ -1,9 +1,9 @@
 package model
 
 import (
-	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
-	"github.com/jinzhu/gorm"
+	// "gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/spf13/cast"
+	// "gorm.io/gorm"
 )
 
 // BaseModel 基础model
@@ -13,31 +13,31 @@ type BaseModel struct {
 	Updatetime string `gorm:"column:update_time" json:"update_time,omitempty" form:"update_time"`
 }
 
-func (v *BaseModel) BeforeCreate(scope *gorm.Scope) error {
-	err := scope.SetColumn("create_time", utils.NowTime())
+// func (v *BaseModel) BeforeCreate(scope *gorm.Scope) error {
+// 	err := scope.SetColumn("create_time", utils.NowTime())
 
-	if err != nil {
-		return err
-	}
+// 	if err != nil {
+// 		return err
+// 	}
 
-	err2 := scope.SetColumn("update_time", utils.NowTime())
+// 	err2 := scope.SetColumn("update_time", utils.NowTime())
 
-	if err != nil {
-		return err2
-	}
+// 	if err != nil {
+// 		return err2
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-func (v *BaseModel) BeforeUpdate(scope *gorm.Scope) error {
-	err := scope.SetColumn("update_time", utils.NowTime())
+// func (v *BaseModel) BeforeUpdate(scope *gorm.Scope) error {
+// 	err := scope.SetColumn("update_time", utils.NowTime())
 
-	if err != nil {
-		return err
-	}
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 // StringID 获取 ID 的字符串格式
 func (v *BaseModel) StringID() string {

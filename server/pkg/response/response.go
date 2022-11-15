@@ -8,8 +8,8 @@ import (
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 // JSON 响应 200 和 JSON 数据，没有code
