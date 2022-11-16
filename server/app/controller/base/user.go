@@ -28,7 +28,6 @@ type User struct {
 // @Router      /base/register [post]
 func (u *User) Register(c *gin.Context) {
 	user := &model.User{}
-
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(400, gin.H{
 			"err": err.Error(),
@@ -37,7 +36,6 @@ func (u *User) Register(c *gin.Context) {
 	}
 
 	err := service.User.Create(user)
-
 	if err != nil {
 		logrus.Error("新增失败", err)
 		response.Fail(c, tip.ErrorInsert)

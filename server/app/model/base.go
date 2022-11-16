@@ -1,45 +1,37 @@
 package model
 
 import (
-	// "gitee.com/jiang-xia/gin-zone/server/pkg/utils"
+	"time"
+
+	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/spf13/cast"
-	// "gorm.io/gorm"
+	"gorm.io/gorm"
 )
 
 // BaseModel 基础model
 type BaseModel struct {
-	Id         int    `gorm:"primary_key;autoIncrement;column:id" json:"id,omitempty"`
-	Createtime string `gorm:"column:create_time" json:"create_time,omitempty" form:"create_time"`
-	Updatetime string `gorm:"column:update_time" json:"update_time,omitempty" form:"update_time"`
+	// 自增id
+	ID uint `gorm:"primaryKey;autoIncrement;" json:"id"`
+	// 创建时间
+	CreatedAt time.Time `gorm:"column:created_at" json:"createdAt"`
+	// 更新时间
+	UpdatedAt time.Time `gorm:"column:updated_at" json:"updatedAt"`
 }
 
-// func (v *BaseModel) BeforeCreate(scope *gorm.Scope) error {
-// 	err := scope.SetColumn("create_time", utils.NowTime())
+// 创建记录时可用的 hook  自动添加创建时间和更新时间
+func (v *BaseModel) BeforeCreate(tx *gorm.DB) error {
+	tx.UpdateColumn("created_at", utils.NowTime())
+	tx.UpdateColumn("updated_at", utils.NowTime())
+	return nil
+}
 
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err2 := scope.SetColumn("update_time", utils.NowTime())
-
-// 	if err != nil {
-// 		return err2
-// 	}
-
-// 	return nil
-// }
-
-// func (v *BaseModel) BeforeUpdate(scope *gorm.Scope) error {
-// 	err := scope.SetColumn("update_time", utils.NowTime())
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
+// 更新数据时可用的 hook  自动添加创建时间和更新时间
+func (v *BaseModel) BeforeUpdate(tx *gorm.DB) error {
+	tx.UpdateColumn("updated_at", utils.NowTime())
+	return nil
+}
 
 // StringID 获取 ID 的字符串格式
 func (v *BaseModel) StringID() string {
-	return cast.ToString(v.Id)
+	return cast.ToString(v.ID)
 }

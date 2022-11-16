@@ -43,7 +43,7 @@ func dbSetup() {
 	// dsn := user + ":" + password + "@tcp(" + host + ":" + port + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 	//拼接下dsn参数, dsn格式可以参考上面的语法，这里使用Sprintf动态拼接dsn参数，因为一般数据库连接参数，我们都是保存在配置文件里面，需要从配置文件加载参数，然后拼接dsn。
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, port, dbName)
-	Mysql, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+	conn, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		// 命名策略
 		NamingStrategy: schema.NamingStrategy{
 			TablePrefix:   tablePrefix, // 自定义表名前缀
@@ -52,12 +52,17 @@ func dbSetup() {
 		},
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
+	// 需要把当前成功连接的实例赋值给全局变量Mysql(不然没法操作数据库)
+	Mysql = conn
 	sqlDB, err := Mysql.DB()
 	sqlDB.SetMaxIdleConns(25)                 // 设置最大空闲连接数
 	sqlDB.SetMaxOpenConns(100)                // 设置最大连接数
 	sqlDB.SetConnMaxLifetime(5 * time.Minute) // 设置每个链接的过期时间
 
-	fmt.Println(Mysql, err)
+	fmt.Println("数据库连接成功")
+	if err != nil {
+		fmt.Println("数据库连接失败", err)
+	}
 	// 调试单个操作，显示此操作的详细日志
 	// db.Debug().Where("name = ?", "jinzhu").First()
 }

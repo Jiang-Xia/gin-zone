@@ -198,24 +198,47 @@ const docTemplate = `{
         "base.User": {
             "type": "object",
             "properties": {
-                "create_time": {
+                "createdAt": {
+                    "description": "创建时间",
                     "type": "string"
                 },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "gender": {
+                    "description": "性别",
+                    "type": "integer"
+                },
                 "id": {
+                    "description": "自增id",
                     "type": "integer"
                 },
                 "isAdmin": {
                     "description": "是否管理员",
                     "type": "boolean"
                 },
+                "isLock": {
+                    "description": "是否管理员",
+                    "type": "boolean"
+                },
+                "nickName": {
+                    "description": "用户昵称",
+                    "type": "string"
+                },
                 "password": {
                     "description": "密码",
                     "type": "string"
                 },
-                "update_time": {
+                "updatedAt": {
+                    "description": "更新时间",
                     "type": "string"
                 },
-                "username": {
+                "userId": {
+                    "description": "用户唯一id",
+                    "type": "integer"
+                },
+                "userName": {
                     "description": "用户名",
                     "type": "string"
                 }

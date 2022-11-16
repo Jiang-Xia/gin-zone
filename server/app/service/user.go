@@ -6,6 +6,7 @@ import (
 
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -33,7 +34,7 @@ func (u *user) Login(username, password string) (userModel *model.User, err erro
 	userModel = &model.User{}
 	db.Mysql.Where("username=?", username).Find(userModel)
 
-	if userModel.Id > 0 {
+	if userModel.ID > 0 {
 		fmt.Println("password = ", password)
 		/*
 			if userModel.Password != password {
@@ -62,7 +63,7 @@ func (u *user) SignIn(username string, password string) (userModel *model.User, 
 	// sess.Set(consts.SessionKeyUser, userInfo)
 	// err = sess.Save()
 
-	if userModel.Id == 0 {
+	if userModel.ID == 0 {
 		return userModel, 1002
 	}
 
@@ -75,9 +76,13 @@ func (u *user) SignIn(username string, password string) (userModel *model.User, 
 
 // Create 新增
 func (u *user) Create(model *model.User) (err error) {
-	err = db.Mysql.Create(model).Error
-
-	return err
+	fmt.Println(model, "Create.User")
+	model.UserId = utils.GenId() //唯一id
+	res := db.Mysql.Create(model)
+	if res.Error != nil { //判断是否插入数据出错
+		fmt.Println(res.Error)
+	}
+	return
 }
 
 // Get 用户信息
