@@ -1,14 +1,19 @@
 package base
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gitee.com/jiang-xia/gin-zone/server/app/service"
+	"gitee.com/jiang-xia/gin-zone/server/middleware"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"github.com/gin-gonic/gin"
+	jwtgo "github.com/golang-jwt/jwt/v4"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 )
 
 // User类，go类的写法
@@ -23,8 +28,8 @@ type User struct {
 // @Tags        用户模块
 // @Accept      json
 // @Produce     json
-// @Param       user body     User false "需要上传的json"
-// @Success     200  {object} User
+// @Param       user body     model.MainUser false "需要上传的json"
+// @Success     200  {object} model.MainUser
 // @Router      /base/register [post]
 func (u *User) Register(c *gin.Context) {
 	user := &model.User{}
@@ -52,11 +57,26 @@ func (u *User) Register(c *gin.Context) {
 // @Tags        用户模块
 // @Accept      json
 // @Produce     json
-// @Param       user body     User false "需要上传的json"
-// @Success     200  {object} User
+// @Param       user body     model.LoginForm false "需要上传的json"
+// @Success     200  {string} token
 // @Router      /base/login [post]
 func (u *User) Login(c *gin.Context) {
-	c.JSON(http.StatusOK, "登录")
+	var login = &model.LoginForm{}
+	if err := c.ShouldBind(&login); err != nil {
+		c.JSON(400, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+	user, errCode := service.User.SignIn(login.UserName, login.Password)
+
+	if errCode == 0 {
+		generateToken(c, user)
+	} else if errCode == tip.AuthUserNotFound {
+		response.Fail(c, tip.AuthUserNotFound)
+	} else {
+		response.Fail(c, tip.AuthUserPasswordError)
+	}
 }
 
 // Login godoc
@@ -67,11 +87,15 @@ func (u *User) Login(c *gin.Context) {
 // @Security	Authorization
 // @Accept      json
 // @Produce     json
-// @Param       id  path     int true "用户id"
 // @Success     200 {object} User
-// @Router      /base/users/{id} [get]
+// @Router      /base/users/info [get]
 func (u *User) UserInfo(c *gin.Context) {
-	c.JSON(http.StatusOK, "用户信息")
+	token := c.GetHeader("authorization")
+	user, err := middleware.NewJWT().ParseToken(token)
+	if err != nil {
+		response.Error(c, err)
+	}
+	fmt.Println("user", user)
 }
 
 // UserList godoc
@@ -102,4 +126,32 @@ func (u *User) UserList(c *gin.Context) {
 // @Router      /base/delete/{id} [delete]
 func (u *User) DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, "删除用户")
+}
+
+// generateToken 生成token
+func generateToken(c *gin.Context, user *model.User) {
+	data := map[string]interface{}{} // 任意接口
+	now := time.Now()
+
+	j := middleware.NewJWT()
+	claims := middleware.JWTCustomClaims{
+		UserId:   cast.ToString(user.UserId),
+		UserName: user.UserName,
+		RegisteredClaims: jwtgo.RegisteredClaims{
+			IssuedAt:  jwtgo.NewNumericDate(now),                                               // 签发时间
+			ExpiresAt: jwtgo.NewNumericDate(time.Now().Add(12 * time.Hour * time.Duration(1))), // 过期时间12小时
+		},
+	}
+
+	token, err := j.CreateToken(claims)
+
+	if err != nil {
+		logrus.Error(err)
+		response.Fail(c, tip.AuthFailedGenerateToken)
+		return
+	}
+
+	data["token"] = token
+
+	response.Success(c, data, tip.AuthLoginSuccess)
 }

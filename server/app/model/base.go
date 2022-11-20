@@ -18,6 +18,7 @@ type BaseModel struct {
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"updatedAt"`
 }
 
+// gorm hook 文档 ：https://gorm.io/zh_CN/docs/hooks.html
 // 创建记录时可用的 hook  自动添加创建时间和更新时间
 func (v *BaseModel) BeforeCreate(tx *gorm.DB) error {
 	tx.UpdateColumn("created_at", utils.NowTime())

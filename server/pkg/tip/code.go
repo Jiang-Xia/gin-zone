@@ -26,6 +26,7 @@ const (
 	AuthSignInSuccess       = 20104
 	AuthTokenNoEmpty        = 20105
 	AuthFail                = 20106
+	AuthUserNotFound        = 20107
 )
 
 func Msg(code int) string {

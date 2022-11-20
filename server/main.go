@@ -2,7 +2,7 @@ package main
 
 import (
 	"gitee.com/jiang-xia/gin-zone/server/router"
-	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 /* 整个项目的swagger文档说明需要写在main.go中，不然执行swag init 生成的docs.go 中的SwaggerInfo都为空，导致信息和鉴权之类用不了 */
@@ -22,8 +22,12 @@ import (
 
 func main() {
 	// 设置日志级别
-	logrus.SetLevel(logrus.DebugLevel)
-	logrus.Info("======App start======")
+	log.WithFields(log.Fields{
+		"animal": "walrus",
+		"number": 1,
+		"size":   10,
+	}).Info("A walrus appears")
+	log.Info("======App start======")
 
 	router := router.RouterApp()
 

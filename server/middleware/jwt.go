@@ -22,8 +22,8 @@ type JWT struct {
 }
 
 type JWTCustomClaims struct {
-	UserID   string `json:"user_id"`
-	Username string `json:"user_name"`
+	UserId   string `json:"userId"`
+	UserName string `json:"userName"`
 	jwtgo.RegisteredClaims
 }
 
@@ -66,7 +66,7 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		if claims.Username == "guest" && !utils.IsGet(c) {
+		if claims.UserName == "guest" && !utils.IsGet(c) {
 			response.Success(c, nil, tip.AuthFail)
 			c.Abort()
 			return
@@ -74,8 +74,8 @@ func JWTAuth() gin.HandlerFunc {
 
 		// 将用户信息存入 gin.context 里，后续 auth 包将从这里拿到当前用户数据
 		c.Set("current_user", claims)
-		c.Set("current_user_id", claims.UserID)
-		c.Set("current_user_name", claims.Username)
+		c.Set("current_user_id", claims.UserId)
+		c.Set("current_user_name", claims.UserName)
 
 		c.Next()
 	}

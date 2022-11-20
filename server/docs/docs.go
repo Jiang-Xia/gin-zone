@@ -72,7 +72,7 @@ const docTemplate = `{
                         "name": "user",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/base.User"
+                            "$ref": "#/definitions/model.LoginForm"
                         }
                     }
                 ],
@@ -80,7 +80,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/base.User"
+                            "type": "string"
                         }
                     }
                 }
@@ -105,7 +105,7 @@ const docTemplate = `{
                         "name": "user",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/base.User"
+                            "$ref": "#/definitions/model.MainUser"
                         }
                     }
                 ],
@@ -113,7 +113,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/base.User"
+                            "$ref": "#/definitions/model.MainUser"
                         }
                     }
                 }
@@ -156,7 +156,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/base/users/{id}": {
+        "/base/users/info": {
             "get": {
                 "security": [
                     {
@@ -174,15 +174,6 @@ const docTemplate = `{
                     "用户模块"
                 ],
                 "summary": "用户信息",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "用户id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -232,6 +223,54 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "description": "更新时间",
+                    "type": "string"
+                },
+                "userId": {
+                    "description": "用户唯一id",
+                    "type": "integer"
+                },
+                "userName": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            }
+        },
+        "model.LoginForm": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.MainUser": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "邮箱",
+                    "type": "string"
+                },
+                "gender": {
+                    "description": "性别",
+                    "type": "integer"
+                },
+                "isAdmin": {
+                    "description": "是否管理员",
+                    "type": "boolean"
+                },
+                "isLock": {
+                    "description": "是否管理员",
+                    "type": "boolean"
+                },
+                "nickName": {
+                    "description": "用户昵称",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
                     "type": "string"
                 },
                 "userId": {

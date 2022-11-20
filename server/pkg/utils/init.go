@@ -10,7 +10,12 @@ import (
 var node *snowflake.Node
 
 func GenId() int64 {
-	return node.Generate().Int64()
+	id := node.Generate()
+	// fmt.Printf("Int64  ID: %d\n", id)
+	// fmt.Printf("String ID: %s\n", id)
+	// fmt.Printf("Base2  ID: %s\n", id.Base2())
+	// fmt.Printf("Base64 ID: %s\n", id.Base64())
+	return id.Int64()
 }
 
 func InitSnowflake(startTime string, machineId int64) (err error) {

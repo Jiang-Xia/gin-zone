@@ -38,9 +38,8 @@ func RouterApp() (r *gin.Engine) {
 
 			baseGroup.POST("login", userController.Login)
 			baseGroup.POST("register", userController.Register)
-			// baseGroup.Use(middleware.JWTAuth())
 			baseGroup.GET("users", middleware.JWTAuth(), userController.UserList)
-			baseGroup.GET("users/:id", userController.UserInfo)
+			baseGroup.GET("users/info", userController.UserInfo)
 			baseGroup.DELETE("delete/:id", userController.DeleteUser)
 		}
 

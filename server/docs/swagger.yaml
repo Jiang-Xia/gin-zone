@@ -36,6 +36,40 @@ definitions:
         description: 用户名
         type: string
     type: object
+  model.LoginForm:
+    properties:
+      password:
+        type: string
+      userName:
+        type: string
+    type: object
+  model.MainUser:
+    properties:
+      email:
+        description: 邮箱
+        type: string
+      gender:
+        description: 性别
+        type: integer
+      isAdmin:
+        description: 是否管理员
+        type: boolean
+      isLock:
+        description: 是否管理员
+        type: boolean
+      nickName:
+        description: 用户昵称
+        type: string
+      password:
+        description: 密码
+        type: string
+      userId:
+        description: 用户唯一id
+        type: integer
+      userName:
+        description: 用户名
+        type: string
+    type: object
 host: localhost:9600
 info:
   contact: {}
@@ -76,14 +110,14 @@ paths:
         in: body
         name: user
         schema:
-          $ref: '#/definitions/base.User'
+          $ref: '#/definitions/model.LoginForm'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/base.User'
+            type: string
       summary: 登录接口
       tags:
       - 用户模块
@@ -97,14 +131,14 @@ paths:
         in: body
         name: user
         schema:
-          $ref: '#/definitions/base.User'
+          $ref: '#/definitions/model.MainUser'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/base.User'
+            $ref: '#/definitions/model.MainUser'
       summary: 注册接口
       tags:
       - 用户模块
@@ -131,17 +165,11 @@ paths:
       summary: 用户列表
       tags:
       - 用户模块
-  /base/users/{id}:
+  /base/users/info:
     get:
       consumes:
       - application/json
       description: 用户信息接口
-      parameters:
-      - description: 用户id
-        in: path
-        name: id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:

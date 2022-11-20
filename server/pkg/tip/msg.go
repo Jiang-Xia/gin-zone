@@ -18,6 +18,7 @@ var MsgFlags = map[int]string{
 	Auth:                    "Token错误",
 	AuthToken:               "Token生成失败",
 	AuthUserPasswordError:   "用户名密码不正确",
+	AuthUserNotFound:        "用户不存在",
 	AuthFailedGenerateToken: "生成token失败",
 	AuthLoginSuccess:        "登录成功",
 	AuthSignInSuccess:       "注册成功",

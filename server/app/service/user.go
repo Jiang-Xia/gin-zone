@@ -1,11 +1,11 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -30,38 +30,18 @@ func (um UserInfoMap) GetUserName() string {
 	return um["username"].(string)
 }
 
-func (u *user) Login(username, password string) (userModel *model.User, err error) {
-	userModel = &model.User{}
-	db.Mysql.Where("username=?", username).Find(userModel)
-
-	if userModel.ID > 0 {
-		fmt.Println("password = ", password)
-		/*
-			if userModel.Password != password {
-				userModel = nil
-				err = errors.New("账号或密码错误")
-				return
-			}
-		*/
-	} else {
-		userModel = nil
-		err = errors.New("账号或密码错误")
-	}
-
-	return
-}
-
 // SignIn 登录校验
 func (u *user) SignIn(username string, password string) (userModel *model.User, code int) {
 	userModel = &model.User{}
 	var PasswordErr error
-
-	db.Mysql.Where("username = ?", username).First(userModel)
+	result := db.Mysql.Where("user_name = ?", username).First(userModel) // 将查询结果赋值给结构体
+	// 用户不存在
+	if result.RowsAffected == 0 {
+		return userModel, tip.AuthUserNotFound
+	}
+	fmt.Println("result", userModel.Password, password)
+	// 比较密码
 	PasswordErr = bcrypt.CompareHashAndPassword([]byte(userModel.Password), []byte(password))
-
-	// sess := sessions.Default(c)
-	// sess.Set(consts.SessionKeyUser, userInfo)
-	// err = sess.Save()
 
 	if userModel.ID == 0 {
 		return userModel, 1002
