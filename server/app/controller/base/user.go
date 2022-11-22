@@ -1,7 +1,6 @@
 package base
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -43,7 +42,7 @@ func (u *User) Register(c *gin.Context) {
 	err := service.User.Create(user)
 	if err != nil {
 		logrus.Error("新增失败", err)
-		response.Fail(c, tip.ErrorInsert)
+		response.Fail(c, tip.Msg(tip.ErrorInsert), err)
 		return
 	}
 
@@ -73,9 +72,9 @@ func (u *User) Login(c *gin.Context) {
 	if errCode == 0 {
 		generateToken(c, user)
 	} else if errCode == tip.AuthUserNotFound {
-		response.Fail(c, tip.AuthUserNotFound)
+		response.Fail(c, tip.Msg(tip.AuthUserNotFound), "")
 	} else {
-		response.Fail(c, tip.AuthUserPasswordError)
+		response.Fail(c, tip.Msg(tip.AuthUserPasswordError), "")
 	}
 }
 
@@ -93,9 +92,11 @@ func (u *User) UserInfo(c *gin.Context) {
 	token := c.GetHeader("authorization")
 	user, err := middleware.NewJWT().ParseToken(token)
 	if err != nil {
-		response.Error(c, err)
+		response.Fail(c, err.Error(), user)
+		return
 	}
-	fmt.Println("user", user)
+	// user.UserId
+	response.Success(c, "用户信息")
 }
 
 // UserList godoc
@@ -146,12 +147,11 @@ func generateToken(c *gin.Context, user *model.User) {
 	token, err := j.CreateToken(claims)
 
 	if err != nil {
-		logrus.Error(err)
-		response.Fail(c, tip.AuthFailedGenerateToken)
+		response.Fail(c, tip.Msg(tip.AuthFailedGenerateToken), err)
 		return
 	}
 
 	data["token"] = token
 
-	response.Success(c, data, tip.AuthLoginSuccess)
+	response.Success(c, data)
 }

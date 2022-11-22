@@ -61,13 +61,7 @@ func JWTAuth() gin.HandlerFunc {
 
 		if err != nil {
 			logrus.Error(err)
-			response.Fail(c, tip.AuthCheckTokenFail, tip.AuthCheckTokenFail)
-			c.Abort()
-			return
-		}
-
-		if claims.UserName == "guest" && !utils.IsGet(c) {
-			response.Success(c, nil, tip.AuthFail)
+			response.Fail(c, tip.Msg(tip.AuthCheckTokenFail), nil)
 			c.Abort()
 			return
 		}
