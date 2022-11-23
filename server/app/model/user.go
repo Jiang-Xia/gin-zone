@@ -17,11 +17,11 @@ type MainUser struct {
 	// 用户唯一id
 	UserId int64 `json:"userId"`
 	// 用户名
-	UserName string `json:"userName"`
+	UserName string `json:"userName" binding:"required,min=4,max=12" label:"用户名"`
 	// 用户昵称
 	NickName string `json:"nickName"`
 	// 密码
-	Password string `json:"password"`
+	Password string `json:"password" binding:"required,min=6,max=16" label:"密码"`
 	// 邮箱
 	Email string `json:"email"`
 	// 性别

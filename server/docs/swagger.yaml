@@ -25,6 +25,8 @@ definitions:
         type: string
       password:
         description: 密码
+        maxLength: 16
+        minLength: 6
         type: string
       updatedAt:
         description: 更新时间
@@ -34,7 +36,12 @@ definitions:
         type: integer
       userName:
         description: 用户名
+        maxLength: 12
+        minLength: 4
         type: string
+    required:
+    - password
+    - userName
     type: object
   model.LoginForm:
     properties:
@@ -62,13 +69,20 @@ definitions:
         type: string
       password:
         description: 密码
+        maxLength: 16
+        minLength: 6
         type: string
       userId:
         description: 用户唯一id
         type: integer
       userName:
         description: 用户名
+        maxLength: 12
+        minLength: 4
         type: string
+    required:
+    - password
+    - userName
     type: object
 host: localhost:9600
 info:
@@ -121,27 +135,6 @@ paths:
       summary: 登录接口
       tags:
       - 用户模块
-  /base/register:
-    post:
-      consumes:
-      - application/json
-      description: 用户注册接口
-      parameters:
-      - description: 需要上传的json
-        in: body
-        name: user
-        schema:
-          $ref: '#/definitions/model.MainUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.MainUser'
-      summary: 注册接口
-      tags:
-      - 用户模块
   /base/users:
     get:
       consumes:
@@ -163,6 +156,26 @@ paths:
       security:
       - Authorization: []
       summary: 用户列表
+      tags:
+      - 用户模块
+    post:
+      consumes:
+      - application/json
+      description: 用户注册接口
+      parameters:
+      - description: 需要上传的json
+        in: body
+        name: user
+        schema:
+          $ref: '#/definitions/model.MainUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.MainUser'
+      summary: 注册接口
       tags:
       - 用户模块
   /base/users/info:

@@ -86,39 +86,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/base/register": {
-            "post": {
-                "description": "用户注册接口",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "用户模块"
-                ],
-                "summary": "注册接口",
-                "parameters": [
-                    {
-                        "description": "需要上传的json",
-                        "name": "user",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/model.MainUser"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.MainUser"
-                        }
-                    }
-                }
-            }
-        },
         "/base/users": {
             "get": {
                 "security": [
@@ -151,6 +118,37 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/base.User"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "用户注册接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "注册接口",
+                "parameters": [
+                    {
+                        "description": "需要上传的json",
+                        "name": "user",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/model.MainUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.MainUser"
                         }
                     }
                 }
@@ -188,6 +186,10 @@ const docTemplate = `{
     "definitions": {
         "base.User": {
             "type": "object",
+            "required": [
+                "password",
+                "userName"
+            ],
             "properties": {
                 "createdAt": {
                     "description": "创建时间",
@@ -219,7 +221,9 @@ const docTemplate = `{
                 },
                 "password": {
                     "description": "密码",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 6
                 },
                 "updatedAt": {
                     "description": "更新时间",
@@ -231,7 +235,9 @@ const docTemplate = `{
                 },
                 "userName": {
                     "description": "用户名",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 4
                 }
             }
         },
@@ -248,6 +254,10 @@ const docTemplate = `{
         },
         "model.MainUser": {
             "type": "object",
+            "required": [
+                "password",
+                "userName"
+            ],
             "properties": {
                 "email": {
                     "description": "邮箱",
@@ -271,7 +281,9 @@ const docTemplate = `{
                 },
                 "password": {
                     "description": "密码",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 6
                 },
                 "userId": {
                     "description": "用户唯一id",
@@ -279,7 +291,9 @@ const docTemplate = `{
                 },
                 "userName": {
                     "description": "用户名",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 4
                 }
             }
         }

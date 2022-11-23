@@ -37,7 +37,7 @@ func RouterApp() (r *gin.Engine) {
 			userController := new(base.User)
 
 			baseGroup.POST("login", userController.Login)
-			baseGroup.POST("register", userController.Register)
+			baseGroup.POST("users", userController.Register)
 			baseGroup.GET("users", middleware.JWTAuth(), userController.UserList)
 			baseGroup.GET("users/info", userController.UserInfo)
 			baseGroup.DELETE("delete/:id", userController.DeleteUser)

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+
+	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
 	"gitee.com/jiang-xia/gin-zone/server/router"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,6 +24,10 @@ import (
 // @description                 jwt token 鉴权
 
 func main() {
+	if err := translate.InitTrans("zh"); err != nil {
+		fmt.Println("初始化翻译器错误")
+		return
+	}
 	// 设置日志级别
 	log.WithFields(log.Fields{
 		"animal": "walrus",
@@ -30,6 +37,5 @@ func main() {
 	log.Info("======App start======")
 
 	router := router.RouterApp()
-
 	router.Run(":9600")
 }

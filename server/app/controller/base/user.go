@@ -9,6 +9,7 @@ import (
 	"gitee.com/jiang-xia/gin-zone/server/middleware"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
 	"github.com/gin-gonic/gin"
 	jwtgo "github.com/golang-jwt/jwt/v4"
 	"github.com/sirupsen/logrus"
@@ -29,13 +30,12 @@ type User struct {
 // @Produce     json
 // @Param       user body     model.MainUser false "需要上传的json"
 // @Success     200  {object} model.MainUser
-// @Router      /base/register [post]
+// @Router      /base/users [post]
 func (u *User) Register(c *gin.Context) {
 	user := &model.User{}
-	if err := c.ShouldBind(&user); err != nil {
-		c.JSON(400, gin.H{
-			"err": err.Error(),
-		})
+	if err := c.ShouldBindJSON(&user); err != nil {
+		// 字段参数校验
+		translate.TranslateIndividual(err, c)
 		return
 	}
 
