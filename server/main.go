@@ -28,14 +28,7 @@ func main() {
 		fmt.Println("初始化翻译器错误")
 		return
 	}
-	// 设置日志级别
-	log.WithFields(log.Fields{
-		"animal": "walrus",
-		"number": 1,
-		"size":   10,
-	}).Info("A walrus appears")
 	log.Info("======App start======")
-
 	router := router.RouterApp()
 	router.Run(":9600")
 }

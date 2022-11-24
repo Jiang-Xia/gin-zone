@@ -23,6 +23,9 @@ func RouterApp() (r *gin.Engine) {
 	router.Static("/uploads", "./public/uploads")
 	// 跨域处理
 	router.Use(middleware.Cors())
+	router.Use(middleware.LoggerToFile())
+	// 强制日志颜色化
+	gin.ForceConsoleColor()
 	// 不需要经过token验证的路由
 	// authController := new(admin.Auth)
 	// router.POST("/admin/login", authController.SignIn)

@@ -50,7 +50,7 @@ func dbSetup() {
 			SingularTable: true,        // 全局禁用表名复数
 
 		},
-		Logger: logger.Default.LogMode(logger.Silent),
+		Logger: logger.Default.LogMode(logger.Info),
 	})
 	// 需要把当前成功连接的实例赋值给全局变量Mysql(不然没法操作数据库)
 	Mysql = conn
