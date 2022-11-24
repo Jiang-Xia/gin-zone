@@ -7,6 +7,7 @@ import (
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -56,7 +57,7 @@ func (u *user) SignIn(username string, password string) (userModel *model.User, 
 
 // Create 新增
 func (u *user) Create(model *model.User) (err error) {
-	fmt.Println(model, "Create.User")
+	logrus.Info(model, "Create.User")
 	model.UserId = utils.GenId() //唯一id
 	res := db.Mysql.Create(model)
 	if res.Error != nil { //判断是否插入数据出错

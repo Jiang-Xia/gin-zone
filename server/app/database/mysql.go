@@ -2,10 +2,10 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -14,15 +14,11 @@ import (
 
 var Mysql *gorm.DB // gorm数据库实例
 
-func init() {
-	dbSetup()
-}
-
 /*
 *
 数据库初始化
 */
-func dbSetup() {
+func DatabaseSetup() {
 	// dsn := "root:88888888@/elk-blog?charset=utf8&parseTime=True&loc=Local"
 
 	var (
@@ -60,6 +56,7 @@ func dbSetup() {
 	sqlDB.SetConnMaxLifetime(5 * time.Minute) // 设置每个链接的过期时间
 
 	fmt.Println("数据库连接成功")
+	logrus.Info("数据库连接成功")
 	if err != nil {
 		fmt.Println("数据库连接失败", err)
 	}
@@ -72,7 +69,7 @@ func CloseDB() {
 		sqlDB, err := Mysql.DB()
 		sqlDB.Close()
 		if err != nil {
-			log.Fatal(err)
+			logrus.Fatal(err)
 		}
 	}()
 }
