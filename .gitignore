@@ -1,5 +1,5 @@
 .idea
 
 server/tmp
-server/tmp/*
 server/logs
+server/tmp/build-errors.log

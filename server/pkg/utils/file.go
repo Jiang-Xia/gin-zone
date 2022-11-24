@@ -18,6 +18,7 @@ func GetLogFile(t string) (file *os.File) {
 	logFilePath := sec.Key("log_file_path").String()
 	logFileName := sec.Key("log_file_name").String()
 
+	// 获取sql记录的日志文件
 	if t == "sql" {
 		logFileName = sec.Key("log_file_sql_name").String()
 	}
