@@ -1,4 +1,5 @@
 .idea
 
 server/tmp
+server/tmp/*
 server/logs

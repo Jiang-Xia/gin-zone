@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
@@ -12,7 +13,18 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-var Mysql *gorm.DB // gorm数据库实例
+var Mysql *gorm.DB                 // gorm数据库实例
+var file = utils.GetLogFile("sql") // 获取记录gorm错误的日志文件
+
+var newLogger = logger.New(
+	log.New(file, "\r\n", log.LstdFlags), // io writer（日志输出的目标，前缀和日志包含的内容——译者注）
+	logger.Config{
+		SlowThreshold:             time.Second, // 慢 SQL 阈值
+		LogLevel:                  logger.Info, // 日志级别
+		IgnoreRecordNotFoundError: false,       // 忽略ErrRecordNotFound（记录未找到）错误
+		Colorful:                  false,       // 彩色打印
+	},
+)
 
 /*
 *
@@ -46,7 +58,8 @@ func DatabaseSetup() {
 			SingularTable: true,        // 全局禁用表名复数
 
 		},
-		Logger: logger.Default.LogMode(logger.Info),
+		Logger: newLogger,
+		// Logger: logger.Default.LogMode(logger.Info),
 	})
 	// 需要把当前成功连接的实例赋值给全局变量Mysql(不然没法操作数据库)
 	Mysql = conn
