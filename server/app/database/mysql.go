@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	mylog "gitee.com/jiang-xia/gin-zone/server/pkg/log"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
@@ -13,45 +13,47 @@ import (
 	"gorm.io/gorm/schema"
 )
 
+/*
+使用 logrus 记录gorm日志
+*/
+
 var Mysql *gorm.DB // gorm数据库实例
 
-/* 使用 logrus 记录gorm日志 */
-//定义自己的Writer
+// MyWriter 定义自己的Writer
 type MyWriter struct {
 	mlog *logrus.Logger
 }
 
-// 实现gorm/logger.Writer接口
+// Printf 实现gorm/logger.Writer接口
 func (m *MyWriter) Printf(format string, v ...interface{}) {
 	logstr := fmt.Sprintf(format, v...)
-	//利用loggus记录日志
+	//利用 logrus 记录日志
 	m.mlog.Info(logstr)
 }
 
-// 自定义记录器
+// NewMyWriter 自定义记录器
 func NewMyWriter() *MyWriter {
-	log := mylog.Logger
+	log := log.Logger
 	return &MyWriter{mlog: log}
 }
-
-// 根据自定义Writer，新建一个logger
-var slowLogger = logger.New(
-	//设置Logger
-	NewMyWriter(),
-	logger.Config{
-		//慢SQL阈值
-		SlowThreshold: time.Second,
-		//设置日志级别，只有Warn以上才会打印sql
-		LogLevel: logger.Info,
-		Colorful: true,
-	},
-)
 
 /*
 *
 数据库初始化
 */
-func DatabaseSetup() {
+func Setup() {
+	// 根据自定义Writer，新建一个logger
+	var slowLogger = logger.New(
+		//设置Logger
+		NewMyWriter(),
+		logger.Config{
+			//慢SQL阈值
+			SlowThreshold: time.Second,
+			//设置日志级别，只有Warn以上才会打印sql
+			LogLevel: logger.Info,
+			Colorful: true,
+		},
+	)
 	// dsn := "root:88888888@/elk-blog?charset=utf8&parseTime=True&loc=Local"
 	var (
 		err                                                     error

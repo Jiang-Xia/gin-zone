@@ -34,9 +34,9 @@ func GetLogFile(t string) (file *os.File) {
 	// os.O_TRUNC // 文件打开时裁剪文件
 	// os.O_EXCL // 和O_CREATE一起使用，文件不能存在
 	// os.O_SYNC // 以同步I/O的方式打开
-	_, bool := IsExists(fileName)
+	_, b := IsExists(fileName)
 	var err error
-	if bool {
+	if b {
 		//打开文件，
 		file, _ = os.OpenFile(fileName, os.O_APPEND|os.O_RDWR, os.ModeAppend)
 	} else {

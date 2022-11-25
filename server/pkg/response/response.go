@@ -5,7 +5,6 @@ import (
 
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 // JSON 响应 200 和 JSON 数据，没有code
@@ -28,7 +27,6 @@ func Success(c *gin.Context, data interface{}) bool {
 		"msg":  tip.Msg(tip.Success),
 		"data": data,
 	})
-	logrus.Info(tip.Msg(tip.Success), data)
 	return true
 }
 
@@ -38,6 +36,5 @@ func Fail(c *gin.Context, msg string, data interface{}) bool {
 		"msg":  msg,
 		"data": data,
 	})
-	logrus.Info(msg)
 	return true
 }

@@ -16,7 +16,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-// User类，go类的写法
+// User 类，go类的写法
 type User struct {
 	model.User
 }
@@ -35,7 +35,7 @@ func (u *User) Register(c *gin.Context) {
 	user := &model.User{}
 	if err := c.ShouldBindJSON(&user); err != nil {
 		// 字段参数校验
-		translate.TranslateIndividual(err, c)
+		translate.Individual(err, c)
 		return
 	}
 
@@ -60,6 +60,7 @@ func (u *User) Register(c *gin.Context) {
 // @Success     200  {string} token
 // @Router      /base/login [post]
 func (u *User) Login(c *gin.Context) {
+	logrus.Info("登录》》》》》》")
 	var login = &model.LoginForm{}
 	if err := c.ShouldBind(&login); err != nil {
 		c.JSON(400, gin.H{

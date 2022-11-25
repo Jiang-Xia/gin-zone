@@ -12,8 +12,8 @@ import (
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
-	en_translations "github.com/go-playground/validator/v10/translations/en"
-	zh_translations "github.com/go-playground/validator/v10/translations/zh"
+	entranslations "github.com/go-playground/validator/v10/translations/en"
+	zhtranslations "github.com/go-playground/validator/v10/translations/zh"
 )
 
 var (
@@ -47,11 +47,11 @@ func InitTrans(locale string) (err error) {
 		}
 		switch locale {
 		case "en":
-			en_translations.RegisterDefaultTranslations(v, trans)
+			entranslations.RegisterDefaultTranslations(v, trans)
 		case "zh":
-			zh_translations.RegisterDefaultTranslations(v, trans)
+			zhtranslations.RegisterDefaultTranslations(v, trans)
 		default:
-			en_translations.RegisterDefaultTranslations(v, trans)
+			entranslations.RegisterDefaultTranslations(v, trans)
 		}
 		return
 	}
@@ -59,7 +59,7 @@ func InitTrans(locale string) (err error) {
 }
 
 // 全部翻译并且全部返回错误信息
-func TranslateAll(err error, c *gin.Context) string {
+func All(err error, c *gin.Context) string {
 	errs := err.(validator.ValidationErrors)
 	var msgs []string // 声明一个空切片
 	for _, e := range errs {
@@ -72,7 +72,7 @@ func TranslateAll(err error, c *gin.Context) string {
 }
 
 // 一次只翻译一个错误信息并且返回
-func TranslateIndividual(err error, c *gin.Context) string {
+func Individual(err error, c *gin.Context) string {
 	errs := err.(validator.ValidationErrors)
 	var msg string
 	for _, e := range errs {

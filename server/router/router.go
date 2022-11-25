@@ -15,7 +15,9 @@ import (
 // api文档说明：
 
 /* 初始化路由 */
-func RouterApp() (r *gin.Engine) {
+func App() (r *gin.Engine) {
+	// 强制日志颜色化
+	gin.ForceConsoleColor()
 	gin.SetMode(gin.ReleaseMode)
 	// gin.SetMode(gin.TestMode)
 	router := gin.Default()
@@ -24,9 +26,8 @@ func RouterApp() (r *gin.Engine) {
 	router.Static("/uploads", "./public/uploads")
 	// 跨域处理
 	router.Use(middleware.Cors())
-	router.Use(middleware.LoggerToFile())
-	// 强制日志颜色化
-	gin.ForceConsoleColor()
+	router.Use(middleware.LoggerMiddleWare())
+
 	// 不需要经过token验证的路由
 	// authController := new(admin.Auth)
 	// router.POST("/admin/login", authController.SignIn)
