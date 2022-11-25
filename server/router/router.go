@@ -17,6 +17,7 @@ import (
 /* 初始化路由 */
 func RouterApp() (r *gin.Engine) {
 	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.TestMode)
 	router := gin.Default()
 	// 静态路由
 	router.Static("/public", "./public")

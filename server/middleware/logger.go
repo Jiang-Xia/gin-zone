@@ -3,8 +3,8 @@ package middleware
 import (
 	"time"
 
+	mylog "gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 // 日志记录到文件
@@ -27,7 +27,7 @@ func LoggerToFile() gin.HandlerFunc {
 		// 请求IP
 		clientIP := c.ClientIP()
 		// 使用logrus接管gin日志
-		logrus.Infof("| %3d | %13v | %15s | %s | %s |",
+		mylog.Logger.Infof("| %3d | %13v | %15s | %s | %s |",
 			statusCode,
 			latencyTime,
 			clientIP,

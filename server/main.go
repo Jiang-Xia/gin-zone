@@ -12,7 +12,7 @@ import (
 
 func init() {
 	// 需初始化配置之后使用logrus才会定制话
-	log.InitLogrus()
+	log.ConfigLog()
 }
 
 /* 整个项目的swagger文档说明需要写在main.go中，不然执行swag init 生成的docs.go 中的SwaggerInfo都为空，导致信息和鉴权之类用不了 */
@@ -36,7 +36,7 @@ func main() {
 	}
 	// 初始化数据库
 	database.DatabaseSetup()
-	logrus.Info("======App start======")
 	router := router.RouterApp()
 	router.Run(":9600")
+	logrus.Info("======App startd======")
 }

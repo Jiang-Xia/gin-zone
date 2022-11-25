@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	mylog "gitee.com/jiang-xia/gin-zone/server/pkg/log"
@@ -14,18 +13,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-var Mysql *gorm.DB                 // gorm数据库实例
-var file = utils.GetLogFile("sql") // 获取记录gorm错误的日志文件
-
-var newLogger = logger.New(
-	log.New(file, "\r\n", log.LstdFlags), // io writer（日志输出的目标，前缀和日志包含的内容——译者注）
-	logger.Config{
-		SlowThreshold:             time.Second, // 慢 SQL 阈值
-		LogLevel:                  logger.Info, // 日志级别
-		IgnoreRecordNotFoundError: false,       // 忽略ErrRecordNotFound（记录未找到）错误
-		Colorful:                  false,       // 彩色打印
-	},
-)
+var Mysql *gorm.DB // gorm数据库实例
 
 /* 使用 logrus 记录gorm日志 */
 //定义自己的Writer
@@ -46,26 +34,25 @@ func NewMyWriter() *MyWriter {
 	return &MyWriter{mlog: log}
 }
 
+// 根据自定义Writer，新建一个logger
+var slowLogger = logger.New(
+	//设置Logger
+	NewMyWriter(),
+	logger.Config{
+		//慢SQL阈值
+		SlowThreshold: time.Second,
+		//设置日志级别，只有Warn以上才会打印sql
+		LogLevel: logger.Info,
+		Colorful: true,
+	},
+)
+
 /*
 *
 数据库初始化
 */
 func DatabaseSetup() {
-	// 根据自定义Writer，新建一个logger
-	slowLogger := logger.New(
-		//设置Logger
-		NewMyWriter(),
-		logger.Config{
-			//慢SQL阈值
-			SlowThreshold: time.Second,
-			//设置日志级别，只有Warn以上才会打印sql
-			LogLevel: logger.Info,
-			Colorful: true,
-		},
-	)
-
 	// dsn := "root:88888888@/elk-blog?charset=utf8&parseTime=True&loc=Local"
-
 	var (
 		err                                                     error
 		dbType, dbName, user, password, host, port, tablePrefix string
@@ -94,18 +81,21 @@ func DatabaseSetup() {
 		Logger: slowLogger,
 		// Logger: logger.Default.LogMode(logger.Info),
 	})
+	if err != nil {
+		logrus.Fatal("数据库连接失败", err)
+		return
+	}
+	logrus.Info("数据库连接成功")
 	// 需要把当前成功连接的实例赋值给全局变量Mysql(不然没法操作数据库)
 	Mysql = conn
 	sqlDB, err := Mysql.DB()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	sqlDB.SetMaxIdleConns(25)                 // 设置最大空闲连接数
 	sqlDB.SetMaxOpenConns(100)                // 设置最大连接数
 	sqlDB.SetConnMaxLifetime(5 * time.Minute) // 设置每个链接的过期时间
-
-	fmt.Println("数据库连接成功")
-	logrus.Info("数据库连接成功")
-	if err != nil {
-		fmt.Println("数据库连接失败", err)
-	}
 	// 调试单个操作，显示此操作的详细日志
 	// db.Debug().Where("name = ?", "jinzhu").First()
 }
