@@ -53,39 +53,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/base/login": {
-            "post": {
-                "description": "用户登录接口",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "用户模块"
-                ],
-                "summary": "登录接口",
-                "parameters": [
-                    {
-                        "description": "需要上传的json",
-                        "name": "user",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/model.LoginForm"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/base/users": {
             "get": {
                 "security": [
@@ -139,6 +106,7 @@ const docTemplate = `{
                         "description": "需要上传的json",
                         "name": "user",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.MainUser"
                         }
@@ -148,7 +116,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.MainUser"
+                            "$ref": "#/definitions/base.User"
                         }
                     }
                 }
@@ -172,6 +140,86 @@ const docTemplate = `{
                     "用户模块"
                 ],
                 "summary": "用户信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.User"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/users/login": {
+            "post": {
+                "description": "用户登录接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "登录接口",
+                "parameters": [
+                    {
+                        "description": "需要上传的json",
+                        "name": "LoginForm",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.LoginForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/base/users/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "修改用户接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "修改用户信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User.ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "需要上传的json",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MainUser"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -220,7 +268,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "description": "密码",
+                    "description": "密码 - 不会json化",
                     "type": "string",
                     "maxLength": 16,
                     "minLength": 6
@@ -243,12 +291,20 @@ const docTemplate = `{
         },
         "model.LoginForm": {
             "type": "object",
+            "required": [
+                "password",
+                "userName"
+            ],
             "properties": {
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 6
                 },
                 "userName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 4
                 }
             }
         },
@@ -280,7 +336,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "description": "密码",
+                    "description": "密码 - 不会json化",
                     "type": "string",
                     "maxLength": 16,
                     "minLength": 6
@@ -294,6 +350,20 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 12,
                     "minLength": 4
+                }
+            }
+        },
+        "response.ResType": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "data": {},
+                "msg": {
+                    "type": "string",
+                    "default": "操作成功"
                 }
             }
         }

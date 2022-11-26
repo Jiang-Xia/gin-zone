@@ -20,7 +20,7 @@ type MainUser struct {
 	UserName string `json:"userName" binding:"required,min=4,max=12" label:"用户名"`
 	// 用户昵称
 	NickName string `json:"nickName"`
-	// 密码
+	// 密码 - 不会json化
 	Password string `json:"password" binding:"required,min=6,max=16" label:"密码"`
 	// 邮箱
 	Email string `json:"email"`
@@ -32,12 +32,21 @@ type MainUser struct {
 	IsLock bool `json:"isLock"`
 }
 
-type LoginForm struct {
-	UserName string
-	Password string
+type UpdateUser struct {
+	// 用户昵称
+	NickName string `json:"nickName"`
+	// 邮箱
+	Email string `json:"email"`
+	// 性别
+	Gender int `json:"gender"`
 }
 
-// user 创建前hook 密码加密&权限控制
+type LoginForm struct {
+	UserName string `json:"userName" binding:"required,min=4,max=12" label:"用户名"`
+	Password string `json:"password" binding:"required,min=6,max=16" label:"密码"`
+}
+
+// BeforeCreate user 创建前hook 密码加密&权限控制
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.Password = hash.BcryptHash(u.Password)
 	return nil

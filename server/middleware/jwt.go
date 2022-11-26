@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
@@ -22,6 +21,7 @@ type JWT struct {
 }
 
 type JWTCustomClaims struct {
+	ID       int    `json:"id"`
 	UserId   string `json:"userId"`
 	UserName string `json:"userName"`
 	jwtgo.RegisteredClaims
@@ -48,13 +48,13 @@ var (
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
-		fmt.Println("============", token)
 		// 没有token 直接中断
 		if len(token) == 0 {
+			response.Fail(c, "token不能为空", nil)
 			c.Abort()
+			return
 		}
 
-		logrus.Error("打印的token: ", token)
 		// 解析token
 		j := NewJWT()
 		claims, err := j.ParseToken(token)
@@ -94,9 +94,8 @@ func (jwt *JWT) ParseToken(token string) (*JWTCustomClaims, error) {
 		return jwt.SignKey, nil
 	})
 
-	logrus.Error("ParseToken的错误： ", err)
-
 	if err != nil {
+		logrus.Error("ParseToken的错误： ", err)
 		// jwt.ValidationError 是一个无效token的错误结构
 		if ve, ok := err.(*jwtgo.ValidationError); ok {
 			// ValidationErrorMalformed是一个uint常量，表示token不可用

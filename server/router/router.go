@@ -12,9 +12,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
-// api文档说明：
-
-/* 初始化路由 */
+// App  初始化路由
 func App() (r *gin.Engine) {
 	// 强制日志颜色化
 	gin.ForceConsoleColor()
@@ -41,11 +39,13 @@ func App() (r *gin.Engine) {
 		{
 			userController := new(base.User)
 
-			baseGroup.POST("login", userController.Login)
+			baseGroup.POST("users/login", userController.Login)
 			baseGroup.POST("users", userController.Register)
+			baseGroup.Use(middleware.JWTAuth())
+			baseGroup.PATCH("users/:id", userController.UpdateUser)
 			baseGroup.GET("users", middleware.JWTAuth(), userController.UserList)
 			baseGroup.GET("users/info", userController.UserInfo)
-			baseGroup.DELETE("delete/:id", userController.DeleteUser)
+			baseGroup.DELETE("users/:id", userController.DeleteUser)
 		}
 
 		// 管理端路由

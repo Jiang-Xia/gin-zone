@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
@@ -16,8 +15,7 @@ type user struct {
 
 var User *user
 
-type UserInfoMap map[string]interface {
-}
+type UserInfoMap map[string]interface{}
 
 func NewUserInfoMap() UserInfoMap {
 	return make(UserInfoMap)
@@ -74,26 +72,24 @@ func (u *user) Get(id int) (user *model.User, err error) {
 }
 
 // List 获取 user 列表
-func (u *user) List(PageNum int, PageSize int, maps interface{}) ([]model.User, int64) {
+func (u *user) List(Page int, PageSize int, maps interface{}) ([]model.User, int64) {
 	var users []model.User
 	var total int64
 
-	db.Mysql.Where(maps).Offset((PageNum - 1) * PageSize).Limit(PageSize).Find(&users)
+	db.Mysql.Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&users)
 	db.Mysql.Model(&users).Count(&total)
 
 	return users, total
 }
 
 // Update 修改
-func (u *user) Update(id string, model *model.User) (err error) {
+func (u *user) Update(id int, model *model.User) (err error) {
 	err = db.Mysql.Model(&model).Where("id = ? ", id).Updates(model).Error
-
 	return err
 }
 
 // Delete 删除
-func (u *user) Delete(id string) bool {
+func (u *user) Delete(id int) bool {
 	db.Mysql.Where("id = ?", id).Delete(&user{})
-
 	return true
 }

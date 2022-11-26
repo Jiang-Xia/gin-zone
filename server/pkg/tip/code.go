@@ -2,7 +2,7 @@ package tip
 
 // 自定义常量状态码
 const (
-	// 后端业务层 无聊报错与否，都会返回http状态200。然后用自定义code进行区分业务逻辑层是否成功与否。 因为 HTTP 是网络传输，不是业务逻辑层（业务层玉网络层分开）。
+	// Success 后端业务层 无聊报错与否，都会返回http状态200。然后用自定义code进行区分业务逻辑层是否成功与否。 因为 HTTP 是网络传输，不是业务逻辑层（业务层玉网络层分开）。
 	Success             = 0
 	Error               = 1
 	InternalServerError = 500
@@ -31,7 +31,7 @@ const (
 	AuthUserNotFound        = 20107
 )
 
-// key为声明常量的值
+// MsgFlags key为声明常量的值
 var MsgFlags = map[int]string{
 	Success:             "操作成功",
 	InternalServerError: "操作失败",

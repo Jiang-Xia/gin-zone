@@ -24,7 +24,7 @@ definitions:
         description: 用户昵称
         type: string
       password:
-        description: 密码
+        description: 密码 - 不会json化
         maxLength: 16
         minLength: 6
         type: string
@@ -46,9 +46,16 @@ definitions:
   model.LoginForm:
     properties:
       password:
+        maxLength: 16
+        minLength: 6
         type: string
       userName:
+        maxLength: 12
+        minLength: 4
         type: string
+    required:
+    - password
+    - userName
     type: object
   model.MainUser:
     properties:
@@ -68,7 +75,7 @@ definitions:
         description: 用户昵称
         type: string
       password:
-        description: 密码
+        description: 密码 - 不会json化
         maxLength: 16
         minLength: 6
         type: string
@@ -83,6 +90,16 @@ definitions:
     required:
     - password
     - userName
+    type: object
+  response.ResType:
+    properties:
+      code:
+        default: 0
+        type: integer
+      data: {}
+      msg:
+        default: 操作成功
+        type: string
     type: object
 host: localhost:9600
 info:
@@ -112,27 +129,6 @@ paths:
       security:
       - Authorization: []
       summary: 删除用户
-      tags:
-      - 用户模块
-  /base/login:
-    post:
-      consumes:
-      - application/json
-      description: 用户登录接口
-      parameters:
-      - description: 需要上传的json
-        in: body
-        name: user
-        schema:
-          $ref: '#/definitions/model.LoginForm'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-      summary: 登录接口
       tags:
       - 用户模块
   /base/users:
@@ -166,6 +162,7 @@ paths:
       - description: 需要上传的json
         in: body
         name: user
+        required: true
         schema:
           $ref: '#/definitions/model.MainUser'
       produces:
@@ -174,8 +171,37 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.MainUser'
+            $ref: '#/definitions/base.User'
       summary: 注册接口
+      tags:
+      - 用户模块
+  /base/users/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: 修改用户接口
+      parameters:
+      - description: User.ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 需要上传的json
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.MainUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.User'
+      security:
+      - Authorization: []
+      summary: 修改用户信息
       tags:
       - 用户模块
   /base/users/info:
@@ -193,6 +219,28 @@ paths:
       security:
       - Authorization: []
       summary: 用户信息
+      tags:
+      - 用户模块
+  /base/users/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录接口
+      parameters:
+      - description: 需要上传的json
+        in: body
+        name: LoginForm
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      summary: 登录接口
       tags:
       - 用户模块
 securityDefinitions:

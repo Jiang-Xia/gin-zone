@@ -58,7 +58,7 @@ func InitTrans(locale string) (err error) {
 	return
 }
 
-// 全部翻译并且全部返回错误信息
+// All 全部翻译并且全部返回错误信息
 func All(err error, c *gin.Context) string {
 	errs := err.(validator.ValidationErrors)
 	var msgs []string // 声明一个空切片
@@ -71,7 +71,7 @@ func All(err error, c *gin.Context) string {
 	//列如:password为必填字段,userName长度必须至少为4个字符
 }
 
-// 一次只翻译一个错误信息并且返回
+// Individual 一次只翻译一个错误信息并且返回
 func Individual(err error, c *gin.Context) string {
 	errs := err.(validator.ValidationErrors)
 	var msg string
