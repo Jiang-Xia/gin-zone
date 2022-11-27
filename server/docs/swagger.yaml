@@ -7,6 +7,7 @@ definitions:
         type: string
       email:
         description: 邮箱
+        example: 123456789@qq.com
         type: string
       gender:
         description: 性别
@@ -15,16 +16,20 @@ definitions:
         description: 自增id
         type: integer
       isAdmin:
+        default: false
         description: 是否管理员
         type: boolean
       isLock:
+        default: false
         description: 是否管理员
         type: boolean
       nickName:
         description: 用户昵称
+        example: 酱
         type: string
       password:
         description: 密码 - 不会json化
+        example: "123456"
         maxLength: 16
         minLength: 6
         type: string
@@ -36,6 +41,7 @@ definitions:
         type: integer
       userName:
         description: 用户名
+        example: test
         maxLength: 12
         minLength: 4
         type: string
@@ -43,13 +49,37 @@ definitions:
     - password
     - userName
     type: object
-  model.LoginForm:
+  model.ChangePassword:
     properties:
+      newPassword:
+        example: "123456"
+        maxLength: 16
+        minLength: 6
+        type: string
       password:
+        example: "123456"
         maxLength: 16
         minLength: 6
         type: string
       userName:
+        example: test
+        maxLength: 12
+        minLength: 4
+        type: string
+    required:
+    - newPassword
+    - password
+    - userName
+    type: object
+  model.LoginForm:
+    properties:
+      password:
+        example: "123456"
+        maxLength: 16
+        minLength: 6
+        type: string
+      userName:
+        example: test
         maxLength: 12
         minLength: 4
         type: string
@@ -61,21 +91,26 @@ definitions:
     properties:
       email:
         description: 邮箱
+        example: 123456789@qq.com
         type: string
       gender:
         description: 性别
         type: integer
       isAdmin:
+        default: false
         description: 是否管理员
         type: boolean
       isLock:
+        default: false
         description: 是否管理员
         type: boolean
       nickName:
         description: 用户昵称
+        example: 酱
         type: string
       password:
         description: 密码 - 不会json化
+        example: "123456"
         maxLength: 16
         minLength: 6
         type: string
@@ -84,12 +119,27 @@ definitions:
         type: integer
       userName:
         description: 用户名
+        example: test
         maxLength: 12
         minLength: 4
         type: string
     required:
     - password
     - userName
+    type: object
+  model.UpdateUser:
+    properties:
+      email:
+        description: 邮箱
+        example: 123456789@qq.com
+        type: string
+      gender:
+        description: 性别
+        type: integer
+      nickName:
+        description: 用户昵称
+        example: 酱
+        type: string
     type: object
   response.ResType:
     properties:
@@ -108,29 +158,6 @@ info:
   title: Gin-Zone-Api
   version: "1.0"
 paths:
-  /base/delete/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: 删除用户接口
-      parameters:
-      - description: 用户id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/base.User'
-      security:
-      - Authorization: []
-      summary: 删除用户
-      tags:
-      - 用户模块
   /base/users:
     get:
       consumes:
@@ -148,7 +175,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/base.User'
+            items:
+              $ref: '#/definitions/base.User'
+            type: array
       security:
       - Authorization: []
       summary: 用户列表
@@ -176,6 +205,28 @@ paths:
       tags:
       - 用户模块
   /base/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除用户接口
+      parameters:
+      - description: 用户id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.User'
+      security:
+      - Authorization: []
+      summary: 删除用户
+      tags:
+      - 用户模块
     patch:
       consumes:
       - application/json
@@ -191,14 +242,14 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/model.MainUser'
+          $ref: '#/definitions/model.UpdateUser'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/base.User'
+            $ref: '#/definitions/model.UpdateUser'
       security:
       - Authorization: []
       summary: 修改用户信息
@@ -241,6 +292,30 @@ paths:
           schema:
             $ref: '#/definitions/response.ResType'
       summary: 登录接口
+      tags:
+      - 用户模块
+  /base/users/password:
+    post:
+      consumes:
+      - application/json
+      description: 修改密码接口
+      parameters:
+      - description: 需要上传的json
+        in: body
+        name: LoginForm
+        required: true
+        schema:
+          $ref: '#/definitions/model.ChangePassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 修改密码
       tags:
       - 用户模块
 securityDefinitions:

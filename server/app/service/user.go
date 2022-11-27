@@ -1,12 +1,13 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/hash"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -21,24 +22,29 @@ func NewUserInfoMap() UserInfoMap {
 	return make(UserInfoMap)
 }
 
-func (um UserInfoMap) GetUserName() string {
-	if um["username"] == nil {
-		return ""
+// 校验用户是否存在
+func (u *user) isUserExist(username string) (bool, *model.User) {
+	userModel := &model.User{}
+	result := db.Mysql.Where("user_name = ?", username).First(userModel) // 将查询结果赋值给结构体
+	// 用户不存在
+	if result.RowsAffected == 0 {
+		return false, userModel
+	} else {
+		return true, userModel
 	}
-
-	return um["username"].(string)
 }
 
 // SignIn 登录校验
 func (u *user) SignIn(username string, password string) (userModel *model.User, code int) {
-	userModel = &model.User{}
-	var PasswordErr error
-	result := db.Mysql.Where("user_name = ?", username).First(userModel) // 将查询结果赋值给结构体
-	// 用户不存在
-	if result.RowsAffected == 0 {
+	var (
+		PasswordErr error
+		b           bool
+	)
+	b, userModel = u.isUserExist(username)
+	if !b {
 		return userModel, tip.AuthUserNotFound
 	}
-	fmt.Println("result", userModel.Password, password)
+	//fmt.Println("result", userModel.Password, password)
 	// 比较密码
 	PasswordErr = bcrypt.CompareHashAndPassword([]byte(userModel.Password), []byte(password))
 
@@ -55,7 +61,9 @@ func (u *user) SignIn(username string, password string) (userModel *model.User, 
 
 // Create 新增
 func (u *user) Create(model *model.User) (err error) {
-	logrus.Info(model, "Create.User")
+	if b, _ := u.isUserExist(model.UserName); b {
+		return errors.New("用户已经存在了")
+	}
 	model.UserId = utils.GenId() //唯一id
 	res := db.Mysql.Create(model)
 	if res.Error != nil { //判断是否插入数据出错
@@ -64,7 +72,7 @@ func (u *user) Create(model *model.User) (err error) {
 	return
 }
 
-// Get 用户信息
+// Get 用户信息 函数又有返回参数以及有return就可返回
 func (u *user) Get(id int) (user *model.User, err error) {
 	user = &model.User{}
 	err = db.Mysql.Find(user, id).Error
@@ -86,6 +94,14 @@ func (u *user) List(Page int, PageSize int, maps interface{}) ([]model.User, int
 func (u *user) Update(id int, model *model.User) (err error) {
 	err = db.Mysql.Model(&model).Where("id = ? ", id).Updates(model).Error
 	return err
+}
+
+// UpdatePassword 修改密码
+func (u *user) UpdatePassword(id int, password string) (err error) {
+	var model model.User // *声明指针类型变量 &为取指针地址
+	password = hash.BcryptHash(password)
+	err = db.Mysql.Model(&model).Select("password").Where("id = ?", id).Updates(map[string]interface{}{"password": password}).Error
+	return
 }
 
 // Delete 删除

@@ -16,43 +16,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/base/delete/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "Authorization": []
-                    }
-                ],
-                "description": "删除用户接口",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "用户模块"
-                ],
-                "summary": "删除用户",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "用户id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/base.User"
-                        }
-                    }
-                }
-            }
-        },
         "/base/users": {
             "get": {
                 "security": [
@@ -84,7 +47,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/base.User"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/base.User"
+                            }
                         }
                     }
                 }
@@ -184,7 +150,81 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/users/password": {
+            "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "修改密码接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "修改密码",
+                "parameters": [
+                    {
+                        "description": "需要上传的json",
+                        "name": "LoginForm",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ChangePassword"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
         "/base/users/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "删除用户接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "删除用户",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.User"
+                        }
+                    }
+                }
+            },
             "patch": {
                 "security": [
                     {
@@ -216,7 +256,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.MainUser"
+                            "$ref": "#/definitions/model.UpdateUser"
                         }
                     }
                 ],
@@ -224,7 +264,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/base.User"
+                            "$ref": "#/definitions/model.UpdateUser"
                         }
                     }
                 }
@@ -245,7 +285,8 @@ const docTemplate = `{
                 },
                 "email": {
                     "description": "邮箱",
-                    "type": "string"
+                    "type": "string",
+                    "example": "123456789@qq.com"
                 },
                 "gender": {
                     "description": "性别",
@@ -257,21 +298,25 @@ const docTemplate = `{
                 },
                 "isAdmin": {
                     "description": "是否管理员",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                 },
                 "isLock": {
                     "description": "是否管理员",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                 },
                 "nickName": {
                     "description": "用户昵称",
-                    "type": "string"
+                    "type": "string",
+                    "example": "酱"
                 },
                 "password": {
                     "description": "密码 - 不会json化",
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "123456"
                 },
                 "updatedAt": {
                     "description": "更新时间",
@@ -285,7 +330,36 @@ const docTemplate = `{
                     "description": "用户名",
                     "type": "string",
                     "maxLength": 12,
-                    "minLength": 4
+                    "minLength": 4,
+                    "example": "test"
+                }
+            }
+        },
+        "model.ChangePassword": {
+            "type": "object",
+            "required": [
+                "newPassword",
+                "password",
+                "userName"
+            ],
+            "properties": {
+                "newPassword": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 6,
+                    "example": "123456"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 6,
+                    "example": "123456"
+                },
+                "userName": {
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 4,
+                    "example": "test"
                 }
             }
         },
@@ -299,12 +373,14 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "123456"
                 },
                 "userName": {
                     "type": "string",
                     "maxLength": 12,
-                    "minLength": 4
+                    "minLength": 4,
+                    "example": "test"
                 }
             }
         },
@@ -317,7 +393,8 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "description": "邮箱",
-                    "type": "string"
+                    "type": "string",
+                    "example": "123456789@qq.com"
                 },
                 "gender": {
                     "description": "性别",
@@ -325,21 +402,25 @@ const docTemplate = `{
                 },
                 "isAdmin": {
                     "description": "是否管理员",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                 },
                 "isLock": {
                     "description": "是否管理员",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                 },
                 "nickName": {
                     "description": "用户昵称",
-                    "type": "string"
+                    "type": "string",
+                    "example": "酱"
                 },
                 "password": {
                     "description": "密码 - 不会json化",
                     "type": "string",
                     "maxLength": 16,
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "123456"
                 },
                 "userId": {
                     "description": "用户唯一id",
@@ -349,7 +430,27 @@ const docTemplate = `{
                     "description": "用户名",
                     "type": "string",
                     "maxLength": 12,
-                    "minLength": 4
+                    "minLength": 4,
+                    "example": "test"
+                }
+            }
+        },
+        "model.UpdateUser": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "邮箱",
+                    "type": "string",
+                    "example": "123456789@qq.com"
+                },
+                "gender": {
+                    "description": "性别",
+                    "type": "integer"
+                },
+                "nickName": {
+                    "description": "用户昵称",
+                    "type": "string",
+                    "example": "酱"
                 }
             }
         },

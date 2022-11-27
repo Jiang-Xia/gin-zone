@@ -1,13 +1,13 @@
 package base
 
 import (
+	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"strconv"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gitee.com/jiang-xia/gin-zone/server/app/service"
 	"gitee.com/jiang-xia/gin-zone/server/middleware"
-	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
@@ -41,11 +41,11 @@ func (u *User) Register(c *gin.Context) {
 
 	err := service.User.Create(user)
 	if err != nil {
-		response.Fail(c, tip.Msg(tip.ErrorInsert), err)
+		response.Fail(c, err.Error(), nil)
 		return
 	}
 
-	response.Success(c, user)
+	response.Success(c, user.ID, "")
 }
 
 // UpdateUser godoc
@@ -57,8 +57,8 @@ func (u *User) Register(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       id   path     int            true  "User.ID"
-// @Param       user body    model.MainUser true "需要上传的json"
-// @Success     200  {object} User
+// @Param       user body   model.UpdateUser true "需要上传的json"
+// @Success     200  {object} model.UpdateUser
 // @Router      /base/users/{id} [patch]
 func (u *User) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
@@ -76,7 +76,7 @@ func (u *User) UpdateUser(c *gin.Context) {
 		response.Fail(c, tip.Msg(tip.ErrorUpdate), err)
 		return
 	}
-	response.Success(c, user)
+	response.Success(c, user.ID, "")
 }
 
 // Login godoc
@@ -92,14 +92,13 @@ func (u *User) UpdateUser(c *gin.Context) {
 func (u *User) Login(c *gin.Context) {
 	logrus.Info("登录》》》》》》")
 	login := &model.LoginForm{}
-	log.Info(login)
 	if err := c.ShouldBind(&login); err != nil {
-		c.JSON(400, gin.H{
-			"err": err.Error(),
-		})
+		translate.Individual(err, c)
 		return
 	}
 	user, errCode := service.User.SignIn(login.UserName, login.Password)
+	log.Info(login)
+
 	if errCode == 0 {
 		generateToken(c, user)
 	} else if errCode == tip.AuthUserNotFound {
@@ -107,6 +106,40 @@ func (u *User) Login(c *gin.Context) {
 	} else {
 		response.Fail(c, tip.Msg(tip.AuthUserPasswordError), "")
 	}
+}
+
+// ChangePassword godoc
+//
+// @Summary     修改密码
+// @Description 修改密码接口
+// @Tags        用户模块
+// @Security	Authorization
+// @Accept      json
+// @Produce     json
+// @Param       LoginForm body     model.ChangePassword true "需要上传的json"
+// @Success     200  {object} response.ResType
+// @Router      /base/users/password [post]
+func (u *User) ChangePassword(c *gin.Context) {
+	var err error
+	changeForm := &model.ChangePassword{}
+	if err = c.ShouldBind(&changeForm); err != nil {
+		translate.Individual(err, c)
+		return
+	}
+	id := model.GetUserID(c)
+	_, err = service.User.Get(id)
+	if err != nil {
+		response.Fail(c, tip.Msg(tip.AuthUserNotFound), err)
+	}
+	if changeForm.Password == changeForm.NewPassword {
+		response.Fail(c, "新密码不能和旧密码一样", nil)
+	}
+	err = service.User.UpdatePassword(id, changeForm.NewPassword)
+	if err != nil {
+		response.Fail(c, "修改密码失败-"+err.Error(), nil)
+		return
+	}
+	response.Success(c, true, "修改密码成功")
 }
 
 // UserInfo godoc
@@ -120,19 +153,12 @@ func (u *User) Login(c *gin.Context) {
 // @Success     200 {object} User
 // @Router      /base/users/info [get]
 func (u *User) UserInfo(c *gin.Context) {
-	token := c.GetHeader("authorization")
-	uInfo, err := middleware.NewJWT().ParseToken(token)
-	logrus.Info(uInfo.ID)
-	if err != nil {
-		response.Fail(c, err.Error(), uInfo)
-		return
-	}
-	user, err := service.User.Get(uInfo.ID)
-	logrus.Info(user, err)
+	id := model.GetUserID(c)
+	user, err := service.User.Get(id)
 	if err != nil {
 		logrus.Error(err)
 	}
-	response.Success(c, user)
+	response.Success(c, user, "")
 }
 
 // UserList godoc
@@ -144,12 +170,12 @@ func (u *User) UserInfo(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       q   query    string false "username search by q" Format(email)
-// @Success     200 {object} User
+// @Success     200 {array} User
 // @Router      /base/users [get]
 func (u *User) UserList(c *gin.Context) {
 	users, total := service.User.List(1, 20, "")
 	data := model.ListRes{List: users, Total: total}
-	response.Success(c, data)
+	response.Success(c, data, "")
 }
 
 // DeleteUser godoc
@@ -162,11 +188,11 @@ func (u *User) UserList(c *gin.Context) {
 // @Produce     json
 // @Param       id  path     int true "用户id" (param name,param type,data type,is mandatory（是否鉴权）?,comment attribute(optional))
 // @Success     200 {object} User
-// @Router      /base/delete/{id} [delete]
+// @Router      /base/users/{id} [delete]
 func (u *User) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	aid, _ := strconv.Atoi(id)
-	response.Success(c, service.User.Delete(aid))
+	response.Success(c, service.User.Delete(aid), "")
 }
 
 // generateToken 生成token
@@ -194,5 +220,5 @@ func generateToken(c *gin.Context, user *model.User) {
 
 	data["token"] = token
 
-	response.Success(c, data)
+	response.Success(c, data, "")
 }

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// 日志记录到文件
+// LoggerMiddleWare 日志记录到文件
 func LoggerMiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 开始时间
@@ -39,19 +39,19 @@ func LoggerMiddleWare() gin.HandlerFunc {
 	}
 }
 
-// 日志记录到 MongoDB
+// LoggerToMongo 日志记录到 MongoDB
 func LoggerToMongo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 	}
 }
 
-// 日志记录到 ES
+// LoggerToES 日志记录到 ES
 func LoggerToES() gin.HandlerFunc {
 	return func(c *gin.Context) {
 	}
 }
 
-// 日志记录到 MQ
+// LoggerToMQ 日志记录到 MQ
 func LoggerToMQ() gin.HandlerFunc {
 	return func(c *gin.Context) {
 	}

@@ -15,7 +15,7 @@ import (
 // App  初始化路由
 func App() (r *gin.Engine) {
 	// 强制日志颜色化
-	gin.ForceConsoleColor()
+	//gin.ForceConsoleColor()
 	gin.SetMode(gin.ReleaseMode)
 	// gin.SetMode(gin.TestMode)
 	router := gin.Default()
@@ -46,6 +46,7 @@ func App() (r *gin.Engine) {
 			baseGroup.GET("users", middleware.JWTAuth(), userController.UserList)
 			baseGroup.GET("users/info", userController.UserInfo)
 			baseGroup.DELETE("users/:id", userController.DeleteUser)
+			baseGroup.POST("users/password", userController.ChangePassword)
 		}
 
 		// 管理端路由
@@ -64,8 +65,12 @@ func App() (r *gin.Engine) {
 		}
 
 		// swagger 文档
-		ginSwagger.PersistAuthorization(true)
-		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+		v1.GET("/swagger/*any", ginSwagger.WrapHandler(
+			swaggerFiles.Handler,
+			//文档授权持久化
+			ginSwagger.PersistAuthorization(true),
+		))
 	}
 
 	return router

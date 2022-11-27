@@ -33,10 +33,13 @@ func Response(c *gin.Context, code int, data interface{}) bool {
 }
 
 // Success 成功响应
-func Success(c *gin.Context, data interface{}) bool {
+func Success(c *gin.Context, data interface{}, msg string) bool {
+	if msg == "" {
+		msg = tip.Msg(tip.Success)
+	}
 	res := ResType{
 		Code: tip.Success,
-		Msg:  tip.Msg(tip.Success),
+		Msg:  msg,
 		Data: data,
 	}
 	log.Infof("成功响应数据: %+v", res)

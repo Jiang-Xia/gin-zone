@@ -1,8 +1,7 @@
 package model
 
 import (
-	"errors"
-
+	"gitee.com/jiang-xia/gin-zone/server/middleware"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/hash"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -17,33 +16,35 @@ type MainUser struct {
 	// 用户唯一id
 	UserId int64 `json:"userId"`
 	// 用户名
-	UserName string `json:"userName" binding:"required,min=4,max=12" label:"用户名"`
-	// 用户昵称
-	NickName string `json:"nickName"`
+	UserName string `json:"userName" binding:"required,min=4,max=12" label:"用户名" example:"test"`
 	// 密码 - 不会json化
-	Password string `json:"password" binding:"required,min=6,max=16" label:"密码"`
-	// 邮箱
-	Email string `json:"email"`
-	// 性别
-	Gender int `json:"gender"`
+	Password string `json:"password" binding:"required,min=6,max=16" label:"密码" example:"123456"`
 	// 是否管理员
-	IsAdmin bool `json:"isAdmin"`
+	IsAdmin bool `json:"isAdmin" default:"0"`
 	// 是否管理员
-	IsLock bool `json:"isLock"`
+	IsLock     bool `json:"isLock" default:"0"`
+	UpdateUser `gorm:"embedded"`
 }
 
 type UpdateUser struct {
 	// 用户昵称
-	NickName string `json:"nickName"`
+	NickName string `json:"nickName" example:"酱"`
 	// 邮箱
-	Email string `json:"email"`
+	Email string `json:"email" example:"123456789@qq.com"`
 	// 性别
 	Gender int `json:"gender"`
 }
 
+// LoginForm 登录
 type LoginForm struct {
-	UserName string `json:"userName" binding:"required,min=4,max=12" label:"用户名"`
-	Password string `json:"password" binding:"required,min=6,max=16" label:"密码"`
+	UserName string `json:"userName" binding:"required,min=4,max=12" label:"用户名" example:"test"`
+	Password string `json:"password" binding:"required,min=6,max=16" label:"密码" example:"123456"`
+}
+
+// ChangePassword 修改密码
+type ChangePassword struct {
+	LoginForm   `gorm:"embedded"`
+	NewPassword string `json:"newPassword" binding:"required,min=6,max=16" label:"新密码" example:"123456"`
 }
 
 // BeforeCreate user 创建前hook 密码加密&权限控制
@@ -52,21 +53,8 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
-/*
-*
-校验用户名
-*/
-func (u *User) checkName() (err error) {
-	nameLen := len(u.UserName)
-
-	if !(nameLen < 12) {
-		err = errors.New("用户名长度必须是4到12位")
-		return
-	}
-	return
-}
-
-// CurrentUserID 从 gin.context 中获取当前登录用户 ID
-func CurrentUserID(c *gin.Context) string {
-	return c.GetString("current_user_id")
+func GetUserID(c *gin.Context) int {
+	token := c.GetHeader("authorization")
+	uInfo, _ := middleware.NewJWT().ParseToken(token)
+	return uInfo.ID
 }

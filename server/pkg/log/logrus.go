@@ -42,6 +42,7 @@ func FileCut(fileName string) *rotatelogs.RotateLogs {
 		// 设置分割日志样式
 		&logrus.TextFormatter{
 			TimestampFormat: "2006-01-02 15:04:05", // 日志时间格式
+			DisableColors:   false,
 		},
 	)
 	logrus.AddHook(lfHook)
@@ -60,7 +61,7 @@ func ConfigLog() {
 	// 设置日志输出控制台样式
 	Logger.SetFormatter(&logrus.TextFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",
-		ForceColors:     true, // 控制台强制彩色
+		//ForceColors:     true, // 控制台强制彩色
 	})
 	// 按天分割 logs/2006-01-02.log
 	logFileName := path.Join("./logs", "%Y%m%d") + ".info.log"
