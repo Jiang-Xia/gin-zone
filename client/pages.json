@@ -1,11 +1,32 @@
 {
-	"pages": [{
-		"path": "pages/index/index",
+	"pages": [
+	{
+		"path": "pages/blog/index",
 		"style": {
-			"navigationBarTitleText": "uni-app"
+			"navigationBarTitleText": "博客"
 		}
-	}],
+	}, 
+	{
+		"path": "pages/moment/index",
+		"style": {
+			"navigationBarTitleText": "动态"
+		}
+	},
+	{
+		"path": "pages/chat/index",
+		"style": {
+			"navigationBarTitleText": "聊天"
+		}
+	}, 
+	{
+		"path": "pages/my/index",
+		"style": {
+			"navigationBarTitleText": "我的"
+		}
+	}
+	],
 	"globalStyle": {
+		// "navigationStyle": "custom",
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
@@ -13,5 +34,32 @@
 		"app-plus": {
 			"background": "#efeff4"
 		}
+	},
+	"tabBar": {
+		"color": "#999999",
+		"borderStyle": "white",
+		// 注意：启用高斯模糊效果后不建议设置backgroundColor，如果需要设置的需要使用 rgba 设置透明度，不然看不到模糊效果
+		// "backgroundColor": "rgba(0,255,51,0.3)",
+		// "spacing": "5px",
+		"height": "50px",
+		"selectedColor": "#0062cc",
+		"list": [
+			{
+				"text": "博客",
+				"pagePath": "pages/blog/index"
+			},
+			{
+				"text": "动态",
+				"pagePath": "pages/moment/index"
+			},
+			{
+				"text": "聊天",
+				"pagePath": "pages/chat/index"
+			},
+			{
+				"text": "我的",
+				"pagePath": "pages/my/index"
+			}
+		]
 	}
 }
