@@ -18,10 +18,11 @@ app.$mount()
 import { createSSRApp } from 'vue'
 import App from './App.vue'
 import CNavbar from './common/colorui/components/c-navbar/c-navbar.vue'
-
+import api from './common/request/api.js'
 export function createApp() {
   const app = createSSRApp(App)
   app.component("c-navbar", CNavbar)
+  app.config.globalProperties.$api = api
   return {
     app
   }

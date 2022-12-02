@@ -18,6 +18,12 @@
 			
 		components:{
 		},
+		created() {
+			this.$api.post("/base/users/{id}/info",{id:1111,a:222})
+			this.$api.del("/base/users",{})
+			this.$api.put("/base/users",{})
+			this.$api.get("/base/users",{})
+		},
 		methods: {
 
 		}
