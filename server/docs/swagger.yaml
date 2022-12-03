@@ -318,6 +318,34 @@ paths:
       summary: 修改密码
       tags:
       - 用户模块
+  /mobile/blog/articles:
+    post:
+      consumes:
+      - application/json
+      description: 获取查询文章列表
+      produces:
+      - application/json
+      responses: {}
+      summary: 获取查询文章列表
+      tags:
+      - 博客模块
+  /mobile/blog/articles/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据id查询文章详情
+      parameters:
+      - description: 文章id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: 根据id查询文章详情
+      tags:
+      - 博客模块
 securityDefinitions:
   Authorization:
     description: jwt token 鉴权

@@ -2,7 +2,6 @@ package router
 
 import (
 	"fmt"
-
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/admin"
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/base"
 	_ "gitee.com/jiang-xia/gin-zone/server/docs" // 需要引入docs, 不然打不开文档
@@ -30,7 +29,7 @@ func App() (r *gin.Engine) {
 	// authController := new(admin.Auth)
 	// router.POST("/admin/login", authController.SignIn)
 
-	fmt.Println("接口文档地址为: 127.0.0.1:9600/api/v1/swagger/index.html")
+	fmt.Println("接口文档地址为: http://127.0.0.1:9600/api/v1/swagger/index.html")
 	v1 := router.Group("/api/v1")
 	{
 		// 基础路由（公共）
@@ -58,12 +57,18 @@ func App() (r *gin.Engine) {
 		}
 
 		// mobile端路由
-		app := v1.Group("mobile")
+		//app := v1.Group("mobile")
 		{
-			momentController := new(admin.Moment)
-			app.GET("moments", momentController.GetList)
 		}
 
+		//博客模块路由 直接转发到blog-server
+		blog := v1.Group("blog")
+		blog.POST("article/list", middleware.ReverseProxy())
+		blog.GET("article/info", middleware.ReverseProxy())
+		blog.GET("tag", middleware.ReverseProxy())
+		blog.GET("category", middleware.ReverseProxy())
+		blog.GET("/comment/findAll", middleware.ReverseProxy())
+		blog.GET("article/views", middleware.ReverseProxy())
 		// swagger 文档
 
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(
