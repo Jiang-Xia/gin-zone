@@ -68,8 +68,9 @@ func App() (r *gin.Engine) {
 		blog.GET("article/info", middleware.ReverseProxy())
 		blog.GET("tag", middleware.ReverseProxy())
 		blog.GET("category", middleware.ReverseProxy())
-		blog.GET("/comment/findAll", middleware.ReverseProxy())
+		blog.GET("comment/findAll", middleware.ReverseProxy())
 		blog.GET("article/views", middleware.ReverseProxy())
+		blog.GET("resources/daily-img", middleware.ReverseProxy())
 		// swagger 文档
 
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(

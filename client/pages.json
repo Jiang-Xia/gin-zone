@@ -1,29 +1,35 @@
 {
 	"pages": [
-	{
-		"path": "pages/blog/index",
-		"style": {
-			"navigationBarTitleText": "博客"
+		{
+			"path": "pages/blog/index",
+			"style": {
+				"navigationBarTitleText": "博客"
+			}
+		},
+		{
+			"path": "pages/blog/detail/detail",
+			"style": {
+				"navigationBarTitleText": "博客详情"
+			}
+		},
+		{
+			"path": "pages/moment/index",
+			"style": {
+				"navigationBarTitleText": "动态"
+			}
+		},
+		{
+			"path": "pages/chat/index",
+			"style": {
+				"navigationBarTitleText": "聊天"
+			}
+		},
+		{
+			"path": "pages/my/index",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
 		}
-	}, 
-	{
-		"path": "pages/moment/index",
-		"style": {
-			"navigationBarTitleText": "动态"
-		}
-	},
-	{
-		"path": "pages/chat/index",
-		"style": {
-			"navigationBarTitleText": "聊天"
-		}
-	}, 
-	{
-		"path": "pages/my/index",
-		"style": {
-			"navigationBarTitleText": "我的"
-		}
-	}
 	],
 	"globalStyle": {
 		// "navigationStyle": "custom",
@@ -44,8 +50,7 @@
 		// "backgroundColor": "#fff",
 		"height": "50px",
 		"selectedColor": "#0062cc",
-		"list": [
-			{
+		"list": [{
 				"text": "博客",
 				"pagePath": "pages/blog/index"
 			},
