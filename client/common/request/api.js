@@ -2,7 +2,13 @@ const baseUrl = "http://localhost:9600/api/v1"
 export class Api {
 	// 获取token
 	getToken(){
-		let token = localStorage.getItem("token")||"12345235"
+		let token = ""
+		uni.getStorage({
+			key:"token",
+			success:(res)=>{
+				token = res
+			}
+		})
 		return token
 	}
 	// 转化rest风格api

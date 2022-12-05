@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/admin"
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/base"
 	_ "gitee.com/jiang-xia/gin-zone/server/docs" // 需要引入docs, 不然打不开文档

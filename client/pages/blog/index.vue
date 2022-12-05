@@ -9,23 +9,41 @@
 </template>
 
 <script>
+	import { formatTime } from '/common/utils/util'
 	export default {
 		data() {
 			return {
-				href: 'https://uniapp.dcloud.io/component/README?id=uniui'
+				articleList: []
 			}
 		},
 			
 		components:{
 		},
 		created() {
-			this.$api.post("/base/users/{id}/info",{id:1111,a:222})
-			this.$api.del("/base/users",{})
-			this.$api.put("/base/users",{})
-			this.$api.get("/base/users",{})
+			this.$api.get('/base/users', {})
+			this.$api.get('/blog/article/info', {id:40})
+			this.getArticleList()
 		},
 		methods: {
-
+		async getArticleList() {
+				this.articleList = []
+				const params = {
+					page: 1,
+					pageSize: 4,
+				}
+				const res = await this.$api.post('/blog/article/list', params)
+				const list = res.data.list.map((v) => {
+					v.createTime = formatTime(new Date(v.createTime))
+					return v
+				})
+				this.articleList = []
+			},
+			goDetail(e) {
+				const id = e.currentTarget.id
+				uni.navigateTo({
+					url: "/pages/detail/detail?id=" + id,
+				})
+			},
 		}
 	}
 </script>

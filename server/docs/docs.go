@@ -269,47 +269,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/mobile/blog/articles": {
-            "post": {
-                "description": "获取查询文章列表",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "博客模块"
-                ],
-                "summary": "获取查询文章列表",
-                "responses": {}
-            }
-        },
-        "/mobile/blog/articles/{id}": {
-            "get": {
-                "description": "根据id查询文章详情",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "博客模块"
-                ],
-                "summary": "根据id查询文章详情",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "文章id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
         }
     },
     "definitions": {
