@@ -3,15 +3,18 @@
 		<swiper class="swiper" circular :indicator-dots="true" :autoplay="true" :interval="6000" :duration="500">
 			<swiper-item v-for="item in swiperList" :key="item.hsh">
 				<view class="swiper-item">
-					<img :src="'https://cn.bing.com/'+item.url" />
+					<image :src="'https://cn.bing.com/'+item.url" ></image>
 				</view>
 			</swiper-item>
 		</swiper>
 
-		<view class="heading">最新文章</view>
+		<view class="heading">
+			<text>最新文章</text>
+			<text @tap="goArticleList">更多</text>
+		</view>
 		<view class="news">
 			<view class="news-item" v-for="item in articleList" :key="item.id" @tap="goDetail(item.id)">
-				<img :src="item.cover"/>
+				<image :src="item.cover"></image>
 				<text class="text">{{item.title}}</text>
 			</view>
 		</view>
@@ -57,6 +60,11 @@
 				})
 				this.articleList = list
 			},
+			goArticleList(){
+				uni.navigateTo({
+					url: "/pages/blog/articles/articles",
+				})
+			},
 			goDetail(id) {
 				uni.navigateTo({
 					url: "/pages/blog/detail/detail?id=" + id,
@@ -78,7 +86,7 @@
 			display: block;
 			height: 500rpx;
 
-			img {
+			image {
 				width: 100%;
 				height: 100%;
 			}
@@ -89,6 +97,8 @@
 			font-size: 14px;
 			padding: 0 16rpx;
 			line-height: 2.4;
+			display: flex;
+			justify-content: space-between;
 		}
 
 		.news {
@@ -103,7 +113,7 @@
 				margin-bottom: 32rpx;
 			}
 
-			img {
+			image {
 				width: 100%;
 				border-radius: 16rpx;
 				height: 100%;

@@ -13,6 +13,13 @@
 			}
 		},
 		{
+			"path": "pages/blog/articles/articles",
+			"style": {
+				"navigationBarTitleText": "文章列表"
+			}
+		},
+		
+		{
 			"path": "pages/moment/index",
 			"style": {
 				"navigationBarTitleText": "动态"
