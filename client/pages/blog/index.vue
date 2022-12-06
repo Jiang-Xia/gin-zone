@@ -10,7 +10,7 @@
 
 		<view class="heading">
 			<text>最新文章</text>
-			<text @tap="goArticleList">更多</text>
+			<text @tap="goArticleList" class="uni-info">查看更多</text>
 		</view>
 		<view class="news">
 			<view class="news-item" v-for="item in articleList" :key="item.id" @tap="goDetail(item.id)">
@@ -93,7 +93,7 @@
 		}
 
 		.heading {
-			font-weight: 600;
+			font-weight: 500;
 			font-size: 14px;
 			padding: 0 16rpx;
 			line-height: 2.4;

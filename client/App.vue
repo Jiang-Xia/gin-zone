@@ -44,12 +44,8 @@
 </script>
 
 <style lang="scss">
-	// @import "commcon/colorui/main.css";
-	// @import "commcon/colorui/icon.css";
-	@import "/common/colorui/main.css";
-	// @import "commcon/colorui/icon.css";colorui/main.css";
-	@import "/common/colorui/icon.css";
-	/*每个页面公共css */
+	@import "common/css/animate.min.css";	
+	/*每个页面公共css 引入辅助样式*/
 	@import '@/uni_modules/uni-scss/index.scss';
 	/* #ifndef APP-NVUE */
 	@import '@/static/customicons.css';
@@ -58,11 +54,5 @@
 	page {
 		background-color: #f5f5f5;
 	}
-
 	/* #endif */
-	.example-info {
-		font-size: 14px;
-		color: #333;
-		padding: 10px;
-	}
 </style>

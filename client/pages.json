@@ -46,6 +46,9 @@
 		"backgroundColor": "#F8F8F8",
 		"app-plus": {
 			"background": "#efeff4"
+		},
+		"usingComponents": {
+			"van-button": "/common/vant/dist/button/index"
 		}
 	},
 	"tabBar": {
