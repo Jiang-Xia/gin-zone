@@ -1,0 +1,63 @@
+.auto-container {
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.bg_img {
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.count-botton {
+  position: relative;
+  margin-bottom: 6vh;
+  width: 300rpx;
+  height: 100rpx;
+  /*渐变色网站https://webgradients.com*/
+  background-image: linear-gradient(120deg, #f093fb 0%, #f5576c 100%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 32rpx;
+  letter-spacing: 4rpx;
+  border-radius: 50rpx;
+  /*flex布局、横向纵向居中*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+/*在ID或类中增加如下的动画代码*/
+
+.fade-in {
+  animation-name: fadeIn; /*动画名称*/
+  animation-duration: 3s; /*动画持续时间*/
+  animation-iteration-count: 1; /*动画次数*/
+  animation-delay: 0s; /*延迟时间*/
+}
+
+/*定义动画，名称为fadeIn*/
+
+@keyframes fadeIn {
+  0% {
+        opacity: 0; /*初始状态 透明度为0*/
+  }
+
+  50% {
+        opacity: 0.6; /*中间状态 透明度为0.6*/
+  }
+
+  100% {
+        opacity: 1; /*结尾状态 透明度为1*/
+  }
+}

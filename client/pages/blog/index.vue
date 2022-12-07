@@ -15,7 +15,10 @@
 		<view class="news">
 			<view class="news-item" v-for="item in articleList" :key="item.id" @tap="goDetail(item.id)">
 				<image :src="item.cover"></image>
-				<text class="text">{{item.title}}</text>
+				<view class="news-item__title uni-ellipsis">
+					<text class="text">{{item.title}}</text>
+					<uni-icons type="forward" size="18" color="#f9f9f9"></uni-icons>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -33,13 +36,19 @@
 
 			}
 		},
-
 		components: {},
+		onPullDownRefresh() {
+			this.init()
+			uni.stopPullDownRefresh()
+		},
 		created() {
-			this.getImage()
-			this.getArticleList()
+			this.init()
 		},
 		methods: {
+			init(){
+				this.getImage()
+				this.getArticleList()
+			},
 			async getImage() {
 				const res = await this.$api.get('/blog/resources/daily-img', {
 					n: 7
@@ -51,7 +60,8 @@
 				this.articleList = []
 				const params = {
 					page: 1,
-					pageSize: 4,
+					pageSize: 10,
+					client:true
 				}
 				const res = await this.$api.post('/blog/article/list', params)
 				const list = res.data.list.map((v) => {
@@ -118,16 +128,22 @@
 				border-radius: 16rpx;
 				height: 100%;
 			}
-
-			.text {
+			.news-item__title{
+				background: rgba(0, 0, 0, 0.2);
 				position: absolute;
-				top: 50%;
+				bottom: 0;
 				left: 0;
-				transform: translate(0, -50%);
 				width: 100%;
-				font-weight: 52rpx;
-				font-weight: 600;
+				box-sizing: border-box;
+				border-radius: 0 0 16rpx 16rpx;
+				padding: 16rpx;
 				color: #f9f9f9;
+				display: flex;
+				justify-content: space-between;
+			}
+			.text {
+				font-size: 28rpx;
+				font-weight: 600;
 				text-align: center;
 				letter-spacing: 4rpx;
 			}

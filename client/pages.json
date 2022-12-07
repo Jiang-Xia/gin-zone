@@ -1,9 +1,22 @@
 {
 	"pages": [
 		{
+			"path": "pages/start/auto/auto",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/start/entrance/entrance",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/blog/index",
 			"style": {
-				"navigationBarTitleText": "博客"
+				"navigationBarTitleText": "博客",
+				"enablePullDownRefresh": true
 			}
 		},
 		{
