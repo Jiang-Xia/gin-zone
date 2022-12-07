@@ -28,7 +28,8 @@
 		{
 			"path": "pages/blog/articles/articles",
 			"style": {
-				"navigationBarTitleText": "文章列表"
+				"navigationBarTitleText": "文章列表",
+				"enablePullDownRefresh": true
 			}
 		},
 		
@@ -61,7 +62,6 @@
 			"background": "#efeff4"
 		},
 		"usingComponents": {
-			"van-button": "/common/vant/dist/button/index"
 		}
 	},
 	"tabBar": {

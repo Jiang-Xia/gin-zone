@@ -3,7 +3,7 @@
 		<swiper class="swiper" circular :indicator-dots="true" :autoplay="true" :interval="6000" :duration="500">
 			<swiper-item v-for="item in swiperList" :key="item.hsh">
 				<view class="swiper-item">
-					<image :src="'https://cn.bing.com/'+item.url" ></image>
+					<image :src="'https://cn.bing.com/'+item.url"></image>
 				</view>
 			</swiper-item>
 		</swiper>
@@ -45,7 +45,7 @@
 			this.init()
 		},
 		methods: {
-			init(){
+			init() {
 				this.getImage()
 				this.getArticleList()
 			},
@@ -61,7 +61,7 @@
 				const params = {
 					page: 1,
 					pageSize: 10,
-					client:true
+					client: true
 				}
 				const res = await this.$api.post('/blog/article/list', params)
 				const list = res.data.list.map((v) => {
@@ -70,7 +70,7 @@
 				})
 				this.articleList = list
 			},
-			goArticleList(){
+			goArticleList() {
 				uni.navigateTo({
 					url: "/pages/blog/articles/articles",
 				})
@@ -128,7 +128,8 @@
 				border-radius: 16rpx;
 				height: 100%;
 			}
-			.news-item__title{
+
+			.news-item__title {
 				background: rgba(0, 0, 0, 0.2);
 				position: absolute;
 				bottom: 0;
@@ -140,7 +141,9 @@
 				color: #f9f9f9;
 				display: flex;
 				justify-content: space-between;
+				box-shadow: 0rpx 0rpx 20rpx rgba(0, 0, 0, .3);
 			}
+
 			.text {
 				font-size: 28rpx;
 				font-weight: 600;
