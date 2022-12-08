@@ -19,15 +19,12 @@ import { createSSRApp } from 'vue'
 import App from './App.vue'
 import api from './common/request/api.js'
 
-import './common/css/atom-one-dark.css'
-import './common/css/editor-v3.style.css'
-
-// #ifdef H5
-import './common/js/vconsole.min.js'
+// #ifdef VUE3
+// import './common/js/vconsole.min.js'
 const mode = import.meta.env.MODE;
-if(mode==="development"){
-	new window.VConsole({ theme: 'white' })
-}
+// if(mode==="development"){
+// 	new window.VConsole({ theme: 'white' })
+// }
 // #endif
 export function createApp() {
   const app = createSSRApp(App)

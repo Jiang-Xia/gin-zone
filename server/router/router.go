@@ -2,7 +2,6 @@ package router
 
 import (
 	"fmt"
-
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/admin"
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/base"
 	_ "gitee.com/jiang-xia/gin-zone/server/docs" // 需要引入docs, 不然打不开文档
@@ -29,7 +28,6 @@ func App() (r *gin.Engine) {
 	// 不需要经过token验证的路由
 	// authController := new(admin.Auth)
 	// router.POST("/admin/login", authController.SignIn)
-
 	fmt.Println("接口文档地址为: http://127.0.0.1:9600/api/v1/swagger/index.html")
 	v1 := router.Group("/api/v1")
 	{
