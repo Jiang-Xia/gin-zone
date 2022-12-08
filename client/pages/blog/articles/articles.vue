@@ -22,10 +22,10 @@
 					</view>
 				</template>
 			</uni-list-item> -->
-
+			
 			<!-- 左图右文 -->
 			<uni-list-item direction="row" clickable v-for="item in articleList" :key="item.id" :title="item.title"
-			:rightText="String(item.views)" showArrow
+			showArrow
 				:note="item.userInfo.nickname + ' '+item.createTime"
 				:to="'/pages/blog/detail/detail?id='+item.id">
 				<template v-slot:header>
@@ -74,14 +74,14 @@
 				this.getArticleList()
 			},
 			async getArticleList(isScoll) {
+				this.loading = true
+				this.status = "loading"
 				// 是否滚动
 				if (!isScoll) {
 					this.articleList = []
 					this.page = 1
 				} else {
 					this.page++
-					this.loading = true
-					this.status = "loading"
 				}
 				const {
 					content
