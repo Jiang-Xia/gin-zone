@@ -269,9 +269,35 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/third/gushichi": {
+            "get": {
+                "description": "今日古诗词",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "第三方模块"
+                ],
+                "summary": "今日古诗词",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.Third"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "base.Third": {
+            "type": "object"
+        },
         "base.User": {
             "type": "object",
             "required": [

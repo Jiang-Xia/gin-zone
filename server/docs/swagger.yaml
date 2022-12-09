@@ -1,5 +1,7 @@
 basePath: /api/v1
 definitions:
+  base.Third:
+    type: object
   base.User:
     properties:
       createdAt:
@@ -318,6 +320,21 @@ paths:
       summary: 修改密码
       tags:
       - 用户模块
+  /third/gushichi:
+    get:
+      consumes:
+      - application/json
+      description: 今日古诗词
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.Third'
+      summary: 今日古诗词
+      tags:
+      - 第三方模块
 securityDefinitions:
   Authorization:
     description: jwt token 鉴权

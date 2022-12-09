@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/admin"
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/base"
 	_ "gitee.com/jiang-xia/gin-zone/server/docs" // 需要引入docs, 不然打不开文档
@@ -69,8 +70,13 @@ func App() (r *gin.Engine) {
 		blog.GET("comment/findAll", middleware.ReverseProxy())
 		blog.GET("article/views", middleware.ReverseProxy())
 		blog.GET("resources/daily-img", middleware.ReverseProxy())
-		// swagger 文档
 
+		// 用于 这个模块转发其他第三方接口
+		third := v1.Group("third")
+		thirdController := new(base.Third)
+		third.GET("gushichi", thirdController.GetGuShiCi)
+
+		// swagger 文档
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(
 			swaggerFiles.Handler,
 			//文档授权持久化

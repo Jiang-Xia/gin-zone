@@ -1,10 +1,12 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 var BlogUrl = "https://jiang-xia.top/x-api/blog-server"
@@ -16,19 +18,26 @@ var BlogUrl = "https://jiang-xia.top/x-api/blog-server"
 func ReverseProxy() gin.HandlerFunc {
 	//反向代理网关
 	return func(c *gin.Context) {
-		target := BlogUrl
+		rPath := c.Request.URL.Path
+		prefix := "/api/v1/blog"
+		remoteUrl := BlogUrl
+		newPath := ""
+		if strings.Contains(rPath, "blog") {
+			//去除url前缀的字符串
+			newPath = rPath[len(prefix):]
+		}
+		target := remoteUrl
 		remote, _ := url.Parse(target)
 		proxy := httputil.NewSingleHostReverseProxy(remote) // 新建代理
-		prefix := "/api/v1/blog"
-		//去除url前缀的字符串
-		newPath := c.Request.URL.Path[len(prefix):]
+		newPath = remote.Path + newPath
+
 		proxy.Director = func(req *http.Request) {
 			req.Header = c.Request.Header
 			req.Host = remote.Host
 			req.URL.Scheme = remote.Scheme
 			req.URL.Host = remote.Host
 			// 地址路径加上request路径
-			req.URL.Path = remote.Path + newPath
+			req.URL.Path = newPath
 		}
 		//fmt.Printf("c.Header: %+v\n", c.Request.Header)
 
