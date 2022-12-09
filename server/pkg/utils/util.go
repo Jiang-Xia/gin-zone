@@ -2,23 +2,14 @@ package utils
 
 import (
 	"bytes"
-	"github.com/gin-gonic/gin"
 	mathrand "math/rand"
 	"net/http"
 	"reflect"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
-
-// IsEnv 检测环境
-func IsEnv(eType string) bool {
-	return Config.Section("app").Key("env").MustString("") == eType
-}
-
-// IsProd 是否是生产环境
-func IsProd() bool {
-	return IsEnv("production")
-}
 
 // GetTime 当前时间
 func GetTime() (retTime string) {

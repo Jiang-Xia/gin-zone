@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
-	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -60,7 +60,7 @@ func Setup() {
 		dbType, dbName, user, password, host, port, tablePrefix string
 	)
 	// 读取配置
-	sec := utils.Config.Section("database")
+	sec := config.Config.Section("database")
 
 	dbType = sec.Key("type").String()
 	dbName = sec.Key("dbname").String()

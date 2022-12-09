@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
-	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/gin-gonic/gin"
 	jwtgo "github.com/golang-jwt/jwt/v4"
 	"github.com/sirupsen/logrus"
@@ -77,7 +77,7 @@ func JWTAuth() gin.HandlerFunc {
 
 func NewJWT() *JWT {
 	return &JWT{
-		SignKey:    []byte(utils.Config.Section("app").Key("key").MustString("")),
+		SignKey:    []byte(config.Config.Section("app").Key("key").MustString("")),
 		MaxRefresh: time.Duration(10) * time.Minute,
 	}
 }
