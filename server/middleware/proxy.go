@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var BlogUrl = "https://jiang-xia.top/x-api/blog-server"
+var BlogUrl = "https://jiang-xia.top/x-blog/api/v1"
 
 //var BlogUrl = "http://localhost:5000"
 
