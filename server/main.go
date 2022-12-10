@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	_ "gitee.com/jiang-xia/gin-zone/server/app/cron"
 	"gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"

@@ -320,7 +320,7 @@ paths:
       summary: 修改密码
       tags:
       - 用户模块
-  /third/gushichi:
+  /third/gushici:
     get:
       consumes:
       - application/json

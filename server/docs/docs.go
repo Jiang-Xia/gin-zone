@@ -270,7 +270,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/third/gushichi": {
+        "/third/gushici": {
             "get": {
                 "description": "今日古诗词",
                 "consumes": [

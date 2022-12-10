@@ -36,6 +36,23 @@
 				colorR: ''
 			}
 		},
+		created() {
+				
+			this.$api.get('/third/gushici').then(res=>{
+				const {content,author,origin} =  res.data
+				let index = 0
+				for(let sign of ["，","？","。"]){
+					index = content.indexOf(sign)
+					if(index !==-1){break}
+				}
+				this.poem = [
+					content.slice(0,index+1),
+					content.slice(index+1,content.length),
+				]
+				this.author = author
+				this.title = origin
+			})
+		},
 		methods: {
 			init() {
 				this.poem = [

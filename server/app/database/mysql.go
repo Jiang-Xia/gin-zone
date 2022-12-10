@@ -37,10 +37,7 @@ func NewMyWriter() *MyWriter {
 	return &MyWriter{mlog: log}
 }
 
-/*
-*
-数据库初始化
-*/
+// Setup 数据库初始化
 func Setup() {
 	// 根据自定义Writer，新建一个logger
 	var slowLogger = logger.New(
@@ -69,7 +66,7 @@ func Setup() {
 	host = sec.Key("host").String()
 	port = sec.Key("port").String()
 	tablePrefix = sec.Key("table_prefix").String()
-	fmt.Println(dbType, dbName, user, password, host, tablePrefix)
+	fmt.Println(dbType, dbName, user, "******", host, tablePrefix)
 	// dsn := user + ":" + password + "@tcp(" + host + ":" + port + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 	//拼接下dsn参数, dsn格式可以参考上面的语法，这里使用Sprintf动态拼接dsn参数，因为一般数据库连接参数，我们都是保存在配置文件里面，需要从配置文件加载参数，然后拼接dsn。
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, port, dbName)

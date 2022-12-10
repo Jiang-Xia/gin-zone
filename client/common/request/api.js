@@ -13,7 +13,7 @@ export class Api {
 		return token
 	}
 	// 转化rest风格api
-	restful(url, data, config) {
+	restful(url, data={}, config) {
 		for (let key in data) {
 			if (url.indexOf(`{${key}}`) != -1) {
 				url = url.replace(`{${key}}`, `${data[key]}`);

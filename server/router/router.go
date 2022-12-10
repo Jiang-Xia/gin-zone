@@ -74,7 +74,7 @@ func App() (r *gin.Engine) {
 		// 用于 这个模块转发其他第三方接口
 		third := v1.Group("third")
 		thirdController := new(base.Third)
-		third.GET("gushichi", thirdController.GetGuShiCi)
+		third.GET("gushici", thirdController.GetGuShiCi)
 
 		// swagger 文档
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(

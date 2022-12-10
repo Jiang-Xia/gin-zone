@@ -1,18 +1,18 @@
 package base
 
 import (
+	"context"
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"time"
-
+	"fmt"
+	"gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
 	"github.com/gin-gonic/gin"
 )
 
 type Third struct {
 }
+
+var ctx = context.Background()
 
 //	godoc
 //
@@ -22,19 +22,15 @@ type Third struct {
 // @Accept      json
 // @Produce     json
 // @Success     200  {object} Third
-// @Router      /third/gushichi [get]
+// @Router      /third/gushici [get]
 func (t *Third) GetGuShiCi(c *gin.Context) {
-	// 任意变量
 	data := make(map[string]interface{})
-	var GuShiCiUrl = "https://v1.jinrishici.com/all.json"
-	resp, _ := http.Get(GuShiCiUrl)
-	body, _ := ioutil.ReadAll(resp.Body)
-	// 创建文件
-	file, _ := os.Create("public/data/gushichi.json")
-	// 写入JSON数据
-	file.Write(body)
-	err := json.Unmarshal(body, &data)
-	data["time"] = time.Now().UnixMilli()
+	val, err := database.Redis().Get(ctx, "z_gu_shi_ci").Result()
+	if err != nil {
+		panic(err)
+	}
+	json.Unmarshal([]byte(val), &data)
+	fmt.Println("z_gu_shi_ci", data)
 	if err != nil {
 		response.Fail(c, "", err)
 	}
