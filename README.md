@@ -1,30 +1,25 @@
 # gin-zone
 
+
+[![license](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+
 #### 介绍
 gin-zone 包含了admin和client两个前端项目，server一个后端服务。
 
-#### 软件架构
-软件架构说明
+#### 项目说明
+go gin uniapp 练手项目 具体说明可以查看子文件夹
+
+#### 目录说明
+go gin uniapp 练手项目 具体说明可以查看子文件夹
+
+```
+ai-share
+├─service    服务端api接口：gin gorm redis mysql
+├─admin      后台系统前端：vue3 vite
+├─client     跨端前端：uniapp
+```
 
 
-#### 安装教程
+## 开源作者
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
+**jiang-xia**
