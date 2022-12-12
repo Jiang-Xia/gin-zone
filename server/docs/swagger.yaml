@@ -160,6 +160,27 @@ info:
   title: Gin-Zone-Api
   version: "1.0"
 paths:
+  /base/auth/wxlogin:
+    get:
+      consumes:
+      - application/json
+      description: 微信授权登录
+      parameters:
+      - description: 用户apiid
+        in: query
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.User'
+      summary: 微信授权登录
+      tags:
+      - 用户模块
   /base/users:
     get:
       consumes:

@@ -16,6 +16,38 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/base/auth/wxlogin": {
+            "get": {
+                "description": "微信授权登录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户模块"
+                ],
+                "summary": "微信授权登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户apiid",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.User"
+                        }
+                    }
+                }
+            }
+        },
         "/base/users": {
             "get": {
                 "security": [

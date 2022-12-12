@@ -1,7 +1,10 @@
 package base
 
 import (
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -186,13 +189,38 @@ func (u *User) UserList(c *gin.Context) {
 // @Security	Authorization
 // @Accept      json
 // @Produce     json
-// @Param       id  path     int true "用户id" (param name,param type,data type,is mandatory（是否鉴权）?,comment attribute(optional))
+// @Param       id  path     int true "用户id"
 // @Success     200 {object} User
 // @Router      /base/users/{id} [delete]
 func (u *User) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	aid, _ := strconv.Atoi(id)
 	response.Success(c, service.User.Delete(aid), "")
+}
+
+// WeiXinLogin godoc
+//
+// @Summary     微信授权登录
+// @Description 微信授权登录
+// @Tags        用户模块
+// @Accept      json
+// @Produce     json
+// @Param       code  query    string true "用户apiid"
+// @Success     200 {object} User
+// @Router      /base/auth/wxlogin [get]
+func (u *User) WeiXinLogin(c *gin.Context) {
+	code := c.Query("code")
+	var appid string
+	var secret string
+	sec := config.Config.Section("app")
+	appid = sec.Key("wechat_app_id").String()
+	secret = sec.Key("wechat_app_secret").String()
+	url := "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + appid + "&secret=" + secret + "&code=" + code + "&grant_type=authorization_code"
+	log.Info(url)
+	resp, _ := http.Get(url)
+	body, _ := ioutil.ReadAll(resp.Body)
+	log.Info(string(body))
+	response.Success(c, code, "")
 }
 
 // generateToken 生成token
