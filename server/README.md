@@ -20,14 +20,16 @@ Golang - 1.19 | 开发语言 | [https://go.dev/](https://go.dev/)
 Gin - 1.8.1 | Gin Web Framework | [https://gin-gonic.com/zh-cn/docs/](https://gin-gonic.com/zh-cn/docs/)
 Mysql - 8.0.28 | 数据库 | [https://www.mysql.com/cn/](https://www.mysql.com/cn/)
 Gorm - 1.9.16 | Golang ORM | [https://gorm.io/zh_CN/docs/index.html](https://gorm.io/zh_CN/docs/index.html)
+go-redis | Go 版本redis | [https://github.com/go-redis/redis](https://github.com/go-redis/redis)
 Jwt | Golang jwt | [https://github.com/golang-jwt/jwt](https://github.com/golang-jwt/jwt)
 Logrus | 日志 | [https://github.com/sirupsen/logrus](https://github.com/sirupsen/logrus)
 Base64Captcha | 验证码 | [https://github.com/mojocn/base64Captcha](https://github.com/mojocn/base64Captcha)
 Crypto | 密码库 | [https://golang.org/x/crypto](https://golang.org/x/crypto)
+Cron | go 定时任务库 | [https://github.com/robfig/cron](https://github.com/robfig/cron)
 Ini | ini文件库 | [https://github.com/go-ini/ini](https://github.com/go-ini/ini)
 Goment | 时间处理工具 | [https://github.com/nleeper/goment](https://github.com/nleeper/goment)
 Air | 热更新工具 | [https://github.com/cosmtrek/air](https://github.com/cosmtrek/air)
-gin-swagger 自动生成RESTful风格文档 | [https://github.com/swaggo/gin-swagger](https://github.com/swaggo/gin-swagger)
+gin-swagger | 自动生成RESTful风格文档 | [https://github.com/swaggo/gin-swagger](https://github.com/swaggo/gin-swagger)
 #### 1.3 开发工具
 
 
@@ -71,13 +73,13 @@ netstat -ano | findstr 9888
 // 杀死进程，14172 查到的pid
 taskkill /pid 14172 /f
 ```
-#### 代码仓库
+#### 2.代码仓库
 
 - [gin-zone/server](https://gitee.com/jiang-xia/gin-zone/server)
 
 <!-- #### 项目示例图 -->
 
-#### 安装使用
+#### 3.安装使用
 
 - 安装依赖
 
@@ -94,9 +96,12 @@ air
 - 打包
 
 ```bash
- go build
+ go build main.go
 ```
+#### 4.部署
+##### 4.1 环境安装
+安装 所需技术环境，打包生成二进制文件 ./main 执行即可启动服务
 
-## 开源作者
+#### 开源作者
 
 **jiang-xia**
