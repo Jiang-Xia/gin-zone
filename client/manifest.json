@@ -16,7 +16,12 @@
             "autoclose" : true,
             "delay" : 0
         },
-        "modules" : {},
+        "modules" : {
+            "Barcode" : {},
+            "Camera" : {},
+            "Geolocation" : {},
+            "OAuth" : {}
+        },
         /* 模块配置 */
         "distribute" : {
             /* 应用发布信息 */
@@ -42,7 +47,52 @@
             },
             "ios" : {},
             /* ios打包配置 */
-            "sdkConfigs" : {}
+            "sdkConfigs" : {
+                "geolocation" : {
+                    "amap" : {
+                        "__platform__" : [ "ios", "android" ],
+                        "appkey_ios" : "",
+                        "appkey_android" : ""
+                    }
+                },
+                "oauth" : {
+                    "weixin" : {
+                        "appid" : "wx1df79a9834d74211",
+                        "UniversalLinks" : ""
+                    }
+                }
+            },
+            "icons" : {
+                "android" : {
+                    "hdpi" : "static/logo/android-chrome-192x192.png",
+                    "xhdpi" : "static/logo/apple-touch-icon.png",
+                    "xxhdpi" : "static/logo/android-chrome-192x192.png",
+                    "xxxhdpi" : "static/logo/android-chrome-512x512.png"
+                },
+                "ios" : {
+                    "iphone" : {
+                        "app@2x" : "static/logo/apple-touch-icon.png",
+                        "app@3x" : "static/logo/android-chrome-192x192.png",
+                        "spotlight@2x" : "static/logo/apple-touch-icon.png",
+                        "spotlight@3x" : "static/logo/apple-touch-icon.png",
+                        "settings@2x" : "static/logo/apple-touch-icon.png",
+                        "settings@3x" : "static/logo/apple-touch-icon.png",
+                        "notification@2x" : "static/logo/apple-touch-icon.png",
+                        "notification@3x" : "static/logo/apple-touch-icon.png"
+                    },
+                    "ipad" : {
+                        "app" : "static/logo/apple-touch-icon.png",
+                        "app@2x" : "static/logo/android-chrome-192x192.png",
+                        "proapp@2x" : "static/logo/android-chrome-192x192.png",
+                        "spotlight" : "static/logo/apple-touch-icon.png",
+                        "spotlight@2x" : "static/logo/apple-touch-icon.png",
+                        "settings" : "static/logo/apple-touch-icon.png",
+                        "settings@2x" : "static/logo/apple-touch-icon.png",
+                        "notification" : "static/logo/apple-touch-icon.png",
+                        "notification@2x" : "static/logo/apple-touch-icon.png"
+                    }
+                }
+            }
         }
     },
     /* SDK配置 */
@@ -71,6 +121,15 @@
         },
         "unipush" : {
             "enable" : true
+        },
+        "sdkConfigs" : {
+            "maps" : {
+                "amap" : {
+                    "key" : "",
+                    "securityJsCode" : "",
+                    "serviceHost" : ""
+                }
+            }
         }
     }
 }

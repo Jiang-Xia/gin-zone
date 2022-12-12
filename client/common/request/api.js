@@ -1,5 +1,5 @@
-const baseUrl = "https://jiang-xia.top/x-zone/api/v1"
-// const baseUrl = "http://localhost:9600/api/v1"
+// const baseUrl = "https://jiang-xia.top/x-zone/api/v1"
+const baseUrl = "http://localhost:9600/api/v1"
 export class Api {
 	// 获取token
 	getToken() {

@@ -53,10 +53,11 @@
 				const res = await this.$api.get('/blog/resources/daily-img', {
 					n: 7
 				})
-				console.log(res)
+				// console.log(res)
 				this.swiperList = res.data.images
 			},
 			async getArticleList() {
+				uni.showLoading({title:''})
 				this.articleList = []
 				const params = {
 					page: 1,
@@ -69,6 +70,7 @@
 					return v
 				})
 				this.articleList = list
+				uni.hideLoading()
 			},
 			goArticleList() {
 				uni.navigateTo({

@@ -47,16 +47,17 @@
 		},
 		methods: {
 			async getArticleInfo(id, ctx) {
+				uni.showLoading({title:''})
 				const res = await this.$api.get('/blog/article/info', {
 					id
 				})
-
 				this.articleInfo = res.data.info
 				this.markdownString = this.articleInfo.contentHtml
 				uni.setNavigationBarTitle({
 					title: this.articleInfo.title
 				})
 				this.transformMarkdown()
+				uni.hideLoading()
 			},
 			transformMarkdown() {
 				// marked 全局变量
@@ -88,6 +89,7 @@
 	.article-detail {
 		font-weight: 36rpx;
 		padding-bottom: 40rpx;
+
 		.cover {
 			width: 100%;
 		}
