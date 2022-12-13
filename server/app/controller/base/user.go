@@ -1,12 +1,14 @@
 package base
 
 import (
-	"gitee.com/jiang-xia/gin-zone/server/config"
-	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
+
+	"gitee.com/jiang-xia/gin-zone/server/config"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gitee.com/jiang-xia/gin-zone/server/app/service"
@@ -209,18 +211,20 @@ func (u *User) DeleteUser(c *gin.Context) {
 // @Success     200 {object} User
 // @Router      /base/auth/wxlogin [get]
 func (u *User) WeiXinLogin(c *gin.Context) {
+	data := make(map[string]interface{})
 	code := c.Query("code")
 	var appid string
 	var secret string
 	sec := config.Config.Section("app")
 	appid = sec.Key("wechat_app_id").String()
 	secret = sec.Key("wechat_app_secret").String()
-	url := "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + appid + "&secret=" + secret + "&code=" + code + "&grant_type=authorization_code"
+	url := "https://api.weixin.qq.com/sns/jscode2session?appid=" + appid + "&secret=" + secret + "&js_code=" + code + "&grant_type=authorization_code"
 	log.Info(url)
 	resp, _ := http.Get(url)
 	body, _ := ioutil.ReadAll(resp.Body)
-	log.Info(string(body))
-	response.Success(c, code, "")
+	json.Unmarshal(body, &data)
+	log.Info(data)
+	response.Success(c, data, "")
 }
 
 // generateToken 生成token

@@ -7,22 +7,35 @@
 <script>
 	export default {
 		data() {
-			return {
-			}
+			return {}
 		},
 
 		components: {},
 		methods: {
 			login() {
+				uni.getUserProfile({
+					lang: 'zh_CN',
+					desc: '用户注册',
+					success(info) {
+						console.log("getUserProfile success",info)
+					},
+					fail(err) {
+						console.log("getUserProfile err",err)
+					}
+				})
 				uni.login({
 					"provider": "weixin",
-					scopes:"auth_user",
+					scopes: "auth_user",
 					// "onlyAuthorize": true, // 微信登录仅请求授权认证
-					success: (event)=> {
+					success: async(event) => {
+						
 						// uni.setStorageSync('token', res.token)
-						this.$api.get('/base/auth/wxlogin',{code:event.code})
+						const res  = await this.$api.get('/base/auth/wxlogin', {
+							code: event.code
+						})
+						console.log("wxlogin success",res)
 					},
-					fail: (err)=> {
+					fail: (err) => {
 						// 登录授权失败  
 						// err.code是错误码
 					}
