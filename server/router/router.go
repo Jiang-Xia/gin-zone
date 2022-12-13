@@ -38,7 +38,7 @@ func App() (r *gin.Engine) {
 		{
 			userController := new(base.User)
 
-			baseGroup.GET("auth/wxlogin", userController.WeiXinLogin)
+			baseGroup.POST("auth/wxlogin", userController.WeiXinLogin)
 			baseGroup.POST("users/login", userController.Login)
 			baseGroup.POST("users", userController.Register)
 			baseGroup.Use(middleware.JWTAuth())

@@ -7,7 +7,9 @@
 <script>
 	export default {
 		data() {
-			return {}
+			return {
+				code :''
+			}
 		},
 
 		components: {},
@@ -16,24 +18,22 @@
 				uni.getUserProfile({
 					lang: 'zh_CN',
 					desc: '用户注册',
-					success(info) {
-						console.log("getUserProfile success",info)
+					success:async(info)=> {
+						console.log("getUserProfile success", info)
+						const res = await this.$api.post('/base/auth/wxlogin', {
+							code: this.code,
+							...info.userInfo
+						})
 					},
 					fail(err) {
-						console.log("getUserProfile err",err)
+						console.log("getUserProfile err", err)
 					}
 				})
 				uni.login({
 					"provider": "weixin",
 					scopes: "auth_user",
-					// "onlyAuthorize": true, // 微信登录仅请求授权认证
-					success: async(event) => {
-						
-						// uni.setStorageSync('token', res.token)
-						const res  = await this.$api.get('/base/auth/wxlogin', {
-							code: event.code
-						})
-						console.log("wxlogin success",res)
+					success: async (event) => {
+					this.code = event.code
 					},
 					fail: (err) => {
 						// 登录授权失败  
@@ -45,7 +45,7 @@
 	}
 </script>
 
-<style>
+<style lang="less">
 	.container {
 		padding: 20px;
 		font-size: 14px;

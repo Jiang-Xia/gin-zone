@@ -19,6 +19,10 @@ import (
 
 var Mysql *gorm.DB // gorm数据库实例
 
+func Db() *gorm.DB {
+	return Mysql
+}
+
 // MyWriter 定义自己的Writer
 type MyWriter struct {
 	mlog *logrus.Logger
@@ -97,6 +101,9 @@ func Setup() {
 	sqlDB.SetConnMaxLifetime(5 * time.Minute) // 设置每个链接的过期时间
 	// 调试单个操作，显示此操作的详细日志
 	// db.Debug().Where("name = ?", "jinzhu").First()
+
+	//初始化表结构
+	InitTable()
 }
 
 func CloseDB() {

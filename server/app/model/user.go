@@ -1,20 +1,23 @@
 package model
 
 import (
+	"fmt"
 	"gitee.com/jiang-xia/gin-zone/server/middleware"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/hash"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type User struct {
+	//gorm.Model
 	BaseModel `gorm:"embedded"` // 基础 model
 	MainUser  `gorm:"embedded"`
 }
 
 type MainUser struct {
 	// 用户唯一id
-	UserId int64 `json:"userId"`
+	UserId int64 `json:"userId" gorm:"unique;`
 	// 用户名
 	UserName string `json:"userName" binding:"required,min=4,max=12" label:"用户名" example:"test"`
 	// 密码 - 不会json化
@@ -27,6 +30,7 @@ type MainUser struct {
 }
 
 type UpdateUser struct {
+	Avatar string `json:"avatar" example:":https://******.com/aa.png"`
 	// 用户昵称
 	NickName string `json:"nickName" example:"酱"`
 	// 邮箱
@@ -52,9 +56,25 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.Password = hash.BcryptHash(u.Password)
 	return nil
 }
+func (u *User) AfterSave(tx *gorm.DB) (err error) {
+	fmt.Println("u.UserName", u.UserName == "", u.ID)
+	if u.UserName == "" {
+		tx.Model(&User{}).Where("id = ?", u.ID).Update("userName", "user_"+strconv.Itoa(u.ID))
+	}
+	return nil
+}
 
 func GetUserID(c *gin.Context) int {
 	token := c.GetHeader("authorization")
 	uInfo, _ := middleware.NewJWT().ParseToken(token)
 	return uInfo.ID
+}
+
+type Oauth struct {
+	//用户表id作为主键
+	ID     int    `json:"id"`
+	Type   int    `json:"type"`
+	Openid string `json:"openid"`
+	AuthId int64
+	User   User `gorm:"foreignKey:AuthId"`
 }

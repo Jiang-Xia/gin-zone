@@ -2,6 +2,9 @@ package base
 
 import (
 	"encoding/json"
+	"fmt"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
+	"github.com/spf13/cast"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -211,20 +214,50 @@ func (u *User) DeleteUser(c *gin.Context) {
 // @Success     200 {object} User
 // @Router      /base/auth/wxlogin [get]
 func (u *User) WeiXinLogin(c *gin.Context) {
-	data := make(map[string]interface{})
-	code := c.Query("code")
+	var err error
+	//嵌套map
+	bodyData := make(map[string]interface{})
+	authData := make(map[string]interface{})
+	c.ShouldBind(&bodyData)
+	//强制转为字符串
+	code := cast.ToString(bodyData["code"])
+	//log.Info("bodyData", bodyData)
 	var appid string
 	var secret string
 	sec := config.Config.Section("app")
 	appid = sec.Key("wechat_app_id").String()
 	secret = sec.Key("wechat_app_secret").String()
 	url := "https://api.weixin.qq.com/sns/jscode2session?appid=" + appid + "&secret=" + secret + "&js_code=" + code + "&grant_type=authorization_code"
-	log.Info(url)
-	resp, _ := http.Get(url)
-	body, _ := ioutil.ReadAll(resp.Body)
-	json.Unmarshal(body, &data)
-	log.Info(data)
-	response.Success(c, data, "")
+	resp, err := http.Get(url)
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		response.Fail(c, "系统错误", nil)
+		return
+	}
+
+	json.Unmarshal(body, &authData)
+	//fmt.Println("authData=========================", authData)
+	sId := utils.GenId()
+	user := &model.User{
+		//嵌套结构体赋值
+		MainUser: model.MainUser{
+			UserId:   sId,
+			UserName: fmt.Sprintf("user_ %v", sId),
+			Password: "123456",
+		},
+	}
+	// .点结构体赋值
+	user.Avatar = cast.ToString(bodyData["avatarUrl"])
+	user.NickName = cast.ToString(bodyData["nickName"])
+	user.Gender = cast.ToInt(bodyData["Gender"])
+	err = service.User.Create(user)
+	if err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
+	generateToken(c, user)
+	//log.Info("验证data", data)
+	//response.Success(c, data, "")
 }
 
 // generateToken 生成token

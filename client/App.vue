@@ -45,7 +45,6 @@
 
 <style lang="scss">
 	
-	@import "common/css/reset.css";	
 	@import "common/css/base.scss";
 	@import "common/css/animate.min.css";	
 	/*每个页面公共css 引入辅助样式*/
