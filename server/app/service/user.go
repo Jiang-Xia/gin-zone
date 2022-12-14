@@ -34,6 +34,18 @@ func (u *user) isUserExist(username string) (bool, *model.User) {
 	}
 }
 
+// IsUserOauthExist 校验用户是否授权过
+func (u *user) IsUserOauthExist(openid string) (bool, *model.User) {
+	userModel := &model.User{}
+	result := db.Mysql.Where("wx_open_id = ?", openid).First(userModel) // 将查询结果赋值给结构体
+	// 用户不存在
+	if result.RowsAffected == 0 {
+		return false, userModel
+	} else {
+		return true, userModel
+	}
+}
+
 // SignIn 登录校验
 func (u *user) SignIn(username string, password string) (userModel *model.User, code int) {
 	var (

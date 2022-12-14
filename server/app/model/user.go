@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"gitee.com/jiang-xia/gin-zone/server/middleware"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/hash"
 	"github.com/gin-gonic/gin"
@@ -25,7 +24,8 @@ type MainUser struct {
 	// 是否管理员
 	IsAdmin bool `json:"isAdmin" default:"0"`
 	// 是否管理员
-	IsLock     bool `json:"isLock" default:"0"`
+	IsLock     bool   `json:"isLock" default:"0"`
+	WxOpenId   string `json:"wxOpenId"`
 	UpdateUser `gorm:"embedded"`
 }
 
@@ -56,10 +56,11 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.Password = hash.BcryptHash(u.Password)
 	return nil
 }
-func (u *User) AfterSave(tx *gorm.DB) (err error) {
-	fmt.Println("u.UserName", u.UserName == "", u.ID)
+
+func (u *User) AfterCreate(tx *gorm.DB) (err error) {
+	//先会执行这个插入的sql，再执行插入的sql
 	if u.UserName == "" {
-		tx.Model(&User{}).Where("id = ?", u.ID).Update("userName", "user_"+strconv.Itoa(u.ID))
+		tx.Model(u).Update("user_name", "user_"+strconv.Itoa(u.ID))
 	}
 	return nil
 }
@@ -68,13 +69,4 @@ func GetUserID(c *gin.Context) int {
 	token := c.GetHeader("authorization")
 	uInfo, _ := middleware.NewJWT().ParseToken(token)
 	return uInfo.ID
-}
-
-type Oauth struct {
-	//用户表id作为主键
-	ID     int    `json:"id"`
-	Type   int    `json:"type"`
-	Openid string `json:"openid"`
-	AuthId int64
-	User   User `gorm:"foreignKey:AuthId"`
 }

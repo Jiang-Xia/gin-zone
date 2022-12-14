@@ -16,7 +16,7 @@ func InitTable() {
 	//	}
 	//}
 	//直接创建表 表存在了也不会报错,新加字段也会自动更新表结构
-	err = db.AutoMigrate(&model.User{}, &model.Oauth{})
+	err = db.AutoMigrate(&model.User{})
 	if err != nil {
 		log.Fatal("建表失败！", err)
 	}

@@ -2,7 +2,6 @@ package base
 
 import (
 	"encoding/json"
-	"fmt"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/spf13/cast"
 	"io/ioutil"
@@ -234,30 +233,43 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 		response.Fail(c, "系统错误", nil)
 		return
 	}
-
+	openid := cast.ToString(authData["openid"])
 	json.Unmarshal(body, &authData)
+	var user = &model.User{}
 	//fmt.Println("authData=========================", authData)
-	sId := utils.GenId()
-	user := &model.User{
-		//嵌套结构体赋值
-		MainUser: model.MainUser{
-			UserId:   sId,
-			UserName: fmt.Sprintf("user_ %v", sId),
-			Password: "123456",
-		},
-	}
 	// .点结构体赋值
 	user.Avatar = cast.ToString(bodyData["avatarUrl"])
 	user.NickName = cast.ToString(bodyData["nickName"])
 	user.Gender = cast.ToInt(bodyData["Gender"])
-	err = service.User.Create(user)
-	if err != nil {
-		response.Fail(c, err.Error(), nil)
+	//存在直接生成token 终止函数
+	if b, user_ := service.User.IsUserOauthExist(openid); b {
+		// struct 数据有多少个只会更新对应字段
+		service.User.Update(user_.ID, user)
+		user = user_
+		generateToken(c, user)
+		log.Info("用户已经存在,直接生成token")
 		return
 	}
+	sId := utils.GenId()
+	user = &model.User{
+		//嵌套结构体赋值
+		MainUser: model.MainUser{
+			UserId:   sId,
+			Password: "123456",
+			WxOpenId: openid,
+		},
+	}
 	generateToken(c, user)
-	//log.Info("验证data", data)
-	//response.Success(c, data, "")
+	if err != nil {
+		return
+	} else {
+		err = service.User.Create(user)
+	}
+}
+
+// RefreshAuthUserInfo 刷新授权信息
+func (u *User) RefreshAuthUserInfo() {
+
 }
 
 // generateToken 生成token
