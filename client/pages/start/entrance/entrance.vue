@@ -76,7 +76,7 @@
 				return color
 			},
 			onTap() {
-				wx.switchTab({
+				uni.switchTab({
 					url: '/pages/blog/index'
 				})
 			}

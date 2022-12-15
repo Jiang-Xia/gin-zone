@@ -16,7 +16,9 @@
 
 <script>
 	import parseHtml from "../../../common/utils/html-parser..js"
+	// #ifdef MP-WEIXIN
 	import mpHtml from '../../../node_modules/mp-html/dist/uni-app/components/mp-html/mp-html'
+	// #endif
 	import {
 		styleStr
 	} from './style.js'
@@ -39,7 +41,9 @@
 		},
 		// 不可省略
 		components: {
-			mpHtml
+			// #ifdef MP-WEIXIN
+			// mpHtml
+			// #endif
 		},
 		onLoad(option) {
 			this.id = option.id
@@ -47,7 +51,9 @@
 		},
 		methods: {
 			async getArticleInfo(id, ctx) {
-				uni.showLoading({title:''})
+				uni.showLoading({
+					title: ''
+				})
 				const res = await this.$api.get('/blog/article/info', {
 					id
 				})
