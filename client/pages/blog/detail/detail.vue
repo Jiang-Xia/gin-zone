@@ -42,7 +42,7 @@
 		// 不可省略
 		components: {
 			// #ifdef MP-WEIXIN
-			// mpHtml
+			mpHtml
 			// #endif
 		},
 		onLoad(option) {

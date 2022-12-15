@@ -2,17 +2,13 @@ const baseUrl = "http://172.18.32.6:9600/api/v1"
 // const baseUrl = "https://jiang-xia.top/x-zone/api/v1"
 // const baseUrl = "http://localhost:9600/api/v1"
 // const baseUrl = "http://192.168.1.51:9600/api/v1"
+const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDcsInVzZXJJZCI6IjE2MTQ5MzgzMjE3NTYxNiIsInVzZXJOYW1lIjoidXNlcl80NyIsImV4cCI6MTY3MTE0NDg1MiwiaWF0IjoxNjcxMTAxNjUyfQ.u0AALD9kllqOuH4A6q9bK9uN7t6bn_zCbJ2LmeOGBHo"
+uni.setStorageSync("token",testToken)
 export class Api {
 	// 获取token
 	getToken() {
-		let token = ""
-		uni.getStorageSync({
-			key: "token",
-			success: (res) => {
-				token = res.token || ""
-			}
-		})
-		// console.warn("token",token)
+		let token = uni.getStorageSync("token")
+		console.log("token",token)
 		return token
 	}
 	// 转化rest风格api

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/config"
@@ -65,7 +66,13 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
+		//需判断解析后的token是否真是存在用户
+		if claims.UserName == "" {
+			response.Fail(c, "token无效", nil)
+			c.Abort()
+			return
+		}
+		fmt.Printf("JWTAuth:%v\n", claims)
 		// 将用户信息存入 gin.context 里，后续 auth 包将从这里拿到当前用户数据
 		c.Set("current_user", claims)
 		c.Set("current_user_id", claims.UserId)

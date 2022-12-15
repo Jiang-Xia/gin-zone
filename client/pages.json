@@ -48,10 +48,22 @@
 		{
 			"path": "pages/my/index",
 			"style": {
-				"navigationBarTitleText": "我的"
+				"navigationBarTitleText": "我的",
+				"mp-weixin": {
+					"navigationStyle": "custom"
+				}
 			}
 		}
-	],
+        ,{
+            "path" : "pages/my/login",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		// "navigationStyle": "custom",
 		"navigationBarTextStyle": "black",

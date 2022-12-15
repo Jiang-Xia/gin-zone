@@ -10,33 +10,38 @@ import (
 
 type User struct {
 	//gorm.Model
-	BaseModel `gorm:"embedded"` // 基础 model
-	MainUser  `gorm:"embedded"`
+	BaseModel  `gorm:"embedded"` // 基础 model
+	MainUser   `gorm:"embedded"`
+	UpdateUser `gorm:"embedded"`
 }
 
 type MainUser struct {
 	// 用户唯一id
-	UserId int64 `json:"userId" gorm:"unique;`
+	UserId int64 `json:"userId" gorm:"unique;comment:用户唯一id"`
 	// 用户名
-	UserName string `json:"userName" binding:"required,min=4,max=12" label:"用户名" example:"test"`
+	UserName string `gorm:"comment:用户名;" json:"userName" binding:"required,min=4,max=12" label:"用户名" example:"test" `
 	// 密码 - 不会json化
-	Password string `json:"password" binding:"required,min=6,max=16" label:"密码" example:"123456"`
+	Password string `gorm:"comment:密码;" json:"-" binding:"required,min=6,max=16" label:"密码" example:"123456"`
 	// 是否管理员
-	IsAdmin bool `json:"isAdmin" default:"0"`
-	// 是否管理员
-	IsLock     bool   `json:"isLock" default:"0"`
-	WxOpenId   string `json:"wxOpenId"`
+	IsAdmin bool `gorm:"comment:是否管理员;" json:"isAdmin" default:"0"`
+	// 是否已锁
+	IsLock bool `gorm:"comment:是否已锁;" json:"isLock" default:"0"`
+	// 微信openid
+	WxOpenId   string `gorm:"comment:微信openid;" json:"-"`
 	UpdateUser `gorm:"embedded"`
 }
 
 type UpdateUser struct {
-	Avatar string `json:"avatar" example:":https://******.com/aa.png"`
+	// 用户头像
+	Avatar string `gorm:"comment:用户头像;" json:"avatar" example:":https://******.com/aa.png"`
 	// 用户昵称
-	NickName string `json:"nickName" example:"酱"`
+	NickName string `gorm:"comment:用户昵称;" json:"nickName" example:"酱"`
+	//个人介绍
+	Intro string `gorm:"comment:个人介绍;" json:"intro" example:"个人介绍"`
 	// 邮箱
-	Email string `json:"email" example:"123456789@qq.com"`
+	Email string `gorm:"comment:邮箱;" json:"email" example:"123456789@qq.com"`
 	// 性别
-	Gender int `json:"gender"`
+	Gender int `gorm:"comment:性别;" json:"gender"`
 }
 
 // LoginForm 登录

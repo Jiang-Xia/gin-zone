@@ -237,7 +237,7 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 	json.Unmarshal(body, &authData)
 	openid := cast.ToString(authData["openid"])
 	var user = &model.User{}
-	fmt.Println("authData=========================", authData)
+	//fmt.Println("authData=========================", authData)
 	// .点结构体赋值
 	user.Avatar = cast.ToString(bodyData["avatarUrl"])
 	user.NickName = cast.ToString(bodyData["nickName"])
@@ -252,14 +252,12 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 		return
 	}
 	sId := utils.GenId()
-	user = &model.User{
-		//嵌套结构体赋值
-		MainUser: model.MainUser{
-			UserId:   sId,
-			Password: "123456",
-			WxOpenId: openid,
-		},
+	user.MainUser = model.MainUser{
+		UserId:   sId,
+		Password: "123456",
+		WxOpenId: openid,
 	}
+	fmt.Printf("新增用户信息%v\n", user)
 	generateToken(c, user)
 	if err != nil {
 		return

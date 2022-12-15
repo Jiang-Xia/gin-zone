@@ -333,10 +333,14 @@ const docTemplate = `{
         "base.User": {
             "type": "object",
             "required": [
-                "password",
                 "userName"
             ],
             "properties": {
+                "avatar": {
+                    "description": "用户头像",
+                    "type": "string",
+                    "example": ":https://******.com/aa.png"
+                },
                 "createdAt": {
                     "description": "创建时间",
                     "type": "string"
@@ -354,13 +358,18 @@ const docTemplate = `{
                     "description": "自增id",
                     "type": "integer"
                 },
+                "intro": {
+                    "description": "个人介绍",
+                    "type": "string",
+                    "example": "个人介绍"
+                },
                 "isAdmin": {
                     "description": "是否管理员",
                     "type": "boolean",
                     "default": false
                 },
                 "isLock": {
-                    "description": "是否管理员",
+                    "description": "是否已锁",
                     "type": "boolean",
                     "default": false
                 },
@@ -368,13 +377,6 @@ const docTemplate = `{
                     "description": "用户昵称",
                     "type": "string",
                     "example": "酱"
-                },
-                "password": {
-                    "description": "密码 - 不会json化",
-                    "type": "string",
-                    "maxLength": 16,
-                    "minLength": 6,
-                    "example": "123456"
                 },
                 "updatedAt": {
                     "description": "更新时间",
@@ -445,10 +447,14 @@ const docTemplate = `{
         "model.MainUser": {
             "type": "object",
             "required": [
-                "password",
                 "userName"
             ],
             "properties": {
+                "avatar": {
+                    "description": "用户头像",
+                    "type": "string",
+                    "example": ":https://******.com/aa.png"
+                },
                 "email": {
                     "description": "邮箱",
                     "type": "string",
@@ -458,13 +464,18 @@ const docTemplate = `{
                     "description": "性别",
                     "type": "integer"
                 },
+                "intro": {
+                    "description": "个人介绍",
+                    "type": "string",
+                    "example": "个人介绍"
+                },
                 "isAdmin": {
                     "description": "是否管理员",
                     "type": "boolean",
                     "default": false
                 },
                 "isLock": {
-                    "description": "是否管理员",
+                    "description": "是否已锁",
                     "type": "boolean",
                     "default": false
                 },
@@ -472,13 +483,6 @@ const docTemplate = `{
                     "description": "用户昵称",
                     "type": "string",
                     "example": "酱"
-                },
-                "password": {
-                    "description": "密码 - 不会json化",
-                    "type": "string",
-                    "maxLength": 16,
-                    "minLength": 6,
-                    "example": "123456"
                 },
                 "userId": {
                     "description": "用户唯一id",
@@ -496,6 +500,11 @@ const docTemplate = `{
         "model.UpdateUser": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "description": "用户头像",
+                    "type": "string",
+                    "example": ":https://******.com/aa.png"
+                },
                 "email": {
                     "description": "邮箱",
                     "type": "string",
@@ -504,6 +513,11 @@ const docTemplate = `{
                 "gender": {
                     "description": "性别",
                     "type": "integer"
+                },
+                "intro": {
+                    "description": "个人介绍",
+                    "type": "string",
+                    "example": "个人介绍"
                 },
                 "nickName": {
                     "description": "用户昵称",

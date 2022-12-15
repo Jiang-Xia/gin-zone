@@ -8,11 +8,11 @@ import (
 // BaseModel 基础model
 type BaseModel struct {
 	// 自增id
-	ID int `gorm:"primaryKey;autoIncrement;" json:"id"`
+	ID int `gorm:"comment:自增id;primaryKey;autoIncrement;" json:"id"`
 	// 创建时间
-	CreatedAt time.Time `gorm:"column:created_at" json:"createdAt"`
+	CreatedAt time.Time `gorm:"comment:创建时间;column:created_at" json:"createdAt"`
 	// 更新时间
-	UpdatedAt time.Time `gorm:"column:updated_at" json:"updatedAt"`
+	UpdatedAt time.Time `gorm:"comment:更新时间;column:updated_at" json:"updatedAt"`
 }
 
 // gorm hook 文档 ：https://gorm.io/zh_CN/docs/hooks.html
