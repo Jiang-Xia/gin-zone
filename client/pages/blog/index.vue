@@ -14,7 +14,7 @@
 		</view>
 		<view class="news">
 			<view class="news-item" v-for="item in articleList" :key="item.id" @tap="goDetail(item.id)">
-				<image :src="item.cover"></image>
+				<image :src="item.cover" :fade-show="true"></image>
 				<view class="news-item__title uni-ellipsis">
 					<text class="text">{{item.title}}</text>
 					<uni-icons type="forward" size="18" color="#f9f9f9"></uni-icons>

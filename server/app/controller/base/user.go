@@ -2,6 +2,7 @@ package base
 
 import (
 	"encoding/json"
+	"fmt"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/spf13/cast"
 	"io/ioutil"
@@ -233,10 +234,10 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 		response.Fail(c, "系统错误", nil)
 		return
 	}
-	openid := cast.ToString(authData["openid"])
 	json.Unmarshal(body, &authData)
+	openid := cast.ToString(authData["openid"])
 	var user = &model.User{}
-	//fmt.Println("authData=========================", authData)
+	fmt.Println("authData=========================", authData)
 	// .点结构体赋值
 	user.Avatar = cast.ToString(bodyData["avatarUrl"])
 	user.NickName = cast.ToString(bodyData["nickName"])

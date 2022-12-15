@@ -6,12 +6,13 @@ export class Api {
 	// 获取token
 	getToken() {
 		let token = ""
-		uni.getStorage({
+		uni.getStorageSync({
 			key: "token",
 			success: (res) => {
 				token = res.token || ""
 			}
 		})
+		// console.warn("token",token)
 		return token
 	}
 	// 转化rest风格api

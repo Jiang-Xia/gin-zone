@@ -21,7 +21,8 @@
             "Bluetooth" : {},
             "Camera" : {},
             "Geolocation" : {},
-            "OAuth" : {}
+            "OAuth" : {},
+            "Payment" : {}
         },
         /* 模块配置 */
         "distribute" : {
@@ -47,7 +48,9 @@
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
                 ]
             },
-            "ios" : {},
+            "ios" : {
+                "dSYMs" : false
+            },
             /* ios打包配置 */
             "sdkConfigs" : {
                 "geolocation" : {
@@ -57,10 +60,12 @@
                 },
                 "oauth" : {
                     "weixin" : {
-                        "appid" : "wx1df79a9834d74211",
+                        "appid" : "wx57ae7e1d4f7a3d88",
                         "UniversalLinks" : ""
                     }
-                }
+                },
+                "ad" : {},
+                "payment" : {}
             },
             "icons" : {
                 "android" : {
