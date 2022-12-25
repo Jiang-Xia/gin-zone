@@ -1,14 +1,29 @@
 <template>
-	<page-meta>
-		<navigation-bar :front-color="nbFrontColor" :background-color="nbBackgroundColor" />
-	</page-meta>
-	<image class="my-bg" src="../../static/images/my.png" mode=""></image>
 	<view class="container">
-		<view class="my-info">
-			<image class="avatar" :src="userInfo.avatar" mode=""></image>
-			<text>{{userInfo.nickName}}</text>
+		<image v-if="isLogin" class="my-bg" src="../../static/images/logined.png" mode=""></image>
+		<view class="my-info" v-if="isLogin">
+			<view class="top-box">
+				<image class="avatar" :src="userInfo.avatar" mode=""></image>
+				<view class="uni-flex-column">
+					<text class="name">{{userInfo.nickName}}</text>
+					<text>难将心事和人说 说与青天明月知</text>
+				</view>
+				<uni-icons custom-prefix="zonefont" type="zone-shuaxin"  size="22" @click="login"></uni-icons>
+			</view>
+		</view>
+		
+		<view class="login-wrap" v-if="!isLogin">
+			<image class="login-bg" src="../../static/images/approve.png" mode=""></image>
+			<button type="primary"  @tap="login">登录</button>
+		</view>
+		
+		<view class="menu-list" v-if="isLogin">
+			<uni-list :border="false">
+				<uni-list-item showArrow title="退出登录" @click="logout" clickable></uni-list-item>
+			</uni-list>
 		</view>
 	</view>
+
 </template>
 
 <script>
@@ -16,13 +31,17 @@
 		data() {
 			return {
 				code: '',
-				nbFrontColor: '#ffffff',
-				nbBackgroundColor: 'rgba(0,0,0,0)',
 				userInfo: {}
 			}
 		},
 
 		components: {},
+			
+		computed:{
+			isLogin(){
+				return Object.keys(this.userInfo).length
+			}
+		},
 		onLoad() {
 			const token = uni.getStorageSync("token")
 			if (token) {
@@ -97,37 +116,71 @@
 			setToken(token) {
 				uni.setStorageSync("token", token)
 			},
+			logout(){
+				this.userInfo = {}
+				this.setToken('')
+				console.log("退出登录")
+			}
 		}
 	}
 </script>
 
 <style lang="less">
-	.my-bg {
-		width: 100%;
-		position: fixed;
-		top: 0;
-		z-index: -1;
-		height: 224rpx;
-		/* #ifdef MP-WEIXIN */
-		height: 324rpx;
-		/* #endif */
-	}
-
-	.container {
-		padding-top: 88rpx;
+.container {
 		font-size: 14px;
 		line-height: 24px;
+		padding: 88rpx 32rpx 32rpx 32rpx;
+	}
+	.my-bg {
+		width: 100%;
+		height: 324rpx;
+		margin-bottom: 16rpx;
+	}
+	page{
+		background-color: #f9f9f9;
 	}
 	.my-info{
 		display: flex;
-		justify-content: center;
-		flex-direction: column;
-		align-items: center;
+		border-radius: 10rpx;
+		background-color: #fff;
+		padding: 24rpx;
+		.top-box{
+			display: flex;
+			align-items: center;
+			color: #666;
+			font-size: 26rpx;
+			// justify-content: space-between;
+			width: 100%;
+		}
+		.uni-icons{
+			margin-left: 64rpx;
+		}
+		.name{
+			font-weight: 500;
+			font-size: 36rpx;
+			color: #333;
+		}
 		image{
 			border-radius: 50%;
-			height: 120rpx;
-			width: 120rpx;
+			height: 100rpx;
+			width: 100rpx;
 			margin-bottom: 10rpx;
+			margin-right: 12rpx;
+		}
+	}
+	.menu-list{
+		border-radius: 10rpx;
+		background-color: #fff;
+		padding: 24rpx;
+		margin-top: 32rpx;
+	}
+	.login-wrap{
+		text-align: center;
+		.login-bg{
+			margin: 0 auto 32rpx;
+		}
+		button{
+			width: 110px;
 		}
 	}
 </style>

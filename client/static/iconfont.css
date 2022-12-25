@@ -1,0 +1,45 @@
+@font-face {
+  font-family: "zonefont"; /* Project id 3805935 */
+  src: url('/static/iconfont.ttf') format('truetype');
+}
+
+.zonefont {
+  font-family: "zonefont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.zone-shuaxin:before {
+  content: "\e782";
+}
+
+.zone-dingwei:before {
+  content: "\e673";
+}
+
+.zone-message:before {
+  content: "\e64c";
+}
+
+.zone-31wode:before {
+  content: "\e600";
+}
+
+.zone-shouye1:before {
+  content: "\e8b9";
+}
+
+.zone-chat2:before {
+  content: "\e69d";
+}
+
+.zone-wode:before {
+  content: "\e613";
+}
+
+.zone-shipin:before {
+  content: "\e695";
+}
+

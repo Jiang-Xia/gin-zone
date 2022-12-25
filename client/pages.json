@@ -49,20 +49,17 @@
 			"path": "pages/my/index",
 			"style": {
 				"navigationBarTitleText": "我的",
-				"mp-weixin": {
-					"navigationStyle": "custom"
-				}
+				"navigationStyle": "custom"
 			}
+		},{
+				"path" : "pages/my/login",
+				"style" :                                                                                    
+				{
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+				}
+				
 		}
-        ,{
-            "path" : "pages/my/login",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
     ],
 	"globalStyle": {
 		// "navigationStyle": "custom",
@@ -89,19 +86,30 @@
 		"selectedColor": "#0062cc",
 		"list": [{
 				"text": "博客",
-				"pagePath": "pages/blog/index"
+				"pagePath": "pages/blog/index",
+				"iconPath": "static/icon/index1.png",
+				"selectedIconPath":  "static/icon/index.png"
 			},
 			{
 				"text": "动态",
-				"pagePath": "pages/moment/index"
+				"pagePath": "pages/moment/index",
+				"iconPath": "static/icon/dt1.png",
+				"selectedIconPath":  "static/icon/dt.png"
 			},
 			{
 				"text": "聊天",
-				"pagePath": "pages/chat/index"
+				"pagePath": "pages/chat/index",
+				"iconPath": "static/icon/chat1.png",
+				"selectedIconPath":  "static/icon/chat.png"
 			},
 			{
 				"text": "我的",
-				"pagePath": "pages/my/index"
+				"pagePath": "pages/my/index",
+				"iconPath": "static/icon/my1.png",
+				"selectedIconPath":  "static/icon/my.png",
+				"iconfont": {
+					"color": ""
+				}
 			}
 		]
 	}

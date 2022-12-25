@@ -20,6 +20,7 @@ import App from './App.vue'
 import api from './common/request/api.js'
 
 // #ifdef VUE3
+
 // import './common/js/vconsole.min.js'
 const mode = import.meta.env.MODE;
 // if(mode==="development"){

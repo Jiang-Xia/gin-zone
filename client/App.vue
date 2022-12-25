@@ -44,19 +44,17 @@
 </script>
 
 <style lang="scss">
-	
 	@import "common/css/base.scss";
 	@import "common/css/animate.min.css";	
 	/*每个页面公共css 引入辅助样式*/
 	@import '@/uni_modules/uni-scss/index.scss';
-	
 	// 编辑器样式
 	@import 'common/css/atom-one-dark.css';
 	@import 'common/css/editor-v3.style.css';
 	
 	/* #ifndef APP-NVUE */
 	@import '@/static/customicons.css';
-
+	@import "@/static/iconfont.css";
 	// 设置整个项目的背景色
 	page {
 		// background-color: #f5f5f5;
