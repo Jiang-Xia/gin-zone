@@ -2,9 +2,9 @@ package router
 
 import (
 	"fmt"
-
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/admin"
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/base"
+	"gitee.com/jiang-xia/gin-zone/server/app/controller/mobile"
 	_ "gitee.com/jiang-xia/gin-zone/server/docs" // 需要引入docs, 不然打不开文档
 	"gitee.com/jiang-xia/gin-zone/server/middleware"
 	"github.com/gin-gonic/gin"
@@ -58,8 +58,10 @@ func App() (r *gin.Engine) {
 		}
 
 		// mobile端路由
-		//app := v1.Group("mobile")
+		app := v1.Group("mobile")
+		mobileController := new(mobile.Chat)
 		{
+			app.GET("chat", mobileController.Chating)
 		}
 
 		//博客模块路由 直接转发到blog-server

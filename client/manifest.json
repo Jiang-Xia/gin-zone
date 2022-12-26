@@ -116,6 +116,9 @@
             "scope.userLocation" : {
                 "desc" : "自己测试使用"
             }
+        },
+        "unipush" : {
+            "enable" : false
         }
     },
     "vueVersion" : "3",

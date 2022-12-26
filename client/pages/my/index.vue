@@ -42,8 +42,9 @@
 				return Object.keys(this.userInfo).length
 			}
 		},
-		onLoad() {
+		onShow() {
 			const token = uni.getStorageSync("token")
+			console.log('token',token)
 			if (token) {
 				this.getZoneUserInfo()
 			}
@@ -61,6 +62,7 @@
 							...info.userInfo
 						})
 						this.setToken(res.data.token)
+						this.getZoneUserInfo()
 					},
 					fail(err) {
 						console.log("getUserProfile err", err)
@@ -98,6 +100,7 @@
 							...info.userInfo
 						})
 						this.setToken(res.data.token)
+						this.getZoneUserInfo()
 					},
 					fail: (err) => {
 						uni.showToast({
