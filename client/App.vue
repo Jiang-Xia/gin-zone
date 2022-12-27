@@ -4,7 +4,8 @@
 		globalData: {
 			StatusBar: 0,
 			CustomBar:0,
-			Custom:0
+			Custom:0,
+			userInfo:{}
 		},
 		/* 应用生命周期 */
 		onLaunch: function() {
@@ -36,6 +37,10 @@
 		},
 		onShow: function() {
 			console.log('App Show')
+			this.$api.get('/base/users/info').then(res=>{
+				uni.setStorageSync('userInfo',res.data)
+				this.globalData.userInfo = res.data
+			})
 		},
 		onHide: function() {
 			console.log('App Hide')

@@ -2,7 +2,7 @@
 	<view class="container" :style="{'background-color':bg}">
 		<view class="poem-container">
 
-			<view class="sentence-container">
+			<view class="sentence-container uni-ellipsis-1">
 				<text v-for="item,index in poem" :key="index">
 					<text class="poem">{{item}}</text>
 				</text>

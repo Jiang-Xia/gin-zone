@@ -61,7 +61,7 @@ func App() (r *gin.Engine) {
 		app := v1.Group("mobile")
 		mobileController := new(mobile.Chat)
 		{
-			app.GET("chat", mobileController.Chating)
+			app.GET("chat", mobileController.WebSocketHandle)
 		}
 
 		//博客模块路由 直接转发到blog-server

@@ -1,14 +1,14 @@
-// const baseUrl = "http://172.18.32.2:9600/api/v1"
+export const baseUrl = "http://172.18.32.2:9600/api/v1"
 // const baseUrl = "https://jiang-xia.top/x-zone/api/v1"
 // const baseUrl = "http://localhost:9600/api/v1"
-export const baseUrl = "http://192.168.1.51:9600/api/v1"
-// const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcklkIjoiODUwMzE2ODI4Mzg1MjgiLCJ1c2VyTmFtZSI6InVzZXJfMSIsImV4cCI6MTY3MTk5MDIwMCwiaWF0IjoxNjcxOTQ3MDAwfQ.v1i5Tvh-vbk4iq5o8-Gb8Pn5CeR_1outBhi0DQeQt20"
-// uni.setStorageSync("token",testToken)
+// export const baseUrl = "http://192.168.1.51:9600/api/v1"
+const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcklkIjoiODUwMzE2ODI4Mzg1MjgiLCJ1c2VyTmFtZSI6InVzZXJfMSIsImV4cCI6MTY3MjE5NjYxMywiaWF0IjoxNjcyMTUzNDEzfQ.ktrL91dhMHh8NoRubglDWVXtRWaRLiYqHo7J_5Fscjk"
+uni.setStorageSync("token",testToken)
 export class Api {
 	// 获取token
 	getToken() {
 		let token = uni.getStorageSync("token")
-		console.log("token",token)
+		// console.log("token",token)
 		return token
 	}
 	// 转化rest风格api

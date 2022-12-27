@@ -123,10 +123,18 @@
 			})
 		},
 		onShow() {
+			const userId = getApp().globalData.userInfo.userId
+			const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat?userId='+userId
 			// const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat'
-			const url = 'ws://192.168.1.51:9600/api/v1/mobile/chat'
+			// const url = 'ws://192.168.1.51:9600/api/v1/mobile/chat'
+			const token = uni.getStorageSync("token")
 			this.socketTask = uni.connectSocket({
 				url,
+				// 自定义请求头(失败)
+				// header: {
+				// 		Authorization:token,
+				// 	},
+				method: 'GET',
 				complete: ()=> {
 					console.log('WebSocket已连接！');
 				}
@@ -211,7 +219,11 @@
 						body = this.text.substring(0, 30) + '...';
 					}
 			  // this.ws.send(this.text)
-				this.sendSocketMessage(this.text);
+				const sendObj = {
+					type:3,
+					data:this.text
+				}
+				this.sendSocketMessage(JSON.stringify(sendObj));
 				}
 				this.text = '';
 			},
