@@ -47,6 +47,7 @@
 
 <script>
 	import EmojiDecoder from '../../common/js/EmojiDecoder.js';
+	import {baseUrl} from '../../common/request/api.js'
 	export default {
 		data() {
 			const emojiUrl = 'https://imgcache.qq.com/open/qcloud/tim/assets/emoji/';
@@ -122,7 +123,8 @@
 			})
 		},
 		onShow() {
-			const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat'
+			// const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat'
+			const url = 'ws://192.168.1.51:9600/api/v1/mobile/chat'
 			this.socketTask = uni.connectSocket({
 				url,
 				complete: ()=> {
@@ -133,6 +135,7 @@
 				console.log('服务端消息：',res);
 			});
 			this.socketTask.onOpen((res)=> {
+				this.socketOpen = true;
 				console.log('WebSocket连接已打开！');
 			});
 			this.socketTask.onError((res)=> {
@@ -143,7 +146,10 @@
 			sendSocketMessage(msg) {
 				if (this.socketOpen) {
 					this.socketTask.send({
-						data: msg
+						data: msg,
+						complete:()=>{
+							console.log('发送消息：',msg);
+						}
 					});
 				} else {
 					this.socketMsgQueue.push(msg);
