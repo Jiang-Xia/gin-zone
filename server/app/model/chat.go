@@ -37,7 +37,7 @@ type ClientManager struct {
 
 // WsMessage 消息模板结构体
 type WsMessage struct {
-	Type int         `json:"type"`
+	Cmd  string      `json:"cmd"`
 	Data interface{} `json:"data"`
 }
 
@@ -69,6 +69,7 @@ func (c *Client) Read() {
 			log.Error(err.Error())
 			break
 		}
+		//ioutil.WriteFile("./nani.mp4", []byte(data), 0644)
 		var msg WsMessage
 		err = json.Unmarshal(data, &msg)
 		if err != nil {
@@ -76,30 +77,32 @@ func (c *Client) Read() {
 			break
 		}
 		fmt.Printf("客户端所发信息:%+v ", msg)
-
-		switch msg.Type {
-		case 6:
+		switch msg.Cmd {
+		case "ping":
 			// 如果是心跳监测消息（利用心跳监测来判断对应客户端是否在线）
-			resp, _ := json.Marshal(&WsMessage{Type: 6, Data: "pong"})
+			resp, _ := json.Marshal(&WsMessage{Cmd: "ping", Data: "pong"})
 			c.Start = time.Now() // 重新刷新时间
 			// 发送变量到 SendChan 通道中
 			c.SendChan <- resp
-		case 1:
+		case "online":
 			// 获取在线人数
 			count := len(Manager.Clients)
-			resp, _ := json.Marshal(&WsMessage{Type: 1, Data: count})
+			resp, _ := json.Marshal(&WsMessage{Cmd: "online", Data: count})
 			c.SendChan <- resp
-		case 2:
+		case "history":
 			// 获取消息历史记录
 			_data := ChatRecord() //你的获取消息记录的操作
-			resp, _ := json.Marshal(&WsMessage{Type: 2, Data: _data})
+			resp, _ := json.Marshal(&WsMessage{Cmd: "history", Data: _data})
 			c.SendChan <- resp
-		case 3:
+		case "text":
 			// 发送文本消息
-			resp, _ := json.Marshal(&WsMessage{Type: 3, Data: msg.Data})
+			resp, _ := json.Marshal(&WsMessage{Cmd: "text", Data: msg.Data})
 			Manager.BroadcastChan <- resp
-
-		case 4:
+		case "file":
+			// 发送文本消息
+			resp, _ := json.Marshal(&WsMessage{Cmd: "file", Data: msg.Data})
+			Manager.BroadcastChan <- resp
+		case "recall":
 			// 你的撤回消息的操作
 			c.SendChan <- []byte("回复消息")
 
@@ -168,12 +171,12 @@ func (manager *ClientManager) Start() {
 // InitSend 初始化客户端管理器
 func (manager *ClientManager) InitSend(cur *Client, count int) {
 	// 初始化时发送在线人数
-	resp, _ := json.Marshal(&WsMessage{Type: 1, Data: count})
+	resp, _ := json.Marshal(&WsMessage{Cmd: "online", Data: count})
 	Manager.BroadcastChan <- resp
 
 	// 初始化时 发送历史聊天记录
 	_data := YouChatHistoryList() //获取聊天室历史消息记录操作
-	resp, _ = json.Marshal(&WsMessage{Type: 2, Data: _data})
+	resp, _ = json.Marshal(&WsMessage{Cmd: "history", Data: _data})
 	cur.SendChan <- resp
 }
 
@@ -199,7 +202,7 @@ func (manager *ClientManager) Quit() {
 			//删除对应在线客户端
 			delete(Manager.Clients, conn.ID)
 			// 给客户端刷新在线人数
-			resp, _ := json.Marshal(&WsMessage{Type: 1, Data: len(Manager.Clients)})
+			resp, _ := json.Marshal(&WsMessage{Cmd: "online", Data: len(Manager.Clients)})
 			//有人退出时 广播刷新在线人数
 			manager.BroadcastChan <- resp
 		}

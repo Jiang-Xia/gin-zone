@@ -1,6 +1,9 @@
 <template>
 	<view class="container">
-
+		
+		<div class="history-wrap">
+		</div>
+		
 		<view class="action-box" v-if="!videoPlayer.visible && !messageSelector.visible">
 			<view class="action-top">
 				<view @click="switchAudioKeyboard">
@@ -47,7 +50,9 @@
 
 <script>
 	import EmojiDecoder from '../../common/js/EmojiDecoder.js';
-	import {baseUrl} from '../../common/request/api.js'
+	import {
+		baseUrl
+	} from '../../common/request/api.js'
 	export default {
 		data() {
 			const emojiUrl = 'https://imgcache.qq.com/open/qcloud/tim/assets/emoji/';
@@ -113,7 +118,7 @@
 
 				socketOpen: false,
 				socketMsgQueue: [],
-				socketTask:null
+				socketTask: null
 			}
 		},
 		onLoad(option) {
@@ -123,8 +128,9 @@
 			})
 		},
 		onShow() {
-			const userId = getApp().globalData.userInfo.userId
-			const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat?userId='+userId
+			// const userId = getApp().globalData.userInfo.userId
+			const userId = new Date().getTime();
+			const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat?userId=' + userId
 			// const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat'
 			// const url = 'ws://192.168.1.51:9600/api/v1/mobile/chat'
 			const token = uni.getStorageSync("token")
@@ -135,18 +141,18 @@
 				// 		Authorization:token,
 				// 	},
 				method: 'GET',
-				complete: ()=> {
+				complete: () => {
 					console.log('WebSocket已连接！');
 				}
 			});
-			this.socketTask.onMessage((res)=> {
-				console.log('服务端消息：',res);
+			this.socketTask.onMessage((res) => {
+				console.log('服务端消息：', res);
 			});
-			this.socketTask.onOpen((res)=> {
+			this.socketTask.onOpen((res) => {
 				this.socketOpen = true;
 				console.log('WebSocket连接已打开！');
 			});
-			this.socketTask.onError((res)=> {
+			this.socketTask.onError((res) => {
 				console.log('WebSocket连接打开失败，请检查！');
 			});
 		},
@@ -155,8 +161,8 @@
 				if (this.socketOpen) {
 					this.socketTask.send({
 						data: msg,
-						complete:()=>{
-							console.log('发送消息：',msg);
+						complete: () => {
+							console.log('发送消息：', msg);
 						}
 					});
 				} else {
@@ -194,14 +200,14 @@
 				} catch (e) {
 					uni.showModal({
 						title: '录音错误',
-			 		content: '请在app和小程序端体验录音，Uni官方明确H5不支持getRecorderManager, 详情查看Uni官方文档'
+						content: '请在app和小程序端体验录音，Uni官方明确H5不支持getRecorderManager, 详情查看Uni官方文档'
 					});
 				}
 			},
 			// 结束录音
 			onRecordEnd() {
 				try {
-			 	recorderManager.stop();
+					recorderManager.stop();
 				} catch (e) {
 					console.log(e);
 				}
@@ -218,12 +224,12 @@
 					if (this.text.length >= 50) {
 						body = this.text.substring(0, 30) + '...';
 					}
-			  // this.ws.send(this.text)
-				const sendObj = {
-					type:3,
-					data:this.text
-				}
-				this.sendSocketMessage(JSON.stringify(sendObj));
+					// this.ws.send(this.text)
+					const sendObj = {
+						cmd: "text",
+						data: this.text
+					}
+					this.sendSocketMessage(JSON.stringify(sendObj));
 				}
 				this.text = '';
 			},
@@ -231,7 +237,8 @@
 			sendVideoMessage() {
 				uni.chooseVideo({
 					success: (res) => {
-
+						console.log(res)
+						this.sendSocketMessage(res.tempFile);
 					}
 				})
 			},
@@ -241,7 +248,24 @@
 					count: 9,
 					success: (res) => {
 						res.tempFiles.forEach(file => {
+							console.log(file)
+							this.sendSocketMessage(file);
+							// let reader = new FileReader();
+							// reader.readAsArrayBuffer(file)
+							// reader.onload = (readRes)=>{
+							//  console.log(readRes.target.result)
+							//  const arrayBuffer = readRes.target.result
+							//  this.sendSocketMessage(arrayBuffer);
+							// }
 
+							// reader.readAsDataURL(file)
+							// reader.onload = (readRes) => {
+							// 	const obj = {
+							// 		cmd: "text",
+							// 		data: readRes.target.result
+							// 	}
+							// 	this.sendSocketMessage(JSON.stringify(obj));
+							// }
 						})
 					}
 				});
