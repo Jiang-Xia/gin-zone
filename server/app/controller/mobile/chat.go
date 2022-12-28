@@ -1,7 +1,6 @@
 package mobile
 
 import (
-	"bytes"
 	"crypto/md5"
 	"fmt"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
@@ -23,41 +22,14 @@ var upGrader = websocket.Upgrader{
 	},
 }
 
+// 初始化 执行客户端管理方法
 func init() {
 	go model.Manager.Start()
 	go model.Manager.Quit()
 	go model.Manager.BroadcastSend()
 }
 
-// Chating webSocket请求ping 返回pong
-func (ch *Chat) Chating(c *gin.Context) {
-	//升级get请求为webSocket协议
-	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
-	fmt.Println("升级协议", "ua:", c.Request.Header["User-Agent"], "referer:", c.Request.Header["Referer"])
-	if err != nil {
-		return
-	}
-	fmt.Println("webSocket 建立连接:", ws.RemoteAddr().String())
-
-	defer ws.Close()
-	for {
-		//读取ws中的数据
-		mt, message, err := ws.ReadMessage()
-		if err != nil {
-			break
-		}
-		buffer := bytes.Buffer{}
-		buffer.Write([]byte("您的消息为："))
-		fmt.Println("客户端消息：", message)
-		buffer.Write(message)
-		//写入ws数据
-		err = ws.WriteMessage(mt, buffer.Bytes())
-		if err != nil {
-			break
-		}
-	}
-}
-
+// WebSocketHandle webSocket升级协议，并且初始化上线用户数据
 func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 	conn, err := (&websocket.Upgrader{
 		// 决解跨域问题
@@ -79,16 +51,20 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 	ua := ctx.GetHeader("User-Agent")
 	id := ip + ua
 	idMd5 := fmt.Sprintf("%x", md5.Sum([]byte(id)))
+	//新用户(新的客户端) 连上就新建一个客户端实例
 	client := &model.Client{
-		ID:     idMd5,
-		Socket: conn, Send: make(chan []byte),
+		ID:         idMd5,
+		Socket:     conn,
+		SendChan:   make(chan []byte),
 		IpAddress:  ip,
 		IpSource:   "未知",
 		UserId:     userid,
 		Start:      time.Now(),
 		ExpireTime: time.Minute * 1,
 	}
-	model.Manager.Register <- client
+	// 使用通道Register发送变量client
+	model.Manager.RegisterChan <- client
+	fmt.Printf("client%v\n", client)
 	go client.Read() // 以goroutine的方式调用Client的Read、Write、Check方法
 	go client.Write()
 	go client.Check()
