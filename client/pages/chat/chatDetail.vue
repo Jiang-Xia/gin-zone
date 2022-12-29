@@ -242,9 +242,17 @@
 			// 发送视频
 			sendVideoMessage() {
 				uni.chooseVideo({
-					success: (res) => {
-						console.log(res)
-						this.sendSocketMessage(res.tempFile);
+					success: (videoRes) => {
+						// console.log(videoRes.tempFilePath)
+						this.uploadFile(videoRes.tempFilePath).then(res => {
+							const obj = {
+								cmd: "file",
+								data: res.data.url,
+								filename: res.data.filename,
+								type: "video"
+							}
+							this.sendSocketMessage(JSON.stringify(obj));
+						})
 					}
 				})
 			},
@@ -252,12 +260,14 @@
 			sendImageMessage() {
 				uni.chooseImage({
 					count: 9,
-					success: (res) => {
-						res.tempFiles.forEach(file => {
-							const res = this.uploadFile(file).then(res => {
+					success: (imageRes) => {
+						imageRes.tempFilePaths.forEach((path, index) => {
+							this.uploadFile(path).then(res => {
 								const obj = {
-									cmd: "text",
-									data: res
+									cmd: "file",
+									data: res.data.url,
+									filename: res.data.filename,
+									type: "image"
 								}
 								this.sendSocketMessage(JSON.stringify(obj));
 							})

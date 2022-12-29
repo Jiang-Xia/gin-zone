@@ -163,6 +163,7 @@ func (u *User) ChangePassword(c *gin.Context) {
 func (u *User) UserInfo(c *gin.Context) {
 	id := model.GetUserID(c)
 	user, err := service.User.Get(id)
+	user.Password = ""
 	if err != nil {
 		logrus.Error(err)
 	}
