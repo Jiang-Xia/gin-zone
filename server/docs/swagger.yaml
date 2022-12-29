@@ -88,6 +88,37 @@ definitions:
     - password
     - userName
     type: object
+  model.ChatLog:
+    properties:
+      content:
+        type: string
+      createdAt:
+        description: 创建时间
+        type: string
+      groupId:
+        type: integer
+      id:
+        description: 自增id
+        type: integer
+      msgType:
+        type: integer
+      receiverId:
+        type: integer
+      senderId:
+        type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+    type: object
+  model.ChatLogQuery:
+    properties:
+      groupId:
+        type: integer
+      receiverId:
+        type: integer
+      senderId:
+        type: integer
+    type: object
   model.LoginForm:
     properties:
       password:
@@ -387,6 +418,53 @@ paths:
       summary: 修改密码
       tags:
       - 用户模块
+  /mobile/chat/friends:
+    get:
+      consumes:
+      - application/json
+      description: 好友列表
+      parameters:
+      - description: User.ID
+        in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      summary: 好友列表
+      tags:
+      - 聊天模块
+  /mobile/chat/logs:
+    post:
+      consumes:
+      - application/json
+      description: 聊天记录
+      parameters:
+      - description: 需要上传的json
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/model.ChatLogQuery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.ChatLog'
+            type: array
+      security:
+      - Authorization: []
+      summary: 聊天记录
+      tags:
+      - 聊天模块
   /third/gushici:
     get:
       consumes:

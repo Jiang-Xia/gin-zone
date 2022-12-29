@@ -36,6 +36,6 @@ func (v *BaseModel) StringID() string {
 
 // ListRes 返回列表数据结构体
 type ListRes struct {
-	List  interface{}
-	Total int64
+	List  interface{} `json:"list"`
+	Total int64       `json:"total"`
 }

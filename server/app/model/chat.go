@@ -98,10 +98,6 @@ func (c *Client) Read() {
 			// 发送文本消息
 			resp, _ := json.Marshal(&WsMessage{Cmd: "text", Data: msg.Data})
 			Manager.BroadcastChan <- resp
-		case "file":
-			// 发送文本消息
-			resp, _ := json.Marshal(&WsMessage{Cmd: "file", Data: msg.Data})
-			Manager.BroadcastChan <- resp
 		case "recall":
 			// 你的撤回消息的操作
 			c.SendChan <- []byte("回复消息")
@@ -217,4 +213,45 @@ func ChatRecord() (data interface{}) {
 // YouChatHistoryList 获取聊天记录
 func YouChatHistoryList() (data interface{}) {
 	return
+}
+
+/* 表-结构体*/
+
+// FriendsList 好友表
+type FriendsList struct {
+	UserId   int `gorm:"comment:用户id;" json:"userId"`
+	FriendId int `gorm:"comment:好友id" json:"friendId"`
+	GroupId  int `gorm:"comment:群组id" json:"groupId"`
+}
+
+// GroupList 群组表
+type GroupList struct {
+	BaseModel
+	GroupName string `gorm:"comment:群名" json:"groupName"`
+	UserId    int    `gorm:"comment:用户id;" json:"userId"`
+}
+
+// GroupMember 群成员表
+type GroupMember struct {
+	BaseModel
+	UserId int `gorm:"comment:用户id;" json:"userId"`
+}
+
+// ChatLog 聊天记录表
+type ChatLog struct {
+	BaseModel
+	SenderId   int    `gorm:"comment:发送人id;" json:"senderId"`
+	ReceiverId int    `gorm:"comment:接收人id;" json:"receiverId"`
+	GroupId    int    `gorm:"comment:群组id;" json:"groupId"`
+	content    string `gorm:"comment:聊天内容;" json:"content"`
+	Remark     string `gorm:"comment:备注;" json:"content"`
+	MsgType    int8   `gorm:"comment:消息类型 1-文本 2-图片 3-视频 4-音频; 5-其他"json:"msgType"`
+}
+
+// ChatLogQuery 聊天记录查询结构体
+type ChatLogQuery struct {
+	SenderId   int    `json:"senderId"`
+	ReceiverId int    `json:"receiverId"`
+	GroupId    int    `json:"groupId"`
+	content    string `json:"content"`
 }

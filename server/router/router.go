@@ -66,6 +66,9 @@ func App() (r *gin.Engine) {
 		mobileController := new(mobile.Chat)
 		{
 			app.GET("chat", mobileController.WebSocketHandle)
+
+			app.GET("chat/friends", mobileController.FriendList)
+			app.POST("chat/logs", mobileController.ChatLogList)
 		}
 
 		//博客模块路由 直接转发到blog-server

@@ -4,7 +4,9 @@ import (
 	"crypto/md5"
 	"fmt"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
+	"gitee.com/jiang-xia/gin-zone/server/app/service"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/spf13/cast"
@@ -68,4 +70,41 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 	go client.Read() // 以goroutine的方式调用Client的Read、Write、Check方法
 	go client.Write()
 	go client.Check()
+}
+
+//	godoc
+//
+// @Summary     好友列表
+// @Description 好友列表
+// @Tags        聊天模块
+// @Accept      json
+// @Produce     json
+// @Param       userId   query     int            true  "User.ID"
+// @Success     200  {object} response.ResType
+// @Router      /mobile/chat/friends [get]
+func (ch *Chat) FriendList(c *gin.Context) {
+	userId := c.Query("userId")
+	friends := service.Chat.FriendsList(cast.ToInt(userId))
+	response.Success(c, friends, "")
+}
+
+// ChatLogList godoc
+//
+// @Summary     聊天记录
+// @Description 聊天记录
+// @Tags        聊天模块
+// @Security	Authorization
+// @Accept      json
+// @Produce     json
+// @Param       query body     model.ChatLogQuery true "需要上传的json"
+// @Success     200 {array} model.ChatLog
+// @Router     /mobile/chat/logs [post]
+func (ch *Chat) ChatLogList(c *gin.Context) {
+	query := &model.ChatLogQuery{}
+	if err := c.ShouldBindJSON(&query); err != nil {
+		return
+	}
+	logs, total := service.Chat.ChatLogList(1, 50, query)
+	data := model.ListRes{List: logs, Total: total}
+	response.Success(c, data, "")
 }
