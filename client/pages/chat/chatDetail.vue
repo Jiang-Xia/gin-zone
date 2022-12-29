@@ -1,9 +1,9 @@
 <template>
 	<view class="container">
-		
+
 		<div class="history-wrap">
 		</div>
-		
+
 		<view class="action-box" v-if="!videoPlayer.visible && !messageSelector.visible">
 			<view class="action-top">
 				<view @click="switchAudioKeyboard">
@@ -157,6 +157,12 @@
 			});
 		},
 		methods: {
+			// 上传文件
+			async uploadFile(file) {
+				const res = await this.$api.upload(file)
+				return res
+			},
+			// 发送消息
 			sendSocketMessage(msg) {
 				if (this.socketOpen) {
 					this.socketTask.send({
@@ -248,24 +254,13 @@
 					count: 9,
 					success: (res) => {
 						res.tempFiles.forEach(file => {
-							console.log(file)
-							this.sendSocketMessage(file);
-							// let reader = new FileReader();
-							// reader.readAsArrayBuffer(file)
-							// reader.onload = (readRes)=>{
-							//  console.log(readRes.target.result)
-							//  const arrayBuffer = readRes.target.result
-							//  this.sendSocketMessage(arrayBuffer);
-							// }
-
-							// reader.readAsDataURL(file)
-							// reader.onload = (readRes) => {
-							// 	const obj = {
-							// 		cmd: "text",
-							// 		data: readRes.target.result
-							// 	}
-							// 	this.sendSocketMessage(JSON.stringify(obj));
-							// }
+							const res = this.uploadFile(file).then(res => {
+								const obj = {
+									cmd: "text",
+									data: res
+								}
+								this.sendSocketMessage(JSON.stringify(obj));
+							})
 						})
 					}
 				});

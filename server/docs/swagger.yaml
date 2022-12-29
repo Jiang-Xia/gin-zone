@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  base.FileInfo:
+    properties:
+      filename:
+        type: string
+      url:
+        type: string
+    type: object
   base.Third:
     type: object
   base.User:
@@ -37,6 +44,12 @@ definitions:
         description: 用户昵称
         example: 酱
         type: string
+      password:
+        description: 密码 - 不会json化
+        example: "123456"
+        maxLength: 16
+        minLength: 6
+        type: string
       updatedAt:
         description: 更新时间
         type: string
@@ -50,6 +63,7 @@ definitions:
         minLength: 4
         type: string
     required:
+    - password
     - userName
     type: object
   model.ChangePassword:
@@ -119,6 +133,12 @@ definitions:
         description: 用户昵称
         example: 酱
         type: string
+      password:
+        description: 密码 - 不会json化
+        example: "123456"
+        maxLength: 16
+        minLength: 6
+        type: string
       userId:
         description: 用户唯一id
         type: integer
@@ -129,6 +149,7 @@ definitions:
         minLength: 4
         type: string
     required:
+    - password
     - userName
     type: object
   model.UpdateUser:
@@ -191,6 +212,21 @@ paths:
       summary: 微信授权登录
       tags:
       - 用户模块
+  /base/upload:
+    post:
+      consumes:
+      - application/json
+      description: 上传接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.FileInfo'
+      summary: 上传接口
+      tags:
+      - 基础模块
   /base/users:
     get:
       consumes:

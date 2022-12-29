@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/admin"
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/base"
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/mobile"
@@ -19,9 +20,8 @@ func App() (r *gin.Engine) {
 	gin.SetMode(gin.ReleaseMode)
 	// gin.SetMode(gin.TestMode)
 	router := gin.Default()
-	// 静态路由
+	// 静态资源路由
 	router.Static("/public", "./public")
-	router.Static("/uploads", "./public/uploads")
 	// 跨域处理
 	router.Use(middleware.Cors())
 	router.Use(middleware.LoggerMiddleWare())
@@ -36,8 +36,8 @@ func App() (r *gin.Engine) {
 		baseGroup := v1.Group("base")
 		// baseGroup.Use(middleware.JWTAuth())
 		{
+			// 用户路由
 			userController := new(base.User)
-
 			baseGroup.POST("auth/wxlogin", userController.WeiXinLogin)
 			baseGroup.POST("users/login", userController.Login)
 			baseGroup.POST("users", userController.Register)
@@ -47,6 +47,10 @@ func App() (r *gin.Engine) {
 			baseGroup.GET("users/info", userController.UserInfo)
 			baseGroup.DELETE("users/:id", userController.DeleteUser)
 			baseGroup.POST("users/password", userController.ChangePassword)
+
+			// 基础路由
+			baseController := new(base.Base)
+			baseGroup.POST("/upload", baseController.Upload)
 		}
 
 		// 管理端路由

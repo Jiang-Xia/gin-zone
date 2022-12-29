@@ -1,9 +1,9 @@
-export const baseUrl = "http://172.18.32.2:9600/api/v1"
+// export const baseUrl = "http://172.18.32.2:9600/api/v1"
 // const baseUrl = "https://jiang-xia.top/x-zone/api/v1"
 // const baseUrl = "http://localhost:9600/api/v1"
-// export const baseUrl = "http://192.168.1.51:9600/api/v1"
-const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcklkIjoiODUwMzE2ODI4Mzg1MjgiLCJ1c2VyTmFtZSI6InVzZXJfMSIsImV4cCI6MTY3MjE5NjYxMywiaWF0IjoxNjcyMTUzNDEzfQ.ktrL91dhMHh8NoRubglDWVXtRWaRLiYqHo7J_5Fscjk"
-uni.setStorageSync("token",testToken)
+export const baseUrl = "http://192.168.1.51:9600/api/v1"
+// const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcklkIjoiODUwMzE2ODI4Mzg1MjgiLCJ1c2VyTmFtZSI6InVzZXJfMSIsImV4cCI6MTY3MjE5NjYxMywiaWF0IjoxNjcyMTUzNDEzfQ.ktrL91dhMHh8NoRubglDWVXtRWaRLiYqHo7J_5Fscjk"
+// uni.setStorageSync("token",testToken)
 export class Api {
 	// 获取token
 	getToken() {
@@ -48,7 +48,11 @@ export class Api {
 	}
 	// 请求响应完成
 	complete(res, resolve, reject) {
-		// console.log("响应数据：",res.data)
+		// console.log(res.data instanceof String)
+		// if(res.data instanceof String){
+		// 	res.data = JSON.parse(res.data)
+		// }
+		console.log("响应数据：",res.data)
 		const code = res.data && res.data.code
 		if (code === 0 || code === 200) {
 			resolve(res.data)
@@ -132,6 +136,21 @@ export class Api {
 				data: rest.data,
 				method: "DELETE",
 				header: config.header,
+				complete: (res) => {
+					this.complete(res, resolve, reject)
+				}
+			});
+		})
+	}
+	
+	upload(file) {
+		return new Promise((resolve, reject) => {
+			uni.uploadFile({
+				url: baseUrl+'/base/upload',
+				file: file,
+				header: {
+					Authorization: this.getToken()
+				},
 				complete: (res) => {
 					this.complete(res, resolve, reject)
 				}

@@ -48,6 +48,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/base/upload": {
+            "post": {
+                "description": "上传接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "基础模块"
+                ],
+                "summary": "上传接口",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.FileInfo"
+                        }
+                    }
+                }
+            }
+        },
         "/base/users": {
             "get": {
                 "security": [
@@ -327,12 +350,24 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "base.FileInfo": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "base.Third": {
             "type": "object"
         },
         "base.User": {
             "type": "object",
             "required": [
+                "password",
                 "userName"
             ],
             "properties": {
@@ -377,6 +412,13 @@ const docTemplate = `{
                     "description": "用户昵称",
                     "type": "string",
                     "example": "酱"
+                },
+                "password": {
+                    "description": "密码 - 不会json化",
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 6,
+                    "example": "123456"
                 },
                 "updatedAt": {
                     "description": "更新时间",
@@ -447,6 +489,7 @@ const docTemplate = `{
         "model.MainUser": {
             "type": "object",
             "required": [
+                "password",
                 "userName"
             ],
             "properties": {
@@ -483,6 +526,13 @@ const docTemplate = `{
                     "description": "用户昵称",
                     "type": "string",
                     "example": "酱"
+                },
+                "password": {
+                    "description": "密码 - 不会json化",
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 6,
+                    "example": "123456"
                 },
                 "userId": {
                     "description": "用户唯一id",
