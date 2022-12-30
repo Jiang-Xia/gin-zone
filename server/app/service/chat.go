@@ -16,21 +16,29 @@ var Chat *chat
 type ChatFriends struct {
 	model.ChatFriends `gorm:"embedded"`
 	model.User        `gorm:"embedded"` // 合并成一个结构体
+	model.ChatGroup   `gorm:"embedded"`
 }
 
 // ChatFriends 获取好友列表
-func (u *chat) ChatFriends(userId int) []ChatFriends {
+func (u *chat) ChatFriends(userId string) []ChatFriends {
 	var friends []ChatFriends
-	db.Mysql.Where("user_id = ?", userId).Find(&friends)
+	db.Mysql.Where("user_id = ?", userId).Or("group_id = ?", userId).Find(&friends)
 	db.Mysql.Model(&friends)
 	//去根据好友id查询用户信息
 	for i, friend := range friends {
 		var user model.User
-		db.Mysql.Where("id = ?", friend.FriendId).Find(&user)
+		db.Mysql.Where("user_id = ?", friend.FriendId).Find(&user)
 		//需要取切片里的元素，不能使用循环中的friend
 		friends[i].User = user
+		// 是群组查询群信息
+		if friend.GroupId != 0 {
+			var chatGroup model.ChatGroup
+			db.Mysql.Where("id = ?", friend.GroupId).Find(&chatGroup)
+			friends[i].ChatGroup = chatGroup
+		}
 		// fmt.Printf("user===============================:%+v", friend.User)
 	}
+	// fmt.Printf("user===============================:%+v", friends)
 	return friends
 }
 
@@ -78,13 +86,10 @@ func (u *chat) DeleteChatLog(id int) bool {
 }
 
 // 群组
-func (u *chat) ChatGroup(Page int, PageSize int, maps interface{}) ([]model.ChatGroup, int64) {
-	// Where可以使用Struct或者Map作为条件
+func (u *chat) ChatGroup(userId string) []model.ChatGroup {
 	var list []model.ChatGroup
-	var total int64
-	db.Mysql.Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
-	db.Mysql.Model(&list).Count(&total)
-	return list, total
+	db.Mysql.Where("user_id = ?", userId).Find(&list)
+	return list
 }
 
 // CreateGroup 新增
@@ -102,14 +107,11 @@ func (u *chat) DeleteGroup(id int) bool {
 	return true
 }
 
-// ChatGroupMemberList 群成员
-func (u *chat) ChatGroupMemberList(Page int, PageSize int, maps interface{}) ([]model.ChatGroupMember, int64) {
-	// Where可以使用Struct或者Map作为条件
+// ChatGroupMember 群成员
+func (u *chat) ChatGroupMember(groupId int) []model.ChatGroupMember {
 	var list []model.ChatGroupMember
-	var total int64
-	db.Mysql.Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
-	db.Mysql.Model(&list).Count(&total)
-	return list, total
+	db.Mysql.Where("group_id = ?", groupId).Find(&list)
+	return list
 }
 
 // CreateChatGroupMember 新增

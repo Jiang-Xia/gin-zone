@@ -279,7 +279,7 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 // @Router      /mobile/chat/friends [get]
 func (ch *Chat) FriendList(c *gin.Context) {
 	userId := c.Query("userId")
-	friends := service.Chat.ChatFriends(cast.ToInt(userId))
+	friends := service.Chat.ChatFriends(userId)
 	response.Success(c, friends, "")
 }
 
@@ -307,4 +307,36 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 	})
 	data := model.ListRes{List: list, Total: total}
 	response.Success(c, data, "")
+}
+
+//	GroupListgodoc
+//
+// @Summary     群组列表
+// @Description 群组列表
+// @Tags        聊天模块
+// @Accept      json
+// @Produce     json
+// @Param       userId   query     int            true  "User.ID"
+// @Success     200  {object} response.ResType
+// @Router      /mobile/chat/groups [get]
+func (ch *Chat) GroupList(c *gin.Context) {
+	userId := c.Query("userId")
+	list := service.Chat.ChatGroup(userId)
+	response.Success(c, list, "")
+}
+
+//	GroupListgodoc
+//
+// @Summary     群成员列表
+// @Description 群成员列表
+// @Tags        聊天模块
+// @Accept      json
+// @Produce     json
+// @Param       groupId   query     int            true  "ChatGroup.ID"
+// @Success     200  {object} response.ResType
+// @Router      /mobile/chat/groupMembers [get]
+func (ch *Chat) GroupMemberList(c *gin.Context) {
+	groupId := c.Query("groupId")
+	list := service.Chat.ChatGroupMember(cast.ToInt(groupId))
+	response.Success(c, list, "")
 }

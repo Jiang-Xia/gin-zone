@@ -357,6 +357,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/mobile/chat/groupMembers": {
+            "get": {
+                "description": "群成员列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "聊天模块"
+                ],
+                "summary": "群成员列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ChatGroup.ID",
+                        "name": "groupId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/mobile/chat/groups": {
+            "get": {
+                "description": "群组列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "聊天模块"
+                ],
+                "summary": "群组列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User.ID",
+                        "name": "userId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
         "/mobile/chat/logs": {
             "post": {
                 "security": [

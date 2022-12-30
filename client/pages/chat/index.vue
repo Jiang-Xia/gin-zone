@@ -3,7 +3,7 @@
 		<uni-list :border="true">
 			<!-- 右侧带角标 -->
 			<uni-list-chat v-for="(item,index) in userList" :avatar-circle="true" :title="item.name"
-				:avatar="avatars[index]" :note="item.name" :time="item.time" :badge-text="item.badge" clickable
+				:avatar="item.avatar" :note="item.name" :time="item.time" :badge-text="item.badge" clickable
 				@click="clickUserItem(item)">
 			</uni-list-chat>
 		</uni-list>
@@ -11,6 +11,8 @@
 </template>
 
 <script>
+	import groupIcon from "../../static/images/group.png"
+	import userIcon from "../../static/images/user.png"
 	const avatars = [
 		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodlzz-头像_天秤座.png',
 		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9xk9-头像_天蝎座.png',
@@ -28,25 +30,32 @@
 	export default {
 		data() {
 			return {
-				avatars,
-				userList: [{
-					name: "机器人001",
-					note: "主人你好",
-					badge: 1,
-					time: '2020-12-26 20:20'
-				}, {
-					name: "机器人002",
-					note: "咯咯咯",
-					badge: 2,
-					time: '2020-12-26 20:20'
-				}, ]
+				groupIcon,
+				userIcon,
+				userList: []
 			}
 		},
 		components: {},
+		onShow() {
+			const userId = getApp().globalData.userInfo.userId
+			this.$api.get("/mobile/chat/friends", {
+				userId
+			}).then(res => {
+				this.userList = res.data.map((v, i) => {
+					v.avatar = v.groupId ? groupIcon : v.avatar || userIcon
+					v.name = v.nickName || v.groupName
+					v.badge = i + 1
+					v.note = "你好"
+					v.time = '2020-12-26 20:20'
+					return v
+				})
+			})
+
+		},
 		methods: {
 			clickUserItem(item) {
 				uni.navigateTo({
-					url: "/pages/chat/chatDetail?name="+item.name+"&id="+item.id
+					url: "/pages/chat/chatDetail?name=" + item.name + "&id=" + item.id
 				})
 			},
 		}

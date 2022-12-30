@@ -11,9 +11,10 @@ fmt.Printf()常用格式化打印符号
 
 // FriendsList 好友表
 type ChatFriends struct {
+	BaseModel
 	UserId   string `gorm:"comment:用户id;" json:"userId"`
 	FriendId string `gorm:"comment:好友id" json:"friendId"`
-	GroupId  string `gorm:"comment:群组id" json:"groupId"`
+	GroupId  int    `gorm:"comment:群组id" json:"groupId"`
 }
 
 // ChatGroup 群组表

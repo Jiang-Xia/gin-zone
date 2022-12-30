@@ -68,6 +68,8 @@ func App() (r *gin.Engine) {
 			app.GET("chat", mobileController.WebSocketHandle)
 
 			app.GET("chat/friends", mobileController.FriendList)
+			app.GET("chat/groups", mobileController.GroupList)
+			app.GET("chat/groupMembers", mobileController.GroupMemberList)
 			app.POST("chat/logs", mobileController.ChatLogList)
 		}
 

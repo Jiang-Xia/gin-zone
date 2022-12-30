@@ -452,6 +452,48 @@ paths:
       summary: 好友列表
       tags:
       - 聊天模块
+  /mobile/chat/groupMembers:
+    get:
+      consumes:
+      - application/json
+      description: 群成员列表
+      parameters:
+      - description: ChatGroup.ID
+        in: query
+        name: groupId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      summary: 群成员列表
+      tags:
+      - 聊天模块
+  /mobile/chat/groups:
+    get:
+      consumes:
+      - application/json
+      description: 群组列表
+      parameters:
+      - description: User.ID
+        in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      summary: 群组列表
+      tags:
+      - 聊天模块
   /mobile/chat/logs:
     post:
       consumes:
