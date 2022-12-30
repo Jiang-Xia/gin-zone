@@ -297,6 +297,7 @@ func (ch *Chat) FriendList(c *gin.Context) {
 func (ch *Chat) ChatLogList(c *gin.Context) {
 	query := &model.ChatLogQuery{}
 	if err := c.ShouldBindJSON(&query); err != nil {
+		response.Fail(c, "参数错误", "")
 		return
 	}
 	list, total := service.Chat.ChatLogList(query.Page, query.PageSize, model.ChatLogQuery{

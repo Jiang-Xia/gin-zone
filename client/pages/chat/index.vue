@@ -54,8 +54,14 @@
 		},
 		methods: {
 			clickUserItem(item) {
+				let str = ''
+				if(item.groupId){
+					str = "&groupId=" + item.groupId
+				}else{
+					 str = "&friendId=" + item.friendId
+				}
 				uni.navigateTo({
-					url: "/pages/chat/chatDetail?name=" + item.name + "&id=" + item.id
+					url: "/pages/chat/chatDetail?name=" + item.name + str
 				})
 			},
 		}

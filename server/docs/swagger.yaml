@@ -13,7 +13,7 @@ definitions:
     properties:
       avatar:
         description: 用户头像
-        example: :https://******.com/aa.png
+        example: https://******.com/aa.png
         type: string
       createdAt:
         description: 创建时间
@@ -152,7 +152,7 @@ definitions:
     properties:
       avatar:
         description: 用户头像
-        example: :https://******.com/aa.png
+        example: https://******.com/aa.png
         type: string
       email:
         description: 邮箱
@@ -200,7 +200,7 @@ definitions:
     properties:
       avatar:
         description: 用户头像
-        example: :https://******.com/aa.png
+        example: https://******.com/aa.png
         type: string
       email:
         description: 邮箱

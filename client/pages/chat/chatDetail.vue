@@ -118,14 +118,21 @@
 
 				socketOpen: false,
 				socketMsgQueue: [],
-				socketTask: null
+				socketTask: null,
+				
+				curOption:{}
 			}
 		},
 		onLoad(option) {
-			console.log(option)
+			this.curOption = option
+			console.log(this.curOption)
 			uni.setNavigationBarTitle({
 				title: option.name
 			})
+			this.loadHistoryMessage(false);
+		},
+		onPullDownRefresh(e) {
+		  this.loadHistoryMessage(false);
 		},
 		onShow() {
 			const userId = getApp().globalData.userInfo.userId
@@ -281,11 +288,31 @@
 			loadHistoryMessage(scrollToBottom) { //历史消息
 				this.history.loading = true;
 				let lastMessageTimeStamp = null;
-				this.$api.post("/mobile/chat/logs",{
+				let lastMessage = this.history.messages[0];
+				if (lastMessage) {
+				  lastMessageTimeStamp = lastMessage.timestamp;
+				}
+				const {friendId=0,groupId=0} = this.curOption
+				const params = {
 					page:1,
-					pageSize:100
-				})
-				
+					pageSize:20,
+					friendId:Number(friendId),
+					groupId:Number(groupId),
+				}
+				this.$api.post("/mobile/chat/logs",params).then(res=>{
+					const {list,total} = res.data
+					uni.stopPullDownRefresh();
+					this.history.loading = false;
+					this.history.messages = list.concat(this.history.messages)
+					if(this.history.messages.length>=res){
+						this.history.allLoaded = true
+					}
+				}).catch((error) => {
+            //获取失败
+            console.log('获取历史消息失败:', error);
+            uni.stopPullDownRefresh();
+            this.history.loading = false;
+          })
 			},
 		}
 	}

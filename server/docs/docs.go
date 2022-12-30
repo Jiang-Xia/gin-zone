@@ -512,7 +512,7 @@ const docTemplate = `{
                 "avatar": {
                     "description": "用户头像",
                     "type": "string",
-                    "example": ":https://******.com/aa.png"
+                    "example": "https://******.com/aa.png"
                 },
                 "createdAt": {
                     "description": "创建时间",
@@ -698,7 +698,7 @@ const docTemplate = `{
                 "avatar": {
                     "description": "用户头像",
                     "type": "string",
-                    "example": ":https://******.com/aa.png"
+                    "example": "https://******.com/aa.png"
                 },
                 "email": {
                     "description": "邮箱",
@@ -755,7 +755,7 @@ const docTemplate = `{
                 "avatar": {
                     "description": "用户头像",
                     "type": "string",
-                    "example": ":https://******.com/aa.png"
+                    "example": "https://******.com/aa.png"
                 },
                 "email": {
                     "description": "邮箱",

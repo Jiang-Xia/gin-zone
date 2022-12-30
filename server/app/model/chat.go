@@ -12,7 +12,7 @@ fmt.Printf()常用格式化打印符号
 // FriendsList 好友表
 type ChatFriends struct {
 	BaseModel
-	UserId   string `gorm:"comment:用户id;" json:"userId"`
+	UserId   string `gorm:"comment:好友所属的用户id;" json:"userId"`
 	FriendId string `gorm:"comment:好友id" json:"friendId"`
 	GroupId  int    `gorm:"comment:群组id" json:"groupId"`
 }
@@ -21,13 +21,14 @@ type ChatFriends struct {
 type ChatGroup struct {
 	BaseModel
 	GroupName string `gorm:"comment:群名" json:"groupName"`
-	UserId    string `gorm:"comment:用户id;" json:"userId"`
+	UserId    string `gorm:"comment:群主用户id;" json:"userId"`
 }
 
 // ChatGroupMember 群成员表
 type ChatGroupMember struct {
 	BaseModel
-	UserId int `gorm:"comment:用户id;" json:"userId"`
+	UserId  int `gorm:"comment:成员id;" json:"userId"`
+	GroupId int `gorm:"comment:群组id" json:"groupId"`
 }
 
 // ChatLog 聊天记录表

@@ -34,7 +34,7 @@ type MainUser struct {
 
 type UpdateUser struct {
 	// 用户头像
-	Avatar string `gorm:"comment:用户头像;" json:"avatar" example:":https://******.com/aa.png"`
+	Avatar string `gorm:"comment:用户头像;" json:"avatar" example:"https://******.com/aa.png"`
 	// 用户昵称
 	NickName string `gorm:"comment:用户昵称;" json:"nickName" example:"酱"`
 	//个人介绍
