@@ -55,7 +55,7 @@ definitions:
         type: string
       userId:
         description: 用户唯一id
-        type: integer
+        type: string
       userName:
         description: 用户名
         example: test
@@ -100,12 +100,16 @@ definitions:
       id:
         description: 自增id
         type: integer
+      logType:
+        type: integer
       msgType:
         type: integer
       receiverId:
-        type: integer
+        type: string
+      remark:
+        type: string
       senderId:
-        type: integer
+        type: string
       updatedAt:
         description: 更新时间
         type: string
@@ -113,13 +117,20 @@ definitions:
   model.ChatLogQuery:
     properties:
       content:
+        example: ""
         type: string
       groupId:
         type: integer
+      page:
+        example: 1
+        type: integer
+      pageSize:
+        example: 20
+        type: integer
       receiverId:
-        type: integer
+        type: string
       senderId:
-        type: integer
+        type: string
     type: object
   model.LoginForm:
     properties:
@@ -174,7 +185,7 @@ definitions:
         type: string
       userId:
         description: 用户唯一id
-        type: integer
+        type: string
       userName:
         description: 用户名
         example: test

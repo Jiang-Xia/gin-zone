@@ -3,12 +3,13 @@ package base
 import (
 	"encoding/json"
 	"fmt"
-	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
-	"github.com/spf13/cast"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
+
+	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
+	"github.com/spf13/cast"
 
 	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
@@ -280,7 +281,7 @@ func generateToken(c *gin.Context, user *model.User) {
 	j := middleware.NewJWT()
 	claims := middleware.JWTCustomClaims{
 		ID:       user.ID,
-		UserId:   strconv.Itoa(int(user.UserId)),
+		UserId:   user.UserId,
 		UserName: user.UserName,
 		RegisteredClaims: jwtgo.RegisteredClaims{
 			IssuedAt:  jwtgo.NewNumericDate(now),                                               // 签发时间

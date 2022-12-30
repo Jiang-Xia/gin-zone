@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/spf13/cast"
 	"time"
+
+	"github.com/spf13/cast"
 )
 
 // BaseModel 基础model
@@ -38,4 +39,9 @@ func (v *BaseModel) StringID() string {
 type ListRes struct {
 	List  interface{} `json:"list"`
 	Total int64       `json:"total"`
+}
+
+type ListQuery struct {
+	Page     int `json:"page" example:"1"`
+	PageSize int `json:"pageSize" example:"20"`
 }

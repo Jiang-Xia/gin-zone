@@ -9,13 +9,14 @@ import (
 
 var node *snowflake.Node
 
-func GenId() int64 {
+func GenId() string {
 	id := node.Generate()
 	// fmt.Printf("Int64  ID: %d\n", id)
 	// fmt.Printf("String ID: %s\n", id)
 	// fmt.Printf("Base2  ID: %s\n", id.Base2())
 	// fmt.Printf("Base64 ID: %s\n", id.Base64())
-	return id.Int64()
+	// 字符串好点，不然传到前端JSON会失真
+	return id.String()
 }
 
 func InitSnowflake(startTime string, machineId int64) (err error) {

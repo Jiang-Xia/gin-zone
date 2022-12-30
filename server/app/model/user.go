@@ -18,7 +18,7 @@ type User struct {
 
 type MainUser struct {
 	// 用户唯一id
-	UserId int64 `json:"userId" gorm:"unique;comment:用户唯一id"`
+	UserId string `json:"userId" gorm:"unique;comment:用户唯一id"`
 	// 用户名
 	UserName string `gorm:"comment:用户名;" json:"userName" binding:"required,min=4,max=12" label:"用户名" example:"test" `
 	// 密码 - 不会json化

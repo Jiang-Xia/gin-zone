@@ -56,7 +56,9 @@ func (u *chat) ChatLogList(Page int, PageSize int, maps interface{}) ([]model.Ch
 	var list []model.ChatLog
 	var total int64
 	db.Mysql.Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
-	db.Mysql.Model(&list).Count(&total)
+	// 条件统计
+	db.Mysql.Model(&list).Where(maps).Count(&total)
+	// fmt.Printf("查询参数: %+v", maps)
 	return list, total
 }
 

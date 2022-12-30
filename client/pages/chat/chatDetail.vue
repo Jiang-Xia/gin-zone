@@ -128,11 +128,10 @@
 			})
 		},
 		onShow() {
-			// const userId = getApp().globalData.userInfo.userId
-			const userId = new Date().getTime();
-			const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat?userId=' + userId
-			// const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat'
-			// const url = 'ws://192.168.1.51:9600/api/v1/mobile/chat'
+			const userId = getApp().globalData.userInfo.userId
+			// const userId = new Date().getTime();
+			// const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat?userId=' + userId
+			const url = 'ws://192.168.1.51:9600/api/v1/mobile/chat?userId=' + userId
 			const token = uni.getStorageSync("token")
 			this.socketTask = uni.connectSocket({
 				url,
@@ -282,10 +281,11 @@
 			loadHistoryMessage(scrollToBottom) { //历史消息
 				this.history.loading = true;
 				let lastMessageTimeStamp = null;
-				let lastMessage = this.history.messages[0];
-				if (lastMessage) {
-					lastMessageTimeStamp = lastMessage.timestamp;
-				}
+				this.$api.post("/mobile/chat/logs",{
+					page:1,
+					pageSize:100
+				})
+				
 			},
 		}
 	}

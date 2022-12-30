@@ -500,7 +500,7 @@ const docTemplate = `{
                 },
                 "userId": {
                     "description": "用户唯一id",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "userName": {
                     "description": "用户名",
@@ -556,14 +556,20 @@ const docTemplate = `{
                     "description": "自增id",
                     "type": "integer"
                 },
+                "logType": {
+                    "type": "integer"
+                },
                 "msgType": {
                     "type": "integer"
                 },
                 "receiverId": {
-                    "type": "integer"
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
                 },
                 "senderId": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "updatedAt": {
                     "description": "更新时间",
@@ -575,16 +581,25 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "content": {
-                    "type": "string"
+                    "type": "string",
+                    "example": ""
                 },
                 "groupId": {
                     "type": "integer"
                 },
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "pageSize": {
+                    "type": "integer",
+                    "example": 20
+                },
                 "receiverId": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "senderId": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },
@@ -659,7 +674,7 @@ const docTemplate = `{
                 },
                 "userId": {
                     "description": "用户唯一id",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "userName": {
                     "description": "用户名",
