@@ -574,6 +574,9 @@ const docTemplate = `{
         "model.ChatLogQuery": {
             "type": "object",
             "properties": {
+                "content": {
+                    "type": "string"
+                },
                 "groupId": {
                     "type": "integer"
                 },

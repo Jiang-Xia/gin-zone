@@ -112,6 +112,8 @@ definitions:
     type: object
   model.ChatLogQuery:
     properties:
+      content:
+        type: string
       groupId:
         type: integer
       receiverId:

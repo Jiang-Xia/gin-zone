@@ -17,9 +17,9 @@ func InitTable() {
 	//}
 	//直接创建表 表存在了也不会报错,新加字段也会自动更新表结构
 	err = db.AutoMigrate(&model.User{})
-	err = db.AutoMigrate(&model.FriendsList{})
-	err = db.AutoMigrate(&model.GroupList{})
-	err = db.AutoMigrate(&model.GroupMember{})
+	err = db.AutoMigrate(&model.ChatFriends{})
+	err = db.AutoMigrate(&model.ChatGroup{})
+	err = db.AutoMigrate(&model.ChatGroupMember{})
 	err = db.AutoMigrate(&model.ChatLog{})
 
 	if err != nil {

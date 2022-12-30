@@ -3,6 +3,9 @@ package mobile
 import (
 	"crypto/md5"
 	"fmt"
+	"net/http"
+	"time"
+
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gitee.com/jiang-xia/gin-zone/server/app/service"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
@@ -10,8 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/spf13/cast"
-	"net/http"
-	"time"
 )
 
 type Chat struct {
@@ -84,7 +85,7 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 // @Router      /mobile/chat/friends [get]
 func (ch *Chat) FriendList(c *gin.Context) {
 	userId := c.Query("userId")
-	friends := service.Chat.FriendsList(cast.ToInt(userId))
+	friends := service.Chat.ChatFriends(cast.ToInt(userId))
 	response.Success(c, friends, "")
 }
 

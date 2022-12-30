@@ -3,9 +3,10 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"github.com/gorilla/websocket"
-	"time"
 )
 
 /*
@@ -218,21 +219,21 @@ func YouChatHistoryList() (data interface{}) {
 /* 表-结构体*/
 
 // FriendsList 好友表
-type FriendsList struct {
+type ChatFriends struct {
 	UserId   int `gorm:"comment:用户id;" json:"userId"`
 	FriendId int `gorm:"comment:好友id" json:"friendId"`
 	GroupId  int `gorm:"comment:群组id" json:"groupId"`
 }
 
-// GroupList 群组表
-type GroupList struct {
+// ChatGroup 群组表
+type ChatGroup struct {
 	BaseModel
 	GroupName string `gorm:"comment:群名" json:"groupName"`
 	UserId    int    `gorm:"comment:用户id;" json:"userId"`
 }
 
-// GroupMember 群成员表
-type GroupMember struct {
+// ChatGroupMember 群成员表
+type ChatGroupMember struct {
 	BaseModel
 	UserId int `gorm:"comment:用户id;" json:"userId"`
 }
@@ -243,7 +244,7 @@ type ChatLog struct {
 	SenderId   int    `gorm:"comment:发送人id;" json:"senderId"`
 	ReceiverId int    `gorm:"comment:接收人id;" json:"receiverId"`
 	GroupId    int    `gorm:"comment:群组id;" json:"groupId"`
-	content    string `gorm:"comment:聊天内容;" json:"content"`
+	Content    string `gorm:"comment:聊天内容;" json:"content"`
 	Remark     string `gorm:"comment:备注;" json:"content"`
 	MsgType    int8   `gorm:"comment:消息类型 1-文本 2-图片 3-视频 4-音频; 5-其他"json:"msgType"`
 }
@@ -253,5 +254,5 @@ type ChatLogQuery struct {
 	SenderId   int    `json:"senderId"`
 	ReceiverId int    `json:"receiverId"`
 	GroupId    int    `json:"groupId"`
-	content    string `json:"content"`
+	Content    string `json:"content"`
 }
