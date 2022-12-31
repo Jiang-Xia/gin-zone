@@ -1,5 +1,7 @@
 <template>
 	<view class="container">
+		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="left" right-icon="plus" :border="false" shadow="true"
+			title="聊天" @clickRight="clickRight" />
 		<uni-list :border="true">
 			<!-- 右侧带角标 -->
 			<uni-list-chat v-for="(item,index) in userList" :avatar-circle="true" :title="item.name"
@@ -36,34 +38,61 @@
 			}
 		},
 		components: {},
-		onShow() {
-			const userId = getApp().globalData.userInfo.userId
-			this.$api.get("/mobile/chat/friends", {
-				userId
-			}).then(res => {
-				this.userList = res.data.map((v, i) => {
-					v.avatar = v.groupId ? groupIcon : v.avatar || userIcon
-					v.name = v.nickName || v.groupName
-					v.badge = i + 1
-					v.note = "你好"
-					v.time = '2020-12-26 20:20'
-					return v
-				})
-			})
-
+		onPullDownRefresh() {
+			this.init()
+		},
+		onLoad() {
+			this.init()
 		},
 		methods: {
+			init() {
+				const userId = getApp().globalData.userInfo.userId
+				this.$api.get("/mobile/chat/friends", {
+					userId
+				}).then(res => {
+					uni.stopPullDownRefresh()
+					this.userList = res.data.map((v, i) => {
+						v.avatar = v.groupId ? groupIcon : v.avatar || userIcon
+						v.name = v.nickName || v.groupName
+						v.badge = i + 1
+						v.note = "你好"
+						v.time = '2020-12-26 20:20'
+						return v
+					})
+				}).catch(() => {
+					uni.stopPullDownRefresh()
+				})
+			},
 			clickUserItem(item) {
 				let str = ''
-				if(item.groupId){
+				if (item.groupId) {
 					str = "&groupId=" + item.groupId
-				}else{
-					 str = "&friendId=" + item.friendId
+				} else {
+					str = "&friendId=" + item.friendId
 				}
 				uni.navigateTo({
 					url: "/pages/chat/chatDetail?name=" + item.name + str
 				})
 			},
+			clickRight() {
+				uni.showActionSheet({
+					itemList: ['添加好友', '加入群聊'],
+					success: (res) => {
+						if (res.tapIndex === 0) {
+							uni.navigateTo({
+								url: "/pages/chat/addFriend?name=添加好友&type=friend"
+							})
+						} else if (res.tapIndex === 1) {
+							uni.navigateTo({
+								url: "/pages/chat/addFriend?name=添加群&type=group"
+							})
+						}
+					},
+					fail: function(res) {
+						console.log(res.errMsg);
+					}
+				})
+			}
 		}
 	}
 </script>

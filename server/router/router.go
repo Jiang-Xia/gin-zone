@@ -71,6 +71,9 @@ func App() (r *gin.Engine) {
 			app.GET("chat/groups", mobileController.GroupList)
 			app.GET("chat/groupMembers", mobileController.GroupMemberList)
 			app.POST("chat/logs", mobileController.ChatLogList)
+			app.POST("chat/friends", mobileController.AddFriend)
+			app.POST("chat/groups", mobileController.AddGroup)
+			app.POST("chat/groupMembers", mobileController.AddGroupMember)
 		}
 
 		//博客模块路由 直接转发到blog-server

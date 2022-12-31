@@ -21,6 +21,8 @@ type ChatFriends struct {
 type ChatGroup struct {
 	BaseModel
 	GroupName string `gorm:"comment:群名" json:"groupName"`
+	Intro     string `gorm:"comment:群介绍" json:"intro"`
+	Notice    string `gorm:"comment:群公告" json:"notice"`
 	UserId    string `gorm:"comment:群主用户id;" json:"userId"`
 }
 

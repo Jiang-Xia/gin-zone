@@ -1,7 +1,9 @@
 package service
 
 import (
+	"errors"
 	"fmt"
+	"gorm.io/gorm"
 
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
@@ -44,6 +46,18 @@ func (u *chat) ChatFriends(userId string) []ChatFriends {
 
 // CreateChatFriends 新增
 func (u *chat) CreateChatFriends(model *model.ChatFriends) (err error) {
+	var result *gorm.DB
+	if model.GroupId != 0 {
+		result = db.Mysql.Where("user_id = ? AND group_id = ?", model.UserId, model.GroupId).First(model)
+		if result.RowsAffected != 0 {
+			return errors.New("你已经加入该群聊")
+		}
+	} else if model.FriendId != "" {
+		result = db.Mysql.Where("user_id = ? AND friend_id = ?", model.UserId, model.FriendId).First(model)
+		if result.RowsAffected != 0 {
+			return errors.New("该用户已经你的好友")
+		}
+	}
 	res := db.Mysql.Create(model)
 	if res.Error != nil { //判断是否插入数据出错
 		fmt.Println(res.Error)
@@ -93,10 +107,14 @@ func (u *chat) DeleteChatLog(id int) bool {
 	return true
 }
 
-// 群组
-func (u *chat) ChatGroup(userId string) []model.ChatGroup {
+// ChatGroup 群组
+func (u *chat) ChatGroup(userId string, groupName string) []model.ChatGroup {
 	var list []model.ChatGroup
-	db.Mysql.Where("user_id = ?", userId).Find(&list)
+	if userId != "" {
+		db.Mysql.Where("user_id = ?", userId).Find(&list)
+	} else if groupName != "" {
+		db.Mysql.Where("group_name LIKE  ?", "%"+groupName+"%").Find(&list)
+	}
 	return list
 }
 

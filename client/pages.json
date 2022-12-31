@@ -42,7 +42,9 @@
 		{
 			"path": "pages/chat/index",
 			"style": {
-				"navigationBarTitleText": "聊天"
+				"navigationBarTitleText": "聊天",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
 			}
 		},
 		{
@@ -50,6 +52,14 @@
 			"style": {
 				"navigationBarTitleText": "聊天详情"
 			}
+		},
+		{
+			"path": "pages/chat/addFriend",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
 		},
 		{
 			"path": "pages/my/index",
@@ -65,6 +75,7 @@
 			}
 
 		}
+
 	],
 	"globalStyle": {
 		// "navigationStyle": "custom",

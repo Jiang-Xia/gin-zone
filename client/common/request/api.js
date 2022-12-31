@@ -66,8 +66,8 @@ export class Api {
 			reject(res.data)
 			const msg = res.data && res.data.msg
 			uni.showToast({
-				title:"系统繁忙",
-				icon: "error"
+				title:msg,
+				icon: "none"
 			});
 		}
 	}

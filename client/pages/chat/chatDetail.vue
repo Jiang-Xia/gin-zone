@@ -192,7 +192,7 @@
 			},
 			// 发送消息
 			sendSocketMessage(messageData) {
-				const {friendId = 0, groupId = 0 } = this.curOption
+				const {friendId = "", groupId = 0 } = this.curOption
 				const {cmd,content,msgType} = messageData
 				const sendObj = {
 					cmd:cmd,
@@ -331,9 +331,7 @@
 				if (lastMessage) {
 					lastMessageTimeStamp = lastMessage.timestamp;
 				}
-				const {
-					friendId = 0, groupId = 0
-				} = this.curOption
+				const {friendId = "", groupId = 0} = this.curOption
 				const params = {
 					page: 1,
 					pageSize: 20,

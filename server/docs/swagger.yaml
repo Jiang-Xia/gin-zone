@@ -88,6 +88,60 @@ definitions:
     - password
     - userName
     type: object
+  model.ChatFriends:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      friendId:
+        type: string
+      groupId:
+        type: integer
+      id:
+        description: 自增id
+        type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+      userId:
+        type: string
+    type: object
+  model.ChatGroup:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      groupName:
+        type: string
+      id:
+        description: 自增id
+        type: integer
+      intro:
+        type: string
+      notice:
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+      userId:
+        type: string
+    type: object
+  model.ChatGroupMember:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      groupId:
+        type: integer
+      id:
+        description: 自增id
+        type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+      userId:
+        type: integer
+    type: object
   model.ChatLog:
     properties:
       content:
@@ -452,6 +506,27 @@ paths:
       summary: 好友列表
       tags:
       - 聊天模块
+    post:
+      consumes:
+      - application/json
+      description: 添加好友
+      parameters:
+      - description: 需要上传的json
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.ChatFriends'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ChatFriends'
+      summary: 添加好友
+      tags:
+      - 聊天模块
   /mobile/chat/groupMembers:
     get:
       consumes:
@@ -473,6 +548,27 @@ paths:
       summary: 群成员列表
       tags:
       - 聊天模块
+    post:
+      consumes:
+      - application/json
+      description: 添加群成员
+      parameters:
+      - description: 需要上传的json
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.ChatGroupMember'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ChatGroupMember'
+      summary: 添加群成员
+      tags:
+      - 聊天模块
   /mobile/chat/groups:
     get:
       consumes:
@@ -482,8 +578,11 @@ paths:
       - description: User.ID
         in: query
         name: userId
-        required: true
         type: integer
+      - description: Group.groupName
+        in: query
+        name: groupName
+        type: string
       produces:
       - application/json
       responses:
@@ -492,6 +591,27 @@ paths:
           schema:
             $ref: '#/definitions/response.ResType'
       summary: 群组列表
+      tags:
+      - 聊天模块
+    post:
+      consumes:
+      - application/json
+      description: 添加群组
+      parameters:
+      - description: 需要上传的json
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.ChatGroup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ChatGroup'
+      summary: 添加群组
       tags:
       - 聊天模块
   /mobile/chat/logs:

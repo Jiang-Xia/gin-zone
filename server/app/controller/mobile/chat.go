@@ -291,6 +291,31 @@ func (ch *Chat) FriendList(c *gin.Context) {
 	response.Success(c, friends, "")
 }
 
+// AddFriend godoc
+//
+// @Summary     添加好友
+// @Description 添加好友
+// @Tags        聊天模块
+// @Accept      json
+// @Produce     json
+// @Param       user body     model.ChatFriends true "需要上传的json"
+// @Success     200  {object} model.ChatFriends
+// @Router      /mobile/chat/friends [post]
+func (ch *Chat) AddFriend(c *gin.Context) {
+	model := &model.ChatFriends{}
+	if err := c.ShouldBindJSON(&model); err != nil {
+		// 字段参数校验
+		response.Fail(c, "参数错误", err.Error())
+		return
+	}
+	err := service.Chat.CreateChatFriends(model)
+	if err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
+	response.Success(c, model.ID, "添加成功")
+}
+
 // ChatLogList godoc
 //
 // @Summary     聊天记录
@@ -305,7 +330,7 @@ func (ch *Chat) FriendList(c *gin.Context) {
 func (ch *Chat) ChatLogList(c *gin.Context) {
 	query := &model.ChatLogQuery{}
 	if err := c.ShouldBindJSON(&query); err != nil {
-		response.Fail(c, "参数错误", "")
+		response.Fail(c, "参数错误", err.Error())
 		return
 	}
 	fmt.Printf("ChatLogList查询参数: %+v", query)
@@ -321,13 +346,40 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 // @Tags        聊天模块
 // @Accept      json
 // @Produce     json
-// @Param       userId   query     int            true  "User.ID"
+// @Param       userId   query     int            false  "User.ID"
+// @Param       groupName   query     string            false  "Group.groupName"
 // @Success     200  {object} response.ResType
 // @Router      /mobile/chat/groups [get]
 func (ch *Chat) GroupList(c *gin.Context) {
 	userId := c.Query("userId")
-	list := service.Chat.ChatGroup(userId)
+	groupName := c.Query("groupName")
+	list := service.Chat.ChatGroup(userId, groupName)
 	response.Success(c, list, "")
+}
+
+// AddGroup godoc
+//
+// @Summary     添加群组
+// @Description 添加群组
+// @Tags        聊天模块
+// @Accept      json
+// @Produce     json
+// @Param       user body     model.ChatGroup true "需要上传的json"
+// @Success     200  {object} model.ChatGroup
+// @Router      /mobile/chat/groups [post]
+func (ch *Chat) AddGroup(c *gin.Context) {
+	model := &model.ChatGroup{}
+	if err := c.ShouldBindJSON(&model); err != nil {
+		// 字段参数校验
+		response.Fail(c, "参数错误", err.Error())
+		return
+	}
+	err := service.Chat.CreateGroup(model)
+	if err != nil {
+		response.Fail(c, "创建失败", err.Error())
+		return
+	}
+	response.Success(c, model.ID, "添加成功")
 }
 
 //	GroupListgodoc
@@ -344,4 +396,29 @@ func (ch *Chat) GroupMemberList(c *gin.Context) {
 	groupId := c.Query("groupId")
 	list := service.Chat.ChatGroupMember(cast.ToInt(groupId))
 	response.Success(c, list, "")
+}
+
+// AddGroupMember godoc
+//
+// @Summary     添加群成员
+// @Description 添加群成员
+// @Tags        聊天模块
+// @Accept      json
+// @Produce     json
+// @Param       user body     model.ChatGroupMember true "需要上传的json"
+// @Success     200  {object} model.ChatGroupMember
+// @Router      /mobile/chat/groupMembers [post]
+func (ch *Chat) AddGroupMember(c *gin.Context) {
+	model := &model.ChatGroupMember{}
+	if err := c.ShouldBindJSON(&model); err != nil {
+		// 字段参数校验
+		response.Fail(c, "参数错误", err)
+		return
+	}
+	err := service.Chat.CreateChatGroupMember(model)
+	if err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
+	response.Success(c, model.ID, "添加成功")
 }
