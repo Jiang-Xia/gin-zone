@@ -1,4 +1,4 @@
-export const baseUrl = "http://172.18.32.2:9600/api/v1"
+export const baseUrl = "http://172.18.32.3:9600/api/v1"
 // const baseUrl = "https://jiang-xia.top/x-zone/api/v1"
 // const baseUrl = "http://localhost:9600/api/v1"
 // export const baseUrl = "http://192.168.1.51:9600/api/v1"

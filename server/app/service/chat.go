@@ -59,19 +59,27 @@ func (u *chat) DeleteChatFriends(id int) bool {
 
 // ChatLogList 获取聊天记录
 // https://gorm.io/zh_CN/docs/query.html#%E6%9D%A1%E4%BB%B6
-func (u *chat) ChatLogList(Page int, PageSize int, maps interface{}) ([]model.ChatLog, int64) {
+func (u *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) ([]model.ChatLog, int64) {
 	// Where可以使用Struct或者Map作为条件
 	var list []model.ChatLog
 	var total int64
-	db.Mysql.Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
+	if query.GroupId != 0 {
+		db.Mysql.Where("group_id", query.GroupId).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
+		db.Mysql.Model(&list).Where("group_id", query.GroupId).Count(&total)
+	} else {
+		//用户自身发的和好友自己发的消息都查询
+		db.Mysql.Where("sender_id", query.SenderId).Or("sender_id", query.ReceiverId).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
+		db.Mysql.Model(&list).Where("sender_id", query.SenderId).Or("sender_id", query.ReceiverId).Count(&total)
+	}
+
 	// 条件统计
-	db.Mysql.Model(&list).Where(maps).Count(&total)
-	// fmt.Printf("查询参数: %+v", maps)
+	fmt.Printf("查询参数: %+v", query)
 	return list, total
 }
 
 // CreateChatLog 新增
 func (u *chat) CreateChatLog(model *model.ChatLog) (err error) {
+	fmt.Printf("创建消息记录:%+v", model)
 	res := db.Mysql.Create(model)
 	if res.Error != nil { //判断是否插入数据出错
 		fmt.Println(res.Error)

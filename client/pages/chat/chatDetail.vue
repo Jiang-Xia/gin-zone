@@ -1,8 +1,25 @@
 <template>
 	<view class="container">
+		<image v-if="history.loading" class="history-loaded" src="/static/images/loading.svg" />
+		<view v-else :class="history.allLoaded ? 'history-loaded':'load'" @click="loadHistoryMessage(false)">
+			<view>{{ history.allLoaded ? '已经没有更多的历史消息' : '点击获取历史消息' }}</view>
+		</view>
 
-		<div class="history-wrap">
-		</div>
+		<checkbox-group @change="selectMessages">
+			<!--消息记录-->
+			<view v-for="(message,index) in history.messages" :key="message.messageId">
+				<view class="message-item">
+					<view class="avatar">
+						<image :src="message.avatar"></image>
+					</view>
+					<view class="content">
+						<view class="text-content" v-if="message.msgType===1">{{message.content}}</view>
+						<view class="image-content" v-if="message.msgType===2">{{message.content}}</view>
+						<view class="image-content" v-if="message.msgType===3">{{message.content}}</view>
+					</view>
+				</view>
+			</view>
+		</checkbox-group>
 
 		<view class="action-box" v-if="!videoPlayer.visible && !messageSelector.visible">
 			<view class="action-top">
@@ -119,8 +136,8 @@
 				socketOpen: false,
 				socketMsgQueue: [],
 				socketTask: null,
-				
-				curOption:{}
+
+				curOption: {}
 			}
 		},
 		onLoad(option) {
@@ -132,13 +149,13 @@
 			this.loadHistoryMessage(false);
 		},
 		onPullDownRefresh(e) {
-		  this.loadHistoryMessage(false);
+			this.loadHistoryMessage(false);
 		},
 		onShow() {
-			const userId = getApp().globalData.userInfo.userId
+			// const userId = getApp().globalData.userInfo.userId
 			// const userId = new Date().getTime();
-			// const url = 'ws://172.18.32.2:9600/api/v1/mobile/chat?userId=' + userId
-			const url = 'ws://192.168.1.51:9600/api/v1/mobile/chat?userId=' + userId
+			const url = 'ws://172.18.32.3:9600/api/v1/mobile/chat?userId=' + this.userId
+			// const url = 'ws://192.168.1.51:9600/api/v1/mobile/chat?userId=' + userId
 			const token = uni.getStorageSync("token")
 			this.socketTask = uni.connectSocket({
 				url,
@@ -162,6 +179,11 @@
 				console.log('WebSocket连接打开失败，请检查！');
 			});
 		},
+		computed:{
+			userId(){
+				return getApp().globalData.userInfo.userId
+			}  
+		},
 		methods: {
 			// 上传文件
 			async uploadFile(file) {
@@ -169,12 +191,28 @@
 				return res
 			},
 			// 发送消息
-			sendSocketMessage(msg) {
+			sendSocketMessage(messageData) {
+				const {friendId = 0, groupId = 0 } = this.curOption
+				const {cmd,content,msgType} = messageData
+				const sendObj = {
+					cmd:cmd,
+					senderId:this.userId,
+					receiverId:friendId,
+					groupId:Number(groupId),
+					content:content,
+					logType:Number(groupId)?2:1,
+					msgType:msgType
+				}
+				
 				if (this.socketOpen) {
+					this.history.messages.push(sendObj);
 					this.socketTask.send({
-						data: msg,
-						complete: () => {
-							console.log('发送消息：', msg);
+						data: JSON.stringify(sendObj),
+						success: () => {
+							console.log('发送成功：', msg);
+						},
+						fail: (error) => {
+							console.log('发送失败:', error);
 						}
 					});
 				} else {
@@ -236,12 +274,12 @@
 					if (this.text.length >= 50) {
 						body = this.text.substring(0, 30) + '...';
 					}
-					// this.ws.send(this.text)
 					const sendObj = {
 						cmd: "text",
-						data: this.text
+						content: this.text,
+						msgType: 1
 					}
-					this.sendSocketMessage(JSON.stringify(sendObj));
+					this.sendSocketMessage(sendObj);
 				}
 				this.text = '';
 			},
@@ -251,13 +289,13 @@
 					success: (videoRes) => {
 						// console.log(videoRes.tempFilePath)
 						this.uploadFile(videoRes.tempFilePath).then(res => {
-							const obj = {
-								cmd: "file",
-								data: res.data.url,
+							const sendObj = {
+								cmd: "text",
+								content: res.data.url,
 								filename: res.data.filename,
-								type: "video"
+								msgType: 3
 							}
-							this.sendSocketMessage(JSON.stringify(obj));
+							this.sendSocketMessage(sendObj);
 						})
 					}
 				})
@@ -269,19 +307,20 @@
 					success: (imageRes) => {
 						imageRes.tempFilePaths.forEach((path, index) => {
 							this.uploadFile(path).then(res => {
-								const obj = {
-									cmd: "file",
-									data: res.data.url,
+								const sendObj = {
+									cmd: "text",
+									content: res.data.url,
 									filename: res.data.filename,
-									type: "image"
+									msgType: 2
 								}
-								this.sendSocketMessage(JSON.stringify(obj));
+								this.sendSocketMessage(sendObj);
 							})
 						})
 					}
 				});
 			},
-
+			// 选择消息
+			selectMessages() {},
 
 			/* 消息记录控制 操作*/
 			// 加载历史消息
@@ -290,29 +329,35 @@
 				let lastMessageTimeStamp = null;
 				let lastMessage = this.history.messages[0];
 				if (lastMessage) {
-				  lastMessageTimeStamp = lastMessage.timestamp;
+					lastMessageTimeStamp = lastMessage.timestamp;
 				}
-				const {friendId=0,groupId=0} = this.curOption
+				const {
+					friendId = 0, groupId = 0
+				} = this.curOption
 				const params = {
-					page:1,
-					pageSize:20,
-					friendId:Number(friendId),
-					groupId:Number(groupId),
+					page: 1,
+					pageSize: 20,
+					senderId:this.userId,//好友发送的的信息
+					receiverId:friendId,// 好友接收的信息
+					groupId: Number(groupId),// 群组的消息
 				}
-				this.$api.post("/mobile/chat/logs",params).then(res=>{
-					const {list,total} = res.data
+				this.$api.post("/mobile/chat/logs", params).then(res => {
+					const {
+						list,
+						total
+					} = res.data
 					uni.stopPullDownRefresh();
 					this.history.loading = false;
 					this.history.messages = list.concat(this.history.messages)
-					if(this.history.messages.length>=res){
+					if (this.history.messages.length >= res) {
 						this.history.allLoaded = true
 					}
 				}).catch((error) => {
-            //获取失败
-            console.log('获取历史消息失败:', error);
-            uni.stopPullDownRefresh();
-            this.history.loading = false;
-          })
+					//获取失败
+					console.log('获取历史消息失败:', error);
+					uni.stopPullDownRefresh();
+					this.history.loading = false;
+				})
 			},
 		}
 	}
@@ -321,6 +366,84 @@
 <style lang="scss">
 	.container {
 		padding: 20rpx;
+	}
+
+	// 加载更多消息
+	.history-loaded {
+		font-size: 24rpx;
+		height: 60rpx;
+		line-height: 60rpx;
+		width: 100%;
+		text-align: center;
+		color: #cccccc;
+	}
+
+	.load {
+		font-size: 24rpx;
+		height: 60rpx;
+		line-height: 60rpx;
+		width: 100%;
+		text-align: center;
+		color: #d02129;
+	}
+
+	// 消息item
+	.message-item {
+		display: flex;
+		margin: 20rpx 0;
+
+		.message-item-content {
+			flex: 1;
+			overflow: hidden;
+			display: flex;
+		}
+
+		.message-item-checkbox {
+			height: 80rpx;
+			display: flex;
+			align-items: center;
+		}
+
+		.avatar {
+			width: 80rpx;
+			height: 80rpx;
+			flex-shrink: 0;
+			flex-grow: 0;
+
+			image {
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		.content {
+			font-size: 34rpx;
+			line-height: 44rpx;
+			margin: 0 20rpx;
+			max-width: 520rpx;
+		}
+
+		.text-content {
+			padding: 16rpx;
+			border-radius: 12rpx;
+			color: #000000;
+			background: #FFFFFF;
+			word-break: break-all;
+			text-align: left;
+			vertical-align: center;
+			display: block;
+
+			img {
+				width: 50rpx;
+				height: 50rpx;
+			}
+		}
+
+		.image-content {
+			border-radius: 12rpx;
+			width: 300rpx;
+			height: 300rpx;
+		}
 	}
 
 	/* 输入框 开始  */

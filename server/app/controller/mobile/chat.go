@@ -49,8 +49,15 @@ type ClientManager struct {
 
 // WsMessage 消息模板结构体
 type WsMessage struct {
-	Cmd  string      `json:"cmd"`
-	Data interface{} `json:"data"`
+	Cmd        string `json:"cmd"`
+	Count      int    `json:"count"`
+	SenderId   string `json:"senderId"`
+	ReceiverId string `json:"receiverId"`
+	GroupId    int    `json:"groupId"`
+	Content    string `json:"content"`
+	Remark     string `json:"remark"`
+	LogType    int8   `json:"logType"`
+	MsgType    int8   `json:"msgType"`
 }
 
 // Manager 管理实例声明
@@ -89,22 +96,34 @@ func (c *Client) Read() {
 			log.Error(err.Error())
 			break
 		}
-		fmt.Printf("客户端所发信息:%+v ", msg)
+		//fmt.Printf("客户端所发信息:%+v ", msg)
 		switch msg.Cmd {
 		case "heatbeat":
 			// 如果是心跳监测消息（利用心跳监测来判断对应客户端是否在线）
-			resp, _ := json.Marshal(&WsMessage{Cmd: "heatbeat", Data: "pong"})
+			msg.Content = "ok"
+			resp, _ := json.Marshal(msg)
 			c.Start = time.Now() // 重新刷新时间
 			// 发送变量到 SendChan 通道中
 			c.SendChan <- resp
 		case "online":
 			// 获取在线人数
 			count := len(Manager.Clients)
-			resp, _ := json.Marshal(&WsMessage{Cmd: "online", Data: count})
+			msg.Count = count
+			resp, _ := json.Marshal(msg)
 			c.SendChan <- resp
 		case "text":
 			// 发送文本消息
-			resp, _ := json.Marshal(&WsMessage{Cmd: "text", Data: msg.Data})
+			resp, _ := json.Marshal(msg)
+			chatLog := &model.ChatLog{
+				SenderId:   msg.SenderId,
+				ReceiverId: msg.ReceiverId,
+				GroupId:    msg.GroupId,
+				Content:    msg.Content,
+				Remark:     msg.Remark,
+				LogType:    msg.LogType,
+				MsgType:    msg.MsgType,
+			}
+			service.Chat.CreateChatLog(chatLog)
 			Manager.BroadcastChan <- resp
 		case "recall":
 			// 你的撤回消息的操作
@@ -136,7 +155,7 @@ func (c *Client) Write() {
 			}
 			var wsMsg WsMessage
 			err := json.Unmarshal(msg, &wsMsg)
-			fmt.Printf("服务端所发信息:%+v ", wsMsg)
+			//fmt.Printf("服务端所发信息:%+v ", wsMsg)
 			err = c.Socket.WriteMessage(websocket.TextMessage, msg)
 			if err != nil {
 				log.Error(err.Error())
@@ -175,13 +194,8 @@ func (manager *ClientManager) Start() {
 // InitSend 初始化客户端管理器
 func (manager *ClientManager) InitSend(cur *Client, count int) {
 	// 初始化时发送在线人数
-	resp, _ := json.Marshal(&WsMessage{Cmd: "online", Data: count})
+	resp, _ := json.Marshal(&WsMessage{Cmd: "online", Count: count})
 	Manager.BroadcastChan <- resp
-
-	// // 初始化时 发送历史聊天记录
-	// _data := ChatRecord() //获取聊天室历史消息记录操作
-	// resp, _ = json.Marshal(&WsMessage{Cmd: "history", Data: _data})
-	// cur.SendChan <- resp
 }
 
 // BroadcastSend 群发消息
@@ -206,17 +220,11 @@ func (manager *ClientManager) Quit() {
 			//删除对应在线客户端
 			delete(Manager.Clients, conn.ID)
 			// 给客户端刷新在线人数
-			resp, _ := json.Marshal(&WsMessage{Cmd: "online", Data: len(Manager.Clients)})
+			resp, _ := json.Marshal(&WsMessage{Cmd: "online", Count: len(Manager.Clients)})
 			//有人退出时 广播刷新在线人数
 			manager.BroadcastChan <- resp
 		}
 	}
-}
-
-// ChatRecord 获取聊天记录
-func ChatRecord() (list interface{}) {
-	list, _ = service.Chat.ChatLogList(1, 20, model.ChatLogQuery{})
-	return list
 }
 
 // 初始化 执行客户端管理方法
@@ -300,12 +308,8 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 		response.Fail(c, "参数错误", "")
 		return
 	}
-	list, total := service.Chat.ChatLogList(query.Page, query.PageSize, model.ChatLogQuery{
-		GroupId:    query.GroupId,
-		SenderId:   query.SenderId,
-		ReceiverId: query.ReceiverId,
-		Content:    query.Content,
-	})
+	fmt.Printf("ChatLogList查询参数: %+v", query)
+	list, total := service.Chat.ChatLogList(query.Page, query.PageSize, query)
 	data := model.ListRes{List: list, Total: total}
 	response.Success(c, data, "")
 }
