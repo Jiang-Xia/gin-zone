@@ -51,6 +51,12 @@
 		},
 		methods: {
 			login() {
+				// #ifdef H5
+				uni.navigateTo({
+					url: "/pages/my/login"
+				})
+				return
+				// #endif
 				// #ifdef MP-WEIXIN
 				uni.getUserProfile({
 					lang: 'zh_CN',

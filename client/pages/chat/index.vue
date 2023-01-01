@@ -15,26 +15,13 @@
 <script>
 	import groupIcon from "../../static/images/group.png"
 	import userIcon from "../../static/images/user.png"
-	const avatars = [
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodlzz-头像_天秤座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9xk9-头像_天蝎座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodlez-头像_白羊座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9xhh-头像_双子座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodluq-头像_巨蟹座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodlph-头像_狮子座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9xep-头像_处女座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9xbx-头像_水瓶座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9x95-头像_摩羯座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodlk8-头像_双鱼座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodl9q-头像_金牛座.png',
-		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9x6d-头像_射手座.png'
-	]
 	export default {
 		data() {
 			return {
 				groupIcon,
 				userIcon,
-				userList: []
+				userList: [],
+				userId:""
 			}
 		},
 		components: {},
@@ -42,13 +29,13 @@
 			this.init()
 		},
 		onLoad() {
+			this.userId = getApp().globalData.userInfo.userId
 			this.init()
 		},
 		methods: {
 			init() {
-				const userId = getApp().globalData.userInfo.userId
 				this.$api.get("/mobile/chat/friends", {
-					userId
+					userId:this.userId
 				}).then(res => {
 					uni.stopPullDownRefresh()
 					this.userList = res.data.map((v, i) => {
@@ -64,6 +51,10 @@
 				})
 			},
 			clickUserItem(item) {
+				if(!this.userId){
+					uni.showModal({title:"请先登录！"})
+					return
+				}
 				let str = ''
 				if (item.groupId) {
 					str = "&groupId=" + item.groupId
@@ -75,6 +66,10 @@
 				})
 			},
 			clickRight() {
+				if(!this.userId){
+					uni.showModal({title:"请先登录！"})
+					return
+				}
 				uni.showActionSheet({
 					itemList: ['添加好友', '加入群聊'],
 					success: (res) => {
