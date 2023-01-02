@@ -5,11 +5,12 @@
 			StatusBar: 0,
 			CustomBar:0,
 			Custom:0,
-			userInfo:{}
+			userInfo:{},
+			avatar:"https://jiang-xia.top/x-blog/api/v1/static/uploads/2023-01-01/2kf3d768tj33vsgs6exbu8-默认头像.jpeg"
 		},
 		/* 应用生命周期 */
 		onLaunch: function() {
-			console.warn('当前组件仅支持 uni_modules 目录结构 ，请升级 HBuilderX 到 3.1.0 版本以上！')
+			// console.warn('当前组件仅支持 uni_modules 目录结构 ，请升级 HBuilderX 到 3.1.0 版本以上！')
 			console.log('App Launch')
 			const that = this
 			uni.getSystemInfo({
@@ -37,10 +38,13 @@
 		},
 		onShow: function() {
 			console.log('App Show')
-			this.$api.get('/base/users/info').then(res=>{
-				uni.setStorageSync('userInfo',res.data)
-				this.globalData.userInfo = res.data
-			})
+			if(uni.getStorageSync("token")){
+				this.$api.get('/base/users/info').then(res=>{
+					uni.setStorageSync('userInfo',res.data)
+					this.globalData.userInfo = res.data
+				})
+			}
+			
 		},
 		onHide: function() {
 			console.log('App Hide')

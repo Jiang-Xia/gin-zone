@@ -20,12 +20,12 @@
 		<view class="login margin-b80" v-if="!cur">
 			<view class="input z-flex z-row z-align-center margin-b40">
 				<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
-				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text" value=""
+				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text"
 					:maxlength="11" placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
 			</view>
 			<view class="input z-flex z-row z-align-center margin-b40">
 				<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
-				<input v-model="form.password" class="z-flex-item color-base font-30" type="text" password value=""
+				<input v-model="form.password" class="z-flex-item color-base font-30" type="text" password
 					placeholder="请输入您的登录密码" placeholder-class="input-placeholder" />
 			</view>
 		</view>
@@ -33,12 +33,12 @@
 		<view class="register margin-b80" v-if="cur">
 			<view class="input z-flex z-row z-align-center margin-b40">
 				<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
-				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text" value=""
+				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text"
 					:maxlength="11" placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
 			</view>
 			<view class="input z-flex z-row z-align-center margin-b40">
 				<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
-				<input v-model="form.password" class="z-flex-item color-base font-30" type="text" password value=""
+				<input v-model="form.password" class="z-flex-item color-base font-30" type="text" password
 					placeholder="请输入您的登录密码" placeholder-class="input-placeholder" />
 			</view>
 		</view>

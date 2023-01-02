@@ -51,7 +51,7 @@
 		},
 		methods: {
 			login() {
-				// #ifdef H5
+				// #ifdef H5|| APP
 				uni.navigateTo({
 					url: "/pages/my/login"
 				})
@@ -134,7 +134,7 @@
 	}
 </script>
 
-<style lang="less">
+<style lang="scss">
 .container {
 		font-size: 14px;
 		line-height: 24px;

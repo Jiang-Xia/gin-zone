@@ -80,7 +80,7 @@
 	}
 </script>
 
-<style lang="less">
+<style lang="scss">
 	.chat-custom-right {
 		display: flex;
 		align-items: center;

@@ -36,7 +36,15 @@
 		{
 			"path": "pages/moment/index",
 			"style": {
-				"navigationBarTitleText": "动态"
+				"navigationBarTitleText": "动态",
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/moment/addMoment",
+			"style": {
+				"navigationBarTitleText": "发动态"
 			}
 		},
 		{
@@ -122,10 +130,7 @@
 				"text": "我的",
 				"pagePath": "pages/my/index",
 				"iconPath": "static/icon/my1.png",
-				"selectedIconPath": "static/icon/my.png",
-				"iconfont": {
-					"color": ""
-				}
+				"selectedIconPath": "static/icon/my.png"
 			}
 		]
 	}

@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
-		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="left" right-icon="plus" :border="false" shadow="true"
-			title="聊天" @clickRight="clickRight" />
+		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" :border="true" :shadow="false" fixed statusBar
+			title="聊天" @clickLeft="clickLeft" />
 		<uni-list :border="true">
 			<!-- 右侧带角标 -->
 			<uni-list-chat v-for="(item,index) in userList" :avatar-circle="true" :title="item.name"
@@ -65,7 +65,7 @@
 					url: "/pages/chat/chatDetail?name=" + item.name + str
 				})
 			},
-			clickRight() {
+			clickLeft() {
 				if(!this.userId){
 					uni.showModal({title:"请先登录！"})
 					return

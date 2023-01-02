@@ -109,7 +109,8 @@
         "appid" : "wx1df79a9834d74211",
         "setting" : {
             "urlCheck" : false,
-            "es6" : true
+            "es6" : true,
+            "minified" : true
         },
         "usingComponents" : true,
         "permission" : {
@@ -135,8 +136,8 @@
         "sdkConfigs" : {
             "maps" : {
                 "amap" : {
-                    "key" : "",
-                    "securityJsCode" : "",
+                    "key" : "dab0e70851fd772a8ced4d5adb371b04",
+                    "securityJsCode" : "666e14ef382b551d57e4eb957694afb9",
                     "serviceHost" : ""
                 }
             }
