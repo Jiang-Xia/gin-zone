@@ -127,6 +127,7 @@
 			},
 			logout(){
 				this.userInfo = {}
+				getApp().globalData.userInfo = {}
 				this.setToken('')
 				console.log("退出登录")
 			}

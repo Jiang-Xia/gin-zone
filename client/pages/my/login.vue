@@ -112,9 +112,11 @@
 			},
 			async login() {
 				try {
+					uni.showLoading({title:''})
 					const res = await this.$api.post('/base/users/login', {
 						...this.form
 					})
+					uni.hideLoading()
 					uni.setStorageSync('token', res.data.token)
 					const res2 = await this.$api.get('/base/users/info')
 					uni.setStorageSync('userInfo', res2.data)
@@ -129,6 +131,7 @@
 						})
 					}, 800)
 				} catch (e) {
+					uni.hideLoading()
 					console.error(e)
 				}
 			},

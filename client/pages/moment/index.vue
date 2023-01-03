@@ -1,7 +1,7 @@
 <template>
 	<view class="container moment-card-wrap">
-		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" border fixed statusBar
-			title="动态" @clickLeft="clickLeft"/>
+		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" border fixed statusBar title="动态"
+			@clickLeft="clickLeft" />
 		<section class="moment-card" v-for="(item, index) in cardList" :key="index">
 			<div class="card-top">
 				<image class="avatar" :src="item.avatar" />
@@ -19,25 +19,25 @@
 			</div>
 			<div class="card-bottom">
 				<div class="adress">
-					<uni-icons type="location" color="#999" ></uni-icons> {{ item.adress }}
-					<uni-icons type="right" color="#999" ></uni-icons>
+					<uni-icons type="location" color="#999"></uni-icons> {{ item.adress }}
+					<uni-icons type="right" color="#999"></uni-icons>
 				</div>
 				<div class="tool-wrap">
 					<span @click="dianzanHandle(item)">
 						<uni-icons :type="item.dianzaned ? 'hand-up-filled' : 'hand-up'" style="margin-bottom: 4px;"
-							:color="item.dianzaned ? '#0066cc' : '#666'" ></uni-icons>
+							:color="item.dianzaned ? '#0066cc' : '#666'"></uni-icons>
 						<span :style="{ color: item.dianzaned ? '#0066cc' : '' }">{{ item.dianzan }}</span>
 					</span>
 					<span>
-						<uni-icons type="chatbubble" color="#666" ></uni-icons>
+						<uni-icons type="chatbubble" color="#666"></uni-icons>
 						{{ item.pinlun }}
 					</span>
 					<span>
-						<uni-icons type="eye" color="#666" ></uni-icons>
+						<uni-icons type="eye" color="#666"></uni-icons>
 						{{ item.liulan }}
 					</span>
 					<span>
-						<uni-icons type="ellipsis" color="#666" ></uni-icons>
+						<uni-icons type="ellipsis" color="#666"></uni-icons>
 					</span>
 				</div>
 			</div>
@@ -184,6 +184,10 @@
 				item.dianzaned = true
 			},
 			clickLeft() {
+				if (!this.$common.getUserId()) {
+					this.$common.showLoginModal()
+					return
+				}
 				uni.navigateTo({
 					url: "/pages/moment/addMoment"
 				})

@@ -21,7 +21,7 @@
 				groupIcon,
 				userIcon,
 				userList: [],
-				userId:""
+				userId: ""
 			}
 		},
 		components: {},
@@ -30,12 +30,14 @@
 		},
 		onLoad() {
 			this.userId = getApp().globalData.userInfo.userId
-			this.init()
+			if (this.userId) {
+				this.init()
+			}
 		},
 		methods: {
 			init() {
 				this.$api.get("/mobile/chat/friends", {
-					userId:this.userId
+					userId: this.userId
 				}).then(res => {
 					uni.stopPullDownRefresh()
 					this.userList = res.data.map((v, i) => {
@@ -51,8 +53,8 @@
 				})
 			},
 			clickUserItem(item) {
-				if(!this.userId){
-					uni.showModal({title:"请先登录！"})
+				if (!this.$common.getUserId()) {
+					this.$common.showLoginModal()
 					return
 				}
 				let str = ''
@@ -66,8 +68,8 @@
 				})
 			},
 			clickLeft() {
-				if(!this.userId){
-					uni.showModal({title:"请先登录！"})
+				if (!this.$common.getUserId()) {
+					this.$common.showLoginModal()
 					return
 				}
 				uni.showActionSheet({

@@ -29,8 +29,8 @@ type ChatGroup struct {
 // ChatGroupMember 群成员表
 type ChatGroupMember struct {
 	BaseModel
-	UserId  int `gorm:"comment:成员id;" json:"userId"`
-	GroupId int `gorm:"comment:群组id" json:"groupId"`
+	UserId  string `gorm:"comment:成员用户id;" json:"userId"`
+	GroupId int    `gorm:"comment:群组id" json:"groupId"`
 }
 
 // ChatLog 聊天记录表

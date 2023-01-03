@@ -2,9 +2,6 @@
 	export default {
 		// 全局变量 全端支持
 		globalData: {
-			StatusBar: 0,
-			CustomBar:0,
-			Custom:0,
 			userInfo:{},
 			avatar:"https://jiang-xia.top/x-blog/api/v1/static/uploads/2023-01-01/2kf3d768tj33vsgs6exbu8-默认头像.jpeg"
 		},
@@ -15,24 +12,6 @@
 			const that = this
 			uni.getSystemInfo({
 				success: function(e) {
-					// #ifndef MP
-					that.globalData.StatusBar = e.statusBarHeight;
-					if (e.platform == 'android') {
-						that.globalData.CustomBar = e.statusBarHeight + 50;
-					} else {
-						that.globalData.CustomBar = e.statusBarHeight + 45;
-					};
-					// #endif
-					// #ifdef MP-WEIXIN
-					that.globalData.StatusBar = e.statusBarHeight;
-					let custom = wx.getMenuButtonBoundingClientRect();
-					that.globalData.Custom = custom;
-					that.globalData.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
-					// #endif		
-					// #ifdef MP-ALIPAY
-			 	that.globalData.StatusBar = e.statusBarHeight;
-					that.globalData.CustomBar = e.statusBarHeight + e.titleBarHeight;
-					// #endif
 				}
 			})
 		},

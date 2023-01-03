@@ -140,7 +140,7 @@ definitions:
         description: 更新时间
         type: string
       userId:
-        type: integer
+        type: string
     type: object
   model.ChatLog:
     properties:

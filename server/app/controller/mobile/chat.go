@@ -32,7 +32,7 @@ type Client struct {
 	ID         string
 	IpAddress  string
 	IpSource   string
-	UserId     int64
+	UserId     string
 	Socket     *websocket.Conn
 	SendChan   chan []byte
 	Start      time.Time
@@ -204,10 +204,39 @@ func (manager *ClientManager) BroadcastSend() {
 		select {
 		// 只要有一方发消息就广播
 		case msg := <-Manager.BroadcastChan:
-			//广播给所有的在线客户端
-			for _, conn := range Manager.Clients {
-				conn.SendChan <- msg
+			wsMsg := WsMessage{}
+			err := json.Unmarshal(msg, &wsMsg)
+			if err != nil {
+				wsMsg.Content = "消息解析错误"
 			}
+			//群聊时找到所有群成员广播消息
+			if wsMsg.GroupId != 0 {
+				list := service.Chat.ChatGroupMember(wsMsg.GroupId)
+				//遍历所有群成员
+				for _, member := range list {
+					//找到所有在线的群成员用户(在线实例用户id和群成员用户id一致)
+					for _, conn := range Manager.Clients {
+						if member.UserId == conn.UserId {
+							conn.SendChan <- msg
+							break
+						}
+					}
+				}
+			} else if wsMsg.ReceiverId != "" {
+				//	私聊时找到对应结接收方用户广播消息
+				for _, conn := range Manager.Clients {
+					//fmt.Println("两个用户id", wsMsg.ReceiverId, conn.UserId)
+					if wsMsg.ReceiverId == conn.UserId {
+						conn.SendChan <- msg
+						break
+					}
+				}
+			}
+			//fmt.Printf("客户端发送的消息:%+v", wsMsg)
+			////广播给所有的在线客户端
+			//for _, conn := range Manager.Clients {
+			//	conn.SendChan <- msg
+			//}
 		}
 	}
 }
@@ -245,7 +274,7 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 		log.Error(err.Error())
 		return
 	}
-	userid := cast.ToInt64(ctx.Query("userId"))
+	userId := ctx.Query("userId")
 	ip := ctx.ClientIP()
 	//addr, err := common.GetIpAddressAndSource(ip)
 	if err != nil {
@@ -263,7 +292,7 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 		SendChan:   make(chan []byte),
 		IpAddress:  ip,
 		IpSource:   "未知",
-		UserId:     userid,
+		UserId:     userId,
 		Start:      time.Now(),
 		ExpireTime: time.Minute * 1,
 	}
@@ -287,6 +316,10 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 // @Router      /mobile/chat/friends [get]
 func (ch *Chat) FriendList(c *gin.Context) {
 	userId := c.Query("userId")
+	if userId == "" {
+		response.Fail(c, "用户id不能为空", []string{})
+		return
+	}
 	friends := service.Chat.ChatFriends(userId)
 	response.Success(c, friends, "")
 }

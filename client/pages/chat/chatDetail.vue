@@ -14,7 +14,9 @@
 					</view>
 					<view class="content">
 						<view class="text-content" v-if="message.msgType===1">{{message.content}}</view>
-						<view class="image-content" v-if="message.msgType===2">{{message.content}}</view>
+						<view class="image-content" v-if="message.msgType===2">
+							<image :src="$fileUrl+message.content" class="image-content" mode="heightFix"></image>
+						</view>
 						<view class="image-content" v-if="message.msgType===3">{{message.content}}</view>
 					</view>
 				</view>
@@ -68,7 +70,7 @@
 <script>
 	import EmojiDecoder from '../../common/js/EmojiDecoder.js';
 	import {
-		baseUrl
+		wsUrl,
 	} from '../../common/request/api.js'
 	export default {
 		data() {
@@ -146,16 +148,15 @@
 			uni.setNavigationBarTitle({
 				title: option.name
 			})
-			this.loadHistoryMessage(false);
+		},
+		onReady() {
+			this.loadHistoryMessage(true);
 		},
 		onPullDownRefresh(e) {
 			this.loadHistoryMessage(false);
 		},
 		onShow() {
-			// const userId = getApp().globalData.userInfo.userId
-			// const userId = new Date().getTime();
-			const url = 'ws://172.18.32.3:9600/api/v1/mobile/chat?userId=' + this.userId
-			// const url = 'ws://192.168.1.51:9600/api/v1/mobile/chat?userId=' + userId
+			const url = wsUrl + '/mobile/chat?userId=' + this.userId
 			const token = uni.getStorageSync("token")
 			this.socketTask = uni.connectSocket({
 				url,
@@ -169,6 +170,11 @@
 				}
 			});
 			this.socketTask.onMessage((res) => {
+				if(res.data){
+					const revObj = JSON.parse(res.data)
+					this.history.messages.push(revObj);
+					this.resetBottom()		
+				}
 				console.log('服务端消息：', res);
 			});
 			this.socketTask.onOpen((res) => {
@@ -179,12 +185,21 @@
 				console.log('WebSocket连接打开失败，请检查！');
 			});
 		},
-		computed:{
-			userId(){
+		computed: {
+			userId() {
 				return getApp().globalData.userInfo.userId
-			}  
+			}
 		},
 		methods: {
+			resetBottom(){
+				// 直接设置最大值跳
+				this.$nextTick(() => {
+				  uni.pageScrollTo({
+				    scrollTop: 2000000,
+				    duration: 0
+				  });
+				});
+			},
 			// 上传文件
 			async uploadFile(file) {
 				const res = await this.$api.upload(file)
@@ -192,31 +207,38 @@
 			},
 			// 发送消息
 			sendSocketMessage(messageData) {
-				const {friendId = "", groupId = 0 } = this.curOption
-				const {cmd,content,msgType} = messageData
+				const {
+					friendId = "", groupId = 0
+				} = this.curOption
+				const {
+					cmd,
+					content,
+					msgType
+				} = messageData
 				const sendObj = {
-					cmd:cmd,
-					senderId:this.userId,
-					receiverId:friendId,
-					groupId:Number(groupId),
-					content:content,
-					logType:Number(groupId)?2:1,
-					msgType:msgType
+					cmd: cmd,
+					senderId: this.userId,
+					receiverId: friendId,
+					groupId: Number(groupId),
+					content: content,
+					logType: Number(groupId) ? 2 : 1,
+					msgType: msgType
 				}
-				
+
 				if (this.socketOpen) {
 					this.history.messages.push(sendObj);
+					this.resetBottom()			
 					this.socketTask.send({
 						data: JSON.stringify(sendObj),
 						success: () => {
-							console.log('发送成功：', msg);
+							console.log('发送成功：', sendObj);
 						},
 						fail: (error) => {
 							console.log('发送失败:', error);
 						}
 					});
 				} else {
-					this.socketMsgQueue.push(msg);
+					this.socketMsgQueue.push(sendObj);
 				}
 			},
 			//语音录制按钮和键盘输入的切换
@@ -331,13 +353,15 @@
 				if (lastMessage) {
 					lastMessageTimeStamp = lastMessage.timestamp;
 				}
-				const {friendId = "", groupId = 0} = this.curOption
+				const {
+					friendId = "", groupId = 0
+				} = this.curOption
 				const params = {
 					page: 1,
 					pageSize: 20,
-					senderId:this.userId,//好友发送的的信息
-					receiverId:friendId,// 好友接收的信息
-					groupId: Number(groupId),// 群组的消息
+					senderId: this.userId, //好友发送的的信息
+					receiverId: friendId, // 好友接收的信息
+					groupId: Number(groupId), // 群组的消息
 				}
 				this.$api.post("/mobile/chat/logs", params).then(res => {
 					const {
@@ -349,6 +373,9 @@
 					this.history.messages = list.concat(this.history.messages)
 					if (this.history.messages.length >= res) {
 						this.history.allLoaded = true
+					}
+					if(scrollToBottom){
+						this.resetBottom()
 					}
 				}).catch((error) => {
 					//获取失败
@@ -363,9 +390,8 @@
 
 <style lang="scss">
 	.container {
-		padding: 20rpx;
+		padding: 20rpx 20rpx 140rpx 20rpx;
 	}
-
 	// 加载更多消息
 	.history-loaded {
 		font-size: 24rpx;
