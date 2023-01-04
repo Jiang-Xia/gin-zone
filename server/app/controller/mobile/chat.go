@@ -209,14 +209,18 @@ func (manager *ClientManager) BroadcastSend() {
 			if err != nil {
 				wsMsg.Content = "消息解析错误"
 			}
+			// fmt.Printf("WsMessage消息模板:%+v", wsMsg)
 			//群聊时找到所有群成员广播消息
 			if wsMsg.GroupId != 0 {
 				list := service.Chat.ChatGroupMember(wsMsg.GroupId)
+				// fmt.Println("群组成员列表：", len(list))
+
 				//遍历所有群成员
 				for _, member := range list {
 					//找到所有在线的群成员用户(在线实例用户id和群成员用户id一致)
 					for _, conn := range Manager.Clients {
 						if member.UserId == conn.UserId {
+							// fmt.Println("群组成员：", conn.UserId)
 							conn.SendChan <- msg
 							break
 						}
@@ -366,7 +370,7 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 		response.Fail(c, "参数错误", err.Error())
 		return
 	}
-	fmt.Printf("ChatLogList查询参数: %+v", query)
+	// fmt.Printf("ChatLogList查询参数: %+v", query)
 	list, total := service.Chat.ChatLogList(query.Page, query.PageSize, query)
 	data := model.ListRes{List: list, Total: total}
 	response.Success(c, data, "")

@@ -14,15 +14,16 @@
 				success: function(e) {
 				}
 			})
-		},
-		onShow: function() {
-			console.log('App Show')
 			if(uni.getStorageSync("token")){
 				this.$api.get('/base/users/info').then(res=>{
 					uni.setStorageSync('userInfo',res.data)
 					this.globalData.userInfo = res.data
 				})
 			}
+		},
+		onShow: function() {
+			console.log('App Show')
+			
 			
 		},
 		onHide: function() {

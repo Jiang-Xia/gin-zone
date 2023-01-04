@@ -8,16 +8,20 @@
 		<checkbox-group @change="selectMessages">
 			<!--消息记录-->
 			<view v-for="(message,index) in history.messages" :key="message.messageId">
-				<view class="message-item">
+				<!--时间显示，类似于微信，隔5分钟不发言，才显示时间-->
+				<view class="time-lag">
+					{{ renderMessageDate(message, index) }}
+				</view>
+				<view class="message-item" :class="[message.senderId===userId?'message-item-me':'',message.groupId?'message-item-group':'']">
 					<view class="avatar">
 						<image :src="message.avatar"></image>
 					</view>
 					<view class="content">
 						<view class="text-content" v-if="message.msgType===1">{{message.content}}</view>
 						<view class="image-content" v-if="message.msgType===2">
-							<image :src="$fileUrl+message.content" class="image-content" mode="heightFix"></image>
+							<image :src="$fileUrl+message.content" mode="heightFix"></image>
 						</view>
-						<view class="image-content" v-if="message.msgType===3">{{message.content}}</view>
+						<view class="video-content" v-if="message.msgType===3">{{message.content}}</view>
 					</view>
 				</view>
 			</view>
@@ -72,6 +76,9 @@
 	import {
 		wsUrl,
 	} from '../../common/request/api.js'
+	import {
+		beforeTimeNow
+	} from '../../common/utils/util.js';
 	export default {
 		data() {
 			const emojiUrl = 'https://imgcache.qq.com/open/qcloud/tim/assets/emoji/';
@@ -170,10 +177,10 @@
 				}
 			});
 			this.socketTask.onMessage((res) => {
-				if(res.data){
+				if (res.data) {
 					const revObj = JSON.parse(res.data)
 					this.history.messages.push(revObj);
-					this.resetBottom()		
+					this.resetBottom()
 				}
 				console.log('服务端消息：', res);
 			});
@@ -191,13 +198,13 @@
 			}
 		},
 		methods: {
-			resetBottom(){
+			resetBottom() {
 				// 直接设置最大值跳
 				this.$nextTick(() => {
-				  uni.pageScrollTo({
-				    scrollTop: 2000000,
-				    duration: 0
-				  });
+					uni.pageScrollTo({
+						scrollTop: 2000000,
+						duration: 0
+					});
 				});
 			},
 			// 上传文件
@@ -227,7 +234,7 @@
 
 				if (this.socketOpen) {
 					this.history.messages.push(sendObj);
-					this.resetBottom()			
+					this.resetBottom()
 					this.socketTask.send({
 						data: JSON.stringify(sendObj),
 						success: () => {
@@ -374,7 +381,7 @@
 					if (this.history.messages.length >= res) {
 						this.history.allLoaded = true
 					}
-					if(scrollToBottom){
+					if (scrollToBottom) {
 						this.resetBottom()
 					}
 				}).catch((error) => {
@@ -384,6 +391,26 @@
 					this.history.loading = false;
 				})
 			},
+			// 渲染消息时间
+			renderMessageDate(item, index) {
+				const timestamp = new Date(item.createdAt).getTime()
+				const now = new Date().getTime()
+				const min5 = 5 * 60 * 1000
+				if (index === 0) {
+					if (now - timestamp > min5) {
+						return beforeTimeNow(timestamp)
+					}else{
+						return ''
+					}
+				} else {
+					const preTimestamp = new Date(this.history.messages[index - 1].createdAt).getTime()
+					// 判断一批信息时间是否在五分钟区间内
+					if (timestamp - preTimestamp > min5) {
+						return beforeTimeNow(timestamp)
+					}
+				}
+				return '';
+			},
 		}
 	}
 </script>
@@ -391,6 +418,9 @@
 <style lang="scss">
 	.container {
 		padding: 20rpx 20rpx 140rpx 20rpx;
+	}
+	page{
+		background-color: #f5f5f5;
 	}
 	// 加载更多消息
 	.history-loaded {
@@ -411,11 +441,16 @@
 		color: #d02129;
 	}
 
+	.time-lag {
+		font-size: 20rpx;
+		text-align: center;
+		transform: scale(0.8);
+	}
+
 	// 消息item
 	.message-item {
 		display: flex;
 		margin: 20rpx 0;
-
 		.message-item-content {
 			flex: 1;
 			overflow: hidden;
@@ -427,16 +462,16 @@
 			display: flex;
 			align-items: center;
 		}
-
+		// 头像
 		.avatar {
 			width: 80rpx;
 			height: 80rpx;
 			flex-shrink: 0;
 			flex-grow: 0;
-
 			image {
 				width: 100%;
 				height: 100%;
+				border-radius:50% ;
 			}
 		}
 
@@ -448,6 +483,7 @@
 		}
 
 		.text-content {
+			min-width: 44rpx;
 			padding: 16rpx;
 			border-radius: 12rpx;
 			color: #000000;
@@ -456,7 +492,7 @@
 			text-align: left;
 			vertical-align: center;
 			display: block;
-
+			font-size: 28rpx;
 			img {
 				width: 50rpx;
 				height: 50rpx;
@@ -465,9 +501,28 @@
 
 		.image-content {
 			border-radius: 12rpx;
-			width: 300rpx;
-			height: 300rpx;
+			image{
+				border-radius: 12rpx;
+				width: 300rpx;
+				height: 180rpx;
+			}
 		}
+	}
+	// 我的消息
+	.message-item-me{
+		justify-content: flex-end;
+		.avatar{
+			order: 1;
+		}
+		.text-content{
+			background-color: #0199fe;
+			box-shadow: inset 0 0 6rpx rgba(0, 0, 0, .12);
+			color: #FFFFFF;
+		}
+	}
+	// 群组消息
+	.message-item-group{
+		
 	}
 
 	/* 输入框 开始  */

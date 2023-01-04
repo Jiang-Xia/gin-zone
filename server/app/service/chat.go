@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+
 	"gorm.io/gorm"
 
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
@@ -25,7 +26,6 @@ type ChatFriends struct {
 func (u *chat) ChatFriends(userId string) []ChatFriends {
 	var friends []ChatFriends
 	db.Mysql.Where("user_id = ?", userId).Or("group_id = ?", userId).Find(&friends)
-	db.Mysql.Model(&friends)
 	//去根据好友id查询用户信息
 	for i, friend := range friends {
 		var user model.User
@@ -45,20 +45,27 @@ func (u *chat) ChatFriends(userId string) []ChatFriends {
 }
 
 // CreateChatFriends 新增
-func (u *chat) CreateChatFriends(model *model.ChatFriends) (err error) {
+func (u *chat) CreateChatFriends(friend *model.ChatFriends) (err error) {
 	var result *gorm.DB
-	if model.GroupId != 0 {
-		result = db.Mysql.Where("user_id = ? AND group_id = ?", model.UserId, model.GroupId).First(model)
+	if friend.GroupId != 0 {
+		result = db.Mysql.Where("user_id = ? AND group_id = ?", friend.UserId, friend.GroupId).First(friend)
 		if result.RowsAffected != 0 {
 			return errors.New("你已经加入该群聊")
 		}
-	} else if model.FriendId != "" {
-		result = db.Mysql.Where("user_id = ? AND friend_id = ?", model.UserId, model.FriendId).First(model)
+		// 添加群成员
+		member := model.ChatGroupMember{
+			UserId:  friend.UserId,
+			GroupId: friend.GroupId,
+		}
+		u.CreateChatGroupMember(&member)
+
+	} else if friend.FriendId != "" {
+		result = db.Mysql.Where("user_id = ? AND friend_id = ?", friend.UserId, friend.FriendId).First(friend)
 		if result.RowsAffected != 0 {
 			return errors.New("该用户已经你的好友")
 		}
 	}
-	res := db.Mysql.Create(model)
+	res := db.Mysql.Create(friend)
 	if res.Error != nil { //判断是否插入数据出错
 		fmt.Println(res.Error)
 	}
@@ -71,29 +78,40 @@ func (u *chat) DeleteChatFriends(id int) bool {
 	return true
 }
 
+// 这个命名需要合model中的结构体保持一致(不然绑定gorm时查询表名对应不上)
+type ChatLog struct {
+	model.ChatLog `gorm:"embedded"`
+	model.User    `gorm:"embedded"` // 合并成一个结构体
+}
+
 // ChatLogList 获取聊天记录
 // https://gorm.io/zh_CN/docs/query.html#%E6%9D%A1%E4%BB%B6
-func (u *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) ([]model.ChatLog, int64) {
+func (u *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) ([]ChatLog, int64) {
 	// Where可以使用Struct或者Map作为条件
-	var list []model.ChatLog
+	var list []ChatLog
 	var total int64
 	if query.GroupId != 0 {
 		db.Mysql.Where("group_id", query.GroupId).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
-		db.Mysql.Model(&list).Where("group_id", query.GroupId).Count(&total)
+		db.Mysql.Where("group_id", query.GroupId).Count(&total)
 	} else {
-		//用户自身发的和好友自己发的消息都查询
-		db.Mysql.Where("sender_id", query.SenderId).Or("sender_id", query.ReceiverId).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
-		db.Mysql.Model(&list).Where("sender_id", query.SenderId).Or("sender_id", query.ReceiverId).Count(&total)
+		//我发给他或者它发给我的都查询
+		db.Mysql.Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).Or("sender_id = ? AND receiver_id = ?", query.ReceiverId, query.SenderId).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
+		db.Mysql.Model(&list).Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).Or("sender_id = ? AND receiver_id = ?", query.ReceiverId, query.SenderId).Count(&total)
 	}
 
+	for i, log := range list {
+		var user model.User
+		db.Mysql.Where("user_id = ?", log.SenderId).Find(&user)
+		list[i].User = user
+	}
+	// fmt.Printf("聊天记录数据: %+v", list)
 	// 条件统计
-	fmt.Printf("查询参数: %+v", query)
 	return list, total
 }
 
 // CreateChatLog 新增
 func (u *chat) CreateChatLog(model *model.ChatLog) (err error) {
-	fmt.Printf("创建消息记录:%+v", model)
+	// fmt.Printf("创建消息记录:%+v", model)
 	res := db.Mysql.Create(model)
 	if res.Error != nil { //判断是否插入数据出错
 		fmt.Println(res.Error)

@@ -27,7 +27,7 @@ func Response(c *gin.Context, code int, data interface{}) bool {
 		Msg:  tip.Msg(code),
 		Data: data,
 	}
-	log.Infof("响应数据: %+v", res)
+	// log.Infof("响应数据: %+v", res)
 	c.JSON(http.StatusOK, res)
 	return true
 }
@@ -42,7 +42,7 @@ func Success(c *gin.Context, data interface{}, msg string) bool {
 		Msg:  msg,
 		Data: data,
 	}
-	log.Infof("成功响应数据: %+v", res)
+	// log.Infof("成功响应数据: %+v", res)
 	c.JSON(http.StatusOK, res)
 	return true
 }
