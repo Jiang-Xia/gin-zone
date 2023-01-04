@@ -13,5 +13,8 @@
     "highlight.js": "^11.7.0",
     "marked": "^4.2.4",
     "mp-html": "^2.4.0"
+  },
+  "devDependencies": {
+    "vite-plugin-pwa": "^0.14.1"
   }
 }
