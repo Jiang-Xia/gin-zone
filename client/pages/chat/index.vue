@@ -21,23 +21,24 @@
 				groupIcon,
 				userIcon,
 				userList: [],
-				userId: ""
 			}
 		},
 		components: {},
 		onPullDownRefresh() {
 			this.init()
 		},
-		onLoad() {
-			this.userId = getApp().globalData.userInfo.userId
-			if (this.userId) {
-				this.init()
-			}
+		onShow() {
+			this.init()
 		},
 		methods: {
 			init() {
+				const userId = getApp().globalData.userInfo.userId
+				if(!userId){
+					this.userList = []
+					return
+				}
 				this.$api.get("/mobile/chat/friends", {
-					userId: this.userId
+					userId: userId
 				}).then(res => {
 					uni.stopPullDownRefresh()
 					this.userList = res.data.map((v, i) => {

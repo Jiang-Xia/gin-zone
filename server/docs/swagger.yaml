@@ -160,8 +160,6 @@ definitions:
         type: integer
       receiverId:
         type: string
-      remark:
-        type: string
       senderId:
         type: string
       updatedAt:

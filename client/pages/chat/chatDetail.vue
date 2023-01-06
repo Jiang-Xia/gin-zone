@@ -12,11 +12,16 @@
 				<view class="time-lag">
 					{{ renderMessageDate(message, index) }}
 				</view>
-				<view class="message-item" :class="[message.senderId===userId?'message-item-me':'',message.groupId?'message-item-group':'']">
+				<view class="message-item"
+					:class="[message.senderId===userId?'message-item-me':'',message.groupId?'message-item-group':'']">
 					<view class="avatar">
-						<image :src="message.avatar"></image>
+						<image :src="message.userInfo?.avatar"></image>
 					</view>
 					<view class="content">
+						<!-- 群聊时显示用户名称 -->
+						<view class="nickname" v-if="curOption.groupId">
+							{{message.userInfo?.nickName}}
+						</view>
 						<view class="text-content" v-if="message.msgType===1">{{message.content}}</view>
 						<view class="image-content" v-if="message.msgType===2">
 							<image :src="$fileUrl+message.content" mode="heightFix"></image>
@@ -146,7 +151,8 @@
 				socketMsgQueue: [],
 				socketTask: null,
 
-				curOption: {}
+				curOption: {},
+				timer: null
 			}
 		},
 		onLoad(option) {
@@ -155,6 +161,10 @@
 			uni.setNavigationBarTitle({
 				title: option.name
 			})
+		},	
+		onUnload(){
+			clearInterval(this.timer)
+			this.timer = null
 		},
 		onReady() {
 			this.loadHistoryMessage(true);
@@ -174,13 +184,16 @@
 				method: 'GET',
 				complete: () => {
 					console.log('WebSocket已连接！');
+					this.heartbeat()
 				}
 			});
 			this.socketTask.onMessage((res) => {
 				if (res.data) {
 					const revObj = JSON.parse(res.data)
-					this.history.messages.push(revObj);
-					this.resetBottom()
+					if(revObj.cmd="text"){
+						this.history.messages.push(revObj);
+						this.resetBottom()
+					}
 				}
 				console.log('服务端消息：', res);
 			});
@@ -198,6 +211,14 @@
 			}
 		},
 		methods: {
+			heartbeat() {
+				this.timer = setInterval(() => {
+					this.sendSocketMessage({
+						cmd: "heartbeat",
+						content:"heartbeat"
+					})
+				}, 30000)
+			},
 			resetBottom() {
 				// 直接设置最大值跳
 				this.$nextTick(() => {
@@ -222,18 +243,31 @@
 					content,
 					msgType
 				} = messageData
-				const sendObj = {
+				const userInfo = getApp().globalData.userInfo
+				let sendObj = {
 					cmd: cmd,
 					senderId: this.userId,
-					receiverId: friendId,
-					groupId: Number(groupId),
 					content: content,
-					logType: Number(groupId) ? 2 : 1,
-					msgType: msgType
 				}
-
-				if (this.socketOpen) {
+				if (cmd === "heartbeat") {
+				} else if (cmd === "text") {
+					const mainObj = {
+						receiverId: friendId,
+						groupId: Number(groupId),
+						logType: Number(groupId) ? 2 : 1,
+						msgType: msgType,
+					}
+					sendObj = {
+						...sendObj,
+						...mainObj
+					}
+					sendObj.userInfo = {
+						...userInfo
+					}
 					this.history.messages.push(sendObj);
+				}
+				// 发送消息
+				if (this.socketOpen) {
 					this.resetBottom()
 					this.socketTask.send({
 						data: JSON.stringify(sendObj),
@@ -245,7 +279,7 @@
 						}
 					});
 				} else {
-					this.socketMsgQueue.push(sendObj);
+					// this.socketMsgQueue.push(sendObj);
 				}
 			},
 			//语音录制按钮和键盘输入的切换
@@ -399,7 +433,7 @@
 				if (index === 0) {
 					if (now - timestamp > min5) {
 						return beforeTimeNow(timestamp)
-					}else{
+					} else {
 						return ''
 					}
 				} else {
@@ -419,9 +453,11 @@
 	.container {
 		padding: 20rpx 20rpx 140rpx 20rpx;
 	}
-	page{
+
+	page {
 		background-color: #f5f5f5;
 	}
+
 	// 加载更多消息
 	.history-loaded {
 		font-size: 24rpx;
@@ -451,6 +487,7 @@
 	.message-item {
 		display: flex;
 		margin: 20rpx 0;
+
 		.message-item-content {
 			flex: 1;
 			overflow: hidden;
@@ -462,19 +499,25 @@
 			display: flex;
 			align-items: center;
 		}
+
 		// 头像
 		.avatar {
 			width: 80rpx;
 			height: 80rpx;
 			flex-shrink: 0;
 			flex-grow: 0;
+
 			image {
 				width: 100%;
 				height: 100%;
-				border-radius:50% ;
+				border-radius: 50%;
 			}
 		}
-
+		// 昵称
+		.nickname{
+			color: $uni-text-color-grey;
+			font-size: 13px;
+		}
 		.content {
 			font-size: 34rpx;
 			line-height: 44rpx;
@@ -493,6 +536,7 @@
 			vertical-align: center;
 			display: block;
 			font-size: 28rpx;
+
 			img {
 				width: 50rpx;
 				height: 50rpx;
@@ -501,29 +545,34 @@
 
 		.image-content {
 			border-radius: 12rpx;
-			image{
+
+			image {
 				border-radius: 12rpx;
 				width: 300rpx;
 				height: 180rpx;
 			}
 		}
 	}
+
 	// 我的消息
-	.message-item-me{
+	.message-item-me {
 		justify-content: flex-end;
-		.avatar{
+		.nickname{
+			text-align: right;
+		}
+		.avatar {
 			order: 1;
 		}
-		.text-content{
+
+		.text-content {
 			background-color: #0199fe;
 			box-shadow: inset 0 0 6rpx rgba(0, 0, 0, .12);
 			color: #FFFFFF;
 		}
 	}
+
 	// 群组消息
-	.message-item-group{
-		
-	}
+	.message-item-group {}
 
 	/* 输入框 开始  */
 	.action-box {

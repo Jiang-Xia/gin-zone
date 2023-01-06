@@ -49,15 +49,10 @@ type ClientManager struct {
 
 // WsMessage 消息模板结构体
 type WsMessage struct {
-	Cmd        string `json:"cmd"`
-	Count      int    `json:"count"`
-	SenderId   string `json:"senderId"`
-	ReceiverId string `json:"receiverId"`
-	GroupId    int    `json:"groupId"`
-	Content    string `json:"content"`
-	Remark     string `json:"remark"`
-	LogType    int8   `json:"logType"`
-	MsgType    int8   `json:"msgType"`
+	Cmd   string `json:"cmd"`
+	Count int    `json:"count"`
+	model.ChatLog
+	UserInfo interface{} `json:"userInfo"`
 }
 
 // Manager 管理实例声明
@@ -98,10 +93,13 @@ func (c *Client) Read() {
 		}
 		//fmt.Printf("客户端所发信息:%+v ", msg)
 		switch msg.Cmd {
-		case "heatbeat":
+		case "heartbeat":
+			var hMsg = map[string]interface{}{}
+			hMsg["cmd"] = msg.Cmd
+			hMsg["content"] = "ok"
+			hMsg["senderId"] = msg.SenderId
 			// 如果是心跳监测消息（利用心跳监测来判断对应客户端是否在线）
-			msg.Content = "ok"
-			resp, _ := json.Marshal(msg)
+			resp, _ := json.Marshal(hMsg)
 			c.Start = time.Now() // 重新刷新时间
 			// 发送变量到 SendChan 通道中
 			c.SendChan <- resp
@@ -113,17 +111,20 @@ func (c *Client) Read() {
 			c.SendChan <- resp
 		case "text":
 			// 发送文本消息
-			resp, _ := json.Marshal(msg)
 			chatLog := &model.ChatLog{
 				SenderId:   msg.SenderId,
 				ReceiverId: msg.ReceiverId,
 				GroupId:    msg.GroupId,
 				Content:    msg.Content,
-				Remark:     msg.Remark,
 				LogType:    msg.LogType,
 				MsgType:    msg.MsgType,
 			}
 			service.Chat.CreateChatLog(chatLog)
+			//查询用户信息
+			UserInfo, _ := service.User.GetByUserId(chatLog.SenderId)
+			msg.UserInfo = UserInfo
+			UserInfo.Password = ""
+			resp, _ := json.Marshal(msg)
 			Manager.BroadcastChan <- resp
 		case "recall":
 			// 你的撤回消息的操作
@@ -219,6 +220,10 @@ func (manager *ClientManager) BroadcastSend() {
 				for _, member := range list {
 					//找到所有在线的群成员用户(在线实例用户id和群成员用户id一致)
 					for _, conn := range Manager.Clients {
+						//自己发消息时，不用广播给自己
+						if wsMsg.SenderId == conn.UserId {
+							continue
+						}
 						if member.UserId == conn.UserId {
 							// fmt.Println("群组成员：", conn.UserId)
 							conn.SendChan <- msg

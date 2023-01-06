@@ -78,10 +78,11 @@ func (u *chat) DeleteChatFriends(id int) bool {
 	return true
 }
 
-// 这个命名需要合model中的结构体保持一致(不然绑定gorm时查询表名对应不上)
+// ChatLog 这个命名需要合model中的结构体保持一致(不然绑定gorm时查询表名对应不上)
 type ChatLog struct {
 	model.ChatLog `gorm:"embedded"`
-	model.User    `gorm:"embedded"` // 合并成一个结构体
+	User          model.User `json:"userInfo"`
+	UserId        string     `json:"-"` // 需要外键约束
 }
 
 // ChatLogList 获取聊天记录
@@ -102,9 +103,10 @@ func (u *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) ([
 	for i, log := range list {
 		var user model.User
 		db.Mysql.Where("user_id = ?", log.SenderId).Find(&user)
+		user.Password = ""
 		list[i].User = user
 	}
-	// fmt.Printf("聊天记录数据: %+v", list)
+	//fmt.Printf("聊天记录数据: %+v", list)
 	// 条件统计
 	return list, total
 }

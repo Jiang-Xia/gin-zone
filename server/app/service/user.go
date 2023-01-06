@@ -12,6 +12,7 @@ import (
 )
 
 type user struct {
+	model.User
 }
 
 var User *user
@@ -88,6 +89,17 @@ func (u *user) Create(model *model.User) (err error) {
 func (u *user) Get(id int) (user *model.User, err error) {
 	user = &model.User{}
 	err = db.Mysql.Find(user, id).Error
+	return
+}
+
+//	type nUser struct {
+//		model.User
+//	}
+//
+// GetByUserId 根据userId搜索
+func (u *user) GetByUserId(userId string) (user *model.User, err error) {
+	user = &model.User{}
+	err = db.Mysql.Where("user_Id = ?", userId).First(&user).Error
 	return
 }
 

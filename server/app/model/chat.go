@@ -40,7 +40,6 @@ type ChatLog struct {
 	ReceiverId string `gorm:"comment:接收人id;" json:"receiverId"`
 	GroupId    int    `gorm:"comment:群组id;" json:"groupId"`
 	Content    string `gorm:"comment:聊天内容;" json:"content"`
-	Remark     string `gorm:"comment:备注;" json:"remark"`
 	LogType    int8   `gorm:"comment:记录类型 1-私聊记录 2-群聊记录;" json:"logType"`
 	MsgType    int8   `gorm:"comment:消息类型 1-文本 2-图片 3-视频 4-音频; 5-其他" json:"msgType"`
 }

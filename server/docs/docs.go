@@ -808,9 +808,6 @@ const docTemplate = `{
                 "receiverId": {
                     "type": "string"
                 },
-                "remark": {
-                    "type": "string"
-                },
                 "senderId": {
                     "type": "string"
                 },
