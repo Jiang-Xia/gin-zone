@@ -564,6 +564,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/mobile/chat/updateReadTime": {
+            "post": {
+                "description": "更新上次阅读信息时间",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "聊天模块"
+                ],
+                "summary": "更新阅读时间",
+                "parameters": [
+                    {
+                        "description": "需要上传的json",
+                        "name": "query",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UpdateReadTime"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
         "/third/gushici": {
             "get": {
                 "description": "今日古诗词",
@@ -720,6 +754,9 @@ const docTemplate = `{
                 "id": {
                     "description": "自增id",
                     "type": "integer"
+                },
+                "lastReadTime": {
+                    "type": "string"
                 },
                 "updatedAt": {
                     "description": "更新时间",
@@ -922,6 +959,20 @@ const docTemplate = `{
                     "maxLength": 12,
                     "minLength": 4,
                     "example": "test"
+                }
+            }
+        },
+        "model.UpdateReadTime": {
+            "type": "object",
+            "properties": {
+                "groupId": {
+                    "type": "integer"
+                },
+                "receiverId": {
+                    "type": "string"
+                },
+                "senderId": {
+                    "type": "string"
                 }
             }
         },

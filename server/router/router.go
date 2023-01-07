@@ -66,8 +66,9 @@ func App() (r *gin.Engine) {
 		mobileController := new(mobile.Chat)
 		{
 			app.GET("chat", mobileController.WebSocketHandle)
-
+			app.Use(middleware.JWTAuth())
 			app.GET("chat/friends", mobileController.FriendList)
+			app.POST("chat/updateReadTime", mobileController.UpdateReadTime)
 			app.GET("chat/groups", mobileController.GroupList)
 			app.GET("chat/groupMembers", mobileController.GroupMemberList)
 			app.POST("chat/logs", mobileController.ChatLogList)

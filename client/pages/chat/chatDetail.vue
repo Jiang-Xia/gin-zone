@@ -113,6 +113,7 @@
 				//是否展示‘其他消息类型面板’
 				otherTypesMessagePanelVisible: false,
 				history: {
+					page: 1,
 					messages: [],
 					allLoaded: false,
 					loading: false
@@ -161,8 +162,8 @@
 			uni.setNavigationBarTitle({
 				title: option.name
 			})
-		},	
-		onUnload(){
+		},
+		onUnload() {
 			clearInterval(this.timer)
 			this.timer = null
 		},
@@ -173,6 +174,8 @@
 			this.loadHistoryMessage(false);
 		},
 		onShow() {
+			// 阅读消息
+			this.$api.post("/mobile/chat/updateReadTime", this.getCurOption())
 			const url = wsUrl + '/mobile/chat?userId=' + this.userId
 			const token = uni.getStorageSync("token")
 			this.socketTask = uni.connectSocket({
@@ -190,12 +193,12 @@
 			this.socketTask.onMessage((res) => {
 				if (res.data) {
 					const revObj = JSON.parse(res.data)
-					if(revObj.cmd="text"){
+					if (revObj.cmd === "text") {
 						this.history.messages.push(revObj);
 						this.resetBottom()
 					}
+					console.log('服务端消息：', revObj);
 				}
-				console.log('服务端消息：', res);
 			});
 			this.socketTask.onOpen((res) => {
 				this.socketOpen = true;
@@ -215,7 +218,7 @@
 				this.timer = setInterval(() => {
 					this.sendSocketMessage({
 						cmd: "heartbeat",
-						content:"heartbeat"
+						content: "heartbeat"
 					})
 				}, 30000)
 			},
@@ -233,6 +236,15 @@
 				const res = await this.$api.upload(file)
 				return res
 			},
+			getCurOption() {
+				const {friendId = "", groupId = 0} = this.curOption
+				let sendObj = {
+					senderId: this.userId,
+					receiverId: friendId,
+					groupId: Number(groupId),
+				}
+				return sendObj
+			},
 			// 发送消息
 			sendSocketMessage(messageData) {
 				const {
@@ -249,8 +261,7 @@
 					senderId: this.userId,
 					content: content,
 				}
-				if (cmd === "heartbeat") {
-				} else if (cmd === "text") {
+				if (cmd === "heartbeat") {} else if (cmd === "text") {
 					const mainObj = {
 						receiverId: friendId,
 						groupId: Number(groupId),
@@ -398,22 +409,28 @@
 					friendId = "", groupId = 0
 				} = this.curOption
 				const params = {
-					page: 1,
+					page: this.history.page,
 					pageSize: 20,
 					senderId: this.userId, //好友发送的的信息
 					receiverId: friendId, // 好友接收的信息
 					groupId: Number(groupId), // 群组的消息
 				}
 				this.$api.post("/mobile/chat/logs", params).then(res => {
-					const {
+					let {
 						list,
 						total
 					} = res.data
 					uni.stopPullDownRefresh();
+					list = list.sort((v1, v2) => {
+						return new Date(v1.createdAt).getTime() - new Date(v2.createdAt).getTime()
+					})
+					// console.log(list.map(v=>v.content))
 					this.history.loading = false;
 					this.history.messages = list.concat(this.history.messages)
-					if (this.history.messages.length >= res) {
+					if (this.history.messages.length >= res.data.total) {
 						this.history.allLoaded = true
+					} else {
+						this.history.page++
 					}
 					if (scrollToBottom) {
 						this.resetBottom()
@@ -513,11 +530,13 @@
 				border-radius: 50%;
 			}
 		}
+
 		// 昵称
-		.nickname{
+		.nickname {
 			color: $uni-text-color-grey;
 			font-size: 13px;
 		}
+
 		.content {
 			font-size: 34rpx;
 			line-height: 44rpx;
@@ -557,9 +576,11 @@
 	// 我的消息
 	.message-item-me {
 		justify-content: flex-end;
-		.nickname{
+
+		.nickname {
 			text-align: right;
 		}
+
 		.avatar {
 			order: 1;
 		}
@@ -624,7 +645,7 @@
 		width: 110rpx;
 		height: 60rpx;
 		border-radius: 10rpx;
-		background: #D02129;
+		background: $uni-color-primary;
 
 	}
 

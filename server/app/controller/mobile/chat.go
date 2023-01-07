@@ -350,12 +350,37 @@ func (ch *Chat) AddFriend(c *gin.Context) {
 		response.Fail(c, "参数错误", err.Error())
 		return
 	}
+	model.LastReadTime = time.Now()
 	err := service.Chat.CreateChatFriends(model)
 	if err != nil {
 		response.Fail(c, err.Error(), nil)
 		return
 	}
 	response.Success(c, model.ID, "添加成功")
+}
+
+// UpdateReadTime godoc
+//
+// @Summary     更新阅读时间
+// @Description 更新上次阅读信息时间
+// @Tags        聊天模块
+// @Accept      json
+// @Produce     json
+// @Param       query body     model.UpdateReadTime true "需要上传的json"
+// @Success     200  {boolean} true
+// @Router      /mobile/chat/updateReadTime [post]
+func (ch *Chat) UpdateReadTime(c *gin.Context) {
+	var query model.UpdateReadTime
+	if err := c.ShouldBindJSON(&query); err != nil {
+		response.Fail(c, "参数错误", err.Error())
+		return
+	}
+	err := service.Chat.UpdateLastReadTime(&query)
+	if err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
+	response.Success(c, true, "操作成功")
 }
 
 // ChatLogList godoc
@@ -381,7 +406,7 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 	response.Success(c, data, "")
 }
 
-//	GroupListgodoc
+//	GroupList godoc
 //
 // @Summary     群组列表
 // @Description 群组列表

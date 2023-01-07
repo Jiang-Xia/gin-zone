@@ -100,6 +100,8 @@ definitions:
       id:
         description: 自增id
         type: integer
+      lastReadTime:
+        type: string
       updatedAt:
         description: 更新时间
         type: string
@@ -247,6 +249,15 @@ definitions:
     required:
     - password
     - userName
+    type: object
+  model.UpdateReadTime:
+    properties:
+      groupId:
+        type: integer
+      receiverId:
+        type: string
+      senderId:
+        type: string
     type: object
   model.UpdateUser:
     properties:
@@ -636,6 +647,28 @@ paths:
       security:
       - Authorization: []
       summary: 聊天记录
+      tags:
+      - 聊天模块
+  /mobile/chat/updateReadTime:
+    post:
+      consumes:
+      - application/json
+      description: 更新上次阅读信息时间
+      parameters:
+      - description: 需要上传的json
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateReadTime'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+      summary: 更新阅读时间
       tags:
       - 聊天模块
   /third/gushici:

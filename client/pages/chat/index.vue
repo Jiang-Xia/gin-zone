@@ -5,7 +5,7 @@
 		<uni-list :border="true">
 			<!-- 右侧带角标 -->
 			<uni-list-chat v-for="(item,index) in userList" :avatar-circle="true" :title="item.name"
-				:avatar="item.avatar" :note="item.name" :time="item.time" :badge-text="item.badge" clickable
+				:avatar="item.avatar" :note="item.note" :time="item.time" :badge-text="item.noReadMsgCount" clickable
 				@click="clickUserItem(item)">
 			</uni-list-chat>
 		</uni-list>
@@ -15,6 +15,9 @@
 <script>
 	import groupIcon from "../../static/images/group.png"
 	import userIcon from "../../static/images/user.png"
+	import {
+		formatDate
+	} from '../../common/utils/util.js';
 	export default {
 		data() {
 			return {
@@ -44,9 +47,13 @@
 					this.userList = res.data.map((v, i) => {
 						v.avatar = v.groupId ? groupIcon : v.avatar || userIcon
 						v.name = v.nickName || v.groupName
-						v.badge = i + 1
-						v.note = "你好"
-						v.time = '2020-12-26 20:20'
+						v.time = formatDate(v.lastInfoTime)
+						v.note = v.lastMsg
+						if(v.msgType===2){
+							v.note = "[图片]"
+						}else if(v.msgType===3){
+							v.note = "[视频]"
+						}
 						return v
 					})
 				}).catch(() => {

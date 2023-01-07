@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 /*
 fmt.Printf()常用格式化打印符号
 %v在打印接口类型时，会打印出其实际的值。而在打印结构体对象时，打印的是结构体成员对象的值。
@@ -12,9 +14,10 @@ fmt.Printf()常用格式化打印符号
 // ChatFriends 好友表
 type ChatFriends struct {
 	BaseModel
-	UserId   string `gorm:"comment:好友所属的用户id;" json:"userId"`
-	FriendId string `gorm:"comment:好友id" json:"friendId"`
-	GroupId  int    `gorm:"comment:群组id" json:"groupId"`
+	UserId       string    `gorm:"comment:好友所属的用户id;" json:"userId"`
+	FriendId     string    `gorm:"comment:好友id" json:"friendId"`
+	GroupId      int       `gorm:"comment:群组id" json:"groupId"`
+	LastReadTime time.Time `gorm:"comment:上次阅读消息时间" json:"lastReadTime"`
 }
 
 // ChatGroup 群组表
@@ -51,4 +54,10 @@ type ChatLogQuery struct {
 	ReceiverId string `json:"receiverId"`
 	GroupId    int    `json:"groupId"`
 	Content    string `json:"content"  example:""`
+}
+
+type UpdateReadTime struct {
+	SenderId   string `json:"senderId"`
+	ReceiverId string `json:"receiverId"`
+	GroupId    int    `json:"groupId"`
 }
