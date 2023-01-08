@@ -327,6 +327,11 @@ const docTemplate = `{
         },
         "/mobile/chat/friends": {
             "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "好友列表",
                 "consumes": [
                     "application/json"
@@ -357,6 +362,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "添加好友",
                 "consumes": [
                     "application/json"
@@ -391,6 +401,11 @@ const docTemplate = `{
         },
         "/mobile/chat/groupMembers": {
             "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "群成员列表",
                 "consumes": [
                     "application/json"
@@ -421,6 +436,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "添加群成员",
                 "consumes": [
                     "application/json"
@@ -455,6 +475,11 @@ const docTemplate = `{
         },
         "/mobile/chat/groups": {
             "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "群组列表",
                 "consumes": [
                     "application/json"
@@ -490,6 +515,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "添加群组",
                 "consumes": [
                     "application/json"
@@ -566,6 +596,11 @@ const docTemplate = `{
         },
         "/mobile/chat/updateReadTime": {
             "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "更新上次阅读信息时间",
                 "consumes": [
                     "application/json"
@@ -593,6 +628,131 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "/mobile/moments": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "动态列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "动态模块"
+                ],
+                "summary": "动态列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "发动态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "动态模块"
+                ],
+                "summary": "发动态",
+                "parameters": [
+                    {
+                        "description": "需要上传的json",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Moment"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Moment"
+                        }
+                    }
+                }
+            }
+        },
+        "/mobile/moments/UpdateMoment": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "更新点赞或者浏览数",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "动态模块"
+                ],
+                "summary": "更新动态数据",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Moment.ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "like或者view",
+                        "name": "t",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
                         }
                     }
                 }
@@ -962,6 +1122,44 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Moment": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "自增id",
+                    "type": "integer"
+                },
+                "likes": {
+                    "type": "integer"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "urls": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "views": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.UpdateReadTime": {
             "type": "object",
             "properties": {
@@ -1002,6 +1200,79 @@ const docTemplate = `{
                     "description": "用户昵称",
                     "type": "string",
                     "example": "酱"
+                }
+            }
+        },
+        "model.User": {
+            "type": "object",
+            "required": [
+                "password",
+                "userName"
+            ],
+            "properties": {
+                "avatar": {
+                    "description": "用户头像",
+                    "type": "string",
+                    "example": "https://******.com/aa.png"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮箱",
+                    "type": "string",
+                    "example": "123456789@qq.com"
+                },
+                "gender": {
+                    "description": "性别",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "自增id",
+                    "type": "integer"
+                },
+                "intro": {
+                    "description": "个人介绍",
+                    "type": "string",
+                    "example": "个人介绍"
+                },
+                "isAdmin": {
+                    "description": "是否管理员",
+                    "type": "boolean",
+                    "default": false
+                },
+                "isLock": {
+                    "description": "是否已锁",
+                    "type": "boolean",
+                    "default": false
+                },
+                "nickName": {
+                    "description": "用户昵称",
+                    "type": "string",
+                    "example": "酱"
+                },
+                "password": {
+                    "description": "密码 - 不会json化",
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 6,
+                    "example": "123456"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "userId": {
+                    "description": "用户唯一id",
+                    "type": "string"
+                },
+                "userName": {
+                    "description": "用户名",
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 4,
+                    "example": "test"
                 }
             }
         },

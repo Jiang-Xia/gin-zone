@@ -63,18 +63,26 @@ func App() (r *gin.Engine) {
 
 		// mobile端路由
 		app := v1.Group("mobile")
-		mobileController := new(mobile.Chat)
+		//聊天模块
+		chatController := new(mobile.Chat)
 		{
-			app.GET("chat", mobileController.WebSocketHandle)
+			app.GET("chat", chatController.WebSocketHandle)
 			app.Use(middleware.JWTAuth())
-			app.GET("chat/friends", mobileController.FriendList)
-			app.POST("chat/updateReadTime", mobileController.UpdateReadTime)
-			app.GET("chat/groups", mobileController.GroupList)
-			app.GET("chat/groupMembers", mobileController.GroupMemberList)
-			app.POST("chat/logs", mobileController.ChatLogList)
-			app.POST("chat/friends", mobileController.AddFriend)
-			app.POST("chat/groups", mobileController.AddGroup)
-			app.POST("chat/groupMembers", mobileController.AddGroupMember)
+			app.GET("chat/friends", chatController.FriendList)
+			app.POST("chat/updateReadTime", chatController.UpdateReadTime)
+			app.GET("chat/groups", chatController.GroupList)
+			app.GET("chat/groupMembers", chatController.GroupMemberList)
+			app.POST("chat/logs", chatController.ChatLogList)
+			app.POST("chat/friends", chatController.AddFriend)
+			app.POST("chat/groups", chatController.AddGroup)
+			app.POST("chat/groupMembers", chatController.AddGroupMember)
+		}
+
+		//动态模块
+		momentController := new(mobile.Moment)
+		{
+			app.GET("/moments", momentController.MomentList)
+			app.POST("/moments", momentController.AddMoment)
 		}
 
 		//博客模块路由 直接转发到blog-server

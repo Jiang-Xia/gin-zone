@@ -4,37 +4,37 @@
 			@clickLeft="clickLeft" />
 		<section class="moment-card" v-for="(item, index) in cardList" :key="index">
 			<div class="card-top">
-				<image class="avatar" :src="item.avatar" />
+				<image class="avatar" :src="item.userInfo.avatar" />
 				<div class="middle">
-					<p class="name">{{ item.name }}</p>
+					<p class="name">{{ item.userInfo.nickName }}</p>
 					<p class="date">{{ item.date }}</p>
 				</div>
 
 			</div>
-			<div class="card-message">{{ item.message }}</div>
+			<div class="card-message">{{ item.content }}</div>
 			<div class="card-images">
 				<image class="image-item" v-for="(item2, index2) in item.images"
 					:style="{ marginRight: (index2 + 1) % 3 === 0 ? '0px' : '4px' }" width="114" height="114" radius="8"
-					:src="item2" :key="index2" />
+					:src="$fileUrl+item2" :key="index2" />
 			</div>
 			<div class="card-bottom">
 				<div class="adress">
-					<uni-icons type="location" color="#999"></uni-icons> {{ item.adress }}
+					<uni-icons type="location" color="#999"></uni-icons> {{ item.location }}
 					<uni-icons type="right" color="#999"></uni-icons>
 				</div>
 				<div class="tool-wrap">
 					<span @click="dianzanHandle(item)">
 						<uni-icons :type="item.dianzaned ? 'hand-up-filled' : 'hand-up'" style="margin-bottom: 4px;"
 							:color="item.dianzaned ? '#0066cc' : '#666'"></uni-icons>
-						<span :style="{ color: item.dianzaned ? '#0066cc' : '' }">{{ item.dianzan }}</span>
+						<span :style="{ color: item.dianzaned ? '#0066cc' : '' }">{{ item.likes }}</span>
 					</span>
 					<span>
 						<uni-icons type="chatbubble" color="#666"></uni-icons>
-						{{ item.pinlun }}
+						{{ item.likes }}
 					</span>
 					<span>
 						<uni-icons type="eye" color="#666"></uni-icons>
-						{{ item.liulan }}
+						{{ item.views }}
 					</span>
 					<span>
 						<uni-icons type="ellipsis" color="#666"></uni-icons>
@@ -47,7 +47,8 @@
 </template>
 
 <script>
-	import {
+	import { formatDate } from '../../common/utils/util'
+import {
 		formatTime
 	} from '/common/utils/util'
 	const cardList2 = [{
@@ -164,14 +165,14 @@
 				} = this
 				const params = {
 					page: this.page,
-					pageSize: 12,
-					client: true,
-					content,
-					description: content,
-					title: content
+					pageSize: 20,
 				}
-				const res = await this.$api.post('/blog/article/list', params)
-				const list = cardList2
+				const res = await this.$api.get('/mobile/moments', params)
+				const list = res.data.list.map(v=>{
+					v.images = v.urls.split()
+					v.date = formatDate(v.createdAt)
+					return v
+				})
 				if (!list.length) {
 					this.status = "noMore"
 				} else {

@@ -313,11 +313,12 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 	go client.Check()
 }
 
-//	godoc
+//	FriendList godoc
 //
 // @Summary     好友列表
 // @Description 好友列表
 // @Tags        聊天模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       userId   query     int            true  "User.ID"
@@ -338,6 +339,7 @@ func (ch *Chat) FriendList(c *gin.Context) {
 // @Summary     添加好友
 // @Description 添加好友
 // @Tags        聊天模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       user body     model.ChatFriends true "需要上传的json"
@@ -364,6 +366,7 @@ func (ch *Chat) AddFriend(c *gin.Context) {
 // @Summary     更新阅读时间
 // @Description 更新上次阅读信息时间
 // @Tags        聊天模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       query body     model.UpdateReadTime true "需要上传的json"
@@ -411,6 +414,7 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 // @Summary     群组列表
 // @Description 群组列表
 // @Tags        聊天模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       userId   query     int            false  "User.ID"
@@ -429,6 +433,7 @@ func (ch *Chat) GroupList(c *gin.Context) {
 // @Summary     添加群组
 // @Description 添加群组
 // @Tags        聊天模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       user body     model.ChatGroup true "需要上传的json"
@@ -449,11 +454,12 @@ func (ch *Chat) AddGroup(c *gin.Context) {
 	response.Success(c, model.ID, "添加成功")
 }
 
-//	GroupListgodoc
+//	GroupList godoc
 //
 // @Summary     群成员列表
 // @Description 群成员列表
 // @Tags        聊天模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       groupId   query     int            true  "ChatGroup.ID"
@@ -470,6 +476,7 @@ func (ch *Chat) GroupMemberList(c *gin.Context) {
 // @Summary     添加群成员
 // @Description 添加群成员
 // @Tags        聊天模块
+// @Security	Authorization
 // @Accept      json
 // @Produce     json
 // @Param       user body     model.ChatGroupMember true "需要上传的json"

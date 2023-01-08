@@ -6,7 +6,7 @@
 					placeholder="说说这一刻的想法…" />
 				<!-- show-word-limit -->
 				<div class="uploader-wrap">
-					<uni-file-picker limit="9" title="" :imageStyles="imageStyles">
+					<uni-file-picker v-model="fileLists" limit="9" title="" :imageStyles="imageStyles"  @delete="deleteHandle" @select="select" ref="files">
 						<div class="zc-uploader-setting"></div>
 					</uni-file-picker>
 				</div>
@@ -19,6 +19,9 @@
 						<uni-icons type="right" color="#999" ></uni-icons>
 					</span>
 				</div>
+				<view class="btn-submit">
+					<button size="default" type="primary" style="width: 100%;" @click="addMoment">提交</button>
+				</view>
 			</section>
 		</div>
 	</view>
@@ -40,7 +43,9 @@
 						style: 'dashed',
 						radius: 2
 					}
-				}
+				},
+				fileLists:[],
+				uploadList:[]
 			}
 		},
 		onLoad(option) {
@@ -56,7 +61,6 @@
 					isHighAccuracy:true,
 					type: 'gcj02', //返回可以用于uni.openLocation的经纬度
 					success: function (res) {
-						console.log({res})
 						const latitude = res.latitude;
 						const longitude = res.longitude;
 						uni.openLocation({
@@ -68,6 +72,52 @@
 						});
 					}
 				});
+			},
+			select(imageRes){
+					imageRes.tempFilePaths.forEach((path, index) => {
+						this.uploadFile(path)
+					})
+			},
+			deleteHandle(opt){
+				this.uploadList.splice(this.uploadList.findIndex(v=>v.path===opt.tempFilePath),1)
+				// console.log(opt,this.uploadList)
+			},
+			async uploadFile(file) {
+				const res = await this.$api.upload(file)
+				this.uploadList.push({
+					path:file,
+					...res.data
+				})
+				// console.log(this.uploadList)
+				return res
+			},
+			async addMoment(){
+				try{
+					const userId = getApp().globalData.userInfo.userId
+					const params = {
+						  content: this.info.content,
+						  location: this.info.adress,
+						  urls: this.uploadList.map(v=>v.url).join(),
+						  userId: userId,
+					}
+					if(!this.info.content||!this.fileLists.length){
+						uni.showToast({
+							title:"请填写完整数据",
+							icon:"none"
+						})
+					}
+					const res = await this.$api.post('/mobile/moments', params)
+					uni.showToast({
+						title:"发表成功",
+						icon:"none"
+					})
+					uni.navigateTo({
+						url:"/pages/moment/index"
+					})
+				}catch(e){
+					
+				}
+				
 			}
 		}
 
@@ -123,6 +173,9 @@
 				background-image: url(../../static/images/moment/ico_sc_tpsp@2x.png);
 				background-size: contain;
 			}
+		}
+		.btn-submit{
+			margin-top: 56rpx;
 		}
 	}
 </style>
