@@ -20,8 +20,8 @@
 		<view class="login margin-b80" v-if="!cur">
 			<view class="input z-flex z-row z-align-center margin-b40">
 				<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
-				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text"
-					:maxlength="11" placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
+				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text" :maxlength="11"
+					placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
 			</view>
 			<view class="input z-flex z-row z-align-center margin-b40">
 				<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
@@ -33,8 +33,8 @@
 		<view class="register margin-b80" v-if="cur">
 			<view class="input z-flex z-row z-align-center margin-b40">
 				<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
-				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text"
-					:maxlength="11" placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
+				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text" :maxlength="11"
+					placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
 			</view>
 			<view class="input z-flex z-row z-align-center margin-b40">
 				<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
@@ -92,7 +92,7 @@
 		data() {
 			return {
 				cur: 0,
-				nowTime: formatTime(new Date(),"-").slice(0,10),
+				nowTime: formatTime(new Date(), "-").slice(0, 10),
 				form: {
 					userName: "",
 					password: ""
@@ -112,7 +112,9 @@
 			},
 			async login() {
 				try {
-					uni.showLoading({title:''})
+					uni.showLoading({
+						title: ''
+					})
 					const res = await this.$api.post('/base/users/login', {
 						...this.form
 					})
@@ -137,19 +139,27 @@
 			},
 			async register() {
 				try {
-					const res = await this.$api.post('/base/users/register', {
-						...this.form
-					})
-					this.form = {
-						userName: "",
-						password: "",
-						avatars: this.getRandomAvatars(),
-						nickName: "用户" + userName
+					const {
+						userName,
+						password
+					} = this.form
+					const params = {
+						userName,
+						password,
+						avatar: this.getRandomAvatars(),
+						nickName: "用户" + userName,
+						intro: "这个人很懒，什么都没有留下。",
 					}
+					const res = await this.$api.post('/base/users', params)
 					uni.showToast({
 						title: "注册成功,快去登录吧!",
 						icon: 'none'
 					});
+					this.form = {
+						userName:"",
+						password:""
+					}
+					this.cur = 0
 				} catch (e) {
 					console.error(e)
 				}

@@ -6,7 +6,7 @@
 				<image class="avatar" :src="userInfo.avatar" mode=""></image>
 				<view class="uni-flex-column">
 					<text class="name">{{userInfo.nickName}}</text>
-					<text>难将心事和人说 说与青天明月知</text>
+					<text>{{userInfo.intro||'难将心事和人说 说与青天明月知'}}</text>
 				</view>
 				<uni-icons custom-prefix="zonefont" type="zone-shuaxin"  size="22" @click="login"></uni-icons>
 			</view>

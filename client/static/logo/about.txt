@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Gloria Hallelujah
+- Font Author: Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com)
+- Font Source: http://fonts.gstatic.com/s/gloriahallelujah/v17/LYjYdHv3kUk9BMV96EIswT9DIbW-MLSy3TKEvkCF.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))

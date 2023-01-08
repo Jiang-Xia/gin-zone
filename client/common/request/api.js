@@ -1,12 +1,28 @@
-export const fileUrl = "http://172.18.32.2:9600" 
-export const baseUrl = "http://172.18.32.2:9600/api/v1"
-export const wsUrl = "ws://172.18.32.2:9600/api/v1"
+const env = process.env.NODE_ENV;
+let fileUrl = ""
+let baseUrl = ""
+let wsUrl = ""
+if (env === 'production') {
+	fileUrl = "https://jiang-xia.top"
+	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
+	wsUrl = "ws://jiang-xia.top/x-zone/api/v1"
+} else {
+	fileUrl = "https://jiang-xia.top"
+	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
+	wsUrl = "ws://jiang-xia.top/x-zone/api/v1"
+	// 本地
+	// fileUrl = "http://172.18.32.2:9600"
+	// baseUrl = "http://172.18.32.2:9600/api/v1"
+	// wsUrl = "ws://172.18.32.2:9600/api/v1"
+	
+}
 
-// export const fileUrl = "http://192.168.1.51:9600" 
-// export const baseUrl = "http://192.168.1.51:9600/api/v1"
-// export const wsUrl = "ws://192.168.1.51:9600/api/v1"
-// const testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcklkIjoiODUwMzE2ODI4Mzg1MjgiLCJ1c2VyTmFtZSI6InVzZXJfMSIsImV4cCI6MTY3MjE5NjYxMywiaWF0IjoxNjcyMTUzNDEzfQ.ktrL91dhMHh8NoRubglDWVXtRWaRLiYqHo7J_5Fscjk"
-// uni.setStorageSync("token",testToken)
+export {
+	fileUrl,
+	baseUrl,
+	wsUrl
+}
+
 export class Api {
 	// 获取token
 	getToken() {
@@ -15,7 +31,7 @@ export class Api {
 		return token
 	}
 	// 转化rest风格api
-	restful(url, data={}, config) {
+	restful(url, data = {}, config) {
 		for (let key in data) {
 			if (url.indexOf(`{${key}}`) != -1) {
 				url = url.replace(`{${key}}`, `${data[key]}`);
@@ -69,7 +85,7 @@ export class Api {
 			reject(res.data)
 			const msg = res.data && res.data.msg
 			uni.showToast({
-				title:msg,
+				title: msg,
 				icon: "none"
 			});
 		}
@@ -145,13 +161,13 @@ export class Api {
 			});
 		})
 	}
-	
+
 	upload(filePath) {
 		return new Promise((resolve, reject) => {
 			uni.uploadFile({
-				url: baseUrl+'/base/upload',
-				filePath:filePath,
-				name:"file",
+				url: baseUrl + '/base/upload',
+				filePath: filePath,
+				name: "file",
 				header: {
 					Authorization: this.getToken()
 				},
