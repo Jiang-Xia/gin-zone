@@ -1,6 +1,35 @@
 h1,h2,h3,h4,h5{
 	font-size: inherit;
 }
+// web滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+}
+
+// /* 滚动槽 */
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  background:  #ffffff;
+}
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  transition: all 0.2s;
+}
+
+:hover::-webkit-scrollbar-thumb {
+  background-color: #dadada;
+}
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-corner {
+  background: #ffffff;
+}
+
+
 /* 常用快捷类名 */
 // 下边距
 .margin-b5 { margin-bottom: 5rpx; }

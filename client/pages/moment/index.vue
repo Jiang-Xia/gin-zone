@@ -151,35 +151,39 @@ import {
 				this.getMomentList()
 			},
 			async getMomentList(isScoll) {
-				this.loading = true
-				this.status = "loading"
-				// 是否滚动
-				if (!isScoll) {
-					this.articleList = []
-					this.page = 1
-				} else {
-					this.page++
-				}
-				const {
-					content
-				} = this
-				const params = {
-					page: this.page,
-					pageSize: 20,
-				}
-				const res = await this.$api.get('/mobile/moments', params)
-				const list = res.data.list.map(v=>{
-					v.images = v.urls.split()
-					v.date = formatDate(v.createdAt)
-					return v
-				})
-				if (!list.length) {
-					this.status = "noMore"
-				} else {
-					this.status = "more"
-				}
-				this.loading = false
-				this.cardList = this.cardList.concat(list)
+					try{
+						this.loading = true
+						this.status = "loading"
+						// 是否滚动
+						if (!isScoll) {
+							this.articleList = []
+							this.page = 1
+						} else {
+							this.page++
+						}
+						const {
+							content
+						} = this
+						const params = {
+							page: this.page,
+							pageSize: 20,
+						}
+						const res = await this.$api.get('/mobile/moments', params)
+						const list = res.data.list.map(v=>{
+							v.images = v.urls.split()
+							v.date = formatDate(v.createdAt)
+							return v
+						})
+						if (!list.length) {
+							this.status = "noMore"
+						} else {
+							this.status = "more"
+						}
+						this.loading = false
+						this.cardList = this.cardList.concat(list)
+					}catch(e){
+						this.loading = false
+					}
 			},
 			dianzanHandle(item) {
 				item.dianzaned = true
