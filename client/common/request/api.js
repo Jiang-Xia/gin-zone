@@ -5,11 +5,10 @@ let wsUrl = ""
 if (env === 'production') {
 	fileUrl = "https://jiang-xia.top"
 	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
-	wsUrl = "ws://42.192.145.236:9600/api/v1"
+	wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 } else {
 	fileUrl = "https://jiang-xia.top"
 	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
-	// wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 	wsUrl = "ws://42.192.145.236:9600/api/v1"
 	
 	// 本地
