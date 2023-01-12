@@ -44,8 +44,8 @@
 		</view>
 
 		<view class="button-wrap">
-			<view class="button bg-color-base z-flex z-row z-align-center z-space-center margin-b20">
-				<text class="color-white font-34" @tap="confirm">立即{{ cur ? '注册': '登录' }}</text>
+			<view class="button bg-color-base z-flex z-row z-align-center z-space-center margin-b20" @tap="confirm">
+				<text class="color-white font-34">立即{{ cur ? '注册': '登录' }}</text>
 			</view>
 		</view>
 
