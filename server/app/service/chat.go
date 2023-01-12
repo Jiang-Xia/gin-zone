@@ -56,24 +56,26 @@ func (ch *chat) ChatFriends(userId string) []ChatFriends {
 		var chatLogs []model.ChatLog
 		hasMsg := true // 用于判断是否有未读消息
 		if friend.GroupId != 0 {
+			groupSql := db.Mysql.Where("group_id = ?", friend.GroupId).Session(&gorm.Session{})
 			//查询群组未读消息
-			db.Mysql.Where("group_id = ?", friend.GroupId).Where("updated_at > ?", friend.LastReadTime).Order("updated_at desc").Find(&chatLogs)
+			groupSql.Where("updated_at > ?", friend.LastReadTime).Order("updated_at desc").Find(&chatLogs)
 			if len(chatLogs) == 0 {
 				hasMsg = false
 				//没有未读时就去查最新的一消息
-				db.Mysql.Where("group_id = ?", friend.GroupId).Order("updated_at desc").First(&chatLogs)
+				groupSql = groupSql.Order("updated_at desc").First(&chatLogs)
 			}
 		} else {
+			// 新建一个会话 ，条件不会一直累加
+			// https://gorm.io/zh_CN/docs/method_chaining.html
+			friendSql := db.Mysql.Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
+				userId, friend.ChatFriends.FriendId, friend.ChatFriends.FriendId, userId).Session(&gorm.Session{})
 			//查询私聊未读消息
-			db.Mysql.Where("sender_id = ? AND receiver_id = ?", userId, friend.ChatFriends.FriendId).
-				Or("sender_id = ? AND receiver_id = ?", friend.ChatFriends.FriendId, userId).
-				Where("updated_at > ?", friend.LastReadTime).Order("updated_at desc").Find(&chatLogs)
+			friendSql.Where("updated_at > ?", friend.LastReadTime).Order("updated_at desc").Find(&chatLogs)
+			//fmt.Println("未读消息===============================>:", len(chatLogs))
 			if len(chatLogs) == 0 {
 				hasMsg = false
 				//没有未读时就去查最新的一消息
-				db.Mysql.Where("sender_id = ? AND receiver_id = ?", userId, friend.ChatFriends.FriendId).
-					Or("sender_id = ? AND receiver_id = ?", friend.ChatFriends.FriendId, userId).
-					Order("updated_at desc").First(&chatLogs)
+				friendSql.Order("updated_at desc").First(&chatLogs)
 			}
 		}
 		if len(chatLogs) != 0 {
@@ -84,7 +86,7 @@ func (ch *chat) ChatFriends(userId string) []ChatFriends {
 				friends[i].NoReadMsgCount = len(chatLogs)
 			}
 		}
-		//fmt.Println("friend===============================:", friend.LastInfoTime, friend.LastMsg, friend.NoReadMsgCount)
+		//fmt.Println("friend===============================>:", friends[i].LastInfoTime, friends[i].LastMsg, friends[i].NoReadMsgCount)
 
 	}
 	//fmt.Printf("user===============================:%+v", friends)
@@ -150,12 +152,15 @@ func (ch *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) (
 	var list []ChatLog
 	var total int64
 	if query.GroupId != 0 {
-		db.Mysql.Where("group_id", query.GroupId).Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
-		db.Mysql.Model(&list).Where("group_id", query.GroupId).Count(&total)
+		gSql := db.Mysql.Where("group_id", query.GroupId).Session(&gorm.Session{})
+		gSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
+		gSql.Model(&list).Count(&total)
 	} else {
 		//我发给他或者它发给我的都查询
-		db.Mysql.Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).Or("sender_id = ? AND receiver_id = ?", query.ReceiverId, query.SenderId).Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
-		db.Mysql.Model(&list).Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).Or("sender_id = ? AND receiver_id = ?", query.ReceiverId, query.SenderId).Count(&total)
+		fSql := db.Mysql.Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).
+			Or("sender_id = ? AND receiver_id = ?", query.ReceiverId, query.SenderId).Session(&gorm.Session{})
+		fSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
+		fSql.Model(&list).Count(&total)
 	}
 	var users []model.User
 	var userIds []string

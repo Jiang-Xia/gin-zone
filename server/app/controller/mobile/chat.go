@@ -72,10 +72,10 @@ func (c *Client) Read() {
 		// 退出
 		Manager.UnRegisterChan <- c
 	}()
-	sum := 0
+	//sum := 0
 	// 无限循环 应用服务器常用于监听
 	for {
-		sum++
+		//sum++
 		_, data, err := c.Socket.ReadMessage()
 		//var err error
 		//var data []byte
@@ -131,7 +131,7 @@ func (c *Client) Read() {
 			c.SendChan <- []byte("回复消息")
 
 		}
-		fmt.Println("sum:", sum, "次")
+		//fmt.Println("sum:", sum, "次")
 	}
 }
 
