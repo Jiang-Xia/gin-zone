@@ -17,7 +17,7 @@ var Services *cron.Cron
 func init() {
 	// 创建一个默认的cron对象 默认为分开始 设置为秒
 	c := cron.New(cron.WithSeconds())
-	c.AddFunc("@every @daily", func() {
+	c.AddFunc("@daily", func() {
 		log.Info("每日凌晨执行===========>")
 		getGuShiCi()
 	})
