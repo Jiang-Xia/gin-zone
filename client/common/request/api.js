@@ -3,18 +3,18 @@ let fileUrl = ""
 let baseUrl = ""
 let wsUrl = ""
 if (env === 'production') {
-	fileUrl = "https://jiang-xia.top"
+	fileUrl = "https://jiang-xia.top/x-zone/api/v1"
 	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
 	wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 } else {
-	fileUrl = "https://jiang-xia.top"
+	fileUrl = "https://jiang-xia.top/x-zone/api/v1"
 	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
 	wsUrl = "ws://42.192.145.236:9600/api/v1"
 	
 	// 本地
-	fileUrl = "http://172.18.32.2:9600"
-	baseUrl = "http://172.18.32.2:9600/api/v1"
-	wsUrl = "ws://172.18.32.2:9600/api/v1"
+	// fileUrl = "http://172.18.32.2:9600"
+	// baseUrl = "http://172.18.32.2:9600/api/v1"
+	// wsUrl = "ws://172.18.32.2:9600/api/v1"
 	
 }
 
