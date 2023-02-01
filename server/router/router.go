@@ -6,7 +6,8 @@ import (
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/admin"
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/base"
 	"gitee.com/jiang-xia/gin-zone/server/app/controller/mobile"
-	_ "gitee.com/jiang-xia/gin-zone/server/docs" // 需要引入docs, 不然打不开文档
+	"gitee.com/jiang-xia/gin-zone/server/config"
+	docs "gitee.com/jiang-xia/gin-zone/server/docs" // 需要引入docs, 不然打不开文档
 	"gitee.com/jiang-xia/gin-zone/server/middleware"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -100,6 +101,7 @@ func App() (r *gin.Engine) {
 		thirdController := new(base.Third)
 		third.GET("gushici", thirdController.GetGuShiCi)
 
+		setDocsInfo()
 		// swagger 文档
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(
 			swaggerFiles.Handler,
@@ -109,4 +111,13 @@ func App() (r *gin.Engine) {
 	}
 
 	return router
+}
+
+// 配置swagger文档信息
+func setDocsInfo() {
+	sec := config.Config.Section("docs")
+	basePath := sec.Key("base_path").String()
+	host := sec.Key("host").String()
+	docs.SwaggerInfo.BasePath = basePath
+	docs.SwaggerInfo.Host = host
 }
