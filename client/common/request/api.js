@@ -12,9 +12,9 @@ if (env === 'production') {
 	wsUrl = "ws://42.192.145.236:9600/api/v1"
 	
 	// 本地
-	// fileUrl = "http://172.18.32.2:9600"
-	// baseUrl = "http://172.18.32.2:9600/api/v1"
-	// wsUrl = "ws://172.18.32.2:9600/api/v1"
+	fileUrl = "http://172.18.32.2:9600"
+	baseUrl = "http://172.18.32.2:9600/api/v1"
+	wsUrl = "ws://172.18.32.2:9600/api/v1"
 	
 }
 

@@ -64,6 +64,12 @@ func App() (r *gin.Engine) {
 
 		// mobile端路由
 		app := v1.Group("mobile")
+		//动态模块
+		momentController := new(mobile.Moment)
+		{
+			app.GET("/moments", momentController.MomentList)
+			app.POST("/moments", middleware.JWTAuth(), momentController.AddMoment)
+		}
 		//聊天模块
 		chatController := new(mobile.Chat)
 		{
@@ -77,13 +83,6 @@ func App() (r *gin.Engine) {
 			app.POST("chat/friends", chatController.AddFriend)
 			app.POST("chat/groups", chatController.AddGroup)
 			app.POST("chat/groupMembers", chatController.AddGroupMember)
-		}
-
-		//动态模块
-		momentController := new(mobile.Moment)
-		{
-			app.GET("/moments", momentController.MomentList)
-			app.POST("/moments", momentController.AddMoment)
 		}
 
 		//博客模块路由 直接转发到blog-server

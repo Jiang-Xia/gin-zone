@@ -93,7 +93,7 @@
 			},
 			async addMoment(){
 				try{
-					const userId = getApp().globalData.userInfo.userId
+					const userId = getApp().globalData.userInfo.id
 					const params = {
 						  content: this.info.content,
 						  location: this.info.adress,
@@ -111,7 +111,7 @@
 						title:"发表成功",
 						icon:"none"
 					})
-					uni.navigateTo({
+					uni.switchTab({
 						url:"/pages/moment/index"
 					})
 				}catch(e){

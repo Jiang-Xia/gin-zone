@@ -16,19 +16,16 @@ var Moment *moment
 func (m *moment) List(Page int, PageSize int, maps interface{}) ([]model.Moment, int64) {
 	var moments []model.Moment
 	var total int64
+	//如果设置了关联会自动查询，这个设置了关联用户表，所以自动查询user信息
 	db.Mysql.Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&moments)
-	for i, moment := range moments {
-		var user model.User
-		db.Mysql.Where("user_id = ?", moment.UserId).Find(&user)
-		moments[i].User = user
-	}
 	db.Mysql.Model(&moments).Count(&total)
 	return moments, total
 }
 
 // CreateMoment 新增
-func (m *moment) CreateMoment(friend *model.Moment) (err error) {
-	res := db.Mysql.Create(friend)
+func (m *moment) CreateMoment(moment *model.Moment) (err error) {
+	// Omit跳过关联创建
+	res := db.Mysql.Create(moment)
 	if res.Error != nil { //判断是否插入数据出错
 		fmt.Println(res.Error)
 	}

@@ -46,18 +46,24 @@ func (m *Moment) MomentList(c *gin.Context) {
 // @Success     200  {object} model.Moment
 // @Router       /mobile/moments [post]
 func (m *Moment) AddMoment(c *gin.Context) {
-	model := &model.Moment{}
-	if err := c.ShouldBindJSON(&model); err != nil {
+	addMoment := &model.AddMoment{}
+	if err := c.ShouldBindJSON(&addMoment); err != nil {
 		// 字段参数校验
 		response.Fail(c, "参数错误", err.Error())
 		return
 	}
-	err := service.Moment.CreateMoment(model)
+	err := service.Moment.CreateMoment(&model.Moment{
+		BaseModel: addMoment.BaseModel,
+		Content:   addMoment.Content,
+		Urls:      addMoment.Urls,
+		UserId:    addMoment.UserId,
+		Location:  addMoment.Location,
+	})
 	if err != nil {
 		response.Fail(c, err.Error(), nil)
 		return
 	}
-	response.Success(c, model.ID, "添加成功")
+	response.Success(c, addMoment.ID, "添加成功")
 }
 
 // UpdateMoment godoc

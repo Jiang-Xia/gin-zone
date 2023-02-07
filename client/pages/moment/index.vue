@@ -136,6 +136,9 @@ import {
 			this.init()
 			uni.stopPullDownRefresh()
 		},
+		onShow(){
+			this.init()
+		},
 		// 上拉加载回调函数
 		onReachBottom() {
 			this.getMomentList(true)
@@ -145,6 +148,7 @@ import {
 		},
 		methods: {
 			init() {
+				this.cardList = []
 				this.onSearch()
 			},
 			onSearch() {
