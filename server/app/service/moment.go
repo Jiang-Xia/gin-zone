@@ -16,8 +16,13 @@ var Moment *moment
 func (m *moment) List(Page int, PageSize int, maps interface{}) ([]model.Moment, int64) {
 	var moments []model.Moment
 	var total int64
-	//如果设置了关联会自动查询，这个设置了关联用户表，所以自动查询user信息
 	db.Mysql.Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&moments)
+	for i, moment := range moments {
+		var user model.User
+		db.Mysql.Where("id = ?", moment.UserId).Find(&user)
+		moments[i].User = user
+		//fmt.Printf("%+v", user)
+	}
 	db.Mysql.Model(&moments).Count(&total)
 	return moments, total
 }

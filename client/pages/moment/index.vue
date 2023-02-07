@@ -143,9 +143,9 @@ import {
 		onReachBottom() {
 			this.getMomentList(true)
 		},
-		created() {
-			this.init()
-		},
+		// created() {
+		// 	this.init()
+		// },
 		methods: {
 			init() {
 				this.cardList = []
