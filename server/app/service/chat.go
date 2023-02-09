@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
-	"gorm.io/gorm/utils"
 	"time"
 
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
@@ -152,39 +151,15 @@ func (ch *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) (
 	var list []ChatLog
 	var total int64
 	if query.GroupId != 0 {
-		gSql := db.Mysql.Where("group_id", query.GroupId).Session(&gorm.Session{})
+		gSql := db.Mysql.Joins("User").Where("group_id", query.GroupId).Session(&gorm.Session{})
 		gSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
 		gSql.Model(&list).Count(&total)
 	} else {
 		//我发给他或者它发给我的都查询
-		fSql := db.Mysql.Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).
+		fSql := db.Mysql.Joins("User").Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).
 			Or("sender_id = ? AND receiver_id = ?", query.ReceiverId, query.SenderId).Session(&gorm.Session{})
 		fSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
 		fSql.Model(&list).Count(&total)
-	}
-	var users []model.User
-	var userIds []string
-	//sort.Slice(list, func(i, j int) bool {
-	//	return list[i].CreatedAt.Second() < list[j].CreatedAt.Second()
-	//})
-	for i, log := range list {
-		var user model.User
-		// 缓存用户信息不用每次都查询数据库
-		if utils.Contains(userIds, log.SenderId) {
-			for _, value := range users {
-				if value.UserId == log.SenderId {
-					list[i].User = value
-					break
-				}
-			}
-			continue
-		} else {
-			db.Mysql.Where("user_id = ?", log.SenderId).Find(&user)
-			user.Password = ""
-			list[i].User = user
-			users = append(users, user)
-			userIds = append(userIds, user.UserId)
-		}
 	}
 	fmt.Printf("聊天记录数据: %+v", total)
 	// 条件统计

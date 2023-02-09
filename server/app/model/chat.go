@@ -45,6 +45,8 @@ type ChatLog struct {
 	Content    string `gorm:"comment:聊天内容;" json:"content"`
 	LogType    int8   `gorm:"comment:记录类型 1-私聊记录 2-群聊记录;" json:"logType"`
 	MsgType    int8   `gorm:"comment:消息类型 1-文本 2-图片 3-视频 4-音频; 5-其他" json:"msgType"`
+	UserId     string `gorm:"comment:用户id;" json:"userId"`
+	User       User   `json:"userInfo"`
 }
 
 // ChatLogQuery 聊天记录查询结构体

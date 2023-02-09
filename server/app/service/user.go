@@ -107,7 +107,7 @@ func (u *user) GetByUserId(userId string) (user *model.User, err error) {
 func (u *user) List(Page int, PageSize int, maps interface{}) ([]model.User, int64) {
 	var users []model.User
 	var total int64
-
+	// Preload("Moments") // 查询一个用户，多个动态。
 	db.Mysql.Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&users)
 	db.Mysql.Model(&users).Count(&total)
 

@@ -10,7 +10,7 @@ type Moment struct {
 	Location string `gorm:"comment:地点;" json:"location"`
 	Likes    int64  `gorm:"comment:点赞数;" json:"likes"`
 	Views    int64  `gorm:"comment:浏览数;" json:"views"`
-	User     User   `gorm:"foreignKey:UserId;references:ID;" json:"userInfo"`
+	User     User   `json:"userInfo"`
 }
 type AddMoment struct {
 	BaseModel
