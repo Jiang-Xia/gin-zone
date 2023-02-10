@@ -696,7 +696,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "需要上传的json",
-                        "name": "user",
+                        "name": "addMoment",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -868,27 +868,14 @@ const docTemplate = `{
                 "content": {
                     "type": "string"
                 },
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "自增id",
-                    "type": "integer"
-                },
                 "location": {
-                    "description": "UserUniqueId string ` + "`" + `gorm:\"comment:用户唯一id;\" json:\"userUniqueId\"` + "`" + `",
                     "type": "string"
                 },
-                "updatedAt": {
-                    "description": "更新时间",
+                "uUniqId": {
                     "type": "string"
                 },
                 "urls": {
                     "type": "string"
-                },
-                "userId": {
-                    "type": "integer"
                 }
             }
         },

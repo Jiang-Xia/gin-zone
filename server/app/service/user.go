@@ -8,7 +8,6 @@ import (
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/hash"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
-	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -78,7 +77,6 @@ func (u *user) Create(model *model.User) (err error) {
 	if b, _ := u.isUserExist(model.UserName); b {
 		return errors.New("用户已经存在了")
 	}
-	model.UserId = utils.GenId() //唯一id
 	res := db.Mysql.Create(model)
 	if res.Error != nil { //判断是否插入数据出错
 		fmt.Println(res.Error)

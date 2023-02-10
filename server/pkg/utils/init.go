@@ -37,5 +37,8 @@ func init() {
 		fmt.Printf("init failed ,err:%v\n", err)
 	}
 	id := GenId()
+	// for i := 0; i < 10000; i++ {
+	// 	fmt.Println(GenId())
+	// }
 	fmt.Println("GenId: ", id)
 }

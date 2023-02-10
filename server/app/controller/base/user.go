@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/spf13/cast"
 
 	"gitee.com/jiang-xia/gin-zone/server/config"
@@ -265,9 +264,7 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 		log.Info("用户已经存在,直接生成token")
 		return
 	}
-	sId := utils.GenId()
 	user.MainUser = model.MainUser{
-		UserId:   sId,
 		Password: "123456",
 		WxOpenId: openid,
 	}

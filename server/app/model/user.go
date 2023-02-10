@@ -15,15 +15,15 @@ type User struct {
 	BaseModel  `gorm:"embedded"` // 基础 model
 	MainUser   `gorm:"embedded"`
 	UpdateUser `gorm:"embedded"`
-	Moments    []Moment  `json:"-"` // moments
-	ChatLogs   []ChatLog `json:"-"` // chatLogs
+	Moments    []Moment  `gorm:"foreignKey:UUniqId;references:UserId"` // moments
+	ChatLogs   []ChatLog `json:"-"`                                    // chatLogs
 }
 
 type MainUser struct {
 	// 用户唯一id
-	UserId string `json:"userId" gorm:"unique;comment:用户唯一id"`
+	UserId string `json:"userId" gorm:"type:varchar(20);index;unique;comment:用户唯一id"`
 	// 用户名
-	UserName string `gorm:"comment:用户名;" json:"userName" binding:"required,min=4,max=12" label:"用户名" example:"test" `
+	UserName string `gorm:"type:varchar(20);comment:用户名;" json:"userName" binding:"required,min=4,max=12" label:"用户名" example:"test" `
 	// 密码 - 不会json化
 	Password string `gorm:"comment:密码;" json:"-" binding:"required,min=6,max=16" label:"密码" example:"123456"`
 	// 是否管理员
@@ -41,9 +41,9 @@ type UpdateUser struct {
 	// 用户昵称
 	NickName string `gorm:"comment:用户昵称;" json:"nickName" example:"酱"`
 	//个人介绍
-	Intro string `gorm:"comment:个人介绍;" json:"intro" example:"个人介绍"`
+	Intro string `gorm:"varchar(255);comment:个人介绍;" json:"intro" example:"个人介绍"`
 	// 邮箱
-	Email string `gorm:"comment:邮箱;" json:"email" example:"123456789@qq.com"`
+	Email string `gorm:"varchar(100);comment:邮箱;" json:"email" example:"123456789@qq.com"`
 	// 性别
 	Gender int `gorm:"comment:性别;" json:"gender"`
 }

@@ -93,7 +93,7 @@
 			},
 			async addMoment(){
 				try{
-					const userId = getApp().globalData.userInfo.id
+					const userId = getApp().globalData.userInfo.userId
 					const params = {
 						  content: this.info.content,
 						  location: this.info.adress,

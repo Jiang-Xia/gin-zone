@@ -42,7 +42,7 @@ func (m *Moment) MomentList(c *gin.Context) {
 // @Security	Authorization
 // @Accept      json
 // @Produce     json
-// @Param       user body     model.AddMoment true "需要上传的json"
+// @Param       addMoment body     model.AddMoment true "需要上传的json"
 // @Success     200  {object} model.AddMoment
 // @Router       /mobile/moments [post]
 func (m *Moment) AddMoment(c *gin.Context) {
@@ -53,17 +53,16 @@ func (m *Moment) AddMoment(c *gin.Context) {
 		return
 	}
 	err := service.Moment.CreateMoment(&model.Moment{
-		BaseModel: addMoment.BaseModel,
-		Content:   addMoment.Content,
-		Urls:      addMoment.Urls,
-		UserId:    addMoment.UserId,
-		Location:  addMoment.Location,
+		Content:  addMoment.Content,
+		Urls:     addMoment.Urls,
+		UUniqId:  addMoment.UUniqId,
+		Location: addMoment.Location,
 	})
 	if err != nil {
 		response.Fail(c, err.Error(), nil)
 		return
 	}
-	response.Success(c, addMoment.ID, "添加成功")
+	response.Success(c, addMoment, "添加成功")
 }
 
 // UpdateMoment godoc
