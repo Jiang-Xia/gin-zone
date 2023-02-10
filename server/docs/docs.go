@@ -129,7 +129,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.MainUser"
+                            "$ref": "#/definitions/model.RegisterForm"
                         }
                     }
                 ],
@@ -800,7 +800,6 @@ const docTemplate = `{
         "base.User": {
             "type": "object",
             "required": [
-                "password",
                 "userName"
             ],
             "properties": {
@@ -845,13 +844,6 @@ const docTemplate = `{
                     "description": "用户昵称",
                     "type": "string",
                     "example": "酱"
-                },
-                "password": {
-                    "description": "密码 - 不会json化",
-                    "type": "string",
-                    "maxLength": 16,
-                    "minLength": 6,
-                    "example": "123456"
                 },
                 "updatedAt": {
                     "description": "更新时间",
@@ -1097,7 +1089,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.MainUser": {
+        "model.RegisterForm": {
             "type": "object",
             "required": [
                 "password",
@@ -1123,34 +1115,18 @@ const docTemplate = `{
                     "type": "string",
                     "example": "个人介绍"
                 },
-                "isAdmin": {
-                    "description": "是否管理员",
-                    "type": "boolean",
-                    "default": false
-                },
-                "isLock": {
-                    "description": "是否已锁",
-                    "type": "boolean",
-                    "default": false
-                },
                 "nickName": {
                     "description": "用户昵称",
                     "type": "string",
                     "example": "酱"
                 },
                 "password": {
-                    "description": "密码 - 不会json化",
                     "type": "string",
                     "maxLength": 16,
                     "minLength": 6,
                     "example": "123456"
                 },
-                "userId": {
-                    "description": "用户唯一id",
-                    "type": "string"
-                },
                 "userName": {
-                    "description": "用户名",
                     "type": "string",
                     "maxLength": 12,
                     "minLength": 4,
@@ -1204,7 +1180,6 @@ const docTemplate = `{
         "model.User": {
             "type": "object",
             "required": [
-                "password",
                 "userName"
             ],
             "properties": {
@@ -1249,13 +1224,6 @@ const docTemplate = `{
                     "description": "用户昵称",
                     "type": "string",
                     "example": "酱"
-                },
-                "password": {
-                    "description": "密码 - 不会json化",
-                    "type": "string",
-                    "maxLength": 16,
-                    "minLength": 6,
-                    "example": "123456"
                 },
                 "updatedAt": {
                     "description": "更新时间",

@@ -37,17 +37,29 @@ type User struct {
 // @Tags        用户模块
 // @Accept      json
 // @Produce     json
-// @Param       user body     model.MainUser true "需要上传的json"
+// @Param       user body     model.RegisterForm true "需要上传的json"
 // @Success     200  {object} User
 // @Router      /base/users [post]
 func (u *User) Register(c *gin.Context) {
-	user := &model.User{}
-	if err := c.ShouldBindJSON(&user); err != nil {
+	registerForm := &model.RegisterForm{}
+	if err := c.ShouldBindJSON(&registerForm); err != nil {
 		// 字段参数校验
 		translate.Individual(err, c)
 		return
 	}
-
+	user := &model.User{
+		MainUser: model.MainUser{
+			Password: registerForm.Password,
+			UserName: registerForm.UserName,
+		},
+		UpdateUser: model.UpdateUser{
+			Avatar:   registerForm.Avatar,
+			NickName: registerForm.NickName,
+			Email:    registerForm.Email,
+			Intro:    registerForm.Intro,
+			Gender:   registerForm.Gender,
+		},
+	}
 	err := service.User.Create(user)
 	if err != nil {
 		response.Fail(c, err.Error(), nil)

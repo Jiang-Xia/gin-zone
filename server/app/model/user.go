@@ -5,6 +5,7 @@ import (
 
 	"gitee.com/jiang-xia/gin-zone/server/middleware"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/hash"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -24,7 +25,7 @@ type MainUser struct {
 	// 用户名
 	UserName string `gorm:"comment:用户名;" json:"userName" binding:"required,min=4,max=12" label:"用户名" example:"test" `
 	// 密码 - 不会json化
-	Password string `gorm:"comment:密码;" json:"password" binding:"required,min=6,max=16" label:"密码" example:"123456"`
+	Password string `gorm:"comment:密码;" json:"-" binding:"required,min=6,max=16" label:"密码" example:"123456"`
 	// 是否管理员
 	IsAdmin bool `gorm:"comment:是否管理员;" json:"isAdmin" default:"0"`
 	// 是否已锁
@@ -53,6 +54,11 @@ type LoginForm struct {
 	Password string `json:"password" binding:"required,min=6,max=16" label:"密码" example:"123456"`
 }
 
+type RegisterForm struct {
+	LoginForm  `gorm:"embedded"`
+	UpdateUser `gorm:"embedded"`
+}
+
 // ChangePassword 修改密码
 type ChangePassword struct {
 	LoginForm   `gorm:"embedded"`
@@ -61,6 +67,7 @@ type ChangePassword struct {
 
 // BeforeCreate user 创建前hook 密码加密&权限控制
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	u.UserId = utils.GenId()
 	u.Password = hash.BcryptHash(u.Password)
 	return nil
 }
@@ -72,6 +79,14 @@ func (u *User) AfterCreate(tx *gorm.DB) (err error) {
 	}
 	return nil
 }
+
+// 查询钩子
+// func (u *User) AfterFind(tx *gorm.DB) (err error) {
+// 	if u.Password != "" {
+// 		u.Password = ""
+// 	}
+// 	return
+// }
 
 func GetUserID(c *gin.Context) int {
 	token := c.GetHeader("authorization")
