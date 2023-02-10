@@ -17,7 +17,9 @@ gin-zone
 ├─admin      后台系统前端：vue3 vite
 ├─client     跨端前端：uniapp
 ```
-
+## 代码仓库
+- [Gin Zone Gitee](https://gitee.com/jiang-xia/gin-zone)
+- [Gin Zone Github](https://github.com/Jiang-Xia/gin-zone)
 #### 开源作者
 
 **jiang-xia**

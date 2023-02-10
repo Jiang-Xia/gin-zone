@@ -42,8 +42,8 @@ func (m *Moment) MomentList(c *gin.Context) {
 // @Security	Authorization
 // @Accept      json
 // @Produce     json
-// @Param       user body     model.Moment true "需要上传的json"
-// @Success     200  {object} model.Moment
+// @Param       user body     model.AddMoment true "需要上传的json"
+// @Success     200  {object} model.AddMoment
 // @Router       /mobile/moments [post]
 func (m *Moment) AddMoment(c *gin.Context) {
 	addMoment := &model.AddMoment{}

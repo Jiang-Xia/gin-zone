@@ -102,6 +102,10 @@ air
 ##### 4.1 环境安装
 安装 所需技术环境，打包生成二进制文件 ./main 执行即可启动服务
 
+#### 在线API文档
+[gin-zone/api-doc](https://jiang-xia.top/x-zone/api/v1/swagger/index.html)
+
+
 #### 开源作者
 
 **jiang-xia**

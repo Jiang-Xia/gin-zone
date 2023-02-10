@@ -700,7 +700,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Moment"
+                            "$ref": "#/definitions/model.AddMoment"
                         }
                     }
                 ],
@@ -708,7 +708,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Moment"
+                            "$ref": "#/definitions/model.AddMoment"
                         }
                     }
                 }
@@ -870,6 +870,36 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AddMoment": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "自增id",
+                    "type": "integer"
+                },
+                "location": {
+                    "description": "UserUniqueId string ` + "`" + `gorm:\"comment:用户唯一id;\" json:\"userUniqueId\"` + "`" + `",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "urls": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.ChangePassword": {
             "type": "object",
             "required": [
@@ -1011,6 +1041,12 @@ const docTemplate = `{
                 "updatedAt": {
                     "description": "更新时间",
                     "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
@@ -1119,44 +1155,6 @@ const docTemplate = `{
                     "maxLength": 12,
                     "minLength": 4,
                     "example": "test"
-                }
-            }
-        },
-        "model.Moment": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "自增id",
-                    "type": "integer"
-                },
-                "likes": {
-                    "type": "integer"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "更新时间",
-                    "type": "string"
-                },
-                "urls": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
-                },
-                "userInfo": {
-                    "$ref": "#/definitions/model.User"
-                },
-                "views": {
-                    "type": "integer"
                 }
             }
         },

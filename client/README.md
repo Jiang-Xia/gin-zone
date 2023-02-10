@@ -29,13 +29,13 @@
 
 ## 在线预览
 
-<!-- - [Blog Admin](https://admin.jiang-xia.top/dashboard/workplace) -->
+- [Gin Zone](https://jiang-xia.top/zone/#/pages/blog/index)
 
   
 
 ## 代码仓库
 
-- [admin](https://gitee.com/jiang-xia/gin-zone/admin)
+- [client](https://gitee.com/jiang-xia/gin-zone/client)
 
 <!-- ## 项目示例图 -->
 
