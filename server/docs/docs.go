@@ -871,10 +871,10 @@ const docTemplate = `{
                 "location": {
                     "type": "string"
                 },
-                "uUniqId": {
+                "urls": {
                     "type": "string"
                 },
-                "urls": {
+                "userId": {
                     "type": "string"
                 }
             }

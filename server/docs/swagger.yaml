@@ -65,9 +65,9 @@ definitions:
         type: string
       location:
         type: string
-      uUniqId:
-        type: string
       urls:
+        type: string
+      userId:
         type: string
     type: object
   model.ChangePassword:

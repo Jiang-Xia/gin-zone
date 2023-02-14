@@ -15,8 +15,8 @@ type User struct {
 	BaseModel  `gorm:"embedded"` // 基础 model
 	MainUser   `gorm:"embedded"`
 	UpdateUser `gorm:"embedded"`
-	Moments    []Moment  `gorm:"foreignKey:UUniqId;references:UserId"` // moments
-	ChatLogs   []ChatLog `json:"-"`                                    // chatLogs
+	Moments    []Moment  `gorm:"foreignKey:UUniqId;references:UserId" json:"-"` // moments
+	ChatLogs   []ChatLog `json:"-"`                                             // chatLogs
 }
 
 type MainUser struct {
