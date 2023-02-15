@@ -55,7 +55,7 @@ func (m *Moment) AddMoment(c *gin.Context) {
 	err := service.Moment.CreateMoment(&model.Moment{
 		Content:  addMoment.Content,
 		Urls:     addMoment.Urls,
-		UUniqId:  addMoment.UUniqId,
+		UserId:   addMoment.UserId,
 		Location: addMoment.Location,
 	})
 	if err != nil {

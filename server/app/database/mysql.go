@@ -82,6 +82,8 @@ func Setup() {
 
 		},
 		Logger: slowLogger,
+		// AutoMigrate 取消自动创建物理外键，但要关联查询时model 结构体中还是需要设置的
+		DisableForeignKeyConstraintWhenMigrating: true,
 		// Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {

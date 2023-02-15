@@ -18,7 +18,7 @@ func (m *moment) List(Page int, PageSize int, maps interface{}) ([]model.Moment,
 	var moments []model.Moment
 	var total int64
 	//Joins("User") 会把关联的用户信息 查询出来
-	db.Mysql.Joins("User").Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Find(&moments)
+	db.Mysql.Where(maps).Offset((Page - 1) * PageSize).Limit(PageSize).Joins("User").Find(&moments)
 	db.Mysql.Model(&moments).Count(&total)
 	return moments, total
 }

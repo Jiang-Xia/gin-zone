@@ -868,7 +868,7 @@
                     "type": "string"
                 },
                 "userId": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },

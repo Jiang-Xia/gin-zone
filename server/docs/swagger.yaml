@@ -68,7 +68,7 @@ definitions:
       urls:
         type: string
       userId:
-        type: string
+        type: integer
     type: object
   model.ChangePassword:
     properties:
