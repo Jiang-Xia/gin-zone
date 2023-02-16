@@ -1,5 +1,11 @@
 basePath: /api/v1
 definitions:
+  base.ChatGPT:
+    properties:
+      text:
+        example: 以《是她》为名写一首诗
+        type: string
+    type: object
   base.FileInfo:
     properties:
       filename:
@@ -68,7 +74,7 @@ definitions:
       urls:
         type: string
       userId:
-        type: integer
+        type: string
     type: object
   model.ChangePassword:
     properties:
@@ -809,6 +815,28 @@ paths:
       summary: 更新动态数据
       tags:
       - 动态模块
+  /third/chatGPT:
+    post:
+      consumes:
+      - application/json
+      description: chatGPT
+      parameters:
+      - description: 需要上传的json
+        in: body
+        name: chatGPT
+        required: true
+        schema:
+          $ref: '#/definitions/base.ChatGPT'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.ChatGPT'
+      summary: chatGPT
+      tags:
+      - 第三方模块
   /third/gushici:
     get:
       consumes:

@@ -758,6 +758,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/third/chatGPT": {
+            "post": {
+                "description": "chatGPT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "第三方模块"
+                ],
+                "summary": "chatGPT",
+                "parameters": [
+                    {
+                        "description": "需要上传的json",
+                        "name": "chatGPT",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/base.ChatGPT"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.ChatGPT"
+                        }
+                    }
+                }
+            }
+        },
         "/third/gushici": {
             "get": {
                 "description": "今日古诗词",
@@ -783,6 +817,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "base.ChatGPT": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "example": "以《是她》为名写一首诗"
+                }
+            }
+        },
         "base.FileInfo": {
             "type": "object",
             "properties": {
@@ -875,7 +918,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "userId": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },
