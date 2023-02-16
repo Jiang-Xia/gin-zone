@@ -3,7 +3,7 @@ definitions:
   base.ChatGPT:
     properties:
       text:
-        example: 以《是她》为名写一首诗
+        example: 以《是她》为标题写一首诗
         type: string
     type: object
   base.FileInfo:

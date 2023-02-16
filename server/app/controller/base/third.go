@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
 	gogpt "github.com/sashabaranov/go-gpt3"
 
@@ -41,7 +42,7 @@ func (t *Third) GetGuShiCi(c *gin.Context) {
 }
 
 type ChatGPT struct {
-	Text string `json:"text" example:"以《是她》为名写一首诗"`
+	Text string `json:"text" example:"以《是她》为标题写一首诗"`
 }
 
 //	godoc
@@ -61,9 +62,11 @@ func (t *Third) ChatGPT(c *gin.Context) {
 		return
 	}
 	data := make(map[string]interface{})
-	client := gogpt.NewClient("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")
+	sec := config.Config.Section("app")
+	openaiAppKey := sec.Key("openai_app_key").String()
+	client := gogpt.NewClient(openaiAppKey)
 	ctx := context.Background()
-	//fmt.Println(req.Text)
+	//fmt.Println(req.Text, openaiAppKey)
 	gptReq := gogpt.CompletionRequest{
 		Model:       gogpt.GPT3TextDavinci003,
 		MaxTokens:   1000,
@@ -75,5 +78,6 @@ func (t *Third) ChatGPT(c *gin.Context) {
 		return
 	}
 	data["text"] = resp.Choices[0].Text
+	//fmt.Println(resp.Choices[0].Text)
 	response.Success(c, data, "请求成功")
 }

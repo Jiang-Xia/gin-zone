@@ -822,7 +822,7 @@ const docTemplate = `{
             "properties": {
                 "text": {
                     "type": "string",
-                    "example": "以《是她》为名写一首诗"
+                    "example": "以《是她》为标题写一首诗"
                 }
             }
         },
