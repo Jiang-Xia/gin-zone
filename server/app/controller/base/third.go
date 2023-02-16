@@ -75,6 +75,7 @@ func (t *Third) ChatGPT(c *gin.Context) {
 	}
 	resp, err := client.CreateCompletion(ctx, gptReq)
 	if err != nil {
+		response.Fail(c, err.Error(), "请求失败")
 		return
 	}
 	data["text"] = resp.Choices[0].Text
