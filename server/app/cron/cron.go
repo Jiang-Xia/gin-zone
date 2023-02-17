@@ -5,7 +5,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-var Services *cron.Cron
+//var Services *cron.Cron
 
 // @yearly  每年一次（晚上12点执行）
 // @monthly 每月一次
@@ -17,10 +17,13 @@ var Services *cron.Cron
 func init() {
 	// 创建一个默认的cron对象 默认为分开始 设置为秒
 	c := cron.New(cron.WithSeconds())
-	c.AddFunc("@daily", func() {
+	_, err := c.AddFunc("@daily", func() {
 		log.Info("每日凌晨执行===========>")
-		getGuShiCi()
+		GetGuShiCi()
 	})
+	if err != nil {
+		log.Warning("添加定时任务报错")
+	}
 	//c.AddFunc("@daily", func() {
 	//	log.Info("每日凌晨执行===========>")
 	//	getGuShiCi()

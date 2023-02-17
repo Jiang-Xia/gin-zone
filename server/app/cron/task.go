@@ -11,8 +11,8 @@ import (
 
 var ctx = context.Background()
 
-// 每日凌晨0点去获取古诗词一次，更新到redis缓存中
-func getGuShiCi() {
+// GetGuShiCi 每日凌晨0点去获取古诗词一次，更新到redis缓存中
+func GetGuShiCi() {
 	//一级分类
 	var categoryList = [2]string{"rensheng/lizhi", "rensheng/zheli"}
 	//随机取切片中的一项
@@ -33,5 +33,5 @@ func getGuShiCi() {
 
 // 初始化调用
 func init() {
-	getGuShiCi()
+	GetGuShiCi()
 }

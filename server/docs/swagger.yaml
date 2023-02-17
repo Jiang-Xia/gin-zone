@@ -2,9 +2,33 @@ basePath: /api/v1
 definitions:
   base.ChatGPT:
     properties:
-      text:
-        example: 以《是她》为标题写一首诗
+      frequencyPenalty:
+        example: 0
+        type: number
+      maxTokens:
+        description: 返回文本长度
+        example: 150
+        type: integer
+      model:
+        example: text-davinci-003
         type: string
+      presencePenalty:
+        example: 0.6
+        type: number
+      prompt:
+        example: 介绍一下自己
+        type: string
+      suffix:
+        description: 返回文本后缀
+        example: 小夏
+        type: string
+      temperature:
+        description: 随机性程度
+        example: 0.9
+        type: number
+      topP:
+        example: 1
+        type: number
     type: object
   base.FileInfo:
     properties:
@@ -821,7 +845,7 @@ paths:
       - application/json
       description: chatGPT
       parameters:
-      - description: 需要上传的json
+      - description: 例子：为对话聊天机器人配置
         in: body
         name: chatGPT
         required: true
@@ -842,6 +866,11 @@ paths:
       consumes:
       - application/json
       description: 今日古诗词
+      parameters:
+      - description: 立即刷新古诗词
+        in: query
+        name: refresh
+        type: string
       produces:
       - application/json
       responses:

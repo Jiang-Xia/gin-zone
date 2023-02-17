@@ -8,6 +8,7 @@ import (
 	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
 	gogpt "github.com/sashabaranov/go-gpt3"
 
+	"gitee.com/jiang-xia/gin-zone/server/app/cron"
 	"gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
 	"github.com/gin-gonic/gin"
@@ -26,14 +27,19 @@ var ctx = context.Background()
 // @Accept      json
 // @Produce     json
 // @Success     200  {object} Third
+// @Param       refresh query     string false "立即刷新古诗词"
 // @Router      /third/gushici [get]
 func (t *Third) GetGuShiCi(c *gin.Context) {
+	refresh := c.Query("refresh")
+	if refresh != "" {
+		cron.GetGuShiCi()
+	}
 	data := make(map[string]interface{})
 	val, err := database.Redis().Get(ctx, "z_gu_shi_ci").Result()
 	if err != nil {
 		panic(err)
 	}
-	json.Unmarshal([]byte(val), &data)
+	err = json.Unmarshal([]byte(val), &data)
 	fmt.Println("z_gu_shi_ci", data)
 	if err != nil {
 		response.Fail(c, "", err)
@@ -42,7 +48,14 @@ func (t *Third) GetGuShiCi(c *gin.Context) {
 }
 
 type ChatGPT struct {
-	Text string `json:"text" example:"以《是她》为标题写一首诗"`
+	Model            string  `json:"model" example:"text-davinci-003"`
+	Prompt           string  `json:"prompt" example:"介绍一下自己"`
+	Suffix           string  `json:"suffix" example:"小夏"`       //返回文本后缀
+	MaxTokens        int     `json:"maxTokens" example:"150"`   //返回文本长度
+	Temperature      float32 `json:"temperature" example:"0.9"` //随机性程度
+	TopP             float32 `json:"topP" example:"1"`
+	FrequencyPenalty float32 `json:"frequencyPenalty" example:"0.0"`
+	PresencePenalty  float32 `json:"presencePenalty" example:"0.6"`
 }
 
 //	godoc
@@ -53,7 +66,7 @@ type ChatGPT struct {
 // @Accept      json
 // @Produce     json
 // @Success     200  {object} ChatGPT
-// @Param       chatGPT body     ChatGPT true "需要上传的json"
+// @Param       chatGPT body     ChatGPT true "例子：为对话聊天机器人配置"
 // @Router      /third/chatGPT [post]
 func (t *Third) ChatGPT(c *gin.Context) {
 	req := &ChatGPT{}
@@ -68,10 +81,14 @@ func (t *Third) ChatGPT(c *gin.Context) {
 	ctx := context.Background()
 	//fmt.Println(req.Text, openaiAppKey)
 	gptReq := gogpt.CompletionRequest{
-		Model:       gogpt.GPT3TextDavinci003,
-		MaxTokens:   1000,
-		Temperature: 0,
-		Prompt:      req.Text,
+		Model:            req.Model,
+		Prompt:           req.Prompt,
+		MaxTokens:        req.MaxTokens,
+		Temperature:      req.Temperature,
+		Suffix:           req.Suffix,
+		TopP:             req.TopP,
+		PresencePenalty:  req.PresencePenalty,
+		FrequencyPenalty: req.FrequencyPenalty,
 	}
 	resp, err := client.CreateCompletion(ctx, gptReq)
 	if err != nil {

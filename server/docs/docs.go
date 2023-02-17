@@ -773,7 +773,7 @@ const docTemplate = `{
                 "summary": "chatGPT",
                 "parameters": [
                     {
-                        "description": "需要上传的json",
+                        "description": "例子：为对话聊天机器人配置",
                         "name": "chatGPT",
                         "in": "body",
                         "required": true,
@@ -805,6 +805,14 @@ const docTemplate = `{
                     "第三方模块"
                 ],
                 "summary": "今日古诗词",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "立即刷新古诗词",
+                        "name": "refresh",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -820,9 +828,40 @@ const docTemplate = `{
         "base.ChatGPT": {
             "type": "object",
             "properties": {
-                "text": {
+                "frequencyPenalty": {
+                    "type": "number",
+                    "example": 0
+                },
+                "maxTokens": {
+                    "description": "返回文本长度",
+                    "type": "integer",
+                    "example": 150
+                },
+                "model": {
                     "type": "string",
-                    "example": "以《是她》为标题写一首诗"
+                    "example": "text-davinci-003"
+                },
+                "presencePenalty": {
+                    "type": "number",
+                    "example": 0.6
+                },
+                "prompt": {
+                    "type": "string",
+                    "example": "介绍一下自己"
+                },
+                "suffix": {
+                    "description": "返回文本后缀",
+                    "type": "string",
+                    "example": "小夏"
+                },
+                "temperature": {
+                    "description": "随机性程度",
+                    "type": "number",
+                    "example": 0.9
+                },
+                "topP": {
+                    "type": "number",
+                    "example": 1
                 }
             }
         },
