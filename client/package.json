@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "highlight.js": "^11.7.0",
-    "marked": "^4.2.4",
-    "mp-html": "^2.4.0"
+    "marked": "^4.2.12",
+    "mp-html": "^2.4.1",
+    "prismjs": "^1.29.0"
   },
   "devDependencies": {
     "vite-plugin-pwa": "^0.14.1"

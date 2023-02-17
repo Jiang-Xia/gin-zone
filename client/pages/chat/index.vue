@@ -20,7 +20,7 @@
 <script>
 	import groupIcon from "../../static/images/group.png"
 	import userIcon from "../../static/images/user.png"
-	import oneChat from "../../static/images/chat/avatar/一号.png"
+	import oneChat from "../../static/images/chat/avatar/one.png"
 	import {
 		formatDate
 	} from '../../common/utils/util.js';

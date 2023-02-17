@@ -4,18 +4,18 @@
 
 		<view class="article-content">
 			<!-- #ifdef H5||APP-PLUS -->
-			<rich-text class="md-preview default-theme md md-previewOnly" :nodes="nodes"></rich-text>
+			<rich-text selectable class="md-preview default-theme md md-previewOnly" :nodes="nodes"></rich-text>
 			<!-- #endif -->
 
 			<!-- #ifdef MP-WEIXIN -->
-			<mp-html :content="contentHtml" :tag-style="tagStyle" />
+			<mp-html :content="contentHtml" />
 			<!-- #endif -->
 		</view>
 	</view>
 </template>
 
 <script>
-	import parseHtml from "../../../common/utils/html-parser..js"
+	import parseHtml from "../../../common/utils/html-parser.js"
 	// #ifdef MP-WEIXIN
 	import mpHtml from '../../../node_modules/mp-html/dist/uni-app/components/mp-html/mp-html'
 	// #endif
@@ -25,7 +25,8 @@
 	import {
 		marked
 	} from 'marked'
-	import hljs from 'highlight.js'
+	import Prism from 'prismjs';
+	import 'prismjs/themes/prism-tomorrow.css';
 	export default {
 		data() {
 			return {
@@ -68,24 +69,30 @@
 			transformMarkdown() {
 				// marked 全局变量
 				const markdownString = this.markdownString
+				// #ifdef H5||APP-PLUS||MP-WEIXIN
 				marked.setOptions({
 					// 设置代码高亮插件
 					highlight: function(code, lang, callback) {
 						let result = ''
-						if (lang && hljs.getLanguage(lang)) {
-							// TODO 代码块 使其高亮
-							result = hljs.highlight(lang, code, true).value;
-						} else {
-							result = hljs.highlightAuto(code).value;
-						}
+						result = Prism.highlight(code, Prism.languages.javascript, "javascript")
 						callback("", result.toString());
 					}
 				});
+				// #endif
 
 				marked.parse(markdownString, (err, html) => {
-					this.contentHtml = styleStr + html
+					console.log(html)
+					// #ifdef MP-WEIXIN
+					this.contentHtml = this.setRichTextStyle(html)
+					// #endif
+
+					// #ifdef H5||APP-PLUS
 					this.nodes = parseHtml(html)
+					// #endif
 				});
+			},
+			setRichTextStyle(html) {
+				return styleStr + html
 			}
 		}
 	}
