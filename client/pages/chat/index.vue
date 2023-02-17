@@ -3,6 +3,11 @@
 		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" :border="true" :shadow="false" fixed statusBar
 			title="聊天" @clickLeft="clickLeft" />
 		<uni-list :border="true">
+			<!-- 默认列表 -->
+			<uni-list-chat v-for="(item,index) in defaultList" :avatar-circle="true" :title="item.name"
+				:avatar="item.avatar" :note="item.note" :time="item.time" clickable
+				@click="clickDefaultItem(item)">
+			</uni-list-chat>
 			<!-- 右侧带角标 -->
 			<uni-list-chat v-for="(item,index) in userList" :avatar-circle="true" :title="item.name"
 				:avatar="item.avatar" :note="item.note" :time="item.time" :badge-text="item.noReadMsgCount" clickable
@@ -15,6 +20,7 @@
 <script>
 	import groupIcon from "../../static/images/group.png"
 	import userIcon from "../../static/images/user.png"
+	import oneChat from "../../static/images/chat/avatar/一号.png"
 	import {
 		formatDate
 	} from '../../common/utils/util.js';
@@ -23,6 +29,13 @@
 			return {
 				groupIcon,
 				userIcon,
+				defaultList:[
+					{
+						name:"知心小夏",
+						avatar:oneChat,
+						note:'对话聊天机器人小夏'
+					}
+				],
 				userList: [],
 			}
 		},
@@ -96,6 +109,12 @@
 					fail: function(res) {
 						console.log(res.errMsg);
 					}
+				})
+			},
+			// 点击默认功能列表
+			clickDefaultItem(item){
+				uni.navigateTo({
+					url: `/pages/chat/chatAiDetail?name=${item.name}&avatar=${oneChat}`
 				})
 			}
 		}

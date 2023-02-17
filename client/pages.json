@@ -62,6 +62,13 @@
 			}
 		},
 		{
+			"path": "pages/chat/chatAiDetail",
+			"style": {
+				"navigationBarTitleText": "AI聊天",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/chat/addFriend",
 			"style": {
 				"navigationBarTitleText": "",
