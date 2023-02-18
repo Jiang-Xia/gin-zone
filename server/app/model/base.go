@@ -1,19 +1,50 @@
 package model
 
 import (
+	"database/sql/driver"
+	"fmt"
 	"time"
 
 	"github.com/spf13/cast"
 )
 
+type JsonTime struct {
+	time.Time
+}
+
+// MarshalJSON on JSONTime format Time field with %Y-%m-%d %H:%M:%S
+func (t JsonTime) MarshalJSON() ([]byte, error) {
+	formatted := fmt.Sprintf("\"%s\"", t.Format("2006-01-02 15:04:05"))
+	return []byte(formatted), nil
+}
+
+// Value insert timestamp into mysql need this function.
+func (t JsonTime) Value() (driver.Value, error) {
+	var zeroTime time.Time
+	if t.Time.UnixNano() == zeroTime.UnixNano() {
+		return nil, nil
+	}
+	return t.Time, nil
+}
+
+// Scan valueof time.Time
+func (t *JsonTime) Scan(v interface{}) error {
+	value, ok := v.(time.Time)
+	if ok {
+		*t = JsonTime{Time: value}
+		return nil
+	}
+	return fmt.Errorf("can not convert %v to timestamp", v)
+}
+
 // BaseModel 基础model
 type BaseModel struct {
 	// 自增id
-	ID int `gorm:"comment:自增id;primaryKey;autoIncrement;" json:"id"`
+	ID int `gorm:"comment:自增id;primaryKey;autoIncrement;" json:"id,omitempty"`
 	// 创建时间
-	CreatedAt time.Time `gorm:"comment:创建时间;column:created_at" json:"createdAt"`
+	CreatedAt JsonTime `gorm:"comment:创建时间;column:created_at" json:"createdAt,omitempty"`
 	// 更新时间
-	UpdatedAt time.Time `gorm:"comment:更新时间;column:updated_at" json:"updatedAt"`
+	UpdatedAt JsonTime `gorm:"comment:更新时间;column:updated_at" json:"updatedAt,omitempty"`
 }
 
 // gorm hook 文档 ：https://gorm.io/zh_CN/docs/hooks.html

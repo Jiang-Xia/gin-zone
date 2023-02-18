@@ -272,16 +272,19 @@
 		.nav-title {
 			line-height: 88rpx;
 			text-align: center;
-			margin: auto 10rpx auto auto;
+			margin: auto;
 			font-size: 14px;
+			/* #ifdef MP-WEIXIN */
+			margin-right: 10rpx;
+			/* #endif */
 		}
 
 		.nav-right-btn {
 			font-size: 14px;
 			color: #333;
-			// #ifdef MP-WEIXIN
+			/* #ifdef MP-WEIXIN */
 			margin-right: 200rpx;
-			// #endif
+			/* #endif */
 		}
 	}
 

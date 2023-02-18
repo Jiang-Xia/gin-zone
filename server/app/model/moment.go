@@ -9,7 +9,7 @@ type Moment struct {
 	Location string `gorm:"comment:地点;" json:"location"`
 	Likes    int64  `gorm:"comment:点赞数;" json:"likes"`
 	Views    int64  `gorm:"comment:浏览数;" json:"views"`
-	// 多对一的写法，需要在当前多的结构体中写，外键和引用。
+	// 多对一的写法，需要在当前多的结构体中写，外键和引用。用户结构体外键为UserId，引用到动态的UserId中
 	User User `gorm:"foreignKey:UserId;references:UserId;comment:用户数据;" json:"userInfo"`
 }
 type AddMoment struct {

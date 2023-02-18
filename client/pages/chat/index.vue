@@ -5,8 +5,7 @@
 		<uni-list :border="true">
 			<!-- 默认列表 -->
 			<uni-list-chat v-for="(item,index) in defaultList" :avatar-circle="true" :title="item.name"
-				:avatar="item.avatar" :note="item.note" :time="item.time" clickable
-				@click="clickDefaultItem(item)">
+				:avatar="item.avatar" :note="item.note" :time="item.time" clickable @click="clickDefaultItem(item)">
 			</uni-list-chat>
 			<!-- 右侧带角标 -->
 			<uni-list-chat v-for="(item,index) in userList" :avatar-circle="true" :title="item.name"
@@ -29,13 +28,11 @@
 			return {
 				groupIcon,
 				userIcon,
-				defaultList:[
-					{
-						name:"知心小夏",
-						avatar:oneChat,
-						note:'对话聊天机器人小夏'
-					}
-				],
+				defaultList: [{
+					name: "知心小夏",
+					avatar: oneChat,
+					note: '对话聊天机器人小夏'
+				}],
 				userList: [],
 			}
 		},
@@ -49,7 +46,7 @@
 		methods: {
 			init() {
 				const userId = getApp().globalData.userInfo.userId
-				if(!userId){
+				if (!userId) {
 					this.userList = []
 					return
 				}
@@ -58,13 +55,16 @@
 				}).then(res => {
 					uni.stopPullDownRefresh()
 					this.userList = res.data.map((v, i) => {
-						v.avatar = v.groupId ? groupIcon : v.avatar || userIcon
-						v.name = v.nickName || v.groupName
+						v.avatar = v.userInfo.avatar || userIcon
+						if (v.chatGroup.groupId) {
+							v.avatar = groupIcon
+						}
+						v.name = v.userInfo.nickName || v.chatGroup.groupName
 						v.time = formatDate(v.lastInfoTime)
 						v.note = v.lastMsg
-						if(v.msgType===2){
+						if (v.msgType === 2) {
 							v.note = "[图片]"
-						}else if(v.msgType===3){
+						} else if (v.msgType === 3) {
 							v.note = "[视频]"
 						}
 						return v
@@ -112,7 +112,7 @@
 				})
 			},
 			// 点击默认功能列表
-			clickDefaultItem(item){
+			clickDefaultItem(item) {
 				uni.navigateTo({
 					url: `/pages/chat/chatAiDetail?name=${item.name}&avatar=${oneChat}`
 				})

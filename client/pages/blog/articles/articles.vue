@@ -68,7 +68,7 @@
 		},
 		methods: {
 			init() {
-				this.onSearch()
+				// this.onSearch()
 			},
 			onSearch() {
 				this.getArticleList()

@@ -342,23 +342,28 @@ func (ch *Chat) FriendList(c *gin.Context) {
 // @Security	Authorization
 // @Accept      json
 // @Produce     json
-// @Param       user body     model.ChatFriends true "需要上传的json"
-// @Success     200  {object} model.ChatFriends
+// @Param       user body     model.AddFriend true "需要上传的json"
+// @Success     200  {object} model.AddFriend
 // @Router      /mobile/chat/friends [post]
 func (ch *Chat) AddFriend(c *gin.Context) {
-	model := &model.ChatFriends{}
-	if err := c.ShouldBindJSON(&model); err != nil {
+	addFriend := &model.AddFriend{}
+	if err := c.ShouldBindJSON(&addFriend); err != nil {
 		// 字段参数校验
 		response.Fail(c, "参数错误", err.Error())
 		return
 	}
-	model.LastReadTime = time.Now()
-	err := service.Chat.CreateChatFriends(model)
+	err := service.Chat.CreateChatFriends(&model.ChatFriends{
+		UserId:       addFriend.UserId,
+		FriendId:     addFriend.FriendId,
+		GroupId:      addFriend.GroupId,
+		LastReadTime: model.JsonTime{Time: time.Now()},
+		LastInfoTime: model.JsonTime{Time: time.Now()},
+	})
 	if err != nil {
 		response.Fail(c, err.Error(), nil)
 		return
 	}
-	response.Success(c, model.ID, "添加成功")
+	response.Success(c, addFriend, "添加成功")
 }
 
 // UpdateReadTime godoc

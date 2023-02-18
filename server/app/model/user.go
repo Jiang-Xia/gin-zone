@@ -16,7 +16,7 @@ type User struct {
 	MainUser   `gorm:"embedded"`
 	UpdateUser `gorm:"embedded"`
 	//Moments  []Moment  `gorm:"foreignKey:UserId;references:UserId" json:"-"` // 这是一对多的写法，多对一时需要在多的结构体中写外键即可
-	ChatLogs []ChatLog `json:"-"` // chatLogs
+	//ChatLogs []ChatLog `json:"-"` // chatLogs
 }
 
 type MainUser struct {

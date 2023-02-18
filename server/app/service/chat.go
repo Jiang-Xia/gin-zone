@@ -16,42 +16,13 @@ type chat struct {
 // Chat 结构体实例化
 var Chat *chat
 
-type ChatFriends struct {
-	model.ChatFriends `gorm:"embedded"`
-	model.User        `gorm:"embedded"` // 合并成一个结构体
-	model.ChatGroup   `gorm:"embedded"`
-	MsgType           int8      `json:"msgType"`
-	LastMsg           string    `json:"lastMsg"`        // 最新消息
-	NoReadMsgCount    int       `json:"noReadMsgCount"` // 未读消息数
-	LastInfoTime      time.Time `json:"lastInfoTime"`   // 最新消息时间
-}
-
-//func setData(friend ChatFriends, chatLogs []model.ChatLog) {
-//	if len(chatLogs) != 0 {
-//		friend.NoReadMsgCount = len(chatLogs)
-//		friend.LastInfoTime = chatLogs[0].CreatedAt
-//		friend.LastMsg = chatLogs[0].Content
-//	}
-//}
-
 // ChatFriends 获取好友列表
-func (ch *chat) ChatFriends(userId string) []ChatFriends {
+func (ch *chat) ChatFriends(userId string) []model.ChatFriends {
 
-	var friends []ChatFriends
-	db.Mysql.Where("user_id = ?", userId).Or("group_id = ?", userId).Find(&friends)
-	//去根据好友id查询用户信息
+	var friends []model.ChatFriends
+	//一对一预加载
+	db.Mysql.Preload("User").Preload("ChatGroup").Where("user_id = ?", userId).Find(&friends)
 	for i, friend := range friends {
-		var user model.User
-		db.Mysql.Where("user_id = ?", friend.FriendId).Find(&user)
-		//需要取切片里的元素，不能使用循环中的friend
-		friends[i].User = user
-		// 是群组查询群组自身信息
-		if friend.GroupId != 0 {
-			var chatGroup model.ChatGroup
-			db.Mysql.Where("id = ?", friend.GroupId).Find(&chatGroup)
-			friends[i].ChatGroup = chatGroup
-		}
-		// fmt.Printf("user===============================:%+v", friend.User)
 		var chatLogs []model.ChatLog
 		hasMsg := true // 用于判断是否有未读消息
 		if friend.GroupId != 0 {
@@ -67,7 +38,7 @@ func (ch *chat) ChatFriends(userId string) []ChatFriends {
 			// 新建一个会话 ，条件不会一直累加
 			// https://gorm.io/zh_CN/docs/method_chaining.html
 			friendSql := db.Mysql.Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
-				userId, friend.ChatFriends.FriendId, friend.ChatFriends.FriendId, userId).Session(&gorm.Session{})
+				userId, friend.FriendId, friend.FriendId, userId).Session(&gorm.Session{})
 			//查询私聊未读消息
 			friendSql.Where("updated_at > ?", friend.LastReadTime).Order("updated_at desc").Find(&chatLogs)
 			//fmt.Println("未读消息===============================>:", len(chatLogs))
@@ -88,7 +59,7 @@ func (ch *chat) ChatFriends(userId string) []ChatFriends {
 		//fmt.Println("friend===============================>:", friends[i].LastInfoTime, friends[i].LastMsg, friends[i].NoReadMsgCount)
 
 	}
-	//fmt.Printf("user===============================:%+v", friends)
+
 	return friends
 }
 
@@ -120,7 +91,7 @@ func (ch *chat) CreateChatFriends(friend *model.ChatFriends) (err error) {
 	return
 }
 
-// UpdateLastReadTime 修改密码
+// UpdateLastReadTime 修改阅读时间
 func (ch *chat) UpdateLastReadTime(friend *model.UpdateReadTime) (err error) {
 	if friend.GroupId != 0 {
 		err = db.Mysql.Table("z_chat_friends").Where("user_id = ? AND group_id = ?", friend.SenderId, friend.GroupId).Updates(map[string]interface{}{"last_read_time": time.Now()}).Error
@@ -137,28 +108,21 @@ func (ch *chat) DeleteChatFriends(id int) bool {
 	return true
 }
 
-// ChatLog 这个命名需要合model中的结构体保持一致(不然绑定gorm时查询表名对应不上)
-type ChatLog struct {
-	model.ChatLog `gorm:"embedded"`
-	User          model.User `json:"userInfo"`
-	UserId        string     `json:"-"` // 需要外键约束
-}
-
 // ChatLogList 获取聊天记录
 // https://gorm.io/zh_CN/docs/query.html#%E6%9D%A1%E4%BB%B6
-func (ch *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) ([]ChatLog, int64) {
+func (ch *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) ([]model.ChatLog, int64) {
 	// Where可以使用Struct或者Map作为条件
-	var list []ChatLog
+	var list []model.ChatLog
 	var total int64
 	if query.GroupId != 0 {
-		gSql := db.Mysql.Joins("User").Where("group_id", query.GroupId).Session(&gorm.Session{})
-		gSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
+		gSql := db.Mysql.Where("group_id", query.GroupId).Session(&gorm.Session{})
+		gSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Joins("User").Find(&list)
 		gSql.Model(&list).Count(&total)
 	} else {
 		//我发给他或者它发给我的都查询
-		fSql := db.Mysql.Joins("User").Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).
+		fSql := db.Mysql.Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).
 			Or("sender_id = ? AND receiver_id = ?", query.ReceiverId, query.SenderId).Session(&gorm.Session{})
-		fSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Find(&list)
+		fSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Joins("User").Find(&list)
 		fSql.Model(&list).Count(&total)
 	}
 	fmt.Printf("聊天记录数据: %+v", total)
