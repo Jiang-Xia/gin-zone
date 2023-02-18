@@ -83,7 +83,7 @@ func (u *User) Register(c *gin.Context) {
 func (u *User) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	aid, err := strconv.Atoi(id)
-	user := &model.User{}
+	user := &model.UpdateUser{}
 
 	if err := c.ShouldBindJSON(&user); err != nil {
 		translate.Individual(err, c) // 字段参数校验
@@ -96,7 +96,7 @@ func (u *User) UpdateUser(c *gin.Context) {
 		response.Fail(c, tip.Msg(tip.ErrorUpdate), err)
 		return
 	}
-	response.Success(c, user.ID, "")
+	response.Success(c, user, "")
 }
 
 // Login godoc
@@ -250,15 +250,24 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 	json.Unmarshal(body, &authData)
 	openid := cast.ToString(authData["openid"])
 	var user = &model.User{}
-	//fmt.Println("authData=========================", authData)
+	fmt.Println("authData=========================", authData)
 	// .点结构体赋值
 	user.Avatar = cast.ToString(bodyData["avatarUrl"])
 	user.NickName = cast.ToString(bodyData["nickName"])
 	user.Gender = cast.ToInt(bodyData["Gender"])
+	if openid == "" {
+		response.Fail(c, "openid不存在！", nil)
+		return
+	}
+
 	//存在直接生成token 终止函数
 	if b, user_ := service.User.IsUserOauthExist(openid); b {
 		// struct 数据有多少个只会更新对应字段
-		service.User.Update(user_.ID, user)
+		//service.User.Update(user_.ID, &model.UpdateUser{
+		//	Avatar:   user.Avatar,
+		//	NickName: user.NickName,
+		//	Gender:   user.Gender,
+		//})
 		user = user_
 		generateToken(c, user)
 		log.Info("用户已经存在,直接生成token")
@@ -268,7 +277,7 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 		Password: "123456",
 		WxOpenId: openid,
 	}
-	fmt.Printf("新增用户信息%v\n", user)
+	fmt.Printf("新增微信用户信息%v\n", user)
 	generateToken(c, user)
 	if err != nil {
 		return

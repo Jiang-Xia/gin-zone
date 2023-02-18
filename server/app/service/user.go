@@ -114,8 +114,8 @@ func (u *user) List(Page int, PageSize int, maps interface{}) ([]model.User, int
 }
 
 // Update 修改
-func (u *user) Update(id int, model *model.User) (err error) {
-	err = db.Mysql.Model(&model).Where("id = ? ", id).Updates(model).Error
+func (u *user) Update(id int, model *model.UpdateUser) (err error) {
+	err = db.Mysql.Table("z_user").Where("id = ? ", id).Updates(model).Error
 	return err
 }
 

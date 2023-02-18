@@ -1,22 +1,21 @@
 <template>
 	<view class="container">
 		<image v-if="isLogin" class="my-bg" src="../../static/images/logined.png" mode=""></image>
-		<view class="my-info" v-if="isLogin">
+		<navigator v-if="isLogin" class="my-info" url="/pages/my/setting" hover-class="navigator-hover">
 			<view class="top-box">
 				<image class="avatar" :src="userInfo.avatar" mode=""></image>
 				<view class="uni-flex-column">
 					<text class="name">{{userInfo.nickName}}</text>
 					<text>{{userInfo.intro||'难将心事和人说 说与青天明月知'}}</text>
 				</view>
-				<uni-icons custom-prefix="zonefont" type="zone-shuaxin"  size="22" @click="login"></uni-icons>
+				<uni-icons class="left-icon" color="#bbbbbb" type="right"  size="17"></uni-icons>
 			</view>
-		</view>
-		
+		</navigator>
 		<view class="login-wrap" v-if="!isLogin">
 			<image class="login-bg" src="../../static/images/approve.png" mode=""></image>
-			<button type="primary"  @tap="login">登录</button>
+			<button type="primary" @tap="login">登录</button>
 		</view>
-		
+
 		<view class="menu-list" v-if="isLogin">
 			<uni-list :border="false">
 				<uni-list-item showArrow title="退出登录" @click="logout" clickable></uni-list-item>
@@ -36,15 +35,15 @@
 		},
 
 		components: {},
-			
-		computed:{
-			isLogin(){
+
+		computed: {
+			isLogin() {
 				return Object.keys(this.userInfo).length
-			}
+			},
 		},
 		onShow() {
 			const token = uni.getStorageSync("token")
-			console.log('token',token)
+			console.log('token', token)
 			if (token) {
 				this.getZoneUserInfo()
 			}
@@ -57,6 +56,7 @@
 				})
 				return
 				// #endif
+
 				// #ifdef MP-WEIXIN
 				uni.getUserProfile({
 					lang: 'zh_CN',
@@ -121,11 +121,13 @@
 			async getZoneUserInfo() {
 				const res = await this.$api.get('/base/users/info')
 				this.userInfo = res.data
+				getApp().globalData.userInfo = res.data
+				uni.setStorageSync('userInfo', res.data)
 			},
 			setToken(token) {
 				uni.setStorageSync("token", token)
 			},
-			logout(){
+			logout() {
 				this.userInfo = {}
 				getApp().globalData.userInfo = {}
 				this.setToken('')
@@ -136,41 +138,57 @@
 </script>
 
 <style lang="scss">
-.container {
+	.container {
 		font-size: 14px;
 		line-height: 24px;
 		padding: 88rpx 32rpx 32rpx 32rpx;
 	}
+
 	.my-bg {
 		width: 100%;
 		height: 324rpx;
 		margin-bottom: 16rpx;
 	}
-	page{
+
+	page {
 		background-color: #f9f9f9;
 	}
-	.my-info{
+
+	.my-info {
 		display: flex;
 		border-radius: 10rpx;
 		background-color: #fff;
 		padding: 24rpx;
-		.top-box{
+
+		.top-box {
 			display: flex;
 			align-items: center;
 			color: #666;
 			font-size: 26rpx;
 			// justify-content: space-between;
 			width: 100%;
+
+			&::active {
+				background-color: #f1f1f1;
+			}
 		}
-		.uni-icons{
+
+		.uni-flex-column {
+			flex: 1;
+		}
+
+		.uni-icons {
 			margin-left: 64rpx;
+			margin-right: 18rpx;
 		}
-		.name{
+
+		.name {
 			font-weight: 500;
 			font-size: 36rpx;
 			color: #333;
 		}
-		image{
+
+		image {
 			border-radius: 50%;
 			height: 100rpx;
 			width: 100rpx;
@@ -178,18 +196,25 @@
 			margin-right: 12rpx;
 		}
 	}
-	.menu-list{
-		border-radius: 10rpx;
-		background-color: #fff;
-		padding: 24rpx;
+
+	.menu-list {
 		margin-top: 32rpx;
+		border-radius: 10rpx;
+
+		.uni-list-item {
+			border-radius: 10rpx;
+			padding: 24rpx;
+		}
 	}
-	.login-wrap{
+
+	.login-wrap {
 		text-align: center;
-		.login-bg{
+
+		.login-bg {
 			margin: 0 auto 32rpx;
 		}
-		button{
+
+		button {
 			width: 110px;
 		}
 	}

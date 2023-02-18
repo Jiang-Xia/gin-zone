@@ -89,8 +89,14 @@
 				"enablePullDownRefresh": false
 			}
 
+		}, 
+		{
+			"path": "pages/my/setting",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
 		}
-
 	],
 	"globalStyle": {
 		// "navigationStyle": "custom",

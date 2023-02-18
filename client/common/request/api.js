@@ -7,13 +7,13 @@ if (env === 'production') {
 	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
 	wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 } else {
-	fileUrl = "https://jiang-xia.top/x-zone/api/v1"
-	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
-	wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
+	// fileUrl = "https://jiang-xia.top/x-zone/api/v1"
+	// baseUrl = "https://jiang-xia.top/x-zone/api/v1"
+	// wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 	// // 本地
-	// fileUrl = "http://172.18.32.2:9600"
-	// baseUrl = "http://172.18.32.2:9600/api/v1"
-	// wsUrl = "ws://172.18.32.2:9600/api/v1"
+	fileUrl = "http://172.18.32.2:9600"
+	baseUrl = "http://172.18.32.2:9600/api/v1"
+	wsUrl = "ws://172.18.32.2:9600/api/v1"
 	
 }
 
@@ -35,7 +35,8 @@ export class Api {
 		for (let key in data) {
 			if (url.indexOf(`{${key}}`) != -1) {
 				url = url.replace(`{${key}}`, `${data[key]}`);
-				delete data[key]
+				// console.log(url)
+				data[key]===undefined
 			}
 		}
 
@@ -133,6 +134,20 @@ export class Api {
 			});
 		})
 	}
+	patch(url, data, config = {}) {
+		return new Promise((resolve, reject) => {
+			const rest = this.restful(url, data, config)
+			uni.request({
+				url: rest.url,
+				data: rest.data,
+				method: "PATCH",
+				header: rest.config.header,
+				complete: (res) => {
+					this.complete(res, resolve, reject)
+				}
+			});
+		})
+	}
 	put(url, data, config = {}) {
 		return new Promise((resolve, reject) => {
 			const rest = this.restful(url, data, config)
@@ -172,7 +187,9 @@ export class Api {
 					Authorization: this.getToken()
 				},
 				complete: (res) => {
-					res.data = JSON.parse(res.data)
+					if(res.data){
+						res.data = JSON.parse(res.data)
+					}
 					this.complete(res, resolve, reject)
 				}
 			});
