@@ -1,7 +1,14 @@
 <template>
-	<view>
-		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="left" rightText="场景" :border="true" :shadow="false" fixed
-			statusBar :title="navTitle" @clickLeft="clickLeft" @clickRight="clickRight" />
+	<view class="page-container">
+		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="left" :border="true" :shadow="false" fixed statusBar
+			@clickLeft="clickLeft" :rightWidth="rightWidth">
+			<view class="nav-title">{{navTitle}}</view>
+			<block v-slot:right>
+				<view @click="clickRight" class="nav-right-btn">
+					场景
+				</view>
+			</block>
+		</uni-nav-bar>
 		<view class="container">
 			<!-- <image v-if="history.loading" class="history-loaded" src="/static/images/loading.svg" />
 				<view v-else :class="history.allLoaded ? 'history-loaded':'load'" @click="loadHistoryMessage(false)">
@@ -66,15 +73,34 @@
 					loading: false
 				},
 				sceneList: [{
-					"frequencyPenalty": 0,
-					"maxTokens": 150,
-					"model": "text-davinci-003",
-					"presencePenalty": 0.6,
-					"name": "对话聊天",
-					"suffix": "小夏",
-					"temperature": 0.9,
-					"topP": 1
-				}],
+						"maxTokens": 150,
+						"model": "text-davinci-003",
+						"frequencyPenalty": 0,
+						"presencePenalty": 0.6,
+						"name": "对话聊天",
+						"suffix": "小夏",
+						"temperature": 0.9,
+						"topP": 1
+					},
+					{
+						"maxTokens": 100,
+						"model": "text-davinci-003",
+						"frequencyPenalty": 0,
+						"presencePenalty": 0.0,
+						"name": "Q&A",
+						"temperature": 0.0,
+						"topP": 1
+					},
+					{
+						"maxTokens": 60,
+						"model": "text-davinci-003",
+						"frequencyPenalty": 0.8,
+						"presencePenalty": 0.0,
+						"name": "恐怖故事",
+						"temperature": 0.8,
+						"topP": 1
+					}
+				],
 				curScene: {},
 				curOption: {},
 				timer: null
@@ -108,11 +134,20 @@
 				const userInfo = getApp().globalData.userInfo
 				return userInfo.avatar ||
 					"https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-10/8ojhda8gzvyx3rdhgyq378-头像.jpg"
+			},
+			rightWidth() {
+				let w = "120rpx"
+				// #ifdef MP-WEIXIN
+				w = "280rpx"
+				// #endif
+				return w
 			}
 		},
 		methods: {
 			clickLeft() {
-				uni.navigateBack(-1)
+				uni.switchTab({
+					url: "/pages/chat/index"
+				})
 			},
 			clickRight() {
 				this.openSceneSelect()
@@ -178,7 +213,7 @@
 			openSceneSelect() {
 				uni.showActionSheet({
 					itemList: this.sceneList.map(v => v.name),
-					success: function(res) {
+					success: (res) => {
 						const item = this.sceneList[res.tapIndex]
 						this.curScene = item
 						console.log({
@@ -231,6 +266,23 @@
 
 	page {
 		background-color: #f5f5f5;
+	}
+
+	.page-container {
+		.nav-title {
+			line-height: 88rpx;
+			text-align: center;
+			margin: auto 10rpx auto auto;
+			font-size: 14px;
+		}
+
+		.nav-right-btn {
+			font-size: 14px;
+			color: #333;
+			// #ifdef MP-WEIXIN
+			margin-right: 200rpx;
+			// #endif
+		}
 	}
 
 	// 加载更多消息
