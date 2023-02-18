@@ -31,7 +31,7 @@ func GetGuShiCi() {
 	}
 }
 
-// 初始化调用
-func init() {
+// TaskInit 初始化调用
+func TaskInit() {
 	GetGuShiCi()
 }

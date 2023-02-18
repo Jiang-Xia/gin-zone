@@ -114,9 +114,6 @@ func App() (r *gin.Engine) {
 
 // 配置swagger文档信息
 func setDocsInfo() {
-	sec := config.Config.Section("docs")
-	basePath := sec.Key("base_path").String()
-	host := sec.Key("host").String()
-	docs.SwaggerInfo.BasePath = basePath
-	docs.SwaggerInfo.Host = host
+	docs.SwaggerInfo.BasePath = config.Docs.BasePath
+	docs.SwaggerInfo.Host = config.Docs.Host
 }

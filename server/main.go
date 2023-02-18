@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-
-	_ "gitee.com/jiang-xia/gin-zone/server/app/cron"
+	"gitee.com/jiang-xia/gin-zone/server/app/cron"
 	"gitee.com/jiang-xia/gin-zone/server/app/database"
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
 	"gitee.com/jiang-xia/gin-zone/server/router"
@@ -30,15 +30,22 @@ import (
 // @name                        Authorization
 // @description                 jwt token 鉴权
 func main() {
+	log.Info("======App Loading======")
+	//初始化配置文件
+	config.InitLoadInIConfig()
 	// 初始化日志
 	log.ConfigLog()
 	// 初始化数据库
 	database.Setup()
+	//初始化redis
+	database.RedisInit()
+	//初始化定时任务
+	cron.TaskInit()
 	if err := translate.InitTrans("zh"); err != nil {
 		fmt.Println("初始化翻译器错误")
 		return
 	}
 	app := router.App()
-	log.Info("======App start======")
+	log.Info("======App starting======")
 	app.Run(":9600")
 }

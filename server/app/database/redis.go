@@ -9,9 +9,8 @@ import (
 var ctx = context.Background()
 var RedisObj *redis.Client
 
-func init() {
-	sec := config.Config.Section("redis")
-	Addr := sec.Key("host").String()
+func RedisInit() {
+	Addr := config.Redis.Host
 	RedisObj = redis.NewClient(&redis.Options{
 		Addr:     Addr,
 		Password: "", // no password set

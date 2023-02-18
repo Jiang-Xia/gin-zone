@@ -237,9 +237,8 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 	//log.Info("bodyData", bodyData)
 	var appid string
 	var secret string
-	sec := config.Config.Section("app")
-	appid = sec.Key("wechat_app_id").String()
-	secret = sec.Key("wechat_app_secret").String()
+	appid = config.App.WechatAppId
+	secret = config.App.WechatAppSecret
 	url := "https://api.weixin.qq.com/sns/jscode2session?appid=" + appid + "&secret=" + secret + "&js_code=" + code + "&grant_type=authorization_code"
 	resp, err := http.Get(url)
 	body, err := ioutil.ReadAll(resp.Body)

@@ -75,8 +75,7 @@ func (t *Third) ChatGPT(c *gin.Context) {
 		return
 	}
 	data := make(map[string]interface{})
-	sec := config.Config.Section("app")
-	openaiAppKey := sec.Key("openai_app_key").String()
+	openaiAppKey := config.App.OpenaiAppKey
 	client := gogpt.NewClient(openaiAppKey)
 	ctx := context.Background()
 	//fmt.Println(req.Text, openaiAppKey)

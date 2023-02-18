@@ -84,7 +84,7 @@ func JWTAuth() gin.HandlerFunc {
 
 func NewJWT() *JWT {
 	return &JWT{
-		SignKey:    []byte(config.Config.Section("app").Key("key").MustString("")),
+		SignKey:    []byte(config.App.Key),
 		MaxRefresh: time.Duration(10) * time.Minute,
 	}
 }
