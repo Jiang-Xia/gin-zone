@@ -8,7 +8,7 @@
 					<text class="name">{{userInfo.nickName}}</text>
 					<text>{{userInfo.intro||'难将心事和人说 说与青天明月知'}}</text>
 				</view>
-				<uni-icons class="left-icon" color="#bbbbbb" type="right"  size="17"></uni-icons>
+				<uni-icons custom-prefix="zonefont" color="#bbbbb" type="zone-gerenziliao" size="17"></uni-icons>
 			</view>
 		</navigator>
 		<view class="login-wrap" v-if="!isLogin">
@@ -167,7 +167,6 @@
 			font-size: 26rpx;
 			// justify-content: space-between;
 			width: 100%;
-
 			&::active {
 				background-color: #f1f1f1;
 			}

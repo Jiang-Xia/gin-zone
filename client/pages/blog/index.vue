@@ -57,11 +57,17 @@
 				this.swiperList = res.data.images
 			},
 			async getArticleList() {
-				uni.showLoading({title:''})
+				uni.showLoading({
+					title: ''
+				})
 				this.articleList = []
+				let pageSize = 10
+				// #ifdef MP-WEIXIN
+				pageSize = 1
+				// #endif
 				const params = {
 					page: 1,
-					pageSize: 10,
+					pageSize,
 					client: true
 				}
 				const res = await this.$api.post('/blog/article/list', params)

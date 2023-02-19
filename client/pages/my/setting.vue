@@ -18,7 +18,7 @@
 						<!-- #endif -->
 					</uni-forms-item>
 					<uni-forms-item label="昵称" required>
-						<uni-easyinput type="nickName" v-model="baseFormData.nickName" placeholder="请输入昵称" />
+						<uni-easyinput type="nickname" v-model="baseFormData.nickName" placeholder="请输入昵称" />
 					</uni-forms-item>
 					<uni-forms-item label="邮箱">
 						<uni-easyinput v-model="baseFormData.email" placeholder="请输入邮箱" />
@@ -30,9 +30,7 @@
 						<uni-easyinput type="textarea" v-model="baseFormData.intro" placeholder="请输入自我介绍" />
 					</uni-forms-item>
 				</uni-forms>
-				<view class="button-group">
-					<button type="primary" size="mini" @click="submit">提交</button>
-				</view>
+					<button type="primary" size="default" @click="submit">提交</button>
 			</view>
 		</uni-section>
 	</view>

@@ -1,20 +1,20 @@
 <template>
-	<view class="page-container">
-		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="left" :border="true" :shadow="false" fixed statusBar
-			@clickLeft="clickLeft" :rightWidth="rightWidth">
-			<view class="nav-title">{{navTitle}}</view>
-			<block v-slot:right>
-				<view @click="clickRight" class="nav-right-btn">
-					场景
-				</view>
-			</block>
+	<view class="container">
+		<!--#ifdef MP-WEIXIN  -->
+		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="left" :leftText="navTitle" :border="true" :shadow="false"
+			fixed statusBar @clickLeft="clickLeft" :leftWidth="rightWidth" :rightWidth="rightWidth">
+			<view class="nav-title" @click="clickRight">
+				{{curScene.name||"场景"}}
+				<uni-icons type="bottom" size="14" color="#999"></uni-icons>
+			</view>
 		</uni-nav-bar>
-		<view class="container">
-			<!-- <image v-if="history.loading" class="history-loaded" src="/static/images/loading.svg" />
+		<!--#endif -->
+		<!-- <image v-if="history.loading" class="history-loaded" src="/static/images/loading.svg" />
 				<view v-else :class="history.allLoaded ? 'history-loaded':'load'" @click="loadHistoryMessage(false)">
 					<view>{{ history.allLoaded ? '已经没有更多的历史消息' : '点击获取历史消息' }}</view>
 				</view>
 		-->
+		<view class="chat-list-wrap">
 			<checkbox-group>
 				<!--消息记录-->
 				<view v-for="(message,index) in history.messages" :key="message.messageId">
@@ -31,23 +31,22 @@
 						</view>
 					</view>
 				</view>
-				<!-- <uni-load-more status="more"></uni-load-more> -->
 			</checkbox-group>
-
-			<view class="action-box">
-				<view class="action-top">
-					<!-- <view view class="send-btn-box" type="default" size="small">
+		</view>
+		<view class="action-box">
+			<view class="action-top">
+				<!-- <view view class="send-btn-box" type="default" size="small">
 							<text class="btn" @click="openSceneSelect">场景</text>
 						</view> -->
-					<!-- <view class="scene-btn" @click="openSceneSelect">
+				<!-- <view class="scene-btn" @click="openSceneSelect">
 							<button type="primary" plain="true" size="mini">场景</button>
 						</view> -->
-					<!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
-					<input v-model="text" class="consult-input" @confirm="sendTextMessage()" confirm-type=“send”
-						maxlength="700" placeholder="发送消息" type="text" />
-					<view v-if="text" class="send-btn-box">
-						<text class="btn" @click="sendTextMessage()">发送</text>
-					</view>
+				<!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
+				<input v-model="text" class="consult-input"  @confirm="sendTextMessage()"
+					confirm-type="send" maxlength="700"  placeholder="输入内容" type="text" />
+					
+				<view v-if="text" class="send-btn-box">
+					<text class="btn" @click="sendTextMessage()">发送</text>
 				</view>
 			</view>
 		</view>
@@ -99,6 +98,24 @@
 						"name": "恐怖故事",
 						"temperature": 0.8,
 						"topP": 1
+					},
+					{
+						"maxTokens": 150,
+						"model": "text-davinci-003",
+						"frequencyPenalty": 0.0,
+						"presencePenalty": 0.0,
+						"name": "面试问答",
+						"temperature": 0.5,
+						"topP": 1.0
+					},
+					{
+						"maxTokens": 150,
+						"model": "text-davinci-003",
+						"frequencyPenalty": 0.0,
+						"presencePenalty": 0.0,
+						"name": "论文大纲",
+						"temperature": 0.3,
+						"topP": 1.0
 					}
 				],
 				curScene: {},
@@ -116,9 +133,7 @@
 				const list = JSON.parse(string) || []
 				this.history.allMessages = list
 			}
-			// uni.setNavigationBarTitle({
-			// 	title: option.name
-			// })
+			this.setNavBarTitle()
 		},
 		onReady() {
 			this.loadHistoryMessage(true);
@@ -126,9 +141,10 @@
 		onPullDownRefresh(e) {
 			this.loadHistoryMessage(false);
 		},
-		onShow() {
-
+		onNavigationBarButtonTap() {
+			this.clickRight()
 		},
+		onShow() {},
 		computed: {
 			curUserAvatar() {
 				const userInfo = getApp().globalData.userInfo
@@ -136,14 +152,15 @@
 					"https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-10/8ojhda8gzvyx3rdhgyq378-头像.jpg"
 			},
 			rightWidth() {
-				let w = "120rpx"
-				// #ifdef MP-WEIXIN
-				w = "280rpx"
-				// #endif
-				return w
+				return "90px"
 			}
 		},
 		methods: {
+			setNavBarTitle() {
+				uni.setNavigationBarTitle({
+					title: this.curOption.name + `(${this.curScene.name})`
+				})
+			},
 			clickLeft() {
 				uni.switchTab({
 					url: "/pages/chat/index"
@@ -216,6 +233,7 @@
 					success: (res) => {
 						const item = this.sceneList[res.tapIndex]
 						this.curScene = item
+						this.setNavBarTitle()
 						console.log({
 							item
 						});
@@ -260,32 +278,14 @@
 </script>
 
 <style lang="scss">
-	.container {
+	.container {}
+
+	.chat-list-wrap {
 		padding: 20rpx 20rpx 140rpx 20rpx;
 	}
 
 	page {
 		background-color: #f5f5f5;
-	}
-
-	.page-container {
-		.nav-title {
-			line-height: 88rpx;
-			text-align: center;
-			margin: auto;
-			font-size: 14px;
-			/* #ifdef MP-WEIXIN */
-			margin-right: 10rpx;
-			/* #endif */
-		}
-
-		.nav-right-btn {
-			font-size: 14px;
-			color: #333;
-			/* #ifdef MP-WEIXIN */
-			margin-right: 200rpx;
-			/* #endif */
-		}
 	}
 
 	// 加载更多消息

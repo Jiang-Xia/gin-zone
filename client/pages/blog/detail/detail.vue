@@ -81,7 +81,7 @@
 				// #endif
 
 				marked.parse(markdownString, (err, html) => {
-					console.log(html)
+					// console.log(html)
 					// #ifdef MP-WEIXIN
 					this.contentHtml = this.setRichTextStyle(html)
 					// #endif

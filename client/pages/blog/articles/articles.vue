@@ -68,7 +68,9 @@
 		},
 		methods: {
 			init() {
-				// this.onSearch()
+				// #ifndef MP-WEIXIN
+				this.onSearch()
+				// #endif
 			},
 			onSearch() {
 				this.getArticleList()

@@ -57,27 +57,37 @@
 		}
 	}
 </script>
-
 <style lang="scss">
+	@import "@/static/iconfont.css";
 	@import "common/css/base.scss";
 	@import "common/css/animate.min.css";
 	/*每个页面公共css 引入辅助样式*/
 	@import '@/uni_modules/uni-scss/index.scss';
 	// 编辑器样式
 	@import 'common/css/editor-v3.style.css';
-
 	/* #ifndef APP-NVUE */
-	@import '@/static/customicons.css';
-	@import "@/static/iconfont.css";
-
 	// 设置整个项目的背景色
 	page {
 		// background-color: #f5f5f5;
 	}
-
 	/* #endif */
-	.h5-navbar {
-		padding-top: 25px;
-		height: 69px;
+	
+	// 自定义导航栏公共样式
+	.uni-navbar{
+		.nav-title {
+				font-size: 32rpx;
+				text-align: center;
+				margin: auto;
+			}
+		.uni-nav-bar-text{
+			font-size: 32rpx !important;
+		}
+		.uni-navbar-btn-text{
+			line-height: 44rpx !important;
+			text{
+				font-size: 32rpx !important;
+			}
+		}
 	}
+	
 </style>

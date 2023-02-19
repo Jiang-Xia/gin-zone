@@ -1,14 +1,16 @@
 <template>
 	<view class="container">
+		<!--#ifdef MP-WEIXIN  -->
 		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" :border="true" :shadow="false" fixed statusBar
 			title="聊天" @clickLeft="clickLeft" />
+		<!--#endif -->
 		<uni-list :border="true">
 			<!-- 默认列表 -->
-			<uni-list-chat v-for="(item,index) in defaultList" :avatar-circle="true" :title="item.name"
+			<uni-list-chat v-for="(item,index) in defaultList" :key="index" :avatar-circle="true" :title="item.name"
 				:avatar="item.avatar" :note="item.note" :time="item.time" clickable @click="clickDefaultItem(item)">
 			</uni-list-chat>
 			<!-- 右侧带角标 -->
-			<uni-list-chat v-for="(item,index) in userList" :avatar-circle="true" :title="item.name"
+			<uni-list-chat v-for="(item,index) in userList" :key="index" :avatar-circle="true" :title="item.name"
 				:avatar="item.avatar" :note="item.note" :time="item.time" :badge-text="item.noReadMsgCount" clickable
 				@click="clickUserItem(item)">
 			</uni-list-chat>
@@ -43,6 +45,9 @@
 		onShow() {
 			this.init()
 		},
+		onNavigationBarButtonTap() {
+			this.clickLeft()
+		},
 		methods: {
 			init() {
 				const userId = getApp().globalData.userInfo.userId
@@ -69,9 +74,12 @@
 						}
 						return v
 					})
-				}).catch(() => {
+				}).finally(() => {
+
+					console.log("======================================", "stopPullDownRefresh")
 					uni.stopPullDownRefresh()
 				})
+
 			},
 			clickUserItem(item) {
 				if (!this.$common.getUserId()) {

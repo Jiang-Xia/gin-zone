@@ -1,6 +1,6 @@
 @font-face {
   font-family: "zonefont"; /* Project id 3805935 */
-  src: url('/static/iconfont.ttf') format('truetype');
+	src:url("@/static/iconfont.ttf") format("truetype");
 }
 
 .zonefont {
@@ -9,6 +9,50 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.zone-qita-v:before {
+  content: "\e602";
+}
+
+.zone-qita-circle:before {
+  content: "\e611";
+}
+
+.zone-tuichu:before {
+  content: "\e652";
+}
+
+.zone-tuichu-square:before {
+  content: "\e60e";
+}
+
+.zone-qita-h:before {
+  content: "\e8c4";
+}
+
+.zone-shezhi:before {
+  content: "\e601";
+}
+
+.zone-gerenziliao:before {
+  content: "\e624";
+}
+
+.zone-shanchu:before {
+  content: "\e8b6";
+}
+
+.zone-qiehuan:before {
+  content: "\e71f";
+}
+
+.zone-plus:before {
+  content: "\e620";
+}
+
+.zone-edit:before {
+  content: "\e654";
 }
 
 .zone-shuaxin:before {

@@ -37,8 +37,31 @@
 			"path": "pages/moment/index",
 			"style": {
 				"navigationBarTitleText": "动态",
-				"navigationStyle": "custom",
-				"enablePullDownRefresh": true
+				"enablePullDownRefresh": true,
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+							"text": "\ue620",  
+							"fontSrc": "/static/iconfont.ttf",  
+							"fontSize": "20px" ,
+							"color": "#333"
+						}]
+					}
+				},
+				"app-plus": {
+					"titleNView": {
+						"autoBackButton": true,
+						"buttons": [{
+							"text": "\ue620",  
+							"fontSrc": "/static/iconfont.ttf",  
+							"fontSize": "20px" ,
+							"color": "#333"
+						}]
+					}
+				},
+				"mp-weixin": {
+					"navigationStyle": "custom"
+				}
 			}
 		},
 		{
@@ -51,30 +74,95 @@
 			"path": "pages/chat/index",
 			"style": {
 				"navigationBarTitleText": "聊天",
-				"navigationStyle": "custom",
-				"enablePullDownRefresh": true
+				"enablePullDownRefresh": true,
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+							"text": "\ue620",  
+							"fontSrc": "/static/iconfont.ttf",  
+							"fontSize": "20px" ,
+							"color": "#333"
+						}]
+					}
+				},
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"text": "\ue620",  
+							"fontSrc": "/static/iconfont.ttf",  
+							"fontSize": "20px" ,
+							"color": "#333"
+						}]
+					}
+				},
+				"mp-weixin": {
+					"navigationStyle": "custom"
+				}
 			}
 		},
 		{
 			"path": "pages/chat/chatDetail",
 			"style": {
-				"navigationBarTitleText": "聊天详情"
+				"navigationBarTitleText": "聊天详情",
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+							"text": "\ue8c4",  
+							"fontSrc": "/static/iconfont.ttf",  
+							"fontSize": "20px" ,
+							"color": "#333"
+						}]
+					},
+					"app-plus": {
+						"titleNView": {
+							"buttons": [{
+								"text": "\ue8c4",  
+								"fontSrc": "/static/iconfont.ttf",  
+								"fontSize": "20px" ,
+								"color": "#333"
+							}]
+						}
+					}
 			}
+		}
 		},
 		{
 			"path": "pages/chat/chatAiDetail",
 			"style": {
 				"navigationBarTitleText": "AI聊天",
-				"navigationStyle": "custom"
-			}
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"select":true,
+							"text": "\ue71f",  
+							"fontSrc": "/static/iconfont.ttf",  
+							"fontSize": "22px" ,
+							"color": "#333"
+						}]
+					}
+				},
+				"h5": {
+					"titleNView": {
+						"buttons": [{
+							"select":false,
+							"float":"right",
+							"text": "\ue71f",  
+							"fontSrc": "/static/iconfont.ttf",  
+							"fontSize": "22px" ,
+							"color": "#333"
+						}]
+					}
+				},
+				"mp-weixin": {
+					"navigationStyle": "custom"
+				}
+				}
 		},
 		{
 			"path": "pages/chat/addFriend",
 			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
+				"navigationBarTitleText": ""
 			}
-
 		},
 		{
 			"path": "pages/my/index",
@@ -85,15 +173,15 @@
 		}, {
 			"path": "pages/my/login",
 			"style": {
-				"navigationBarTitleText": "",
+				"navigationBarTitleText": "登录",
 				"enablePullDownRefresh": false
 			}
 
-		}, 
+		},
 		{
 			"path": "pages/my/setting",
 			"style": {
-				"navigationBarTitleText": "",
+				"navigationBarTitleText": "个人资料",
 				"enablePullDownRefresh": false
 			}
 		}
