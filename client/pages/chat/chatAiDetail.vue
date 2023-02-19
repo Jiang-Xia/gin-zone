@@ -1,14 +1,5 @@
 <template>
 	<view class="container">
-		<!--#ifdef MP-WEIXIN  -->
-		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="left" :leftText="navTitle" :border="true" :shadow="false"
-			fixed statusBar @clickLeft="clickLeft" :leftWidth="rightWidth" :rightWidth="rightWidth">
-			<view class="nav-title" @click="clickRight">
-				{{curScene.name||"场景"}}
-				<uni-icons type="bottom" size="14" color="#999"></uni-icons>
-			</view>
-		</uni-nav-bar>
-		<!--#endif -->
 		<!-- <image v-if="history.loading" class="history-loaded" src="/static/images/loading.svg" />
 				<view v-else :class="history.allLoaded ? 'history-loaded':'load'" @click="loadHistoryMessage(false)">
 					<view>{{ history.allLoaded ? '已经没有更多的历史消息' : '点击获取历史消息' }}</view>
@@ -42,14 +33,17 @@
 							<button type="primary" plain="true" size="mini">场景</button>
 						</view> -->
 				<!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
-				<input v-model="text" class="consult-input"  @confirm="sendTextMessage()"
-					confirm-type="send" maxlength="700"  placeholder="输入内容" type="text" />
-					
+				<input v-model="text" class="consult-input" :adjust-positio="false" @confirm="sendTextMessage()"
+					confirm-type="send" maxlength="700" placeholder="输入内容" type="text" />
+
 				<view v-if="text" class="send-btn-box">
 					<text class="btn" @click="sendTextMessage()">发送</text>
 				</view>
 			</view>
 		</view>
+		<!-- 悬浮按钮 -->
+		<uni-fab ref="fab" :popMenu="false" :pattern="fabPattern" :content="fabContent" horizontal="right" vertical="top" direction="horizontal"
+			@trigger="trigger" @fabClick="fabClick" />
 	</view>
 </template>
 
@@ -120,7 +114,29 @@
 				],
 				curScene: {},
 				curOption: {},
-				timer: null
+				timer: null,
+
+				/* 悬浮按钮配置 开始*/
+				fabPattern: {
+					color: '#7A7E83',
+					backgroundColor: '#fff',
+					selectedColor: '#007AFF',
+					buttonColor: '#007AFF',
+					iconColor: '#fff'
+				},
+				fabContent: [{
+						text: '相册',
+						active: false
+					},
+					{
+						text: '首页',
+						active: false
+					},
+					{
+						text: '收藏',
+						active: false
+					}
+				]
 			}
 		},
 		onLoad(option) {
@@ -272,6 +288,25 @@
 						duration: 0
 					});
 				});
+			},
+			/* 悬浮按钮回调开始 */
+			trigger(e) {
+				console.log(e)
+				this.content[e.index].active = !e.item.active
+				uni.showModal({
+					title: '提示',
+					content: `您${this.content[e.index].active ? '选中了' : '取消了'}${e.item.text}`,
+					success: function(res) {
+						if (res.confirm) {
+							console.log('用户点击确定')
+						} else if (res.cancel) {
+							console.log('用户点击取消')
+						}
+					}
+				})
+			},
+			fabClick() {
+				this.clickRight()
 			},
 		}
 	}
@@ -485,6 +520,13 @@
 		align-items: center;
 		flex-direction: column;
 		padding: 0 30rpx;
+	}
+
+	.action-box {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
 	}
 
 	.action-box .action-bottom .operation-icon {

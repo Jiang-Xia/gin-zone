@@ -62,9 +62,6 @@
 				})
 				this.articleList = []
 				let pageSize = 10
-				// #ifdef MP-WEIXIN
-				pageSize = 1
-				// #endif
 				const params = {
 					page: 1,
 					pageSize,
@@ -75,7 +72,9 @@
 					v.createTime = formatTime(new Date(v.createTime))
 					return v
 				})
+				// #ifndef MP-WEIXIN
 				this.articleList = list
+				// #endif
 				uni.hideLoading()
 			},
 			goArticleList() {

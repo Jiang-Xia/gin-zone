@@ -76,7 +76,7 @@
 					})
 				}).finally(() => {
 
-					console.log("======================================", "stopPullDownRefresh")
+					// console.log("======================================", "stopPullDownRefresh")
 					uni.stopPullDownRefresh()
 				})
 
@@ -129,7 +129,7 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	.container {
 		font-size: 14px;
 	}

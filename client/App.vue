@@ -47,12 +47,28 @@
 		onShow: function() {
 			console.log('App Show');
 		},
+		onReady: function() {
+			console.log('App onReady');
+			this.initOpt();
+		},
 		onHide: function() {
 			console.log('App Hide')
 		},
 		methods:{
 			// 初始化操作
 			initOpt(){
+				console.log(window)
+				  window.addEventListener('resize', function() {
+				    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {//滚动到当前元素的方法
+				      window.setTimeout(function() {
+				        if ('scrollIntoView' in document.activeElement) {
+				          document.activeElement.scrollIntoView(false)
+				        } else {
+				          document.activeElement.scrollIntoViewIfNeeded(false)
+				        }
+				      }, 0)
+				    }
+				  })
 			}
 		}
 	}
