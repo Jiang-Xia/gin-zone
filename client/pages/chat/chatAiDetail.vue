@@ -122,7 +122,7 @@
 					backgroundColor: '#fff',
 					selectedColor: '#007AFF',
 					buttonColor: '#007AFF',
-					iconColor: '#fff'
+					iconColor: '#fff',
 				},
 				fabContent: [{
 						text: '相册',

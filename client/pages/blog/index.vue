@@ -15,10 +15,12 @@
 		<view class="news">
 			<view class="news-item" v-for="item in articleList" :key="item.id" @tap="goDetail(item.id)">
 				<image :src="item.cover" :fade-show="true"></image>
+				<!-- #ifndef MP-WEIXIN -->
 				<view class="news-item__title uni-ellipsis">
 					<text class="text">{{item.title}}</text>
 					<uni-icons type="forward" size="18" color="#f9f9f9"></uni-icons>
 				</view>
+				<!-- #endif -->
 			</view>
 		</view>
 	</view>
@@ -72,9 +74,7 @@
 					v.createTime = formatTime(new Date(v.createTime))
 					return v
 				})
-				// #ifndef MP-WEIXIN
 				this.articleList = list
-				// #endif
 				uni.hideLoading()
 			},
 			goArticleList() {

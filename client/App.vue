@@ -43,9 +43,17 @@
 					this.globalData.userInfo = res.data
 				})
 			}
+			// 设置分享
+			wx.showShareMenu({
+				withShareTicket: true,
+			})
 		},
 		onShow: function() {
 			console.log('App Show');
+			// 设置分享
+			wx.showShareMenu({
+				withShareTicket: true,
+			})
 		},
 		onReady: function() {
 			console.log('App onReady');
@@ -54,21 +62,22 @@
 		onHide: function() {
 			console.log('App Hide')
 		},
-		methods:{
+		methods: {
 			// 初始化操作
-			initOpt(){
+			initOpt() {
 				console.log(window)
-				  window.addEventListener('resize', function() {
-				    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {//滚动到当前元素的方法
-				      window.setTimeout(function() {
-				        if ('scrollIntoView' in document.activeElement) {
-				          document.activeElement.scrollIntoView(false)
-				        } else {
-				          document.activeElement.scrollIntoViewIfNeeded(false)
-				        }
-				      }, 0)
-				    }
-				  })
+				window.addEventListener('resize', function() {
+					if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName ===
+						'TEXTAREA') { //滚动到当前元素的方法
+				 	window.setTimeout(function() {
+							if ('scrollIntoView' in document.activeElement) {
+								document.activeElement.scrollIntoView(false)
+							} else {
+								document.activeElement.scrollIntoViewIfNeeded(false)
+							}
+						}, 0)
+					}
+				})
 			}
 		}
 	}
@@ -81,29 +90,33 @@
 	@import '@/uni_modules/uni-scss/index.scss';
 	// 编辑器样式
 	@import 'common/css/editor-v3.style.css';
+
 	/* #ifndef APP-NVUE */
 	// 设置整个项目的背景色
 	page {
 		// background-color: #f5f5f5;
 	}
+
 	/* #endif */
-	
+
 	// 自定义导航栏公共样式
-	.uni-navbar{
+	.uni-navbar {
 		.nav-title {
-				font-size: 32rpx;
-				text-align: center;
-				margin: auto;
-			}
-		.uni-nav-bar-text{
+			font-size: 32rpx;
+			text-align: center;
+			margin: auto;
+		}
+
+		.uni-nav-bar-text {
 			font-size: 32rpx !important;
 		}
-		.uni-navbar-btn-text{
+
+		.uni-navbar-btn-text {
 			line-height: 44rpx !important;
-			text{
+
+			text {
 				font-size: 32rpx !important;
 			}
 		}
 	}
-	
 </style>
