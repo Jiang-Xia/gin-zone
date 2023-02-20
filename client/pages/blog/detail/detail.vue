@@ -60,9 +60,10 @@
 				})
 				this.articleInfo = res.data.info
 				this.markdownString = this.articleInfo.contentHtml
-				uni.setNavigationBarTitle({
-					title: this.articleInfo.title
-				})
+				const title = this.articleInfo.title
+				uni.setNavigationBarTitle({title})
+				this.share.title = title
+				this.share.imageUrl = this.articleInfo.cover
 				this.transformMarkdown()
 				uni.hideLoading()
 			},
@@ -100,6 +101,8 @@
 
 <style lang="scss">
 	.article-detail {
+		// -webkit-user-select: text; 
+		// user-select: text;
 		font-weight: 36rpx;
 		padding-bottom: 40rpx;
 

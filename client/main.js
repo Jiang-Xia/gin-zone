@@ -1,3 +1,4 @@
+import pageJson from "./pages"
 // #ifndef VUE3
 import Vue from 'vue'
 import App from './App'
@@ -10,7 +11,6 @@ const app = new Vue({
 })
 app.$mount()
 // #endif
-
 // #ifdef VUE3
 import {
 	createSSRApp
@@ -30,6 +30,7 @@ export function createApp() {
 	app.config.globalProperties.$common = common
 	app.config.globalProperties.$fileUrl = fileUrl
 	app.config.globalProperties.$baseUrl = baseUrl
+	app.config.globalProperties.$pages = pageJson.pages,
 	app.mixin(mixins)
 	return {
 		app

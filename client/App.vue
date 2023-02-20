@@ -43,17 +43,15 @@
 					this.globalData.userInfo = res.data
 				})
 			}
-			// 设置分享
-			wx.showShareMenu({
+			 // #ifdef MP-WEIXIN
+			uni.showShareMenu({
+				// 小程序分享
 				withShareTicket: true,
 			})
+			// #endif
 		},
 		onShow: function() {
 			console.log('App Show');
-			// 设置分享
-			wx.showShareMenu({
-				withShareTicket: true,
-			})
 		},
 		onReady: function() {
 			console.log('App onReady');

@@ -22,7 +22,9 @@
             "Camera" : {},
             "Geolocation" : {},
             "OAuth" : {},
-            "Payment" : {}
+            "Payment" : {},
+            "Share" : {},
+            "Push" : {}
         },
         /* 模块配置 */
         "distribute" : {
@@ -39,12 +41,13 @@
                     "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
                     "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+                    "<uses-permission android:name=\"android.permission.INTERNET\"/>",
                     "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
                     "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
-                    "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
                     "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
                     "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
                 ]
             },
@@ -65,7 +68,27 @@
                     }
                 },
                 "ad" : {},
-                "payment" : {}
+                "payment" : {},
+                "speech" : {
+                    "baidu" : {
+                        "appid" : "",
+                        "apikey" : "",
+                        "secretkey" : ""
+                    }
+                },
+                "statics" : {},
+                "share" : {
+                    "weixin" : {
+                        "appid" : "wx57ae7e1d4f7a3d88",
+                        "UniversalLinks" : ""
+                    }
+                },
+                "push" : {
+                    "unipush" : {
+                        "version" : "2",
+                        "offline" : false
+                    }
+                }
             },
             "icons" : {
                 "android" : {
@@ -98,6 +121,9 @@
                     },
                     "appstore" : "unpackage/res/icons/1024x1024.png"
                 }
+            },
+            "splashscreen" : {
+                "iosStyle" : "common"
             }
         }
     },
@@ -118,7 +144,7 @@
             }
         },
         "unipush" : {
-            "enable" : false
+            "enable" : true
         },
         "secureNetwork" : {
             "enable" : false

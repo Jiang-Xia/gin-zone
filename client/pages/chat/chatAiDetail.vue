@@ -18,7 +18,9 @@
 							<image :src="message.type===2?curOption.avatar:curUserAvatar"></image>
 						</view>
 						<view class="content">
-							<view class="text-content">{{message.content}}</view>
+							<view class="text-content" >
+								<text selectable user-select>{{message.content}}</text>
+							</view>
 						</view>
 					</view>
 				</view>
@@ -173,9 +175,9 @@
 		},
 		methods: {
 			setNavBarTitle() {
-				uni.setNavigationBarTitle({
-					title: this.curOption.name + `(${this.curScene.name})`
-				})
+				const title = this.curOption.name + `(${this.curScene.name})`
+				uni.setNavigationBarTitle({title})
+				this.share.title = title
 			},
 			clickLeft() {
 				uni.switchTab({

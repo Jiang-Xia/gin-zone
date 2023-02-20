@@ -42,7 +42,7 @@ export const mixins = {
 		return {
 			// 默认的全局分享内容
 			share: {
-				title: '全局分享的标题',
+				title: '',
 				path: 'pages/blog/index', // 全局分享的路径，比如 首页
 				imageUrl: '', // 全局分享的图片(可本地可网络)
 			}
@@ -51,23 +51,22 @@ export const mixins = {
 	// 定义全局分享
 	// 1.发送给朋友
 	onShareAppMessage(res) { 
-		let that = this
 		// 动态获取当前页面栈
 		let pages = getCurrentPages(); //获取所有页面栈实例列表
 		let nowPage = pages[pages.length - 1]; //当前页页面实例
-		that.share.path = `/${nowPage.route}`
+		this.share.title = this.getShareTitle(nowPage.route)
+		this.share.path = nowPage.$page.fullPath
+		// console.log({nowPage})
 		return {
 			title: this.share.title,
 			path: this.share.path,
 			imageUrl: this.share.imageUrl,
 			success(res) {
-				console.log('success(res)==', res);
 				uni.showToast({
 					title: '分享成功'
 				})
 			},
 			fail(res) {
-				console.log('fail(res)==', res);
 				uni.showToast({
 					title: '分享失败',
 					icon: 'none'
@@ -77,23 +76,21 @@ export const mixins = {
 	},
 	// 2.分享到朋友圈
 	onShareTimeline(res) { 
-		let that = this
 		// 动态获取当前页面栈
 		let pages = getCurrentPages(); //获取所有页面栈实例列表
 		let nowPage = pages[pages.length - 1]; //当前页页面实例
-		that.share.path = `/${nowPage.route}`
+		this.share.title = this.getShareTitle(nowPage.route)
+		this.share.path = nowPage.$page.fullPath
 		return {
 			title: this.share.title,
 			path: this.share.path,
 			imageUrl: this.share.imageUrl,
 			success(res) {
-				console.log('success(res)==', res);
 				uni.showToast({
 					title: '分享成功'
 				})
 			},
 			fail(res) {
-				console.log('fail(res)==', res);
 				uni.showToast({
 					title: '分享失败',
 					icon: 'none'
@@ -101,4 +98,21 @@ export const mixins = {
 			}
 		}
 	},
+	// created(){
+	// 	let pages = getCurrentPages(); //获取所有页面栈实例列表
+	// 	let nowPage = pages[pages.length - 1]; //当前页页面实例
+	// 	console.log({nowPage})
+	// },
+	methods:{
+		// 获取分享标题
+		getShareTitle(path){
+			let title = ''
+			if(this.share.title){
+				title = this.share.title
+			}else{
+				title = this.$pages.find(v=>v.path===path)?.style.navigationBarTitleText
+			}
+			return title||'江夏的博客'
+		}
+	}
 }
