@@ -33,6 +33,7 @@ type AddFriend struct {
 // ChatGroup 群组表
 type ChatGroup struct {
 	BaseModel
+	Avatar    string `gorm:"comment:群头像;" json:"avatar,omitempty"`
 	GroupName string `gorm:"comment:群名" json:"groupName,omitempty"`
 	Intro     string `gorm:"comment:群介绍" json:"intro,omitempty"`
 	Notice    string `gorm:"comment:群公告" json:"notice,omitempty"`

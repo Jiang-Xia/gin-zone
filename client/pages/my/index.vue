@@ -18,6 +18,7 @@
 
 		<view class="menu-list" v-if="isLogin">
 			<uni-list :border="false">
+				<uni-list-item showArrow title="其他功能" @click="other" clickable></uni-list-item>
 				<uni-list-item showArrow title="退出登录" @click="logout" clickable></uni-list-item>
 			</uni-list>
 		</view>
@@ -132,6 +133,22 @@
 				getApp().globalData.userInfo = {}
 				this.setToken('')
 				console.log("退出登录")
+			},
+			// 其他功能
+			other(){
+				const isAdmin = this.userInfo.isAdmin
+				const list = ["创建群聊"].filter(v=>isAdmin)
+				uni.showActionSheet({
+					itemList: list,
+					success: async ({tapIndex}) => {
+						if(tapIndex===0){
+							uni.navigateTo({url: "/pages/my/createGroup"})
+						}
+					},
+					fail: function(res) {
+						console.log(res.errMsg);
+					}
+				});
 			}
 		}
 	}
@@ -199,8 +216,10 @@
 	.menu-list {
 		margin-top: 32rpx;
 		border-radius: 10rpx;
-
+		background: transparent;
+		.uni-list{background: transparent;}
 		.uni-list-item {
+			margin-bottom: 24rpx;
 			border-radius: 10rpx;
 			padding: 24rpx;
 		}

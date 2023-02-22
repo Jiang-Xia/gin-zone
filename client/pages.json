@@ -153,7 +153,7 @@
 				// 			"color": "#333"
 				// 		}]
 				// 	}
-				}
+			}
 		},
 		{
 			"path": "pages/chat/addFriend",
@@ -164,8 +164,8 @@
 		{
 			"path": "pages/my/index",
 			"style": {
-				"navigationBarTitleText": "我的",
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "我的"
+				// "navigationStyle": "custom"
 			}
 		}, {
 			"path": "pages/my/login",
@@ -181,6 +181,13 @@
 				"navigationBarTitleText": "个人资料",
 				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path": "pages/my/createGroup",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
 		}
 	],
 	"globalStyle": {
@@ -192,8 +199,7 @@
 		"app-plus": {
 			"background": "#efeff4"
 		},
-		"usingComponents": {
-		}
+		"usingComponents": {}
 	},
 	"tabBar": {
 		"color": "#999999",

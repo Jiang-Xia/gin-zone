@@ -155,7 +155,7 @@ func (ch *chat) ChatGroup(userId string, groupName string) []model.ChatGroup {
 	var list []model.ChatGroup
 	if userId != "" {
 		db.Mysql.Where("user_id = ?", userId).Find(&list)
-	} else if groupName != "" {
+	} else {
 		db.Mysql.Where("group_name LIKE  ?", "%"+groupName+"%").Find(&list)
 	}
 	return list
