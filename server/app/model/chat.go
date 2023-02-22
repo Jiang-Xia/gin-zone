@@ -15,19 +15,19 @@ type ChatFriends struct {
 	UserId         string    `gorm:"comment:好友列表所属的用户id;" json:"userId"`
 	FriendId       string    `gorm:"comment:好友id" json:"friendId"`
 	GroupId        int       `gorm:"comment:群组id" json:"groupId"`
-	LastReadTime   JsonTime  `gorm:"comment:上次阅读消息时间" json:"lastReadTime"`
+	LastReadTime   Time      `gorm:"comment:上次阅读消息时间" json:"lastReadTime"`
 	User           User      `gorm:"foreignKey:UserId;references:FriendId;comment:用户数据;" json:"userInfo,omitempty"`
 	ChatGroup      ChatGroup `gorm:"foreignKey:ID;references:GroupId;comment:用户数据;" json:"chatGroup,omitempty"`
 	MsgType        int8      `json:"msgType"`
 	LastMsg        string    `json:"lastMsg"`        // 最新消息
 	NoReadMsgCount int       `json:"noReadMsgCount"` // 未读消息数
-	LastInfoTime   JsonTime  `json:"lastInfoTime"`   // 最新消息时间
+	LastInfoTime   Time      `json:"lastInfoTime"`   // 最新消息时间
 }
 type AddFriend struct {
-	UserId       string   `gorm:"comment:好友列表所属的用户id;" json:"userId"`
-	FriendId     string   `gorm:"comment:好友id" json:"friendId"`
-	GroupId      int      `gorm:"comment:群组id" json:"groupId"`
-	LastReadTime JsonTime `gorm:"comment:上次阅读消息时间" json:"lastReadTime"`
+	UserId       string `gorm:"comment:好友列表所属的用户id;" json:"userId"`
+	FriendId     string `gorm:"comment:好友id" json:"friendId"`
+	GroupId      int    `gorm:"comment:群组id" json:"groupId"`
+	LastReadTime Time   `gorm:"comment:上次阅读消息时间" json:"lastReadTime"`
 }
 
 // ChatGroup 群组表

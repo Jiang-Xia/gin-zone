@@ -3,11 +3,10 @@ package service
 import (
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
-	"time"
-
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
+	"gorm.io/gorm"
+	"time"
 )
 
 type chat struct {
@@ -39,9 +38,9 @@ func (ch *chat) ChatFriends(userId string) []model.ChatFriends {
 			// https://gorm.io/zh_CN/docs/method_chaining.html
 			friendSql := db.Mysql.Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
 				userId, friend.FriendId, friend.FriendId, userId).Session(&gorm.Session{})
-			//查询私聊未读消息
-			friendSql.Where("updated_at > ?", friend.LastReadTime).Order("updated_at desc").Find(&chatLogs)
-			//fmt.Println("未读消息===============================>:", len(chatLogs))
+			//查询私聊未读消息 发消息为对方，接受者为自己时
+			db.Mysql.Where("updated_at > ? AND sender_id = ? AND receiver_id = ?", friend.LastReadTime, friend.FriendId, friend.UserId).Order("updated_at desc").Find(&chatLogs)
+			fmt.Println("未读消息===============================>:", len(chatLogs))
 			if len(chatLogs) == 0 {
 				hasMsg = false
 				//没有未读时就去查最新的一消息

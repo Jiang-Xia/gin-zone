@@ -8,30 +8,50 @@ import (
 	"github.com/spf13/cast"
 )
 
-type JsonTime struct {
-	time.Time
+const timeFormat = "2006-01-02 15:04:05"
+const timezone = "Asia/Shanghai"
+
+// Time 全局定义
+type Time time.Time
+
+//其他地方使用的使用model.Time{}实例化一个即可
+
+func (t Time) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0, len(timeFormat)+2)
+	b = append(b, '"')
+	b = time.Time(t).AppendFormat(b, timeFormat)
+	b = append(b, '"')
+	return b, nil
 }
 
-// MarshalJSON on JSONTime format Time field with %Y-%m-%d %H:%M:%S
-func (t JsonTime) MarshalJSON() ([]byte, error) {
-	formatted := fmt.Sprintf("\"%s\"", t.Format("2006-01-02 15:04:05"))
-	return []byte(formatted), nil
+func (t *Time) UnmarshalJSON(data []byte) (err error) {
+	now, err := time.ParseInLocation(`"`+timeFormat+`"`, string(data), time.Local)
+	*t = Time(now)
+	return
 }
 
-// Value insert timestamp into mysql need this function.
-func (t JsonTime) Value() (driver.Value, error) {
+func (t Time) String() string {
+	return time.Time(t).Format(timeFormat)
+}
+
+func (t Time) local() time.Time {
+	loc, _ := time.LoadLocation(timezone)
+	return time.Time(t).In(loc)
+}
+
+func (t Time) Value() (driver.Value, error) {
 	var zeroTime time.Time
-	if t.Time.UnixNano() == zeroTime.UnixNano() {
+	var ti = time.Time(t)
+	if ti.UnixNano() == zeroTime.UnixNano() {
 		return nil, nil
 	}
-	return t.Time, nil
+	return ti, nil
 }
 
-// Scan valueof time.Time
-func (t *JsonTime) Scan(v interface{}) error {
+func (t *Time) Scan(v interface{}) error {
 	value, ok := v.(time.Time)
 	if ok {
-		*t = JsonTime{Time: value}
+		*t = Time(value)
 		return nil
 	}
 	return fmt.Errorf("can not convert %v to timestamp", v)
@@ -42,9 +62,9 @@ type BaseModel struct {
 	// 自增id
 	ID int `gorm:"comment:自增id;primaryKey;autoIncrement;" json:"id,omitempty"`
 	// 创建时间
-	CreatedAt JsonTime `gorm:"comment:创建时间;column:created_at" json:"createdAt,omitempty"`
+	CreatedAt Time `gorm:"comment:创建时间;column:created_at" json:"createdAt,omitempty"`
 	// 更新时间
-	UpdatedAt JsonTime `gorm:"comment:更新时间;column:updated_at" json:"updatedAt,omitempty"`
+	UpdatedAt Time `gorm:"comment:更新时间;column:updated_at" json:"updatedAt,omitempty"`
 }
 
 // gorm hook 文档 ：https://gorm.io/zh_CN/docs/hooks.html

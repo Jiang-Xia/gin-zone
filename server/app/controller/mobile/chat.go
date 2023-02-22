@@ -91,7 +91,7 @@ func (c *Client) Read() {
 			log.Error(err.Error())
 			break
 		}
-		//fmt.Printf("客户端所发信息:%+v ", msg)
+		//fmt.Printf("客户端所发信息:%+v\n ", msg)
 		switch msg.Cmd {
 		case "heartbeat":
 			var hMsg = map[string]interface{}{}
@@ -208,9 +208,13 @@ func (manager *ClientManager) BroadcastSend() {
 			wsMsg := WsMessage{}
 			err := json.Unmarshal(msg, &wsMsg)
 			if err != nil {
-				wsMsg.Content = "消息解析错误"
+				wsMsg.Content = "消息解析错误:" + err.Error()
+				log.Error(wsMsg.Content)
 			}
-			// fmt.Printf("WsMessage消息模板:%+v", wsMsg)
+			//fmt.Printf("WsMessage消息模板:%+v\n", wsMsg)
+			//fmt.Println("群聊id:", wsMsg.GroupId)
+			//fmt.Println("当前连接者id:", wsMsg.GroupId)
+			//fmt.Println("接受者id:", wsMsg.ReceiverId)
 			//群聊时找到所有群成员广播消息
 			if wsMsg.GroupId != 0 {
 				list := service.Chat.ChatGroupMember(wsMsg.GroupId)
@@ -234,7 +238,7 @@ func (manager *ClientManager) BroadcastSend() {
 			} else if wsMsg.ReceiverId != "" {
 				//	私聊时找到对应结接收方用户广播消息
 				for _, conn := range Manager.Clients {
-					//fmt.Println("两个用户id", wsMsg.ReceiverId, conn.UserId)
+					fmt.Println("两个用户id", wsMsg.ReceiverId, conn.UserId)
 					if wsMsg.ReceiverId == conn.UserId {
 						conn.SendChan <- msg
 						break
@@ -313,6 +317,12 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 	go client.Check()
 }
 
+/*
+*
+* 聊天相关接口开始==============================>
+*
+ */
+
 //	FriendList godoc
 //
 // @Summary     好友列表
@@ -356,16 +366,16 @@ func (ch *Chat) AddFriend(c *gin.Context) {
 		UserId:       addFriend.UserId,
 		FriendId:     addFriend.FriendId,
 		GroupId:      addFriend.GroupId,
-		LastReadTime: model.JsonTime{Time: time.Now()},
-		LastInfoTime: model.JsonTime{Time: time.Now()},
+		LastReadTime: model.Time{},
+		LastInfoTime: model.Time{},
 	})
 	if addFriend.FriendId != "" {
 		//对方 好友列表同时加上自身
 		err = service.Chat.CreateChatFriends(&model.ChatFriends{
 			UserId:       addFriend.FriendId,
 			FriendId:     addFriend.UserId,
-			LastReadTime: model.JsonTime{Time: time.Now()},
-			LastInfoTime: model.JsonTime{Time: time.Now()},
+			LastReadTime: model.Time{},
+			LastInfoTime: model.Time{},
 		})
 	}
 	if err != nil {
