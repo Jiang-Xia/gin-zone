@@ -3,6 +3,7 @@ package middleware
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/config"
@@ -49,6 +50,8 @@ var (
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
+		//去除 Bearer
+		token = strings.Replace(token, "Bearer ", "", 1)
 		// 没有token 直接中断
 		if len(token) == 0 {
 			response.Fail(c, "token不能为空", nil)
@@ -72,12 +75,13 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		fmt.Printf("JWTAuth:%v\n", claims)
+		fmt.Printf("JWTAuth:%+v\n", claims)
 		// 将用户信息存入 gin.context 里，后续 auth 包将从这里拿到当前用户数据
 		c.Set("current_user", claims)
-		c.Set("current_user_id", claims.UserId)
+		c.Set("current_user_id", claims.ID)
+		c.Set("current_user_uid", claims.UserId)
 		c.Set("current_user_name", claims.UserName)
-
+		//fmt.Printf("c-----:%+v\n", c)
 		c.Next()
 	}
 }

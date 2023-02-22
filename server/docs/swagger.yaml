@@ -46,8 +46,9 @@ definitions:
         example: https://******.com/aa.png
         type: string
       createdAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
-        type: string
       email:
         description: 邮箱
         example: 123456789@qq.com
@@ -75,8 +76,9 @@ definitions:
         example: 酱
         type: string
       updatedAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
-        type: string
       userId:
         description: 用户唯一id
         type: string
@@ -88,6 +90,17 @@ definitions:
         type: string
     required:
     - userName
+    type: object
+  model.AddFriend:
+    properties:
+      friendId:
+        type: string
+      groupId:
+        type: integer
+      lastReadTime:
+        $ref: '#/definitions/model.JsonTime'
+      userId:
+        type: string
     type: object
   model.AddMoment:
     properties:
@@ -122,31 +135,12 @@ definitions:
     - password
     - userName
     type: object
-  model.ChatFriends:
-    properties:
-      createdAt:
-        description: 创建时间
-        type: string
-      friendId:
-        type: string
-      groupId:
-        type: integer
-      id:
-        description: 自增id
-        type: integer
-      lastReadTime:
-        type: string
-      updatedAt:
-        description: 更新时间
-        type: string
-      userId:
-        type: string
-    type: object
   model.ChatGroup:
     properties:
       createdAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
-        type: string
       groupName:
         type: string
       id:
@@ -157,24 +151,27 @@ definitions:
       notice:
         type: string
       updatedAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
-        type: string
       userId:
         type: string
     type: object
   model.ChatGroupMember:
     properties:
       createdAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
-        type: string
       groupId:
         type: integer
       id:
         description: 自增id
         type: integer
       updatedAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
-        type: string
       userId:
         type: string
     type: object
@@ -183,8 +180,9 @@ definitions:
       content:
         type: string
       createdAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
-        type: string
       groupId:
         type: integer
       id:
@@ -199,10 +197,9 @@ definitions:
       senderId:
         type: string
       updatedAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
-        type: string
-      userId:
-        type: string
       userInfo:
         $ref: '#/definitions/model.User'
     type: object
@@ -222,6 +219,11 @@ definitions:
       receiverId:
         type: string
       senderId:
+        type: string
+    type: object
+  model.JsonTime:
+    properties:
+      time.Time:
         type: string
     type: object
   model.LoginForm:
@@ -313,8 +315,9 @@ definitions:
         example: https://******.com/aa.png
         type: string
       createdAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
-        type: string
       email:
         description: 邮箱
         example: 123456789@qq.com
@@ -342,8 +345,9 @@ definitions:
         example: 酱
         type: string
       updatedAt:
+        allOf:
+        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
-        type: string
       userId:
         description: 用户唯一id
         type: string
@@ -595,24 +599,47 @@ paths:
     post:
       consumes:
       - application/json
-      description: 添加好友
+      description: 添加好友或加入群聊
       parameters:
       - description: 需要上传的json
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/model.ChatFriends'
+          $ref: '#/definitions/model.AddFriend'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.ChatFriends'
+            $ref: '#/definitions/model.AddFriend'
       security:
       - Authorization: []
-      summary: 添加好友
+      summary: 添加好友关系
+      tags:
+      - 聊天模块
+  /mobile/chat/friends/{friendId}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除好友
+      parameters:
+      - description: 好友id
+        in: path
+        name: friendId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 删除好友
       tags:
       - 聊天模块
   /mobile/chat/groupMembers:
@@ -661,6 +688,29 @@ paths:
       summary: 添加群成员
       tags:
       - 聊天模块
+  /mobile/chat/groupMembers/{groupId}:
+    delete:
+      consumes:
+      - application/json
+      description: 退出群聊
+      parameters:
+      - description: 需要上传的json
+        in: path
+        name: groupId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 退出群聊
+      tags:
+      - 聊天模块
   /mobile/chat/groups:
     get:
       consumes:
@@ -690,7 +740,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 添加群组
+      description: 创建群聊
       parameters:
       - description: 需要上传的json
         in: body
@@ -707,7 +757,30 @@ paths:
             $ref: '#/definitions/model.ChatGroup'
       security:
       - Authorization: []
-      summary: 添加群组
+      summary: 创建群聊
+      tags:
+      - 聊天模块
+  /mobile/chat/groups/{groupId}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除群聊
+      parameters:
+      - description: 群组id
+        in: path
+        name: groupId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 删除群聊
       tags:
       - 聊天模块
   /mobile/chat/logs:

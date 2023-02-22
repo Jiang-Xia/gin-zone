@@ -41,6 +41,9 @@
 				this.$api.get('/base/users/info').then(res => {
 					uni.setStorageSync('userInfo', res.data)
 					this.globalData.userInfo = res.data
+				}).catch((err)=>{
+					uni.setStorageSync('token', "")
+					uni.setStorageSync('userInfo', "")
 				})
 			}
 			 // #ifdef MP-WEIXIN

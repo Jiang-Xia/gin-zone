@@ -40,7 +40,7 @@
 		},
 		computed: {
 			placeholder() {
-				return this.type === 'group' ? '输入群名搜索群' : "输入用户名搜索好友"
+				return this.type === 'group' ? '输入群名搜索群' : "输入用户名或昵称搜索好友"
 			}
 		},
 		methods: {

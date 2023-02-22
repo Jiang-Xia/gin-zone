@@ -81,8 +81,11 @@ func App() (r *gin.Engine) {
 			app.GET("chat/groupMembers", chatController.GroupMemberList)
 			app.POST("chat/logs", chatController.ChatLogList)
 			app.POST("chat/friends", chatController.AddFriend)
+			app.DELETE("chat/friends/:friendId", chatController.DelFriend)
 			app.POST("chat/groups", chatController.AddGroup)
+			app.DELETE("chat/groups/:groupId", chatController.DelGroup)
 			app.POST("chat/groupMembers", chatController.AddGroupMember)
+			app.DELETE("chat/groupMembers/:groupId", chatController.ExitGroupMember)
 		}
 
 		//博客模块路由 直接转发到blog-server

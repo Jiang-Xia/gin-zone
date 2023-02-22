@@ -194,7 +194,8 @@ func (u *User) UserInfo(c *gin.Context) {
 // @Success     200 {array} User
 // @Router      /base/users [get]
 func (u *User) UserList(c *gin.Context) {
-	users, total := service.User.List(1, 20, "")
+	q := c.Query("q")
+	users, total := service.User.List(1, 20, q)
 	data := model.ListRes{List: users, Total: total}
 	response.Success(c, data, "")
 }
@@ -313,7 +314,7 @@ func generateToken(c *gin.Context, user *model.User) {
 		return
 	}
 
-	data["token"] = token
+	data["token"] = "Bearer " + token
 
 	response.Success(c, data, "")
 }

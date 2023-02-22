@@ -1,13 +1,12 @@
 package model
 
 import (
-	"strconv"
-
-	"gitee.com/jiang-xia/gin-zone/server/middleware"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/hash"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type User struct {
@@ -89,7 +88,12 @@ func (u *User) AfterCreate(tx *gorm.DB) (err error) {
 // }
 
 func GetUserID(c *gin.Context) int {
-	token := c.GetHeader("authorization")
-	uInfo, _ := middleware.NewJWT().ParseToken(token)
-	return uInfo.ID
+	id, _ := c.Keys["current_user_id"]
+	//fmt.Println("current_user_uid", id)
+	return cast.ToInt(id)
+}
+func GetUserUid(c *gin.Context) string {
+	id, _ := c.Keys["current_user_uid"]
+	//fmt.Println("current_user_uid", id)
+	return cast.ToString(id)
 }

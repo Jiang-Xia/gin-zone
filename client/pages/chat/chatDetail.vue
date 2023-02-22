@@ -153,11 +153,15 @@
 				socketTask: null,
 
 				curOption: {},
-				timer: null
+				timer: null,
+				selectList:["删除好友"]
 			}
 		},
 		onLoad(option) {
 			this.curOption = option
+			if(option.groupId){
+				this.selectList = ["退出群聊"]
+			}
 			console.log(this.curOption)
 			uni.setNavigationBarTitle({
 				title: option.name
@@ -172,6 +176,9 @@
 		},
 		onPullDownRefresh(e) {
 			this.loadHistoryMessage(false);
+		},
+		onNavigationBarButtonTap() {
+			this.openOptSelect()
 		},
 		onShow() {
 			// 阅读消息
@@ -461,6 +468,29 @@
 					}
 				}
 				return '';
+			},
+			// 好友操作
+			openOptSelect() {
+				uni.showActionSheet({
+					itemList: this.selectList,
+					success: async ({tapIndex}) => {
+						const groupId = this.curOption.groupId
+						if(tapIndex===0&&groupId){
+							const res = await this.$api.del("/mobile/chat/groupMembers/{groupId}", {groupId: groupId})
+								uni.showToast({title: res.msg,})
+								uni.switchTab({url:"/pages/chat/index"})
+							
+						}else {
+							const res = await this.$api.del("/mobile/chat/friends/{friendId}", {friendId: this.curOption.friendId})
+							uni.showToast({title: res.msg,})
+							uni.switchTab({url:"/pages/chat/index"})
+						}
+					},
+					fail: function(res) {
+						console.log(res.errMsg);
+					}
+				});
+			
 			},
 		}
 	}

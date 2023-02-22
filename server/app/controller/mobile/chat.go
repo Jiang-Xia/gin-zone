@@ -336,8 +336,8 @@ func (ch *Chat) FriendList(c *gin.Context) {
 
 // AddFriend godoc
 //
-// @Summary     添加好友
-// @Description 添加好友
+// @Summary     添加好友关系
+// @Description 添加好友或加入群聊
 // @Tags        聊天模块
 // @Security	Authorization
 // @Accept      json
@@ -359,11 +359,45 @@ func (ch *Chat) AddFriend(c *gin.Context) {
 		LastReadTime: model.JsonTime{Time: time.Now()},
 		LastInfoTime: model.JsonTime{Time: time.Now()},
 	})
+	if addFriend.FriendId != "" {
+		//对方 好友列表同时加上自身
+		err = service.Chat.CreateChatFriends(&model.ChatFriends{
+			UserId:       addFriend.FriendId,
+			FriendId:     addFriend.UserId,
+			LastReadTime: model.JsonTime{Time: time.Now()},
+			LastInfoTime: model.JsonTime{Time: time.Now()},
+		})
+	}
 	if err != nil {
 		response.Fail(c, err.Error(), nil)
 		return
 	}
 	response.Success(c, addFriend, "添加成功")
+}
+
+// DelFriend godoc
+//
+// @Summary     删除好友
+// @Description 删除好友
+// @Tags        聊天模块
+// @Security	Authorization
+// @Accept      json
+// @Produce     json
+// @Param       friendId path  string true "好友id"
+// @Success     200  {object}  response.ResType
+// @Router      /mobile/chat/friends/{friendId} [delete]
+func (ch *Chat) DelFriend(c *gin.Context) {
+	userId := model.GetUserUid(c)
+	friendId := c.Param("friendId")
+	fmt.Println(userId, "friendId", friendId)
+	bool := service.Chat.DeleteChatFriends(userId, friendId)
+	//互删
+	bool = service.Chat.DeleteChatFriends(friendId, userId)
+	if !bool {
+		response.Fail(c, "删除失败", nil)
+		return
+	}
+	response.Success(c, bool, "删除成功")
 }
 
 // UpdateReadTime godoc
@@ -435,8 +469,8 @@ func (ch *Chat) GroupList(c *gin.Context) {
 
 // AddGroup godoc
 //
-// @Summary     添加群组
-// @Description 添加群组
+// @Summary     创建群聊
+// @Description 创建群聊
 // @Tags        聊天模块
 // @Security	Authorization
 // @Accept      json
@@ -457,6 +491,28 @@ func (ch *Chat) AddGroup(c *gin.Context) {
 		return
 	}
 	response.Success(c, model.ID, "添加成功")
+}
+
+// DelGroup godoc
+//
+// @Summary     删除群聊
+// @Description 删除群聊
+// @Tags        聊天模块
+// @Security	Authorization
+// @Accept      json
+// @Produce     json
+// @Param       groupId path    string true "群组id"
+// @Success     200  {object} response.ResType
+// @Router      /mobile/chat/groups/{groupId} [delete]
+func (ch *Chat) DelGroup(c *gin.Context) {
+	userId := model.GetUserUid(c)
+	groupId := cast.ToInt(c.Param("groupId"))
+	bool := service.Chat.DeleteGroup(userId, groupId)
+	if !bool {
+		response.Fail(c, "删除失败", nil)
+		return
+	}
+	response.Success(c, bool, "删除成功")
 }
 
 //	GroupList godoc
@@ -500,4 +556,28 @@ func (ch *Chat) AddGroupMember(c *gin.Context) {
 		return
 	}
 	response.Success(c, model.ID, "添加成功")
+}
+
+// ExitGroupMember godoc
+//
+// @Summary     退出群聊
+// @Description 退出群聊
+// @Tags        聊天模块
+// @Security	Authorization
+// @Accept      json
+// @Produce     json
+// @Param       groupId path   string true "需要上传的json"
+// @Success     200  {object} response.ResType
+// @Router      /mobile/chat/groupMembers/{groupId} [delete]
+func (ch *Chat) ExitGroupMember(c *gin.Context) {
+	userId := model.GetUserUid(c)
+	groupId := cast.ToInt(c.Param("groupId"))
+	bool := service.Chat.DeleteChatGroupMember(userId)
+	bool = service.Chat.DeleteGroupFriends(userId, groupId)
+	//删除群关系
+	if !bool {
+		response.Fail(c, "退出失败", nil)
+		return
+	}
+	response.Success(c, bool, "退出成功")
 }

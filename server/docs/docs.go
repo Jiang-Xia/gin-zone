@@ -367,7 +367,7 @@ const docTemplate = `{
                         "Authorization": []
                     }
                 ],
-                "description": "添加好友",
+                "description": "添加好友或加入群聊",
                 "consumes": [
                     "application/json"
                 ],
@@ -377,7 +377,7 @@ const docTemplate = `{
                 "tags": [
                     "聊天模块"
                 ],
-                "summary": "添加好友",
+                "summary": "添加好友关系",
                 "parameters": [
                     {
                         "description": "需要上传的json",
@@ -385,7 +385,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ChatFriends"
+                            "$ref": "#/definitions/model.AddFriend"
                         }
                     }
                 ],
@@ -393,7 +393,44 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.ChatFriends"
+                            "$ref": "#/definitions/model.AddFriend"
+                        }
+                    }
+                }
+            }
+        },
+        "/mobile/chat/friends/{friendId}": {
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "删除好友",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "聊天模块"
+                ],
+                "summary": "删除好友",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "好友id",
+                        "name": "friendId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
                         }
                     }
                 }
@@ -473,6 +510,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/mobile/chat/groupMembers/{groupId}": {
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "退出群聊",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "聊天模块"
+                ],
+                "summary": "退出群聊",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "需要上传的json",
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
         "/mobile/chat/groups": {
             "get": {
                 "security": [
@@ -520,7 +594,7 @@ const docTemplate = `{
                         "Authorization": []
                     }
                 ],
-                "description": "添加群组",
+                "description": "创建群聊",
                 "consumes": [
                     "application/json"
                 ],
@@ -530,7 +604,7 @@ const docTemplate = `{
                 "tags": [
                     "聊天模块"
                 ],
-                "summary": "添加群组",
+                "summary": "创建群聊",
                 "parameters": [
                     {
                         "description": "需要上传的json",
@@ -547,6 +621,43 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.ChatGroup"
+                        }
+                    }
+                }
+            }
+        },
+        "/mobile/chat/groups/{groupId}": {
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "删除群聊",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "聊天模块"
+                ],
+                "summary": "删除群聊",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "群组id",
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
                         }
                     }
                 }
@@ -892,7 +1003,11 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "description": "创建时间",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "email": {
                     "description": "邮箱",
@@ -929,7 +1044,11 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "userId": {
                     "description": "用户唯一id",
@@ -941,6 +1060,23 @@ const docTemplate = `{
                     "maxLength": 12,
                     "minLength": 4,
                     "example": "test"
+                }
+            }
+        },
+        "model.AddFriend": {
+            "type": "object",
+            "properties": {
+                "friendId": {
+                    "type": "string"
+                },
+                "groupId": {
+                    "type": "integer"
+                },
+                "lastReadTime": {
+                    "$ref": "#/definitions/model.JsonTime"
+                },
+                "userId": {
+                    "type": "string"
                 }
             }
         },
@@ -989,41 +1125,16 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ChatFriends": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "description": "创建时间",
-                    "type": "string"
-                },
-                "friendId": {
-                    "type": "string"
-                },
-                "groupId": {
-                    "type": "integer"
-                },
-                "id": {
-                    "description": "自增id",
-                    "type": "integer"
-                },
-                "lastReadTime": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "description": "更新时间",
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
-                }
-            }
-        },
         "model.ChatGroup": {
             "type": "object",
             "properties": {
                 "createdAt": {
                     "description": "创建时间",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "groupName": {
                     "type": "string"
@@ -1040,7 +1151,11 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "userId": {
                     "type": "string"
@@ -1052,7 +1167,11 @@ const docTemplate = `{
             "properties": {
                 "createdAt": {
                     "description": "创建时间",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "groupId": {
                     "type": "integer"
@@ -1063,7 +1182,11 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "userId": {
                     "type": "string"
@@ -1078,7 +1201,11 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "description": "创建时间",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "groupId": {
                     "type": "integer"
@@ -1101,10 +1228,11 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "userInfo": {
                     "$ref": "#/definitions/model.User"
@@ -1133,6 +1261,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "senderId": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.JsonTime": {
+            "type": "object",
+            "properties": {
+                "time.Time": {
                     "type": "string"
                 }
             }
@@ -1259,7 +1395,11 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "description": "创建时间",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "email": {
                     "description": "邮箱",
@@ -1296,7 +1436,11 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.JsonTime"
+                        }
+                    ]
                 },
                 "userId": {
                     "description": "用户唯一id",

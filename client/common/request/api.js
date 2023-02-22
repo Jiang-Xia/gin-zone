@@ -15,6 +15,9 @@ if (env === 'production') {
 	// baseUrl = "http://172.18.32.2:9600/api/v1"
 	// wsUrl = "ws://172.18.32.2:9600/api/v1"
 	
+	fileUrl = "http://192.168.1.51:9600"
+	baseUrl = "http://192.168.1.51:9600/api/v1"
+	wsUrl = "ws://192.168.1.51:9600/api/v1"
 }
 
 export {

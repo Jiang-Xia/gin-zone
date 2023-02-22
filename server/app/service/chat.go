@@ -63,7 +63,7 @@ func (ch *chat) ChatFriends(userId string) []model.ChatFriends {
 	return friends
 }
 
-// CreateChatFriends 新增
+// CreateChatFriends 新增好友关系
 func (ch *chat) CreateChatFriends(friend *model.ChatFriends) (err error) {
 	var result *gorm.DB
 	if friend.GroupId != 0 {
@@ -77,14 +77,13 @@ func (ch *chat) CreateChatFriends(friend *model.ChatFriends) (err error) {
 			GroupId: friend.GroupId,
 		}
 		ch.CreateChatGroupMember(&member)
-
 	} else if friend.FriendId != "" {
 		result = db.Mysql.Where("user_id = ? AND friend_id = ?", friend.UserId, friend.FriendId).First(friend)
 		if result.RowsAffected != 0 {
 			return errors.New("该用户已经你的好友")
 		}
 	}
-	res := db.Mysql.Create(friend)
+	res := db.Mysql.Create(&friend)
 	if res.Error != nil { //判断是否插入数据出错
 		fmt.Println(res.Error)
 	}
@@ -102,9 +101,15 @@ func (ch *chat) UpdateLastReadTime(friend *model.UpdateReadTime) (err error) {
 	return
 }
 
-// DeleteChatFriends 删除
-func (ch *chat) DeleteChatFriends(id int) bool {
-	db.Mysql.Where("id = ?", id).Delete(&model.ChatFriends{})
+// DeleteChatFriends 删除好友关系
+func (ch *chat) DeleteChatFriends(userId string, friendId string) bool {
+	db.Mysql.Where("user_id = ? AND friend_id = ?", userId, friendId).Delete(&model.ChatFriends{})
+	return true
+}
+
+// DeleteGroupFriends 删除群聊关系
+func (ch *chat) DeleteGroupFriends(userId string, groupId int) bool {
+	db.Mysql.Where("user_id = ? AND group_id = ?", userId, groupId).Delete(&model.ChatFriends{})
 	return true
 }
 
@@ -167,8 +172,8 @@ func (ch *chat) CreateGroup(model *model.ChatGroup) (err error) {
 }
 
 // DeleteGroup 删除
-func (ch *chat) DeleteGroup(id int) bool {
-	db.Mysql.Where("id = ?", id).Delete(&model.ChatGroup{})
+func (ch *chat) DeleteGroup(userId string, id int) bool {
+	db.Mysql.Where("id = ? AND user_id = ?", id, userId).Delete(&model.ChatGroup{})
 	return true
 }
 
@@ -189,7 +194,7 @@ func (ch *chat) CreateChatGroupMember(model *model.ChatGroupMember) (err error) 
 }
 
 // DeleteChatGroupMember 删除
-func (ch *chat) DeleteChatGroupMember(id int) bool {
-	db.Mysql.Where("id = ?", id).Delete(&model.ChatGroupMember{})
+func (ch *chat) DeleteChatGroupMember(id string) bool {
+	db.Mysql.Where("user_id = ?", id).Delete(&model.ChatGroupMember{})
 	return true
 }
