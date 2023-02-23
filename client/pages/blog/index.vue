@@ -53,7 +53,7 @@
 			this.init()
 			uni.stopPullDownRefresh()
 		},
-		created() {
+		onShow() {
 			this.init()
 		},
 		methods: {

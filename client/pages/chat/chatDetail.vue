@@ -22,7 +22,7 @@
 						<view class="nickname" v-if="curOption.groupId">
 							{{message.userInfo?.nickName}}
 						</view>
-						<view class="text-content" v-if="message.msgType===1">{{message.content}}</view>
+						<view class="text-content emojifont" v-if="message.msgType===1">{{message.content}}</view>
 						<view class="image-content" v-if="message.msgType===2">
 							<image :src="$fileUrl+message.content" mode="heightFix"></image>
 						</view>
@@ -43,7 +43,7 @@
 					{{ audio.recording ? '松开发送' : '按住录音' }}
 				</view>
 				<!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
-				<input v-else v-model="text" class="consult-input" confirm-type="send" maxlength="700" placeholder="发送消息" type="text" />
+				<input v-else v-model="text" class="consult-input emojifont" confirm-type="send" maxlength="700" placeholder="发送消息" type="text" />
 				<view @click="switchEmojiKeyboard">
 					<image class="more" v-if="emoji.visible" src="/static/images/jianpan.png"></image>
 					<image class="more" v-else src="/static/images/emoji.png"></image>
@@ -56,9 +56,10 @@
 				</view>
 			</view>
 			<!--展示表情列表-->
-			<view class="action-bottom action-bottom-emoji" v-if="emoji.visible">
-				<image class="emoji-item" v-for="(emojiItem, emojiKey, index) in emoji.map" :key="index"
-					:src="emoji.url + emojiItem" @click="chooseEmoji(emojiKey)"></image>
+			<view class="action-bottom action-bottom-emoji" v-show="emoji.visible">
+				<!-- #ifndef MP-WEIXIN -->
+				<emojiList ref="emojifont-list"></emojiList>
+				<!-- #endif -->
 			</view>
 			<!--其他类型消息面板-->
 			<view v-if="otherTypesMessagePanelVisible" class="action-bottom">
@@ -77,24 +78,16 @@
 </template>
 
 <script>
-	import EmojiDecoder from '../../common/js/EmojiDecoder.js';
+	import emojiList from './components/emojifont-list.vue';
 	import {
 		wsUrl,
 	} from '../../common/request/api.js'
 	import {
 		beforeTimeNow
 	} from '../../common/utils/util.js';
+import { watch } from "vue";
 	export default {
 		data() {
-			const emojiUrl = 'https://imgcache.qq.com/open/qcloud/tim/assets/emoji/';
-			const emojiMap = {
-				'[么么哒]': 'emoji_3@2x.png',
-				'[乒乓]': 'emoji_4@2x.png',
-				'[便便]': 'emoji_5@2x.png',
-				'[信封]': 'emoji_6@2x.png',
-				'[偷笑]': 'emoji_7@2x.png',
-				'[傲慢]': 'emoji_8@2x.png'
-			};
 			return {
 				ws: '',
 				//聊天文本框
@@ -105,10 +98,10 @@
 
 				//定义表情列表
 				emoji: {
-					url: emojiUrl,
-					map: emojiMap,
+					url: '',
+					map: {},
 					visible: false,
-					decoder: new EmojiDecoder(emojiUrl, emojiMap),
+					decoder: '',
 				},
 				//是否展示‘其他消息类型面板’
 				otherTypesMessagePanelVisible: false,
@@ -157,6 +150,9 @@
 				selectList:["删除好友"]
 			}
 		},
+		components:{
+			emojiList
+		},
 		onLoad(option) {
 			this.curOption = option
 			if(option.groupId){
@@ -166,6 +162,14 @@
 			uni.setNavigationBarTitle({
 				title: option.name
 			})
+			// uni.loadFontFace({
+			// 	global:true,
+			//   family: 'emojifont',
+			//   source: 'url("/static/iconfont/emojifont.ttf")',
+			// 	desc:{
+			// 		style:"normal"
+			// 	}
+			// })
 		},
 		onUnload() {
 			clearInterval(this.timer)
@@ -220,6 +224,19 @@
 				return getApp().globalData.userInfo.userId
 			}
 		},
+		watch:{
+			'emoji.visible'(n){
+				this.$nextTick(()=>{
+					// #ifndef MP-WEIXIN
+					this.$refs['emojifont-list'].open({
+						confirm:(content)=>{
+							this.text += content
+						}
+					})
+					// #endif
+				})
+			}
+		},
 		methods: {
 			heartbeat() {
 				this.timer = setInterval(() => {
@@ -230,7 +247,6 @@
 				}, 30000)
 			},
 			resetBottom() {
-				console.log(1)
 				// 直接设置最大值跳
 				this.$nextTick(() => {
 					uni.pageScrollTo({
@@ -298,6 +314,7 @@
 						}
 					});
 				} else {
+					this.resetBottom()
 					// this.socketMsgQueue.push(sendObj);
 				}
 			},
@@ -364,6 +381,7 @@
 					this.sendSocketMessage(sendObj);
 				}
 				this.text = '';
+				this.emoji.visible = false
 			},
 			// 发送视频
 			sendVideoMessage() {
@@ -498,6 +516,12 @@
 </script>
 
 <style lang="scss">
+	/* #ifndef MP-WEIXIN */
+	@font-face {
+	   font-family: 'emojifont';
+	   src:url("~@/static/iconfont/emojifont.ttf") format("truetype");
+	}
+	/* #endif */
 	.container {
 		padding: 20rpx 20rpx 140rpx 20rpx;
 	}
@@ -576,8 +600,9 @@
 		}
 
 		.text-content {
-			min-width: 44rpx;
-			padding: 16rpx;
+			position: relative;
+			min-width: 1em;
+			padding: 16rpx 24rpx;
 			border-radius: 12rpx;
 			color: #000000;
 			background: #FFFFFF;
@@ -586,10 +611,21 @@
 			vertical-align: center;
 			display: block;
 			font-size: 28rpx;
-
 			img {
 				width: 50rpx;
 				height: 50rpx;
+			}
+			&::before{
+				content: " ";
+				display: block;
+				width: 0px;
+				height: 0px;
+				border-top: 8px solid transparent;
+				border-bottom: 8px solid transparent;
+				border-right: 8px solid #FFFFFF;
+				position: absolute;
+				top: 10px;
+				left: -8px;
 			}
 		}
 
@@ -618,8 +654,14 @@
 
 		.text-content {
 			background-color: #0199fe;
-			box-shadow: inset 0 0 6rpx rgba(0, 0, 0, .12);
+			// box-shadow: inset 0 0 6rpx rgba(0, 0, 0, .12);
 			color: #FFFFFF;
+			&::before{
+				left: auto;
+				right: -8px !important;
+				border-right-color: #0199fe;
+				transform: rotateZ(180deg);
+			}
 		}
 	}
 
@@ -661,7 +703,11 @@
 		background: #FFFFFF;
 		font-size: 32rpx;
 	}
-
+	// 表情样式
+	.emojifont{
+		font-family: emojifont !important;
+		font-style: normal;
+	}
 	.more {
 		width: 62rpx;
 		height: 62rpx;

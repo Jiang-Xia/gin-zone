@@ -37,13 +37,19 @@
 					// console.log(that.globalData)
 				}
 			})
-			if (uni.getStorageSync("token")) {
+			const userInfo = uni.getStorageSync("zoneUserInfo")
+			if(userInfo){
+				this.globalData.userInfo = userInfo
+			}
+			
+			/* 全局用户信息处理 */
+			if (uni.getStorageSync("token")&&!userInfo) {
 				this.$api.get('/base/users/info').then(res => {
-					uni.setStorageSync('userInfo', res.data)
+					uni.setStorageSync('zoneUserInfo', res.data)
 					this.globalData.userInfo = res.data
 				}).catch((err) => {
 					uni.setStorageSync('token', "")
-					uni.setStorageSync('userInfo', "")
+					uni.setStorageSync('zoneUserInfo', "")
 				})
 			}
 			// #ifdef MP-WEIXIN

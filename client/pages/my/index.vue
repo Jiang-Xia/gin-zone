@@ -44,7 +44,6 @@
 		},
 		onShow() {
 			const token = uni.getStorageSync("token")
-			console.log('token', token)
 			if (token) {
 				this.getZoneUserInfo()
 			}
@@ -123,7 +122,7 @@
 				const res = await this.$api.get('/base/users/info')
 				this.userInfo = res.data
 				getApp().globalData.userInfo = res.data
-				uni.setStorageSync('userInfo', res.data)
+				uni.setStorageSync('zoneUserInfo', res.data)
 			},
 			setToken(token) {
 				uni.setStorageSync("token", token)
@@ -132,6 +131,7 @@
 				this.userInfo = {}
 				getApp().globalData.userInfo = {}
 				this.setToken('')
+				uni.setStorageSync('zoneUserInfo', '')
 				console.log("退出登录")
 			},
 			// 其他功能

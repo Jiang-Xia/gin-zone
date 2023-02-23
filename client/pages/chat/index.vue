@@ -10,10 +10,18 @@
 				:avatar="item.avatar" :note="item.note" :time="item.time" clickable @click="clickDefaultItem(item)">
 			</uni-list-chat>
 			<!-- 右侧带角标 -->
-			<uni-list-chat v-for="(item,index) in userList" :key="index" :avatar-circle="true" :title="item.name"
+			<!-- <uni-list-chat v-for="(item,index) in userList" :key="index" :avatar-circle="true" :title="item.name"
 				:avatar="item.avatar" :note="item.note" :time="item.time" :badge-text="item.noReadMsgCount" clickable
 				@click="clickUserItem(item)">
-			</uni-list-chat>
+			</uni-list-chat> -->
+			<uni-swipe-action>
+				<uni-swipe-action-item :threshold="50" :right-options="options2" @click="bindClick"
+					v-for="(item,index) in userList" :key="index">
+					<uni-list-chat :avatar-circle="true" :title="item.name" :avatar="item.avatar" :note="item.note"
+						:time="item.time" :badge-text="item.noReadMsgCount" clickable @click="clickUserItem(item)">
+					</uni-list-chat>
+				</uni-swipe-action-item>
+			</uni-swipe-action>
 		</uni-list>
 	</view>
 </template>
@@ -36,6 +44,19 @@
 					note: '对话聊天机器人小夏'
 				}],
 				userList: [],
+				options2: [{
+						text: '取消',
+						style: {
+							backgroundColor: '#007aff'
+						}
+					},
+					// {
+					// 	text: '删除',
+					// 	style: {
+					// 		backgroundColor: '#F56C6C'
+					// 	}
+					// }
+				],
 			}
 		},
 		components: {},
@@ -124,6 +145,9 @@
 				uni.navigateTo({
 					url: `/pages/chat/chatAiDetail?name=${item.name}&avatar=${oneChat}`
 				})
+			},
+			bindClick() {
+
 			}
 		}
 	}

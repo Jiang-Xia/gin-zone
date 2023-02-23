@@ -18,7 +18,7 @@
 							<image :src="message.type===2?curOption.avatar:curUserAvatar"></image>
 						</view>
 						<view class="content">
-							<view class="text-content" >
+							<view class="text-content emojifont" >
 								<text selectable user-select>{{message.content}}</text>
 							</view>
 						</view>
@@ -35,7 +35,7 @@
 							<button type="primary" plain="true" size="mini">场景</button>
 						</view> -->
 				<!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
-				<input v-model="text" class="consult-input" :adjust-positio="false" @confirm="sendTextMessage()"
+				<input v-model="text" class="consult-input emojifont" :adjust-positio="false" @confirm="sendTextMessage()"
 					confirm-type="send" maxlength="700" placeholder="输入内容" type="text" />
 
 				<view v-if="text" class="send-btn-box">
@@ -470,7 +470,6 @@
 		background: #FFFFFF;
 		font-size: 32rpx;
 	}
-
 	.more {
 		width: 62rpx;
 		height: 62rpx;
@@ -510,6 +509,7 @@
 
 	.action-bottom-emoji {
 		justify-content: space-around;
+		padding: 8rpx;
 	}
 
 	.action-bottom image {

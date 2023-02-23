@@ -121,7 +121,7 @@
 					uni.hideLoading()
 					uni.setStorageSync('token', res.data.token)
 					const res2 = await this.$api.get('/base/users/info')
-					uni.setStorageSync('userInfo', res2.data)
+					uni.setStorageSync('zoneUserInfo', res2.data)
 					getApp().globalData.userInfo = res2.data
 					uni.showToast({
 						title: "登录成功",
