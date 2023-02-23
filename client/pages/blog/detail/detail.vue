@@ -1,7 +1,8 @@
 <template>
 	<view class="article-detail">
-		<image class="cover" :src="articleInfo.cover"></image>
-
+		<view class="cover">
+			<image :src="articleInfo.cover"></image>
+		</view>
 		<view class="article-content">
 			<!-- #ifdef H5||APP-PLUS -->
 			<rich-text selectable class="md-preview default-theme md md-previewOnly" :nodes="nodes"></rich-text>
@@ -107,11 +108,15 @@
 		padding-bottom: 40rpx;
 
 		.cover {
-			width: 100%;
+			height: 400rpx;
+			image{
+				width: 100%;
+				height: 100%;
+			}
 		}
 
 		.article-content {
-			padding: 28rpx;
+			padding:24rpx;
 		}
 	}
 </style>

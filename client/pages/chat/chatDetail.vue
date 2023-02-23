@@ -230,6 +230,7 @@
 				}, 30000)
 			},
 			resetBottom() {
+				console.log(1)
 				// 直接设置最大值跳
 				this.$nextTick(() => {
 					uni.pageScrollTo({

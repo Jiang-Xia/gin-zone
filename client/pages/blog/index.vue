@@ -1,12 +1,15 @@
 <template>
 	<view class="container">
-		<swiper class="swiper" circular :indicator-dots="true" :autoplay="true" :interval="6000" :duration="500">
-			<swiper-item v-for="item in swiperList" :key="item.hsh">
-				<view class="swiper-item">
-					<image :src="'https://cn.bing.com/'+item.url"></image>
-				</view>
-			</swiper-item>
-		</swiper>
+		<uni-swiper-dot :info="swiperList" :current="current" field="url" mode="round" :dotsStyles="dotsStyles">
+			<swiper class="swiper" @change="swiperChange" circular :autoplay="true" :interval="6000" :duration="500">
+				<swiper-item v-for="(item ,index) in swiperList" :key="index">
+					<view class="swiper-item">
+						<image :src="'https://cn.bing.com/'+item.url"></image>
+					</view>
+				</swiper-item>
+			</swiper>
+		</uni-swiper-dot>
+
 
 		<view class="heading">
 			<text>最新文章</text>
@@ -16,8 +19,8 @@
 			<view class="news-item" v-for="item in articleList" :key="item.id" @tap="goDetail(item.id)">
 				<image :src="item.cover" :fade-show="true"></image>
 				<!-- #ifndef MP-WEIXIN -->
-				<view class="news-item__title uni-ellipsis">
-					<text class="text">{{item.title}}</text>
+				<view class="news-item__title">
+					<text class="text  uni-ellipsis">{{item.title}}</text>
 					<uni-icons type="forward" size="18" color="#f9f9f9"></uni-icons>
 				</view>
 				<!-- #endif -->
@@ -35,7 +38,14 @@
 			return {
 				swiperList: [],
 				articleList: [],
-
+				current:0,
+				dotsStyles:{
+						backgroundColor: 'rgba(0, 0, 0, .1)',
+						border: '1px rgba(0, 0, 0, .3) solid',
+						color: '#fff',
+						selectedBackgroundColor: 'rgba(0, 0, 0, .5)',
+						selectedBorder: '1px rgba(0, 0, 0, .5) solid'
+					},
 			}
 		},
 		components: {},
@@ -87,6 +97,9 @@
 					url: "/pages/blog/detail/detail?id=" + id,
 				})
 			},
+			swiperChange(e) {
+				this.current = e.detail.current;
+			}
 		}
 	}
 </script>
@@ -94,40 +107,42 @@
 <style lang="scss">
 	.container {
 		padding-bottom: 50px;
+		padding-right: 24rpx;
+		padding-left: 24rpx;
 
 		.swiper {
-			height: 500rpx;
-		}
-
-		.swiper-item {
-			display: block;
-			height: 500rpx;
-
-			image {
-				width: 100%;
-				height: 100%;
+			height: 400rpx;
+			box-shadow: 0px 1px 7px 5px rgba(186,190,197,0.2);
+			:deep(.uni-swiper__warp){
+				border-radius: 16rpx;
+			}
+			.swiper-item {
+				display: block;
+				height: 400rpx;
+				image {
+					border-radius: 16rpx;
+					width: 100%;
+					height: 100%;
+				}
 			}
 		}
-
 		.heading {
 			font-weight: 500;
 			font-size: 14px;
-			padding: 0 16rpx;
 			line-height: 2.4;
 			display: flex;
 			justify-content: space-between;
 		}
 
 		.news {
-			padding: 0 16rpx;
 			box-sizing: border-box;
-
 			.news-item {
 				position: relative;
-				height: 400rpx;
+				height: 340rpx;
 				border-radius: 16rpx;
 				box-sizing: border-box;
 				margin-bottom: 32rpx;
+				box-shadow: 0px 1px 7px 5px rgba(186,190,197,0.2);
 			}
 
 			image {
@@ -154,7 +169,6 @@
 			.text {
 				font-size: 28rpx;
 				font-weight: 600;
-				text-align: center;
 				letter-spacing: 4rpx;
 			}
 		}

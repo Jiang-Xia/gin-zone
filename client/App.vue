@@ -41,12 +41,12 @@
 				this.$api.get('/base/users/info').then(res => {
 					uni.setStorageSync('userInfo', res.data)
 					this.globalData.userInfo = res.data
-				}).catch((err)=>{
+				}).catch((err) => {
 					uni.setStorageSync('token', "")
 					uni.setStorageSync('userInfo', "")
 				})
 			}
-			 // #ifdef MP-WEIXIN
+			// #ifdef MP-WEIXIN
 			uni.showShareMenu({
 				// 小程序分享
 				withShareTicket: true,
@@ -55,6 +55,10 @@
 		},
 		onShow: function() {
 			console.log('App Show');
+			// #ifdef MP-WEIXIN
+			this.mpVersionUpdate()
+			// #endif
+			
 		},
 		onReady: function() {
 			console.log('App onReady');
@@ -70,13 +74,54 @@
 				window.addEventListener('resize', function() {
 					if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName ===
 						'TEXTAREA') { //滚动到当前元素的方法
-				 	window.setTimeout(function() {
+						window.setTimeout(function() {
 							if ('scrollIntoView' in document.activeElement) {
 								document.activeElement.scrollIntoView(false)
 							} else {
 								document.activeElement.scrollIntoViewIfNeeded(false)
 							}
 						}, 0)
+					}
+				})
+			},
+			//版本更新
+			mpVersionUpdate() {
+				const updateManager = uni.getUpdateManager();
+				updateManager.onCheckForUpdate(function(res) {
+					console.log("hasUpdate",res.hasUpdate)
+					// 请求完新版本信息的回调
+					if (res.hasUpdate) {
+						uni.showLoading({
+							title: '正在下载'
+						})
+						updateManager.onUpdateReady(function(res) {
+							uni.hideLoading()
+							uni.showModal({
+								title: '更新提示',
+								content: '新版本已经准备好，是否重启应用？',
+								success(res) {
+									if (res.confirm) {
+										// 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+										updateManager.applyUpdate();
+									} else {
+										uni.showModal({
+											content: '本次版本更新涉及到新功能的添加，旧版本将无法正常使用',
+											showCancel: false,
+											confirmText: '确认更新'
+										}).then(res => {
+											updateManager.applyUpdate();
+										});
+									}
+								}
+							});
+						})
+						updateManager.onUpdateFailed(function(res) {
+							uni.hideLoading()
+							uni.showToast({
+								title: '新的版本下载失败'
+							})
+						});
+
 					}
 				})
 			}

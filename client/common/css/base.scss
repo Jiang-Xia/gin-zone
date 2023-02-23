@@ -184,3 +184,27 @@ h1,h2,h3,h4,h5{
 .z-btn-hover { opacity: 0.8; }
 .color-base { color: #5064eb; }
 .bg-color-base { background-color: #5064eb; }
+
+// 文本溢出
+	.uni-ellipsis {
+		/* #ifndef APP-NVUE */
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		/* #endif */
+		/* #ifdef APP-NVUE */
+		lines: 1;
+		/* #endif */
+	}
+	.uni-ellipsis-2 {
+		/* #ifndef APP-NVUE */
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		/* #endif */
+		/* #ifdef APP-NVUE */
+		lines: 2;
+		/* #endif */
+	}
