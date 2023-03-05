@@ -72,6 +72,7 @@
 		methods: {
 			init() {
 				const userId = getApp().globalData.userInfo.userId
+				console.log({userId})
 				if (!userId) {
 					this.userList = []
 					return

@@ -43,12 +43,12 @@
 			}
 			
 			/* 全局用户信息处理 */
-			if (uni.getStorageSync("token")&&!userInfo) {
+			if (uni.getStorageSync("zoneToken")&&!userInfo) {
 				this.$api.get('/base/users/info').then(res => {
 					uni.setStorageSync('zoneUserInfo', res.data)
 					this.globalData.userInfo = res.data
 				}).catch((err) => {
-					uni.setStorageSync('token', "")
+					uni.setStorageSync("zoneToken", "")
 					uni.setStorageSync('zoneUserInfo', "")
 				})
 			}

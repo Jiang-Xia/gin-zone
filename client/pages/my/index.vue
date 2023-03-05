@@ -43,7 +43,7 @@
 			},
 		},
 		onShow() {
-			const token = uni.getStorageSync("token")
+			const token = uni.getStorageSync("zoneToken")
 			if (token) {
 				this.getZoneUserInfo()
 			}
@@ -125,7 +125,7 @@
 				uni.setStorageSync('zoneUserInfo', res.data)
 			},
 			setToken(token) {
-				uni.setStorageSync("token", token)
+				uni.setStorageSync("zoneToken", token)
 			},
 			logout() {
 				this.userInfo = {}

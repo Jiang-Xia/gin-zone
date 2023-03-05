@@ -188,7 +188,7 @@ import { watch } from "vue";
 			// 阅读消息
 			this.$api.post("/mobile/chat/updateReadTime", this.getCurOption())
 			const url = wsUrl + '/mobile/chat?userId=' + this.userId
-			const token = uni.getStorageSync("token")
+			const token = uni.getStorageSync("zoneToken")
 			this.socketTask = uni.connectSocket({
 				url,
 				// 自定义请求头(失败)

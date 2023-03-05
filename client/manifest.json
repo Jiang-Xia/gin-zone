@@ -95,12 +95,12 @@
                     "hdpi" : "unpackage/res/icons/72x72.png",
                     "xhdpi" : "unpackage/res/icons/96x96.png",
                     "xxhdpi" : "unpackage/res/icons/144x144.png",
-                    "xxxhdpi" : "static/logo/android-chrome-192x192.png"
+                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
                 },
                 "ios" : {
                     "iphone" : {
                         "app@2x" : "unpackage/res/icons/120x120.png",
-                        "app@3x" : "static/logo/apple-touch-icon.png",
+                        "app@3x" : "unpackage/res/icons/180x180.png",
                         "spotlight@2x" : "unpackage/res/icons/80x80.png",
                         "spotlight@3x" : "unpackage/res/icons/120x120.png",
                         "settings@2x" : "unpackage/res/icons/58x58.png",
@@ -158,8 +158,8 @@
         "title" : "zone",
         "template" : "index.html",
         "router" : {
-            "mode" : "hash",
-            "base" : "./"
+            "mode" : "history",
+            "base" : "/zone/"
         },
         "unipush" : {
             "enable" : true

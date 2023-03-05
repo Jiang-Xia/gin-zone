@@ -119,7 +119,7 @@
 						...this.form
 					})
 					uni.hideLoading()
-					uni.setStorageSync('token', res.data.token)
+					uni.setStorageSync("zoneToken", res.data.token)
 					const res2 = await this.$api.get('/base/users/info')
 					uni.setStorageSync('zoneUserInfo', res2.data)
 					getApp().globalData.userInfo = res2.data

@@ -29,8 +29,8 @@ export {
 export class Api {
 	// 获取token
 	getToken() {
-		let token = uni.getStorageSync("token")
-		// console.log("token",token)
+		let token = uni.getStorageSync("zoneToken")
+		// console.log("zoneToken",token)
 		return token
 	}
 	// 转化rest风格api
