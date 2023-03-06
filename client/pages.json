@@ -113,16 +113,16 @@
 							"fontSize": "20px",
 							"color": "#333"
 						}]
-					},
-					"app-plus": {
-						"titleNView": {
-							"buttons": [{
-								"text": "\ue8c4",
-								"fontSrc": "/static/iconfont.ttf",
-								"fontSize": "20px",
-								"color": "#333"
-							}]
-						}
+					}
+				},
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"text": "\ue8c4",
+							"fontSrc": "/static/iconfont.ttf",
+							"fontSize": "20px",
+							"color": "#333"
+						}]
 					}
 				}
 			}
@@ -153,6 +153,7 @@
 				// 			"color": "#333"
 				// 		}]
 				// 	}
+				// }
 			}
 		},
 		{
@@ -167,7 +168,8 @@
 				"navigationBarTitleText": "我的"
 				// "navigationStyle": "custom"
 			}
-		}, {
+		},
+		{
 			"path": "pages/my/login",
 			"style": {
 				"navigationBarTitleText": "登录",

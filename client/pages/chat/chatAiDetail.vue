@@ -69,8 +69,8 @@
 				},
 				sceneList: [{
 						"maxTokens": 150,
-						"model": "text-davinci-003",
-						"frequencyPenalty": 0,
+						"model": "gpt-3.5-turbo",
+						"frequencyPenalty": 0.0,
 						"presencePenalty": 0.6,
 						"name": "对话聊天",
 						"suffix": "小夏",
@@ -80,7 +80,7 @@
 					{
 						"maxTokens": 100,
 						"model": "text-davinci-003",
-						"frequencyPenalty": 0,
+						"frequencyPenalty": 0.0,
 						"presencePenalty": 0.0,
 						"name": "Q&A",
 						"temperature": 0.0,
@@ -158,7 +158,7 @@
 			} = await this.$api.post('/third/chatGPT', {
 				keyCode: 'j123456'
 			})
-			this.openAiKey = openAiKey.slice(0,aaa.length-2)
+			this.openAiKey = openAiKey.slice(0, openAiKey.length - 2)
 		},
 		onReady() {
 			this.loadHistoryMessage(true);
@@ -221,19 +221,40 @@
 						title: '拼命加载中',
 						mask: true
 					})
-					// https://api.openai.com/v1/chat/completions
-					const res = await this.$api.request('https://api.openai.com/v1/chat/completions', 'POST',{
-						"model": "gpt-3.5-turbo",
-						"messages": [{
-							"role": "user",
-							"content": content
-						}]
-					}, {
+					let sendParams = {}
+					let url = ''
+					if (params.model === 'gpt-3.5-turbo') {
+						url = 'https://api.openai.com/v1/chat/completions'
+						sendParams = {
+							"model": "gpt-3.5-turbo",
+							"messages": [{
+								"role": "user",
+								"content": content
+							}]
+						}
+
+					} else {
+						url = 'https://api.openai.com/v1/completions'
+						sendParams = {
+							"model": params.model,
+							"prompt": params.prompt,
+							"max_tokens": params.maxTokens,
+							"temperature": params.temperature,
+							"top_p": params.topP,
+							"frequency_penalty": params.frequencyPenalty
+						}
+					}
+					const res = await this.$api.request(url, 'POST', sendParams, {
 						header: {
 							Authorization: 'Bearer ' + this.openAiKey
 						}
 					})
-					const message = res.data.choices[0].message.content
+					let message = ''
+					if (params.model === 'gpt-3.5-turbo') {
+						message = res.data.choices[0].message.content
+					} else {
+						message = res.data.choices[0].text
+					}
 					this.history.messages.push({
 						content: message,
 						createdAt: new Date(),
