@@ -41,7 +41,7 @@
 				defaultList: [{
 					name: "知心小夏",
 					avatar: oneChat,
-					note: '对话聊天机器人小夏'
+					note: '对话聊天机器人小夏(搭梯子和我交流)'
 				}],
 				userList: [],
 				options2: [{

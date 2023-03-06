@@ -15,9 +15,9 @@ if (env === 'production') {
 	// baseUrl = "http://172.18.32.2:9600/api/v1"
 	// wsUrl = "ws://172.18.32.2:9600/api/v1"
 	
-	// fileUrl = "http://192.168.1.51:9600"
-	// baseUrl = "http://192.168.1.51:9600/api/v1"
-	// wsUrl = "ws://192.168.1.51:9600/api/v1"
+	fileUrl = "http://192.168.1.51:9600"
+	baseUrl = "http://192.168.1.51:9600/api/v1"
+	wsUrl = "ws://192.168.1.51:9600/api/v1"
 }
 
 export {
@@ -60,9 +60,7 @@ export class Api {
 			config.header = {
 				Authorization: this.getToken()
 			}
-		} else {
-			config.header.Authorization = this.getToken()
-		}
+		} 
 		return {
 			data,
 			url,
@@ -104,7 +102,7 @@ export class Api {
 				method,
 				header: rest.config.header,
 				complete: (res) => {
-					this.complete(res, resolve, reject)
+					resolve(res)
 				}
 			});
 		})
@@ -112,6 +110,7 @@ export class Api {
 	post(url, data, config = {}) {
 		return new Promise((resolve, reject) => {
 			const rest = this.restful(url, data, config)
+			// console.log(rest.config.header)
 			uni.request({
 				url: rest.url,
 				data: rest.data,

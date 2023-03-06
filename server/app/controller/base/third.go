@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitee.com/jiang-xia/gin-zone/server/config"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
 	gogpt "github.com/sashabaranov/go-gpt3"
 
@@ -48,6 +49,7 @@ func (t *Third) GetGuShiCi(c *gin.Context) {
 }
 
 type ChatGPT struct {
+	KeyCode          string  `json:"keyCode"`
 	Model            string  `json:"model" example:"text-davinci-003"`
 	Prompt           string  `json:"prompt" example:"介绍一下自己"`
 	Suffix           string  `json:"suffix" example:"小夏"`       //返回文本后缀
@@ -76,25 +78,32 @@ func (t *Third) ChatGPT(c *gin.Context) {
 	}
 	data := make(map[string]interface{})
 	openaiAppKey := config.App.OpenaiAppKey
-	client := gogpt.NewClient(openaiAppKey)
-	ctx := context.Background()
-	//fmt.Println(req.Text, openaiAppKey)
-	gptReq := gogpt.CompletionRequest{
-		Model:            req.Model,
-		Prompt:           req.Prompt,
-		MaxTokens:        req.MaxTokens,
-		Temperature:      req.Temperature,
-		Suffix:           req.Suffix,
-		TopP:             req.TopP,
-		PresencePenalty:  req.PresencePenalty,
-		FrequencyPenalty: req.FrequencyPenalty,
+	if req.KeyCode == "j123456" {
+		response.Success(c, openaiAppKey+"bb", "请求成功")
+	} else {
+		client := gogpt.NewClient(openaiAppKey)
+		ctx := context.Background()
+		//fmt.Println(req.Text, openaiAppKey)
+		gptReq := gogpt.CompletionRequest{
+			Model:            req.Model,
+			Prompt:           req.Prompt,
+			MaxTokens:        req.MaxTokens,
+			Temperature:      req.Temperature,
+			Suffix:           req.Suffix,
+			TopP:             req.TopP,
+			PresencePenalty:  req.PresencePenalty,
+			FrequencyPenalty: req.FrequencyPenalty,
+		}
+		resp, err := client.CreateCompletion(ctx, gptReq)
+		if err != nil {
+			data["text"] = "警告！警告！分析错误！系统故障..."
+			log.Info(err.Error())
+			response.Success(c, data, "请求成功")
+			//response.Fail(c, err.Error(), "请求失败")
+			return
+		}
+		data["text"] = resp.Choices[0].Text
+		//fmt.Println(resp.Choices[0].Text)
+		response.Success(c, data, "请求成功")
 	}
-	resp, err := client.CreateCompletion(ctx, gptReq)
-	if err != nil {
-		response.Fail(c, err.Error(), "请求失败")
-		return
-	}
-	data["text"] = resp.Choices[0].Text
-	//fmt.Println(resp.Choices[0].Text)
-	response.Success(c, data, "请求成功")
 }

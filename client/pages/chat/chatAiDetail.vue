@@ -18,7 +18,7 @@
 							<image :src="message.type===2?curOption.avatar:curUserAvatar"></image>
 						</view>
 						<view class="content">
-							<view class="text-content emojifont" >
+							<view class="text-content emojifont">
 								<text selectable user-select>{{message.content}}</text>
 							</view>
 						</view>
@@ -35,8 +35,8 @@
 							<button type="primary" plain="true" size="mini">场景</button>
 						</view> -->
 				<!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
-				<input v-model="text" class="consult-input emojifont" :adjust-positio="false" @confirm="sendTextMessage()"
-					confirm-type="send" maxlength="700" placeholder="输入内容" type="text" />
+				<input v-model="text" class="consult-input emojifont" :adjust-positio="false"
+					@confirm="sendTextMessage()" confirm-type="send" maxlength="700" placeholder="输入内容" type="text" />
 
 				<view v-if="text" class="send-btn-box">
 					<text class="btn" @click="sendTextMessage()">发送</text>
@@ -44,8 +44,8 @@
 			</view>
 		</view>
 		<!-- 悬浮按钮 -->
-		<uni-fab ref="fab" :popMenu="false" :pattern="fabPattern" :content="fabContent" horizontal="right" vertical="top" direction="horizontal"
-			@trigger="trigger" @fabClick="fabClick" />
+		<uni-fab ref="fab" :popMenu="false" :pattern="fabPattern" :content="fabContent" horizontal="right"
+			vertical="top" direction="horizontal" @trigger="trigger" @fabClick="fabClick" />
 	</view>
 </template>
 
@@ -138,10 +138,11 @@
 						text: '收藏',
 						active: false
 					}
-				]
+				],
+				openAiKey: ""
 			}
 		},
-		onLoad(option) {
+		async onLoad(option) {
 			this.curOption = option
 			console.log(this.curOption)
 			this.navTitle = option.name
@@ -152,6 +153,12 @@
 				this.history.allMessages = list
 			}
 			this.setNavBarTitle()
+			const {
+				data: openAiKey
+			} = await this.$api.post('/third/chatGPT', {
+				keyCode: 'j123456'
+			})
+			this.openAiKey = openAiKey.slice(0,aaa.length-2)
 		},
 		onReady() {
 			this.loadHistoryMessage(true);
@@ -176,7 +183,9 @@
 		methods: {
 			setNavBarTitle() {
 				const title = this.curOption.name + `(${this.curScene.name})`
-				uni.setNavigationBarTitle({title})
+				uni.setNavigationBarTitle({
+					title
+				})
 				this.share.title = title
 			},
 			clickLeft() {
@@ -212,9 +221,21 @@
 						title: '拼命加载中',
 						mask: true
 					})
-					const res = await this.$api.post('/third/chatGPT', params)
+					// https://api.openai.com/v1/chat/completions
+					const res = await this.$api.request('https://api.openai.com/v1/chat/completions', 'POST',{
+						"model": "gpt-3.5-turbo",
+						"messages": [{
+							"role": "user",
+							"content": content
+						}]
+					}, {
+						header: {
+							Authorization: 'Bearer ' + this.openAiKey
+						}
+					})
+					const message = res.data.choices[0].message.content
 					this.history.messages.push({
-						content: res.data.text,
+						content: message,
 						createdAt: new Date(),
 						type: 2
 					})
@@ -225,7 +246,7 @@
 					uni.hideLoading()
 					uni.setStorageSync("historyMessages", JSON.stringify(this.history.messages))
 				} catch (e) {
-					//TODO handle the exception
+					console.error(e)
 				}
 			},
 			loadHistoryMessage(scrollToBottom) {
@@ -470,6 +491,7 @@
 		background: #FFFFFF;
 		font-size: 32rpx;
 	}
+
 	.more {
 		width: 62rpx;
 		height: 62rpx;
