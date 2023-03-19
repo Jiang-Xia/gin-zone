@@ -9,7 +9,7 @@
 			<!-- #endif -->
 
 			<!-- #ifdef MP-WEIXIN -->
-			<mp-html :content="contentHtml" />
+			<mp-html :content="content" />
 			<!-- #endif -->
 		</view>
 	</view>
@@ -33,7 +33,7 @@
 			return {
 				articleInfo: {},
 				markdownString: '',
-				contentHtml: "",
+				content: "",
 				nodes: [],
 				id: "",
 				tagStyle: {
@@ -60,7 +60,7 @@
 					id
 				})
 				this.articleInfo = res.data.info
-				this.markdownString = this.articleInfo.contentHtml
+				this.markdownString = this.articleInfo.content
 				const title = this.articleInfo.title
 				uni.setNavigationBarTitle({title})
 				this.share.title = title
@@ -85,7 +85,7 @@
 				marked.parse(markdownString, (err, html) => {
 					// console.log(html)
 					// #ifdef MP-WEIXIN
-					this.contentHtml = this.setRichTextStyle(html)
+					this.content = this.setRichTextStyle(html)
 					// #endif
 
 					// #ifdef H5||APP-PLUS
