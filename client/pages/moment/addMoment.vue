@@ -6,18 +6,20 @@
 					placeholder="说说这一刻的想法…" />
 				<!-- show-word-limit -->
 				<div class="uploader-wrap">
-					<uni-file-picker v-model="fileLists" limit="9" title="" :imageStyles="imageStyles"  @delete="deleteHandle" @select="select" ref="files">
+					<uni-file-picker v-model="fileLists" limit="9" title="" :imageStyles="imageStyles"
+						@delete="deleteHandle" @select="select" ref="files">
 						<div class="zc-uploader-setting"></div>
 					</uni-file-picker>
 				</div>
 
-				<div class="footer-bar" @click="getLocation">
-					<span>
-						<uni-icons type="location" color="#999" ></uni-icons> 地点
-					</span>
-					<span>{{ info.adress }}
-						<uni-icons type="right" color="#999" ></uni-icons>
-					</span>
+				<div class="footer-bar" @click="chooseLocation">
+					<text class="adress-text">
+						<uni-icons type="location" color="#999"></uni-icons> 地点
+					</text>
+					<text class="uni-ellipsis">
+						{{ info.address }}
+					</text>
+					<uni-icons type="right" color="#999"></uni-icons>
 				</div>
 				<view class="btn-submit">
 					<button size="default" type="primary" style="width: 100%;" @click="addMoment">提交</button>
@@ -33,9 +35,10 @@
 			return {
 				info: {
 					content: '',
-					adress: '广州市天河区车陂街道'
+					address: '选择位置',
+					latitude: 0,
+					longitude: 0
 				},
-
 				imageStyles: {
 					border: {
 						color: 'transparent',
@@ -44,80 +47,110 @@
 						radius: 2
 					}
 				},
-				fileLists:[],
-				uploadList:[]
+				fileLists: [],
+				uploadList: []
 			}
 		},
 		onLoad(option) {
+			this.getLocation()
 		},
 		onPullDownRefresh() {},
-		computed: {
-		},
+		computed: {},
 		methods: {
-			getLocation(){
+			// 获取定位信息
+			getLocation() {
 				uni.getLocation({
-					geocode:true,
-					accuracy:true,
-					isHighAccuracy:true,
+					geocode: true,
+					accuracy: true,
+					isHighAccuracy: true,
 					type: 'gcj02', //返回可以用于uni.openLocation的经纬度
-					success: function (res) {
-						const latitude = res.latitude;
-						const longitude = res.longitude;
-						uni.openLocation({
-							latitude: latitude,
-							longitude: longitude,
-							success: function () {
-								console.log('success');
-							}
-						});
+					success: (res) => {
+						const {
+							latitude,
+							longitude
+						} = res
+						this.info.latitude = latitude;
+						this.info.longitude = longitude;
+						console.log('success', this.info);
+						if (res.address) {
+							const {
+								province,
+								city,
+								district,
+								street
+							} = res.address
+							this.info.address = province + city + district + street
+							console.log('success', this.info.address);
+						} else {
+							this.info.address = '中国'
+						}
+
 					}
 				});
 			},
-			select(imageRes){
-					imageRes.tempFilePaths.forEach((path, index) => {
-						this.uploadFile(path)
-					})
+			// 选择位置
+			chooseLocation() {
+				uni.chooseLocation({
+					success: (res) => {
+						const {
+							latitude,
+							longitude,
+							name,
+							address
+						} = res
+						this.info.latitude = latitude;
+						this.info.longitude = longitude;
+						this.info.address = name || address
+					}
+				});
 			},
-			deleteHandle(opt){
-				this.uploadList.splice(this.uploadList.findIndex(v=>v.path===opt.tempFilePath),1)
+			// 打开地图
+			openMap() {},
+			select(imageRes) {
+				imageRes.tempFilePaths.forEach((path, index) => {
+					this.uploadFile(path)
+				})
+			},
+			deleteHandle(opt) {
+				this.uploadList.splice(this.uploadList.findIndex(v => v.path === opt.tempFilePath), 1)
 				// console.log(opt,this.uploadList)
 			},
 			async uploadFile(file) {
 				const res = await this.$api.upload(file)
 				this.uploadList.push({
-					path:file,
+					path: file,
 					...res.data
 				})
 				// console.log(this.uploadList)
 				return res
 			},
-			async addMoment(){
-				try{
+			async addMoment() {
+				try {
 					const userId = getApp().globalData.userInfo.userId
 					const params = {
-						  content: this.info.content,
-						  location: this.info.adress,
-						  urls: this.uploadList.map(v=>v.url).join(),
-						  userId: userId,
+						content: this.info.content,
+						location: this.info.address,
+						urls: this.uploadList.map(v => v.url).join(),
+						userId: userId,
 					}
-					if(!this.info.content||!this.fileLists.length){
+					if (!this.info.content || !this.fileLists.length) {
 						uni.showToast({
-							title:"请填写完整数据",
-							icon:"none"
+							title: "请填写完整数据",
+							icon: "none"
 						})
 					}
 					const res = await this.$api.post('/mobile/moments', params)
 					uni.showToast({
-						title:"发表成功",
-						icon:"none"
+						title: "发表成功",
+						icon: "none"
 					})
 					uni.switchTab({
-						url:"/pages/moment/index"
+						url: "/pages/moment/index"
 					})
-				}catch(e){
-					
+				} catch (e) {
+
 				}
-				
+
 			}
 		}
 
@@ -146,11 +179,15 @@
 				align-items: center;
 				color: #333;
 				font-size: 15px;
-				font-weight: 500;
-				color: #333333;
 				border-bottom: 1px solid #eee;
 				border-top: 1px solid #eee;
-
+				.uni-ellipsis{
+					flex: 1;
+					text-align: right;
+				}
+				.adress-text{
+					padding-right: 18rpx;
+				}
 				.van-icon-arrow {
 					color: #999;
 				}
@@ -174,7 +211,8 @@
 				background-size: contain;
 			}
 		}
-		.btn-submit{
+
+		.btn-submit {
 			margin-top: 56rpx;
 		}
 	}

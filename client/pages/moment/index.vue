@@ -4,7 +4,7 @@
 		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" border fixed statusBar title="动态"
 			@clickLeft="clickLeft" />
 		<!--#endif -->
-		<section class="moment-card" v-for="(item, index) in cardList" :key="index">
+		<section class="moment-card" v-for="(item, index) in cardList" :key="cardList.id">
 			<div class="card-top">
 				<image class="avatar" :src="item.userInfo.avatar" />
 				<div class="middle">
@@ -17,7 +17,7 @@
 			<div class="card-images">
 				<image class="image-item" v-for="(item2, index2) in item.images"
 					:style="{ marginRight: (index2 + 1) % 3 === 0 ? '0px' : '4px' }" width="114" height="114" radius="8"
-					:src="$fileUrl+item2" :key="index2" />
+					:src="$fileUrl+item2" :key="item2+index2" @click="previewImage(item)" />
 			</div>
 			<div class="card-bottom">
 				<div class="adress">
@@ -25,22 +25,22 @@
 					<uni-icons type="right" color="#999"></uni-icons>
 				</div>
 				<div class="tool-wrap">
-					<span @click="dianzanHandle(item)">
+					<view @click="dianzanHandle(item)">
 						<uni-icons :type="item.dianzaned ? 'hand-up-filled' : 'hand-up'" style="margin-bottom: 4px;"
 							:color="item.dianzaned ? '#0066cc' : '#666'"></uni-icons>
-						<span :style="{ color: item.dianzaned ? '#0066cc' : '' }">{{ item.likes }}</span>
-					</span>
-					<span>
+						<text :style="{ color: item.dianzaned ? '#0066cc' : '' }">{{ item.likes }}</text>
+					</view>
+					<view>
 						<uni-icons type="chatbubble" color="#666"></uni-icons>
-						{{ item.likes }}
-					</span>
-					<span>
+						{{ 0 }}
+					</view>
+					<view>
 						<uni-icons type="eye" color="#666"></uni-icons>
 						{{ item.views }}
-					</span>
-					<span>
+					</view>
+					<view>
 						<uni-icons type="ellipsis" color="#666"></uni-icons>
-					</span>
+					</view>
 				</div>
 			</div>
 		</section>
@@ -109,7 +109,7 @@
 					}
 					const res = await this.$api.get('/mobile/moments', params)
 					const list = res.data.list.map(v => {
-						v.images = v.urls.split()
+						v.images = v.urls.split(',')
 						v.date = formatDate(v.createdAt)
 						return v
 					})
@@ -127,6 +127,7 @@
 			},
 			dianzanHandle(item) {
 				item.dianzaned = true
+				this.optHandle(item,'like')
 			},
 			clickLeft() {
 				if (!this.$common.getUserId()) {
@@ -138,6 +139,28 @@
 					url: "/pages/moment/addMoment"
 				})
 				// #endif
+			},
+			// 查看动态图片
+			previewImage(item) {
+				this.optHandle(item,'view')
+				uni.previewImage({
+					loop: true,
+					indicator: "number",
+					longPressActions: true,
+					urls: item.images.map(v => this.$fileUrl + v)
+				})
+			},
+			// 更新动态数据
+			async optHandle(item, type) {
+				if (type === 'like') {
+					item.likes++
+				} else {
+					item.views++
+				}
+				const res = await this.$api.get('/mobile/moments/UpdateMoment', {
+					id: item.id,
+					t:type
+				})
 			}
 		}
 	}
@@ -180,8 +203,7 @@
 		.card-message {
 			margin-top: 10px;
 			font-size: 15px;
-			font-weight: 500;
-			color: #000000;
+			color: #333;
 			margin-bottom: 10px;
 		}
 
@@ -218,7 +240,7 @@
 				color: #666666;
 				line-height: 12px;
 
-				&>span {
+				&>text {
 					// display: flex;
 					// align-items: center;
 				}

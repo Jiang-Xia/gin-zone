@@ -59,6 +59,11 @@
                 "geolocation" : {
                     "system" : {
                         "__platform__" : [ "ios", "android" ]
+                    },
+                    "amap" : {
+                        "__platform__" : [ "android" ],
+                        "appkey_ios" : "",
+                        "appkey_android" : "921ff9b73b06cf4172379e7fc2d0e132"
                     }
                 },
                 "oauth" : {

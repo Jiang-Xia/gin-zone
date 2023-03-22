@@ -12,13 +12,11 @@ const app = new Vue({
 app.$mount()
 // #endif
 // #ifdef VUE3
-import {
-	createSSRApp
-} from 'vue'
+import {createSSRApp} from 'vue'
 import App from './App.vue'
 import api from './common/request/api.js'
-
 import common,{mixins} from './common/utils/common.js'
+// const mode = import.meta.env.MODE;
 import {
 	baseUrl,
 	fileUrl
