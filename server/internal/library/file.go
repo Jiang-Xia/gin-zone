@@ -2,10 +2,9 @@ package l
 
 import (
 	"fmt"
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"os"
 	"path"
-
-	"gitee.com/jiang-xia/gin-zone/server/config"
 )
 
 // 判断路径是否存在
@@ -16,13 +15,12 @@ func IsExists(path string) (os.FileInfo, bool) {
 
 // 获取记录日志的文件
 func GetLogFile(t string) (file *os.File) {
-	sec := config.Config.Section("log")
-	logFilePath := sec.Key("log_file_path").String()
-	logFileName := sec.Key("log_file_name").String()
+	logFilePath := config.Log.LogFilePath
+	logFileName := config.Log.LogFileName
 
 	// 获取sql记录的日志文件
 	if t == "sql" {
-		logFileName = sec.Key("log_file_sql_name").String()
+		logFileName = config.Log.LogFileSqlName
 	}
 	//日志文件
 	fileName := path.Join(logFilePath, logFileName)
