@@ -5,6 +5,8 @@ definitions:
       frequencyPenalty:
         example: 0
         type: number
+      keyCode:
+        type: string
       maxTokens:
         description: 返回文本长度
         example: 150
@@ -30,6 +32,16 @@ definitions:
         example: 1
         type: number
     type: object
+  base.ChatGPTApi:
+    properties:
+      id:
+        type: string
+      key:
+        type: string
+      message:
+        example: 介绍一下自己
+        type: string
+    type: object
   base.FileInfo:
     properties:
       filename:
@@ -46,9 +58,8 @@ definitions:
         example: https://******.com/aa.png
         type: string
       createdAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
+        type: string
       email:
         description: 邮箱
         example: 123456789@qq.com
@@ -76,9 +87,8 @@ definitions:
         example: 酱
         type: string
       updatedAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
+        type: string
       userId:
         description: 用户唯一id
         type: string
@@ -98,7 +108,7 @@ definitions:
       groupId:
         type: integer
       lastReadTime:
-        $ref: '#/definitions/model.JsonTime'
+        type: string
       userId:
         type: string
     type: object
@@ -137,10 +147,11 @@ definitions:
     type: object
   model.ChatGroup:
     properties:
+      avatar:
+        type: string
       createdAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
+        type: string
       groupName:
         type: string
       id:
@@ -151,27 +162,24 @@ definitions:
       notice:
         type: string
       updatedAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
+        type: string
       userId:
         type: string
     type: object
   model.ChatGroupMember:
     properties:
       createdAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
+        type: string
       groupId:
         type: integer
       id:
         description: 自增id
         type: integer
       updatedAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
+        type: string
       userId:
         type: string
     type: object
@@ -180,9 +188,8 @@ definitions:
       content:
         type: string
       createdAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
+        type: string
       groupId:
         type: integer
       id:
@@ -197,9 +204,8 @@ definitions:
       senderId:
         type: string
       updatedAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
+        type: string
       userInfo:
         $ref: '#/definitions/model.User'
     type: object
@@ -219,11 +225,6 @@ definitions:
       receiverId:
         type: string
       senderId:
-        type: string
-    type: object
-  model.JsonTime:
-    properties:
-      time.Time:
         type: string
     type: object
   model.LoginForm:
@@ -315,9 +316,8 @@ definitions:
         example: https://******.com/aa.png
         type: string
       createdAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 创建时间
+        type: string
       email:
         description: 邮箱
         example: 123456789@qq.com
@@ -345,9 +345,8 @@ definitions:
         example: 酱
         type: string
       updatedAt:
-        allOf:
-        - $ref: '#/definitions/model.JsonTime'
         description: 更新时间
+        type: string
       userId:
         description: 用户唯一id
         type: string
@@ -934,6 +933,28 @@ paths:
       summary: chatGPT
       tags:
       - 第三方模块
+  /third/chatGPTApi:
+    post:
+      consumes:
+      - application/json
+      description: ChatGPTApi
+      parameters:
+      - description: 例子：appkey 和文本内容
+        in: body
+        name: chatGPT
+        required: true
+        schema:
+          $ref: '#/definitions/base.ChatGPTApi'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/base.ChatGPTApi'
+      summary: ChatGPTApi
+      tags:
+      - 第三方模块
   /third/gushici:
     get:
       consumes:
@@ -960,4 +981,6 @@ securityDefinitions:
     in: header
     name: Authorization
     type: apiKey
+  BasicAuth:
+    type: basic
 swagger: "2.0"

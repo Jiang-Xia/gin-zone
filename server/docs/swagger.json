@@ -896,6 +896,40 @@
                 }
             }
         },
+        "/third/chatGPTApi": {
+            "post": {
+                "description": "ChatGPTApi",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "第三方模块"
+                ],
+                "summary": "ChatGPTApi",
+                "parameters": [
+                    {
+                        "description": "例子：appkey 和文本内容",
+                        "name": "chatGPT",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/base.ChatGPTApi"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/base.ChatGPTApi"
+                        }
+                    }
+                }
+            }
+        },
         "/third/gushici": {
             "get": {
                 "description": "今日古诗词",
@@ -936,6 +970,9 @@
                     "type": "number",
                     "example": 0
                 },
+                "keyCode": {
+                    "type": "string"
+                },
                 "maxTokens": {
                     "description": "返回文本长度",
                     "type": "integer",
@@ -969,6 +1006,21 @@
                 }
             }
         },
+        "base.ChatGPTApi": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "介绍一下自己"
+                }
+            }
+        },
         "base.FileInfo": {
             "type": "object",
             "properties": {
@@ -996,11 +1048,7 @@
                 },
                 "createdAt": {
                     "description": "创建时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "email": {
                     "description": "邮箱",
@@ -1037,11 +1085,7 @@
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "userId": {
                     "description": "用户唯一id",
@@ -1066,7 +1110,7 @@
                     "type": "integer"
                 },
                 "lastReadTime": {
-                    "$ref": "#/definitions/model.JsonTime"
+                    "type": "string"
                 },
                 "userId": {
                     "type": "string"
@@ -1121,13 +1165,12 @@
         "model.ChatGroup": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "createdAt": {
                     "description": "创建时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "groupName": {
                     "type": "string"
@@ -1144,11 +1187,7 @@
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "userId": {
                     "type": "string"
@@ -1160,11 +1199,7 @@
             "properties": {
                 "createdAt": {
                     "description": "创建时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "groupId": {
                     "type": "integer"
@@ -1175,11 +1210,7 @@
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "userId": {
                     "type": "string"
@@ -1194,11 +1225,7 @@
                 },
                 "createdAt": {
                     "description": "创建时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "groupId": {
                     "type": "integer"
@@ -1221,11 +1248,7 @@
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "userInfo": {
                     "$ref": "#/definitions/model.User"
@@ -1254,14 +1277,6 @@
                     "type": "string"
                 },
                 "senderId": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.JsonTime": {
-            "type": "object",
-            "properties": {
-                "time.Time": {
                     "type": "string"
                 }
             }
@@ -1388,11 +1403,7 @@
                 },
                 "createdAt": {
                     "description": "创建时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "email": {
                     "description": "邮箱",
@@ -1429,11 +1440,7 @@
                 },
                 "updatedAt": {
                     "description": "更新时间",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.JsonTime"
-                        }
-                    ]
+                    "type": "string"
                 },
                 "userId": {
                     "description": "用户唯一id",
@@ -1469,6 +1476,9 @@
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
+        },
+        "BasicAuth": {
+            "type": "basic"
         }
     }
 }

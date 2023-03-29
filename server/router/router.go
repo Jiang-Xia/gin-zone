@@ -104,6 +104,7 @@ func App() (r *gin.Engine) {
 		thirdController := new(base.Third)
 		third.GET("gushici", thirdController.GetGuShiCi)
 		third.POST("chatGPT", thirdController.ChatGPT)
+		third.POST("chatGPTApi", thirdController.ChatGPTApi)
 		setDocsInfo()
 		// swagger 文档
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(

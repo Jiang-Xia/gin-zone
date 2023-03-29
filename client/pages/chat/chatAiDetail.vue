@@ -44,8 +44,8 @@
 			</view>
 		</view>
 		<!-- 悬浮按钮 -->
-		<uni-fab ref="fab" :popMenu="false" :pattern="fabPattern" :content="fabContent" horizontal="right"
-			vertical="top" direction="horizontal" @trigger="trigger" @fabClick="fabClick" />
+		<!-- <uni-fab ref="fab" :popMenu="false" :pattern="fabPattern" :content="fabContent" horizontal="right"
+			vertical="top" direction="horizontal" @trigger="trigger" @fabClick="fabClick" /> -->
 	</view>
 </template>
 
@@ -139,7 +139,8 @@
 						active: false
 					}
 				],
-				openAiKey: ""
+				openAiKey: "",
+				curId:''
 			}
 		},
 		async onLoad(option) {
@@ -197,7 +198,7 @@
 				this.openSceneSelect()
 			},
 			// 发送消息
-			async sendTextMessage(messageData) {
+			async sendTextMessage2(messageData) {
 				if (!this.text) {
 					uni.showToast({
 						title: "内容不能为空"
@@ -260,6 +261,51 @@
 						createdAt: new Date(),
 						type: 2
 					})
+					if (this.history.messages.length > 100) {
+						this.history.messages.shift()
+					}
+					this.resetBottom()
+					uni.hideLoading()
+					uni.setStorageSync("historyMessages", JSON.stringify(this.history.messages))
+				} catch (e) {
+					console.error(e)
+				}
+			},
+			async sendTextMessage(messageData) {
+				if (!this.text) {
+					uni.showToast({
+						title: "内容不能为空"
+					})
+					return
+				}
+				try {
+					const content = this.text
+					this.text = ""
+					this.history.messages.push({
+						content: content,
+						createdAt: new Date(),
+						type: 1
+					})
+					this.resetBottom()
+					uni.showLoading({
+						title: '拼命加载中',
+						mask: true
+					})
+					let sendParams = {id:'',message:content}
+					let message = ''
+					const res = await this.$api.post('/third/chatGPTApi', sendParams)
+					if(res){
+						res.data = JSON.parse(res.data)
+						res.data = res.data.data
+						message = res.data.text
+					}
+					if(message){
+						this.history.messages.push({
+							content: message,
+							createdAt: new Date(),
+							type: 2
+						})
+					}
 					if (this.history.messages.length > 100) {
 						this.history.messages.shift()
 					}

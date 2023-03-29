@@ -1,18 +1,20 @@
 package base
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitee.com/jiang-xia/gin-zone/server/config"
-	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
-	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
-	gogpt "github.com/sashabaranov/go-gpt3"
-
 	"gitee.com/jiang-xia/gin-zone/server/app/cron"
 	"gitee.com/jiang-xia/gin-zone/server/app/database"
+	"gitee.com/jiang-xia/gin-zone/server/config"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
 	"github.com/gin-gonic/gin"
+	"github.com/sashabaranov/go-openai"
+	"io/ioutil"
+	"net/http"
 )
 
 type Third struct {
@@ -81,29 +83,64 @@ func (t *Third) ChatGPT(c *gin.Context) {
 	if req.KeyCode == "j123456" {
 		response.Success(c, openaiAppKey+"bb", "请求成功")
 	} else {
-		client := gogpt.NewClient(openaiAppKey)
-		ctx := context.Background()
-		//fmt.Println(req.Text, openaiAppKey)
-		gptReq := gogpt.CompletionRequest{
-			Model:            req.Model,
-			Prompt:           req.Prompt,
-			MaxTokens:        req.MaxTokens,
-			Temperature:      req.Temperature,
-			Suffix:           req.Suffix,
-			TopP:             req.TopP,
-			PresencePenalty:  req.PresencePenalty,
-			FrequencyPenalty: req.FrequencyPenalty,
-		}
-		resp, err := client.CreateCompletion(ctx, gptReq)
+		client := openai.NewClient(openaiAppKey)
+		resp, err := client.CreateChatCompletion(
+			context.Background(),
+			openai.ChatCompletionRequest{
+				Model: openai.GPT3Dot5Turbo,
+				Messages: []openai.ChatCompletionMessage{
+					{
+						Role:    openai.ChatMessageRoleUser,
+						Content: req.Prompt,
+					},
+				},
+			},
+		)
 		if err != nil {
 			data["text"] = "警告！警告！分析错误！系统故障..."
 			log.Info(err.Error())
 			response.Success(c, data, "请求成功")
-			//response.Fail(c, err.Error(), "请求失败")
 			return
 		}
-		data["text"] = resp.Choices[0].Text
+		data["text"] = resp.Choices[0].Message.Content
 		//fmt.Println(resp.Choices[0].Text)
 		response.Success(c, data, "请求成功")
 	}
+}
+
+type ChatGPTApi struct {
+	Id      string `json:"id"`
+	Message string `json:"message" example:"介绍一下自己"`
+	Key     string `json:"key"`
+}
+
+//	godoc
+//
+// @Summary     ChatGPTApi
+// @Description ChatGPTApi
+// @Tags        第三方模块
+// @Accept      json
+// @Produce     json
+// @Success     200  {object} ChatGPTApi
+// @Param       chatGPT body     ChatGPTApi true "例子：appkey 和文本内容"
+// @Router      /third/chatGPTApi [post]
+func (t *Third) ChatGPTApi(c *gin.Context) {
+	req := &ChatGPTApi{}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		translate.Individual(err, c)
+		return
+	}
+	openaiAppKey := config.App.OpenaiAppKey
+	req.Key = openaiAppKey
+	fmt.Printf("请求参数%+v", req)
+	// 构造POST请求的数据
+	postData, _ := json.Marshal(req)
+	resp, err := http.Post("https://chat.xingyijun.cn/chat/textModel", "application/json", bytes.NewBuffer(postData))
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		response.Fail(c, "请求失败", nil)
+		return
+	}
+	response.Success(c, string(body), "请求成功")
 }
