@@ -108,10 +108,15 @@ func (t *Third) ChatGPT(c *gin.Context) {
 	}
 }
 
-type ChatGPTApi struct {
+type ChatGptApiData struct {
 	Id      string `json:"id"`
-	Message string `json:"message" example:"介绍一下自己"`
-	Key     string `json:"key"`
+	Message string `json:"message"`
+	Key     string `json:"-"`
+	Text    string `json:"text"`
+}
+type ChatGPTApi struct {
+	Code int            `json:"code"`
+	Data ChatGptApiData `json:"data"`
 }
 
 //	godoc
@@ -125,7 +130,7 @@ type ChatGPTApi struct {
 // @Param       chatGPT body     ChatGPTApi true "例子：appkey 和文本内容"
 // @Router      /third/chatGPTApi [post]
 func (t *Third) ChatGPTApi(c *gin.Context) {
-	req := &ChatGPTApi{}
+	req := &ChatGptApiData{}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		translate.Individual(err, c)
 		return
@@ -138,9 +143,12 @@ func (t *Third) ChatGPTApi(c *gin.Context) {
 	resp, err := http.Post("https://chat.xingyijun.cn/chat/textModel", "application/json", bytes.NewBuffer(postData))
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	chatGPTApi := ChatGPTApi{}
+	err = json.Unmarshal(body, &chatGPTApi)
+	fmt.Printf("响应参数%+v", string(body))
 	if err != nil {
 		response.Fail(c, "请求失败", nil)
 		return
 	}
-	response.Success(c, string(body), "请求成功")
+	response.Success(c, chatGPTApi.Data, "请求成功")
 }

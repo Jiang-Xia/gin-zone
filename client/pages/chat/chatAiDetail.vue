@@ -20,6 +20,7 @@
 						<view class="content">
 							<view class="text-content emojifont">
 								<text selectable user-select>{{message.content}}</text>
+								<!-- <rich-text selectable class="md-preview default-theme md md-previewOnly" :nodes="message.content"></rich-text> -->
 							</view>
 						</view>
 					</view>
@@ -295,8 +296,6 @@
 					let message = ''
 					const res = await this.$api.post('/third/chatGPTApi', sendParams)
 					if(res){
-						res.data = JSON.parse(res.data)
-						res.data = res.data.data
 						message = res.data.text
 					}
 					if(message){

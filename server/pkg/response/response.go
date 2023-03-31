@@ -3,6 +3,7 @@ package response
 import (
 	"net/http"
 
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,9 @@ func Response(c *gin.Context, code int, data interface{}) bool {
 		Msg:  tip.Msg(code),
 		Data: data,
 	}
-	// log.Infof("响应数据: %+v", res)
+	if config.App.Env == "dev" {
+		log.Infof("响应数据: %+v", res)
+	}
 	c.JSON(http.StatusOK, res)
 	return true
 }
@@ -42,7 +45,9 @@ func Success(c *gin.Context, data interface{}, msg string) bool {
 		Msg:  msg,
 		Data: data,
 	}
-	//log.Infof("成功响应数据: %+v", res)
+	if config.App.Env == "dev" {
+		log.Infof("响应数据: %+v", res)
+	}
 	c.JSON(http.StatusOK, res)
 	return true
 }
