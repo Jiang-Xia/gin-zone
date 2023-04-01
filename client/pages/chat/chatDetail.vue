@@ -43,7 +43,8 @@
 					{{ audio.recording ? '松开发送' : '按住录音' }}
 				</view>
 				<!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
-				<input v-else v-model="text" class="consult-input emojifont" confirm-type="send" maxlength="700" placeholder="发送消息" type="text" />
+				<input v-else v-model="text" class="consult-input emojifont" confirm-type="send" maxlength="700"
+					placeholder="发送消息" type="text" />
 				<view @click="switchEmojiKeyboard">
 					<image class="more" v-if="emoji.visible" src="/static/images/jianpan.png"></image>
 					<image class="more" v-else src="/static/images/emoji.png"></image>
@@ -85,7 +86,9 @@
 	import {
 		beforeTimeNow
 	} from '../../common/utils/util.js';
-import { watch } from "vue";
+	import {
+		watch
+	} from "vue";
 	export default {
 		data() {
 			return {
@@ -147,15 +150,15 @@ import { watch } from "vue";
 
 				curOption: {},
 				timer: null,
-				selectList:["删除好友"]
+				selectList: ["删除好友"]
 			}
 		},
-		components:{
+		components: {
 			emojiList
 		},
 		onLoad(option) {
 			this.curOption = option
-			if(option.groupId){
+			if (option.groupId) {
 				this.selectList = ["退出群聊"]
 			}
 			console.log(this.curOption)
@@ -189,18 +192,8 @@ import { watch } from "vue";
 			this.$api.post("/mobile/chat/updateReadTime", this.getCurOption())
 			const url = wsUrl + '/mobile/chat?userId=' + this.userId
 			const token = uni.getStorageSync("zoneToken")
-			this.socketTask = uni.connectSocket({
-				url,
-				// 自定义请求头(失败)
-				// header: {
-				// 		Authorization:token,
-				// 	},
-				method: 'GET',
-				complete: () => {
-					console.log('WebSocket已连接！');
-					this.heartbeat()
-				}
-			});
+			this.socketTask = getApp().globalData.socketTask
+			this.socketOpen = true;
 			this.socketTask.onMessage((res) => {
 				if (res.data) {
 					const revObj = JSON.parse(res.data)
@@ -211,25 +204,18 @@ import { watch } from "vue";
 					console.log('服务端消息：', revObj);
 				}
 			});
-			this.socketTask.onOpen((res) => {
-				this.socketOpen = true;
-				console.log('WebSocket连接已打开！');
-			});
-			this.socketTask.onError((res) => {
-				console.log('WebSocket连接打开失败，请检查！');
-			});
 		},
 		computed: {
 			userId() {
 				return getApp().globalData.userInfo.userId
 			}
 		},
-		watch:{
-			'emoji.visible'(n){
-				this.$nextTick(()=>{
+		watch: {
+			'emoji.visible'(n) {
+				this.$nextTick(() => {
 					// #ifndef MP-WEIXIN
 					this.$refs['emojifont-list'].open({
-						confirm:(content)=>{
+						confirm: (content) => {
 							this.text += content
 						}
 					})
@@ -261,7 +247,9 @@ import { watch } from "vue";
 				return res
 			},
 			getCurOption() {
-				const {friendId = "", groupId = 0} = this.curOption
+				const {
+					friendId = "", groupId = 0
+				} = this.curOption
 				let sendObj = {
 					senderId: this.userId,
 					receiverId: friendId,
@@ -271,6 +259,7 @@ import { watch } from "vue";
 			},
 			// 发送消息
 			sendSocketMessage(messageData) {
+				console.log("sendSocketMessage", messageData)
 				const {
 					friendId = "", groupId = 0
 				} = this.curOption
@@ -285,7 +274,9 @@ import { watch } from "vue";
 					senderId: this.userId,
 					content: content,
 				}
-				if (cmd === "heartbeat") {} else if (cmd === "text") {
+				if (cmd === "heartbeat") {
+					console.log("心跳中...")
+				} else if (cmd === "text") {
 					const mainObj = {
 						receiverId: friendId,
 						groupId: Number(groupId),
@@ -492,24 +483,38 @@ import { watch } from "vue";
 			openOptSelect() {
 				uni.showActionSheet({
 					itemList: this.selectList,
-					success: async ({tapIndex}) => {
+					success: async ({
+						tapIndex
+					}) => {
 						const groupId = this.curOption.groupId
-						if(tapIndex===0&&groupId){
-							const res = await this.$api.del("/mobile/chat/groupMembers/{groupId}", {groupId: groupId})
-								uni.showToast({title: res.msg,})
-								uni.switchTab({url:"/pages/chat/index"})
-							
-						}else {
-							const res = await this.$api.del("/mobile/chat/friends/{friendId}", {friendId: this.curOption.friendId})
-							uni.showToast({title: res.msg,})
-							uni.switchTab({url:"/pages/chat/index"})
+						if (tapIndex === 0 && groupId) {
+							const res = await this.$api.del("/mobile/chat/groupMembers/{groupId}", {
+								groupId: groupId
+							})
+							uni.showToast({
+								title: res.msg,
+							})
+							uni.switchTab({
+								url: "/pages/chat/index"
+							})
+
+						} else {
+							const res = await this.$api.del("/mobile/chat/friends/{friendId}", {
+								friendId: this.curOption.friendId
+							})
+							uni.showToast({
+								title: res.msg,
+							})
+							uni.switchTab({
+								url: "/pages/chat/index"
+							})
 						}
 					},
 					fail: function(res) {
 						console.log(res.errMsg);
 					}
 				});
-			
+
 			},
 		}
 	}
@@ -518,9 +523,10 @@ import { watch } from "vue";
 <style lang="scss">
 	/* #ifndef MP-WEIXIN */
 	@font-face {
-	   font-family: 'emojifont';
-	   src:url("~@/static/iconfont/emojifont.ttf") format("truetype");
+		font-family: 'emojifont';
+		src: url("~@/static/iconfont/emojifont.ttf") format("truetype");
 	}
+
 	/* #endif */
 	.container {
 		padding: 20rpx 20rpx 140rpx 20rpx;
@@ -611,11 +617,13 @@ import { watch } from "vue";
 			vertical-align: center;
 			display: block;
 			font-size: 28rpx;
+
 			img {
 				width: 50rpx;
 				height: 50rpx;
 			}
-			&::before{
+
+			&::before {
 				content: " ";
 				display: block;
 				width: 0px;
@@ -656,7 +664,8 @@ import { watch } from "vue";
 			background-color: #0199fe;
 			// box-shadow: inset 0 0 6rpx rgba(0, 0, 0, .12);
 			color: #FFFFFF;
-			&::before{
+
+			&::before {
 				left: auto;
 				right: -8px !important;
 				border-right-color: #0199fe;
@@ -703,11 +712,13 @@ import { watch } from "vue";
 		background: #FFFFFF;
 		font-size: 32rpx;
 	}
+
 	// 表情样式
-	.emojifont{
+	.emojifont {
 		font-family: emojifont !important;
 		font-style: normal;
 	}
+
 	.more {
 		width: 62rpx;
 		height: 62rpx;

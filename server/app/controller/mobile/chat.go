@@ -238,7 +238,9 @@ func (manager *ClientManager) BroadcastSend() {
 			} else if wsMsg.ReceiverId != "" {
 				//	私聊时找到对应结接收方用户广播消息
 				for _, conn := range Manager.Clients {
-					fmt.Println("两个用户id", wsMsg.ReceiverId, conn.UserId)
+					//掉线了可能就找不到对应的在线实例
+					fmt.Println("找到对应接受者用户", wsMsg.ReceiverId, conn.UserId)
+					//接受者is和当前连接实例相等时
 					if wsMsg.ReceiverId == conn.UserId {
 						conn.SendChan <- msg
 						break

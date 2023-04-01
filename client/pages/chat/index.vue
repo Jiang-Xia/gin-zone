@@ -16,7 +16,7 @@
 			</uni-list-chat> -->
 			<uni-swipe-action>
 				<uni-swipe-action-item :threshold="50" :right-options="options2" @click="bindClick"
-					v-for="(item,index) in userList" :key="index">
+					v-for="(item,index) in userList" :key="(item.userId||item.groupId)+index">
 					<uni-list-chat :avatar-circle="true" :title="item.name" :avatar="item.avatar" :note="item.note"
 						:time="item.time" :badge-text="item.noReadMsgCount" clickable @click="clickUserItem(item)">
 					</uni-list-chat>
@@ -114,6 +114,7 @@
 						}
 						return v
 					})
+					this.initFriend()
 				}).finally(() => {
 
 					// console.log("======================================", "stopPullDownRefresh")
@@ -167,6 +168,32 @@
 			},
 			bindClick() {
 
+			},
+			initFriend(){
+				this.socketTask = getApp().globalData.socketTask
+				this.socketTask.onMessage((res) => {
+					if (res.data) {
+						const revObj = JSON.parse(res.data)
+						const cb = (v)=>{
+							v.note = revObj.content
+							v.time = formatDate()
+							v.noReadMsgCount++
+							if (v.msgType === 2) {
+								v.note = "[图片]"
+							} else if (v.msgType === 3) {
+								v.note = "[视频]"
+							}
+						}
+						this.userList = this.userList.map(v=>{
+							if(revObj.groupId&&revObj.groupId===v.groupId){
+								cb(v)
+							}else if(revObj.receiverId&&revObj.receiverId===v.userId){
+								cb(v)
+							}
+							return v
+						})
+					}
+				});
 			}
 		}
 	}

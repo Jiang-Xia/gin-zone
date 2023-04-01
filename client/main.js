@@ -13,6 +13,7 @@ app.$mount()
 // #endif
 // #ifdef VUE3
 import {createSSRApp} from 'vue'
+import * as Pinia from 'pinia';
 import App from './App.vue'
 import api from './common/request/api.js'
 import common,{mixins} from './common/utils/common.js'
@@ -24,6 +25,7 @@ import {
 
 export function createApp() {
 	const app = createSSRApp(App)
+	app.use(Pinia.createPinia());
 	app.config.globalProperties.$api = api
 	app.config.globalProperties.$common = common
 	app.config.globalProperties.$fileUrl = fileUrl
@@ -31,7 +33,8 @@ export function createApp() {
 	app.config.globalProperties.$pages = pageJson.pages,
 	app.mixin(mixins)
 	return {
-		app
+		app,
+		Pinia // 此处必须将 Pinia 返回
 	}
 }
 // #endif

@@ -1,4 +1,7 @@
 <script>
+	import {
+		wsUrl,
+	} from '@/common/request/api.js'
 	export default {
 		// 全局变量 全端支持
 		globalData: {
@@ -6,7 +9,13 @@
 			CustomBar: 0,
 			Custom: 0,
 			userInfo: {},
-			avatar: "https://jiang-xia.top/x-blog/api/v1/static/uploads/2023-01-01/2kf3d768tj33vsgs6exbu8-默认头像.jpeg"
+			avatar: "https://jiang-xia.top/x-blog/api/v1/static/uploads/2023-01-01/2kf3d768tj33vsgs6exbu8-默认头像.jpeg",
+			socketTask: null,
+		},
+		data(){
+			return{
+				timer:null
+			}
 		},
 		/* 应用生命周期 */
 		onLaunch: function() {
@@ -38,15 +47,17 @@
 				}
 			})
 			const userInfo = uni.getStorageSync("zoneUserInfo")
-			if(userInfo){
+			if (userInfo) {
 				this.globalData.userInfo = userInfo
+				this.initChat(userInfo.userId)
 			}
-			
+
 			/* 全局用户信息处理 */
-			if (uni.getStorageSync("zoneToken")&&!userInfo) {
+			if (uni.getStorageSync("zoneToken") && !userInfo) {
 				this.$api.get('/base/users/info').then(res => {
 					uni.setStorageSync('zoneUserInfo', res.data)
 					this.globalData.userInfo = res.data
+					this.initChat(res.data.userId)
 				}).catch((err) => {
 					uni.setStorageSync("zoneToken", "")
 					uni.setStorageSync('zoneUserInfo', "")
@@ -64,7 +75,7 @@
 			// #ifdef MP-WEIXIN
 			this.mpVersionUpdate()
 			// #endif
-			
+
 		},
 		onReady: function() {
 			console.log('App onReady');
@@ -94,7 +105,7 @@
 			mpVersionUpdate() {
 				const updateManager = uni.getUpdateManager();
 				updateManager.onCheckForUpdate(function(res) {
-					console.log("hasUpdate",res.hasUpdate)
+					console.log("hasUpdate", res.hasUpdate)
 					// 请求完新版本信息的回调
 					if (res.hasUpdate) {
 						uni.showLoading({
@@ -130,7 +141,53 @@
 
 					}
 				})
-			}
+			},
+			// 初始化聊天
+			initChat(userId) {
+				console.log({
+					userId
+				})
+				const url = wsUrl + '/mobile/chat?userId=' + userId
+				const token = uni.getStorageSync("zoneToken")
+				this.globalData.socketTask = uni.connectSocket({
+					url,
+					method: 'GET',
+					complete: () => {
+						console.log('WebSocket已连接！');
+					}
+				});
+				// 监听服务端发送消息
+				this.globalData.socketTask.onMessage((res) => {
+					// if (res.data) {
+					// 	const revObj = JSON.parse(res.data)
+					// 	console.log('服务端消息：', revObj);
+					// 	}
+				});
+				this.globalData.socketTask.onOpen((res) => {
+					console.log('WebSocket连接已打开！');
+					this.heartbeat()
+				});
+				this.globalData.socketTask.onError((res) => {
+					console.log('WebSocket连接打开失败，请检查！');
+				});
+			},
+			heartbeat(userId) {
+				this.timer = setInterval(() => {
+					this.globalData.socketTask.send({
+						data: JSON.stringify({
+							cmd: "heartbeat",
+							content: "heartbeat",
+							senderId: this.globalData.userInfo.userId,
+						}),
+						success: () => {
+							console.log('发送成功：', sendObj);
+						},
+						fail: (error) => {
+							console.log('发送失败:', error);
+						}
+					});
+				}, 10000)
+			},
 		}
 	}
 </script>
