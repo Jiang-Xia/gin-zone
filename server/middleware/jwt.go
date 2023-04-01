@@ -53,7 +53,7 @@ func JWTAuth() gin.HandlerFunc {
 		token = strings.Replace(token, "Bearer ", "", 1)
 		// 没有token 直接中断
 		if len(token) == 0 {
-			response.Fail(c, "token不能为空", nil)
+			response.Fail(c, "token不能为空", gin.H{"reload": true})
 			c.Abort()
 			return
 		}
@@ -64,13 +64,13 @@ func JWTAuth() gin.HandlerFunc {
 
 		if err != nil {
 			logrus.Error(err)
-			response.Fail(c, tip.Msg(tip.AuthCheckTokenFail), nil)
+			response.Fail(c, tip.Msg(tip.AuthCheckTokenFail), gin.H{"reload": true})
 			c.Abort()
 			return
 		}
 		//需判断解析后的token是否真是存在用户
 		if claims.UserName == "" {
-			response.Fail(c, "token无效", nil)
+			response.Fail(c, "token无效", gin.H{"reload": true})
 			c.Abort()
 			return
 		}

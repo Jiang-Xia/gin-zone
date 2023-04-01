@@ -86,6 +86,11 @@ export class Api {
 		} else {
 			reject(res.data)
 			const msg = res.data && res.data.msg
+			// 鉴权失败清空信息
+			if(res.data.data.reload){
+				uni.setStorageSync("zoneToken", "")
+				uni.setStorageSync('zoneUserInfo', "")
+			}
 			uni.showToast({
 				title: msg,
 				icon: "none"
