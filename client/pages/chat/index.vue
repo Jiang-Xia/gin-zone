@@ -1,8 +1,8 @@
 <template>
 	<view class="container">
 		<!--#ifdef MP-WEIXIN  -->
-		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" :border="true" :shadow="false" fixed statusBar
-			title="聊天" @clickLeft="clickLeft" />
+		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" :border="true" :shadow="false" fixed statusBar title="聊天"
+			@clickLeft="clickLeft" />
 		<!--#endif -->
 		<uni-list :border="true">
 			<!-- 默认列表 -->
@@ -30,6 +30,8 @@
 	import groupIcon from "../../static/images/group.png"
 	import userIcon from "../../static/images/user.png"
 	import oneChat from "../../static/images/chat/avatar/one.png"
+	import sevenChat from "../../static/images/chat/avatar/seven.webp"
+	import sixChat from "../../static/images/chat/avatar/six.png"
 	import {
 		formatDate
 	} from '../../common/utils/util.js';
@@ -39,10 +41,24 @@
 				groupIcon,
 				userIcon,
 				defaultList: [{
-					name: "知心小夏",
-					avatar: oneChat,
-					note: '对话聊天机器人小夏(搭梯子和我交流)'
-				}],
+						id: "001",
+						name: "知心小夏",
+						avatar: oneChat,
+						note: '对话聊天机器人小夏'
+					},
+					{
+						id: "002",
+						name: "可爱大白",
+						avatar: sevenChat,
+						note: '可可爱爱机器人大白'
+					},
+					{
+						id: "003",
+						name: "憨逼小木",
+						avatar: sixChat,
+						note: '憨憨机器人小木'
+					},
+				],
 				userList: [],
 				options2: [{
 						text: '取消',
@@ -72,7 +88,9 @@
 		methods: {
 			init() {
 				const userId = getApp().globalData.userInfo.userId
-				console.log({userId})
+				console.log({
+					userId
+				})
 				if (!userId) {
 					this.userList = []
 					return
@@ -144,7 +162,7 @@
 			// 点击默认功能列表
 			clickDefaultItem(item) {
 				uni.navigateTo({
-					url: `/pages/chat/chatAiDetail?name=${item.name}&avatar=${oneChat}`
+					url: `/pages/chat/chatAiDetail?id=${item.id}&name=${item.name}&avatar=${item.avatar}`
 				})
 			},
 			bindClick() {

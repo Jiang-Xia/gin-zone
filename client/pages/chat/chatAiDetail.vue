@@ -19,8 +19,8 @@
 						</view>
 						<view class="content">
 							<view class="text-content emojifont">
-								<text selectable user-select>{{message.content}}</text>
-								<!-- <rich-text selectable class="md-preview default-theme md md-previewOnly" :nodes="message.content"></rich-text> -->
+								<rich-text selectable class="md-preview default-theme md md-previewOnly"
+									:nodes="message.content"></rich-text>
 							</view>
 						</view>
 					</view>
@@ -29,15 +29,8 @@
 		</view>
 		<view class="action-box">
 			<view class="action-top">
-				<!-- <view view class="send-btn-box" type="default" size="small">
-							<text class="btn" @click="openSceneSelect">场景</text>
-						</view> -->
-				<!-- <view class="scene-btn" @click="openSceneSelect">
-							<button type="primary" plain="true" size="mini">场景</button>
-						</view> -->
-				<!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
-				<input v-model="text" class="consult-input emojifont" :adjust-positio="false"
-					@confirm="sendTextMessage()" confirm-type="send" maxlength="700" placeholder="输入内容" type="text" />
+				<input v-model="text" class="consult-input emojifont" :adjust-positio="false" @confirm="sendTextMessage()"
+					confirm-type="send" maxlength="700" placeholder="输入内容" type="text" />
 
 				<view v-if="text" class="send-btn-box">
 					<text class="btn" @click="sendTextMessage()">发送</text>
@@ -45,8 +38,8 @@
 			</view>
 		</view>
 		<!-- 悬浮按钮 -->
-		<!-- <uni-fab ref="fab" :popMenu="false" :pattern="fabPattern" :content="fabContent" horizontal="right"
-			vertical="top" direction="horizontal" @trigger="trigger" @fabClick="fabClick" /> -->
+		<!-- <uni-fab ref="fab" :popMenu="false" :pattern="fabPattern" :content="fabContent" horizontal="right" vertical="top"
+			direction="horizontal" @trigger="trigger" @fabClick="fabClick" /> -->
 	</view>
 </template>
 
@@ -54,6 +47,12 @@
 	import {
 		beforeTimeNow
 	} from '../../common/utils/util.js';
+	import parseHtml from "@/common/utils/html-parser.js"
+	import {
+		marked
+	} from 'marked'
+	import Prism from 'prismjs';
+	import 'prismjs/themes/prism-tomorrow.css';
 	export default {
 		data() {
 			return {
@@ -141,15 +140,22 @@
 					}
 				],
 				openAiKey: "",
-				curId:''
+				curId: ''
 			}
 		},
 		async onLoad(option) {
 			this.curOption = option
-			console.log(this.curOption)
+			marked.setOptions({
+				// 设置代码高亮插件
+				highlight: function(code, lang, callback) {
+					let result = ''
+					result = Prism.highlight(code, Prism.languages.javascript, "javascript")
+					callback("", result.toString());
+				}
+			});
 			this.navTitle = option.name
 			this.curScene = this.sceneList[0]
-			const string = uni.getStorageSync("historyMessages")
+			const string = uni.getStorageSync(this.storageKey)
 			if (string) {
 				const list = JSON.parse(string) || []
 				this.history.allMessages = list
@@ -173,6 +179,9 @@
 		},
 		onShow() {},
 		computed: {
+			storageKey(){
+				return 'robot'+this.curOption.id+'_historyMessages'
+			},
 			curUserAvatar() {
 				const userInfo = getApp().globalData.userInfo
 				return userInfo.avatar ||
@@ -199,79 +208,6 @@
 				this.openSceneSelect()
 			},
 			// 发送消息
-			async sendTextMessage2(messageData) {
-				if (!this.text) {
-					uni.showToast({
-						title: "内容不能为空"
-					})
-					return
-				}
-				try {
-					const content = this.text
-					this.text = ""
-					const params = {
-						...this.curScene,
-						prompt: content
-					}
-					this.history.messages.push({
-						content: content,
-						createdAt: new Date(),
-						type: 1
-					})
-					this.resetBottom()
-					uni.showLoading({
-						title: '拼命加载中',
-						mask: true
-					})
-					let sendParams = {}
-					let url = ''
-					if (params.model === 'gpt-3.5-turbo') {
-						url = 'https://api.openai.com/v1/chat/completions'
-						sendParams = {
-							"model": "gpt-3.5-turbo",
-							"messages": [{
-								"role": "user",
-								"content": content
-							}]
-						}
-
-					} else {
-						url = 'https://api.openai.com/v1/completions'
-						sendParams = {
-							"model": params.model,
-							"prompt": params.prompt,
-							"max_tokens": params.maxTokens,
-							"temperature": params.temperature,
-							"top_p": params.topP,
-							"frequency_penalty": params.frequencyPenalty
-						}
-					}
-					const res = await this.$api.request(url, 'POST', sendParams, {
-						header: {
-							Authorization: 'Bearer ' + this.openAiKey
-						}
-					})
-					let message = ''
-					if (params.model === 'gpt-3.5-turbo') {
-						message = res.data.choices[0].message.content
-					} else {
-						message = res.data.choices[0].text
-					}
-					this.history.messages.push({
-						content: message,
-						createdAt: new Date(),
-						type: 2
-					})
-					if (this.history.messages.length > 100) {
-						this.history.messages.shift()
-					}
-					this.resetBottom()
-					uni.hideLoading()
-					uni.setStorageSync("historyMessages", JSON.stringify(this.history.messages))
-				} catch (e) {
-					console.error(e)
-				}
-			},
 			async sendTextMessage(messageData) {
 				if (!this.text) {
 					uni.showToast({
@@ -292,13 +228,16 @@
 						title: '拼命加载中',
 						mask: true
 					})
-					let sendParams = {id:'',message:content}
+					let sendParams = {
+						id: '',
+						message: content
+					}
 					let message = ''
 					const res = await this.$api.post('/third/chatGPTApi', sendParams)
-					if(res){
+					if (res) {
 						message = res.data.text
 					}
-					if(message){
+					if (message) {
 						this.history.messages.push({
 							content: message,
 							createdAt: new Date(),
@@ -310,26 +249,19 @@
 					}
 					this.resetBottom()
 					uni.hideLoading()
-					uni.setStorageSync("historyMessages", JSON.stringify(this.history.messages))
+					uni.setStorageSync(this.storageKey, JSON.stringify(this.history.messages))
 				} catch (e) {
 					console.error(e)
 				}
 			},
-			loadHistoryMessage(scrollToBottom) {
+			async loadHistoryMessage(scrollToBottom) {
+				for (let item of this.history.allMessages) {
+					item.content = await this.transformMarkdown(item.content)
+				}
 				this.history.messages = this.history.allMessages
-				// const list = this.history.addMessages.slice(-this.history.page*20)
-				// this.history.loading = true;
-				// this.history.messages = list.concat(this.history.messages)
-				// if (this.history.messages.length >= this.history.addMessages.length) {
-				// 	this.history.allLoaded = true
-				// } else {
-				// 	this.history.page++
-				// }
 				if (scrollToBottom) {
 					this.resetBottom()
 				}
-				// uni.stopPullDownRefresh();
-				// this.history.loading = false;
 			},
 			// 选择场景
 			openSceneSelect() {
@@ -397,6 +329,17 @@
 			fabClick() {
 				this.clickRight()
 			},
+			transformMarkdown(markdownString) {
+				return new Promise((resove, reject) => {
+					marked.parse(markdownString, (err, html) => {
+						let nodes = parseHtml(html)
+						console.log({
+							nodes
+						})
+						resove(nodes)
+					});
+				})
+			}
 		}
 	}
 </script>
@@ -405,7 +348,7 @@
 	.container {}
 
 	.chat-list-wrap {
-		padding: 20rpx 20rpx 140rpx 20rpx;
+		padding: 12rpx 12rpx 140rpx 12rpx;
 	}
 
 	page {
@@ -477,13 +420,13 @@
 		.content {
 			font-size: 34rpx;
 			line-height: 44rpx;
-			margin: 0 20rpx;
-			max-width: 520rpx;
+			margin: 0 12rpx;
 		}
 
 		.text-content {
-			min-width: 44rpx;
-			padding: 16rpx;
+			position: relative;
+			min-width: 1em;
+			padding: 12rpx;
 			border-radius: 12rpx;
 			color: #000000;
 			background: #FFFFFF;
@@ -497,8 +440,29 @@
 				width: 50rpx;
 				height: 50rpx;
 			}
-		}
 
+			&::before {
+				content: " ";
+				display: block;
+				width: 0px;
+				height: 0px;
+				border-top: 4px solid transparent;
+				border-bottom: 4px solid transparent;
+				border-right: 4px solid #FFFFFF;
+				position: absolute;
+				top: 10px;
+				left: -4px;
+			}
+		}
+		// 代码风格
+		.default-theme{
+			pre {
+			    margin: 8px 0;
+			}
+			p{
+				padding: 0;
+			}
+		}
 	}
 
 	// 我的消息
@@ -517,6 +481,17 @@
 			background-color: #0199fe;
 			box-shadow: inset 0 0 6rpx rgba(0, 0, 0, .12);
 			color: #FFFFFF;
+
+			&::before {
+				left: auto;
+				right: -4px !important;
+				border-right-color: #0199fe;
+				transform: rotateZ(180deg);
+			}
+		}
+
+		.md {
+			background-color: #0199fe;
 		}
 	}
 
@@ -549,7 +524,7 @@
 		flex: 1;
 		height: 80rpx;
 		padding-left: 20rpx;
-		margin: 20rpx;
+		margin: 20rpx 0;
 		border: none;
 		outline: none;
 		box-sizing: border-box;
@@ -566,6 +541,7 @@
 	}
 
 	.send-btn-box {
+		margin-left: 20rpx;
 		display: flex;
 		align-items: center;
 		justify-content: center;

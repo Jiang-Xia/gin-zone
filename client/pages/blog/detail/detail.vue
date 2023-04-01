@@ -89,7 +89,7 @@
 					// #endif
 
 					// #ifdef H5||APP-PLUS
-					this.nodes = parseHtml(html)
+					this.nodes = html
 					// #endif
 				});
 			},
