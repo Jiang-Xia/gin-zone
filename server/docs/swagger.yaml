@@ -34,12 +34,20 @@ definitions:
     type: object
   base.ChatGPTApi:
     properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/base.ChatGptApiData'
+    type: object
+  base.ChatGptApiData:
+    properties:
       id:
         type: string
       key:
         type: string
       message:
-        example: 介绍一下自己
+        type: string
+      text:
         type: string
     type: object
   base.FileInfo:
@@ -939,12 +947,12 @@ paths:
       - application/json
       description: ChatGPTApi
       parameters:
-      - description: 例子：appkey 和文本内容
+      - description: 例子：appkey,对话id,对话内容
         in: body
         name: chatGPT
         required: true
         schema:
-          $ref: '#/definitions/base.ChatGPTApi'
+          $ref: '#/definitions/base.ChatGptApiData'
       produces:
       - application/json
       responses:
@@ -981,6 +989,4 @@ securityDefinitions:
     in: header
     name: Authorization
     type: apiKey
-  BasicAuth:
-    type: basic
 swagger: "2.0"

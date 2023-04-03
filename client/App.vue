@@ -180,7 +180,7 @@
 							senderId: this.globalData.userInfo.userId,
 						}),
 						success: () => {
-							console.log('发送成功：', sendObj);
+							// console.log('发送成功：');
 						},
 						fail: (error) => {
 							console.log('发送失败:', error);

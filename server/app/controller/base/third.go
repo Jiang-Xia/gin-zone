@@ -111,7 +111,7 @@ func (t *Third) ChatGPT(c *gin.Context) {
 type ChatGptApiData struct {
 	Id      string `json:"id"`
 	Message string `json:"message"`
-	Key     string `json:"-"`
+	Key     string `json:"key"`
 	Text    string `json:"text"`
 }
 type ChatGPTApi struct {
@@ -127,7 +127,7 @@ type ChatGPTApi struct {
 // @Accept      json
 // @Produce     json
 // @Success     200  {object} ChatGPTApi
-// @Param       chatGPT body     ChatGPTApi true "例子：appkey 和文本内容"
+// @Param       chatGPT body     ChatGptApiData true "例子：appkey,对话id,对话内容"
 // @Router      /third/chatGPTApi [post]
 func (t *Third) ChatGPTApi(c *gin.Context) {
 	req := &ChatGptApiData{}
@@ -136,7 +136,9 @@ func (t *Third) ChatGPTApi(c *gin.Context) {
 		return
 	}
 	openaiAppKey := config.App.OpenaiAppKey
-	req.Key = openaiAppKey
+	if req.Key == "" {
+		req.Key = openaiAppKey
+	}
 	fmt.Printf("请求参数%+v", req)
 	// 构造POST请求的数据
 	postData, _ := json.Marshal(req)
@@ -145,7 +147,7 @@ func (t *Third) ChatGPTApi(c *gin.Context) {
 	body, err := ioutil.ReadAll(resp.Body)
 	chatGPTApi := ChatGPTApi{}
 	err = json.Unmarshal(body, &chatGPTApi)
-	fmt.Printf("响应参数%+v", string(body))
+	fmt.Println("AI接口响应参数:", string(body))
 	if err != nil {
 		response.Fail(c, "请求失败", nil)
 		return

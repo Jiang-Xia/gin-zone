@@ -911,12 +911,12 @@
                 "summary": "ChatGPTApi",
                 "parameters": [
                     {
-                        "description": "例子：appkey 和文本内容",
+                        "description": "例子：appkey,对话id,对话内容",
                         "name": "chatGPT",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/base.ChatGPTApi"
+                            "$ref": "#/definitions/base.ChatGptApiData"
                         }
                     }
                 ],
@@ -1009,6 +1009,17 @@
         "base.ChatGPTApi": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/base.ChatGptApiData"
+                }
+            }
+        },
+        "base.ChatGptApiData": {
+            "type": "object",
+            "properties": {
                 "id": {
                     "type": "string"
                 },
@@ -1016,8 +1027,10 @@
                     "type": "string"
                 },
                 "message": {
-                    "type": "string",
-                    "example": "介绍一下自己"
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
                 }
             }
         },
@@ -1476,9 +1489,6 @@
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
-        },
-        "BasicAuth": {
-            "type": "basic"
         }
     }
 }
