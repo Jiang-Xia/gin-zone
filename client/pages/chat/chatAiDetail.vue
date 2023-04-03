@@ -218,8 +218,9 @@
 				try {
 					const content = this.text
 					this.text = ""
+					let mdContent = await this.transformMarkdown(content)
 					this.history.messages.push({
-						content: content,
+						content: mdContent,
 						createdAt: new Date(),
 						type: 1
 					})
@@ -238,6 +239,7 @@
 						message = res.data.text
 					}
 					if (message) {
+						message = await this.transformMarkdown(message)
 						this.history.messages.push({
 							content: message,
 							createdAt: new Date(),
@@ -255,9 +257,9 @@
 				}
 			},
 			async loadHistoryMessage(scrollToBottom) {
-				for (let item of this.history.allMessages) {
-					item.content = await this.transformMarkdown(item.content)
-				}
+				// for (let item of this.history.allMessages) {
+				// 	item.content = await this.transformMarkdown(item.content)
+				// }
 				this.history.messages = this.history.allMessages
 				if (scrollToBottom) {
 					this.resetBottom()
@@ -421,6 +423,7 @@
 			font-size: 34rpx;
 			line-height: 44rpx;
 			margin: 0 12rpx;
+			max-width: calc(100% - 48px);
 		}
 
 		.text-content {
@@ -435,7 +438,6 @@
 			vertical-align: center;
 			display: block;
 			font-size: 28rpx;
-
 			img {
 				width: 50rpx;
 				height: 50rpx;
