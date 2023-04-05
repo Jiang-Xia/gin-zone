@@ -1,66 +1,46 @@
+# Getting Started with Create React App
 
-<div align="center">
-	<!-- <img style="width: 80px;height: 80px" src=""/> -->
-	<h1>admin</h1>
-</div>
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Available Scripts
 
-[![license](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+In the project directory, you can run:
 
-## 简介
+### `yarn start`
 
- Admin  是一个基于 Vue3、Vite、TypeScript、naive 的后台管理系统，它使用了最新的前端技术栈，用于管理h5的各种功能。
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-## 主要技术和依赖
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-- [Vue3](https://staging-cn.vuejs.org/guide/introduction.html)
-- [Vite](https://www.vitejs.net/guide/)
-- [Naiveui UI](https://www.naiveui.com/zh-CN/os-theme/components/button)
-- [TypeScript](https://typescript.bootcss.com/)
-  
-  
-## 特性
+### `yarn test`
 
-- **最新技术栈**：使用 Vue3/vite3 等前端前沿技术开发, 使用高效率的npm包管理器
-- **TypeScript**: 应用程序级 JavaScript 的语言
-- **代码规范**：丰富的规范插件及极高的代码规范
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-## 推荐IDE
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+### `yarn build`
 
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-## 在线预览
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-<!-- - [Blog Admin](https://admin.jiang-xia.top/dashboard/workplace) -->
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-  
+### `yarn eject`
 
-## 代码仓库
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-- [admin](https://gitee.com/jiang-xia/gin-zone/admin)
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-<!-- ## 项目示例图 -->
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-## 安装使用
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-- 安装依赖
+## Learn More
 
-```bash
-npm install
-```
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-- 运行
-
-```bash
-npm run dev
-```
-
-- 打包
-
-```bash
-npm run build
-```
-
-## 开源作者
-
-**jiang-xia**
+To learn React, check out the [React documentation](https://reactjs.org/).
