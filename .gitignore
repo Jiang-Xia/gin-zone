@@ -1,5 +1,4 @@
 .idea
-node_modules
 server/tmp
 server/logs
 server/tmp/build-errors.log
