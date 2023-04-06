@@ -1,6 +1,17 @@
 #!/bin/sh
+
 set -e
 
-cd server go tidy mod
-cd admin yarn
-cd client npm install
+cd server
+go mod tidy
+cd -
+
+cd admin
+yarn
+cd -
+
+cd client
+npm install
+cd -
+
+echo "✅ installed completed"
