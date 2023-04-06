@@ -1,7 +1,7 @@
 
 <div align="center">
 	<!-- <img style="width: 80px;height: 80px" src=""/> -->
-	<h1>client</h1>
+	<h1>Zone</h1>
 </div>
 
 
@@ -9,7 +9,7 @@
 
 ## 简介
 
- Client  是一个基于 Vue3、Vite、Uniapp 跨端项目，可打包生成h5 app 微信小程序等。
+ Zone  是一个基于 Vue3、Vite、Uniapp 跨端项目，可打包生成h5 app 微信小程序等。
 
 ## 主要技术和依赖
 

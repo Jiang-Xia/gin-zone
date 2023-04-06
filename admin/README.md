@@ -1,46 +1,66 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center">
+	<!-- <img style="width: 80px;height: 80px" src=""/> -->
+	<h1>Zone Admin</h1>
+</div>
 
-## Available Scripts
 
-In the project directory, you can run:
+[![license](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
-### `yarn start`
+## 简介
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+ Zone Admin  是一个基于  的后台管理系统，它使用了最新的前端技术栈，用于React18、Create React App、TypeScript、Ant Design后台管理系统。
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 主要技术和依赖
 
-### `yarn test`
+- [React官网](https://zh-hans.reactjs.org/learn/)
+- [Create React App](https://create-react-app.dev/)
+- [TypeScript](https://typescript.bootcss.com/)
+- [ant-design](https://ant.design/index-cn)
+- [ant-design-pro(参考)](https://pro.ant.design/zh-CN/docs/getting-started/)
+  
+## 特性
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **最新技术栈**：使用 React18/hook 等前端前沿技术开发, 使用高效率的npm包管理器
+- **TypeScript**: 应用程序级 JavaScript 的语言
+- **代码规范**：丰富的规范插件及极高的代码规范
 
-### `yarn build`
+## 推荐IDE
+- [VSCode](https://code.visualstudio.com/) + [Eslint](http://eslint.org/)+[Prettier](https://prettier.io/)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 在线预览
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+<!-- - [Blog Admin](https://admin.jiang-xia.top/dashboard/workplace) -->
 
-### `yarn eject`
+  
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 代码仓库
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- [admin](https://gitee.com/jiang-xia/gin-zone/admin)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+<!-- ## 项目示例图 -->
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 安装使用
 
-## Learn More
+- 安装依赖
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+npm install
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- 运行
+
+```bash
+npm run dev
+```
+
+- 打包
+
+```bash
+npm run build
+```
+
+## 开源作者
+
+**jiang-xia**

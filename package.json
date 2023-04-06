@@ -4,8 +4,8 @@
   "description": "go react uniapp 综合练手项目",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "i:all": "bash ./scripts/install.sh"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,8 @@
   "homepage": "https://github.com/Jiang-Xia/gin-zone#readme",
   "dependencies": {},
   "devDependencies": {
+    "@commitlint/cli": "^17.5.1",
+    "@commitlint/config-conventional": "^17.4.4",
     "husky": "^8.0.0"
   }
 }
