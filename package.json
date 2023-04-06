@@ -1,0 +1,32 @@
+{
+  "name": "gin-zone",
+  "version": "1.0.0",
+  "description": "go react uniapp 综合练手项目",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jiang-Xia/gin-zone.git"
+  },
+  "keywords": [
+    "go",
+    "gin",
+    "react",
+    "ant-design",
+    "uniapp",
+    "大前端"
+  ],
+  "author": "jiangxia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jiang-Xia/gin-zone/issues"
+  },
+  "homepage": "https://github.com/Jiang-Xia/gin-zone#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^8.0.0"
+  }
+}
