@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["src/*"],
+        "@pages/*": ["src/pages/*"],
+        "@svg/*": ["src/assets/svg/*"],
+        "@img/*": ["src/assets/images/*"],
+        "@icons/*": ["src/assets/icons/*"],
+        "@shared/*": ["src/shared/*"],
+        "@components/*": ["src/components/*"],
+        "@hooks/*": ["src/hooks/*"],
+        "@constants/*": ["src/constants/*"],
+        "@layout/*": ["src/layout/*"],
+        "@services/*": ["src/services/*"]
+      }
+    }
+  }

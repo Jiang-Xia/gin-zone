@@ -1,16 +1,10 @@
 const path = require('path');
-const { name } = require('./package.json');
-
-const pathResolve = pathUrl => path.join(__dirname, pathUrl);
-
+const CracoAlias = require('craco-alias');
+const pathResolve = pathUrl => path.resolve(__dirname, pathUrl);
 module.exports = {
   reactScriptsVersion: 'react-scripts' /* (default value) */,
   webpack: {
-    alias: {
-      '@': pathResolve('src'),
-      '@assets': pathResolve('src/assets'),
-      '@components': pathResolve('src/components'),
-    },
+    alias: {},
     configure(webpackConfig) {
       // 配置扩展扩展名
       webpackConfig.resolve.extensions = [...webpackConfig.resolve.extensions, ...['.scss', '.css']];
@@ -21,6 +15,17 @@ module.exports = {
       return webpackConfig;
     },
   },
+  plugins: [
+    // 重写路径别名
+    {
+      plugin: CracoAlias,
+      options: {
+        source: 'tsconfig',
+        baseUrl: '.',
+        tsConfigPath: './tsconfig.path.json',
+      },
+    },
+  ],
   devServer: {
     // 本地服务的端口号
     port: 3001,
@@ -31,4 +36,3 @@ module.exports = {
     },
   },
 };
-

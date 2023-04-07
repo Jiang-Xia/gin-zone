@@ -52,7 +52,7 @@ npm install
 - 运行
 
 ```bash
-npm run dev
+npm run start
 ```
 
 - 打包

@@ -2,17 +2,21 @@ import { GithubFilled, InfoCircleFilled, QuestionCircleFilled } from '@ant-desig
 import type { ProSettings } from '@ant-design/pro-components';
 import { PageContainer, ProLayout, SettingDrawer, ProCard } from '@ant-design/pro-components';
 import { useState } from 'react';
+import React from 'react';
 import defaultProps from './_defaultProps';
-export default () => {
+import { useNavigate } from 'react-router-dom';
+import { MenuRoutes } from '../routers';
+const Container: React.FC = (props: any) => {
   const [settings, setSetting] = useState<Partial<ProSettings> | undefined>({
     layout: 'side',
   });
 
-  const [pathname, setPathname] = useState('/list/sub-page/sub-sub-page1');
-
+  const [pathname, setPathname] = useState('');
+  const navigate = useNavigate();
+  console.log({ MenuRoutes });
   return (
     <div
-      id="test-pro-layout"
+      id="app-pro-layout"
       style={{
         height: '100vh',
       }}
@@ -60,6 +64,8 @@ export default () => {
           <div
             onClick={() => {
               setPathname(item.path || '/welcome');
+              console.log(item.path);
+              navigate(item.path || '/welcome');
             }}
           >
             {dom}
@@ -74,6 +80,7 @@ export default () => {
               minHeight: 800,
             }}
           >
+            <MenuRoutes />
             <div />
           </ProCard>
         </PageContainer>
@@ -81,7 +88,7 @@ export default () => {
       <SettingDrawer
         pathname={pathname}
         enableDarkTheme
-        getContainer={() => document.getElementById('test-pro-layout')}
+        getContainer={() => document.getElementById('app-pro-layout')}
         settings={settings}
         onSettingChange={changeSetting => {
           setSetting(changeSetting);
@@ -91,3 +98,4 @@ export default () => {
     </div>
   );
 };
+export default Container;
