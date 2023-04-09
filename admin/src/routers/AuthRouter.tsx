@@ -2,19 +2,27 @@ import { message } from 'antd';
 import { useEffect } from 'react';
 // import { useSelector } from 'react-redux';
 import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
-import { routers } from './index';
+import { rootRouter } from './index';
 
+import { AxiosCanceler } from '@/api/helper/axiosCancel';
+import { searchRoute } from '@/utils/util';
+
+const axiosCanceler = new AxiosCanceler();
+/**
+ * @description 路由守卫组件
+ * */
 const AuthRoute = ({ children, auth }: any) => {
   const navigate = useNavigate();
   const location = useLocation();
   const token = localStorage.getItem('ZDToken') || '';
   //   const loginState = useSelector((state: any) => state.public.loginState);
-  const mathchs = matchRoutes(routers, location);
+  const mathchs = matchRoutes(rootRouter, location);
 
   const isExist = mathchs?.some(item => item.pathname === location.pathname);
 
   useEffect(() => {
     navigate(location.pathname);
+    axiosCanceler.removeAllPending();
     return;
     if (token === '' && isExist) {
       message.error('token 过期，请重新登录!');

@@ -4,8 +4,8 @@ import { PageContainer, ProLayout, SettingDrawer, ProCard } from '@ant-design/pr
 import { useState } from 'react';
 import React from 'react';
 import defaultProps from './_defaultProps';
-import { useNavigate } from 'react-router-dom';
-import { MenuRoutes } from '../routers';
+import { useNavigate, Outlet } from 'react-router-dom';
+import { routerArray, RouteObject } from '@/routers';
 const Container: React.FC = (props: any) => {
   const [settings, setSetting] = useState<Partial<ProSettings> | undefined>({
     layout: 'side',
@@ -13,7 +13,20 @@ const Container: React.FC = (props: any) => {
 
   const [pathname, setPathname] = useState('');
   const navigate = useNavigate();
-  console.log({ MenuRoutes });
+  const getMenuList = (list: RouteObject[]) => {
+    if (!list) {
+      return list;
+    }
+    list = list.map((v: any) => {
+      const menuItem: any = {};
+      return menuItem;
+    });
+    return list;
+  };
+  console.log({ routerArray });
+  const menuList = getMenuList(routerArray);
+  console.log({ menuList });
+  defaultProps.route.routes = [...menuList, ...defaultProps.route.routes];
   return (
     <div
       id="app-pro-layout"
@@ -80,7 +93,8 @@ const Container: React.FC = (props: any) => {
               minHeight: 800,
             }}
           >
-            <MenuRoutes />
+            {/* 类似vue-router的router-view */}
+            <Outlet />
             <div />
           </ProCard>
         </PageContainer>

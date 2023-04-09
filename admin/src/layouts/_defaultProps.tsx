@@ -12,21 +12,6 @@ const defaultProps: any = {
     path: '/',
     routes: [
       {
-        path: '/welcome',
-        name: '欢迎',
-        component: Welcome,
-        icon: <SmileFilled />,
-        auth: true,
-      },
-      {
-        path: '/moment',
-        component: lazyLoad('moment'),
-        name: '动态',
-        auth: true,
-        routes: [{ path: 'detail', component: lazyLoad('moment/detail'), name: '动态详情', auth: true }],
-      },
-      //   { path: "*", component: <NotFound />, auth: true },
-      {
         path: 'https://jiang-xia.top/',
         name: '我的博客',
         icon: <ChromeFilled />,
