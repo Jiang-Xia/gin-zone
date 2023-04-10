@@ -1,0 +1,27 @@
+{
+    "code": 0,
+    "data": [
+        {
+            "icon": "SmileFilled",
+            "name": "欢迎",
+            "path": "/welcome"
+        },
+        {
+            "icon": "ChromeFilled",
+            "name": "动态",
+            "path": "/moment/index",
+            "children": [
+                {
+                    "icon": "",
+                    "path": "/moment/list",
+                    "name": "动态列表"
+                },
+                {
+                    "icon": "",
+                    "path": "/moment/detail",
+                    "name": "动态详情"
+                }
+            ]
+        }
+    ]
+}

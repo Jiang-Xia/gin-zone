@@ -8,10 +8,10 @@ import { message } from 'antd';
 import { store } from '@/redux';
 
 const axiosCanceler = new AxiosCanceler();
-
+// 'localhost:5050'
 const config = {
   // 默认地址请求地址，可在 .env 开头文件中修改
-  baseURL: process.env.BaseUrl || 'localhost:5050',
+  baseURL: process.env.BaseUrl,
   // 设置超时时间（30s）
   timeout: 30000,
   // 跨域时候允许携带凭证

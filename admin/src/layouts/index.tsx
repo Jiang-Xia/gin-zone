@@ -1,32 +1,80 @@
-import { GithubFilled, InfoCircleFilled, QuestionCircleFilled } from '@ant-design/icons';
+import { GithubFilled, InfoCircleFilled, QuestionCircleFilled, SmileFilled } from '@ant-design/icons';
 import type { ProSettings } from '@ant-design/pro-components';
+import * as Icons from '@ant-design/icons';
 import { PageContainer, ProLayout, SettingDrawer, ProCard } from '@ant-design/pro-components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import React from 'react';
 import defaultProps from './_defaultProps';
-import { useNavigate, Outlet } from 'react-router-dom';
-import { routerArray, RouteObject } from '@/routers';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { RouteObject } from '@/routers';
+import { getMenuList } from '@/api/modules/login';
+interface MenuItem {
+  component: string;
+  path: string;
+  icon: React.ReactNode;
+  name: string;
+  children?: MenuItem[];
+}
+const getItem = (menuItem: RouteObject): MenuItem => {
+  return {
+    component: menuItem.element as string,
+    path: menuItem.path || '',
+    icon: addIcon(menuItem.icon || ''),
+    name: menuItem.name || '',
+  };
+};
+// 动态渲染 Icon 图标
+const customIcons: { [key: string]: any } = Icons;
+const addIcon = (name: string) => {
+  // console.log(name, customIcons[name]);
+  if (!customIcons[name]) return;
+  return React.createElement(customIcons[name]);
+};
+const dealMenuList = (list: RouteObject[]): MenuItem[] => {
+  if (!list) {
+    return list;
+  }
+  return list.map((v: RouteObject) => {
+    const menuItem: MenuItem = getItem(v);
+    if (v?.children?.length) {
+      menuItem.children = dealMenuList(v.children);
+    }
+    return menuItem;
+  });
+};
 const Container: React.FC = (props: any) => {
+  const { pathname: curPathname } = useLocation();
   const [settings, setSetting] = useState<Partial<ProSettings> | undefined>({
     layout: 'side',
   });
-
-  const [pathname, setPathname] = useState('');
+  // 设置选中菜单项
+  const [pathname, setPathname] = useState(curPathname);
   const navigate = useNavigate();
-  const getMenuList = (list: RouteObject[]) => {
-    if (!list) {
-      return list;
+  const layoutConfig = defaultProps;
+  // 获取菜单列表并处理成 antd menu 需要的格式
+  // 需要使用useState视图才会更新
+  const [route, setRoute] = useState<any>({
+    path: '/',
+    routes: [],
+  });
+  const getMenuData = async (layoutConfig: any) => {
+    layoutConfig.menu.loading = true;
+    try {
+      let { data } = await getMenuList();
+      if (!data) return;
+      data = [...data, ...defaultProps.route.routes];
+      setRoute({
+        path: '/',
+        routes: dealMenuList(data),
+      });
+    } finally {
+      layoutConfig.menu.loading = false;
     }
-    list = list.map((v: any) => {
-      const menuItem: any = {};
-      return menuItem;
-    });
-    return list;
   };
-  console.log({ routerArray });
-  const menuList = getMenuList(routerArray);
-  console.log({ menuList });
-  defaultProps.route.routes = [...menuList, ...defaultProps.route.routes];
+  // 需要设置第二个参数依懒性，不然会无限循环
+  useEffect(() => {
+    getMenuData(layoutConfig);
+  }, [layoutConfig]);
   return (
     <div
       id="app-pro-layout"
@@ -56,7 +104,8 @@ const Container: React.FC = (props: any) => {
             width: '331px',
           },
         ]}
-        {...defaultProps}
+        {...layoutConfig}
+        route={route}
         location={{
           pathname,
         }}
@@ -77,7 +126,6 @@ const Container: React.FC = (props: any) => {
           <div
             onClick={() => {
               setPathname(item.path || '/welcome');
-              console.log(item.path);
               navigate(item.path || '/welcome');
             }}
           >

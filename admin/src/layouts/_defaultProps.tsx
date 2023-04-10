@@ -14,12 +14,17 @@ const defaultProps: any = {
       {
         path: 'https://jiang-xia.top/',
         name: '我的博客',
-        icon: <ChromeFilled />,
+        icon: 'GithubFilled',
       },
     ],
   },
+  title: 'Zone Admin',
+  logo: '/logo512.png',
   location: {
     pathname: '/',
+  },
+  menu: {
+    loading: false,
   },
   appList: [
     {

@@ -37,7 +37,7 @@ export interface RouteObject {
   path?: string;
   auth?: boolean;
   name?: string;
-  icon?: ReactNode;
+  icon?: string;
   children?: RouteObject[];
   redirect?: string;
 }

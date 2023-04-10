@@ -61,6 +61,7 @@
     ]
   },
   "devDependencies": {
+    "@ant-design/icons": "^5.0.1",
     "@types/redux-promise": "^0.5.29",
     "@types/redux-thunk": "^2.1.0",
     "@types/webpack-env": "^1.18.0",
