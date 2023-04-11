@@ -7,7 +7,7 @@ import React from 'react';
 import defaultProps from './_defaultProps';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { RouteObject } from '@/routers';
-import { getMenuList } from '@/api/modules/login';
+import { getMenuList } from '@/api/modules/user';
 interface MenuItem {
   component: string;
   path: string;

@@ -1,6 +1,6 @@
-import { legacy_createStore as createStore, combineReducers, Store, compose } from 'redux';
+import { legacy_createStore as createStore, combineReducers, Store, compose } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import { applyMiddleware } from 'redux';
+import { applyMiddleware } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage';
 import reduxThunk from 'redux-thunk';
 import reduxPromise from 'redux-promise';
@@ -21,7 +21,7 @@ const persistReducerConfig = persistReducer(persistConfig, reducer);
 // 开启 redux-devtools
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-// 使用 redux 中间件
+// 使用 redux 中间件 可以redux+reduxThunk或者redux+reduxPromise配套使用
 const middleWares = applyMiddleware(reduxThunk, reduxPromise);
 
 // 创建 store
