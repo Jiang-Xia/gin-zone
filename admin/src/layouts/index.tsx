@@ -5,9 +5,12 @@ import { PageContainer, ProLayout, SettingDrawer, ProCard } from '@ant-design/pr
 import { useState, useEffect } from 'react';
 import React from 'react';
 import defaultProps from './_defaultProps';
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import { RouteObject } from '@/routers';
 import { getMenuList } from '@/api/modules/user';
+import { logout } from '@/redux/modules/global/action';
+import { connect } from 'react-redux';
+import AvatarIcon from './components/AvatarIcon';
 interface MenuItem {
   component: string;
   path: string;
@@ -71,6 +74,8 @@ const Container: React.FC = (props: any) => {
       layoutConfig.menu.loading = false;
     }
   };
+
+  const userinfo = props.userInfo;
   // 需要设置第二个参数依懒性，不然会无限循环
   useEffect(() => {
     getMenuData(layoutConfig);
@@ -110,8 +115,8 @@ const Container: React.FC = (props: any) => {
           pathname,
         }}
         avatarProps={{
-          src: 'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
-          title: '七妮妮',
+          src: <AvatarIcon avatar={userinfo.avatar} />,
+          title: userinfo.nickName,
           size: 'small',
         }}
         actionsRender={props => {
@@ -119,7 +124,9 @@ const Container: React.FC = (props: any) => {
           return [
             <InfoCircleFilled key="InfoCircleFilled" />,
             <QuestionCircleFilled key="QuestionCircleFilled" />,
-            <GithubFilled key="GithubFilled" />,
+            <Link to="https://github.com/Jiang-Xia/gin-zone/tree/master/admin">
+              <GithubFilled key="GithubFilled" />
+            </Link>,
           ];
         }}
         menuItemRender={(item, dom) => (
@@ -160,4 +167,10 @@ const Container: React.FC = (props: any) => {
     </div>
   );
 };
-export default Container;
+
+function mapStateToProps(state: any) {
+  const { userInfo } = state.global;
+  return { userInfo };
+}
+const mapDispatchToProps = { logout };
+export default connect(mapStateToProps, mapDispatchToProps)(Container);
