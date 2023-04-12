@@ -13,6 +13,6 @@ export const setUserInfo = async () => {
 };
 
 // * logout
-export const logout = async (info: string) => {
+export const logout = () => {
   return { type: types.LOGOUT };
 };

@@ -3,7 +3,7 @@ import { showFullScreenLoading, tryHideFullScreenLoading } from '@/config/servic
 import { ResultData } from '@/api/interface';
 import { checkStatus } from './helper/checkStatus';
 import { AxiosCanceler } from './helper/axiosCancel';
-import { setToken } from '@/redux/modules/global/action';
+import { logout } from '@/redux/modules/global/action';
 import { message } from 'antd';
 import { store } from '@/redux';
 
@@ -53,11 +53,11 @@ class RequestHttp {
         // * 在请求结束后，移除本次请求(关闭loading)
         axiosCanceler.removePending(config);
         tryHideFullScreenLoading();
-        // * 登录失效（code == 1
-        if (data.code === 1) {
-          store.dispatch(setToken(''));
+        // * 登录失效 code === 1&& data.data.reload
+        console.log({ data });
+        if (data.code === 1 && data.data.reload) {
+          store.dispatch(logout());
           message.error(data.msg);
-          window.location.hash = '/login';
           return Promise.reject(data);
         }
         // * 全局错误信息拦截（防止下载文件得时候返回数据流，没有code，直接报错）

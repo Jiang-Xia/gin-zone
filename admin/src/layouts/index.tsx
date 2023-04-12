@@ -5,6 +5,7 @@ import { PageContainer, ProLayout, SettingDrawer, ProCard } from '@ant-design/pr
 import { useState, useEffect } from 'react';
 import React from 'react';
 import defaultProps from './_defaultProps';
+import defaultSettings from './defaultSettings';
 import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import { RouteObject } from '@/routers';
 import { getMenuList } from '@/api/modules/user';
@@ -48,7 +49,7 @@ const dealMenuList = (list: RouteObject[]): MenuItem[] => {
 const Container: React.FC = (props: any) => {
   const { pathname: curPathname } = useLocation();
   const [settings, setSetting] = useState<Partial<ProSettings> | undefined>({
-    layout: 'side',
+    ...defaultSettings,
   });
   // 设置选中菜单项
   const [pathname, setPathname] = useState(curPathname);
@@ -78,8 +79,9 @@ const Container: React.FC = (props: any) => {
   const userinfo = props.userInfo;
   // 需要设置第二个参数依懒性，不然会无限循环
   useEffect(() => {
+    // console.log({ settings });
     getMenuData(layoutConfig);
-  }, [layoutConfig]);
+  }, [layoutConfig, settings]);
   return (
     <div
       id="app-pro-layout"
@@ -157,12 +159,13 @@ const Container: React.FC = (props: any) => {
       <SettingDrawer
         pathname={pathname}
         enableDarkTheme
+        disableUrlParams={true}
         getContainer={() => document.getElementById('app-pro-layout')}
         settings={settings}
         onSettingChange={changeSetting => {
-          setSetting(changeSetting);
+          setSetting({ ...changeSetting });
+          console.log({ settings });
         }}
-        disableUrlParams={false}
       />
     </div>
   );

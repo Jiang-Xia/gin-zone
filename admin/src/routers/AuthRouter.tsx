@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import { useEffect } from 'react';
 // import { useSelector } from 'react-redux';
 import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
@@ -7,7 +6,6 @@ import { rootRouter } from './index';
 import { AxiosCanceler } from '@/api/helper/axiosCancel';
 // import { searchRoute } from '@/utils/util';
 import { connect } from 'react-redux';
-import { setUserInfo } from '@/redux/modules/global/action';
 
 const axiosCanceler = new AxiosCanceler();
 /**
@@ -23,15 +21,12 @@ const AuthRoute = ({ children, auth, userInfo, token }: any) => {
     // navigate(location.pathname);
     // 会取消一些请求，造成不确定性
     // axiosCanceler.removeAllPending();
+    console.log('当前路径：', location.pathname);
     if (token === '' && isExist) {
-      message.error('token 过期，请重新登录!');
       navigate('/login');
     }
     // 这里判断条件是：token 存在并且是匹配到路由并且是已经登录的状态
     if (token && isExist) {
-      // if (!Object.keys(userInfo).length) {
-      //   setUserInfo();
-      // }
       // 如果你已经登录了，但是你通过浏览器里直接访问login的话不允许直接跳转到login路由，必须通过logout来控制退出登录或者是token过期返回登录界面
       if (location.pathname === '/' || location.pathname === '/login') {
         navigate('/welcome');
@@ -48,5 +43,4 @@ function mapStateToProps(state: any) {
   const { userInfo, token } = state.global;
   return { userInfo, token };
 }
-const mapDispatchToProps = { setUserInfo };
-export default connect(mapStateToProps, mapDispatchToProps)(AuthRoute);
+export default connect(mapStateToProps)(AuthRoute);
