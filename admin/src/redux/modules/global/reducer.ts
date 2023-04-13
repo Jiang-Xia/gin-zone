@@ -4,6 +4,16 @@ import * as types from '@/redux/mutation-types';
 const globalState: GlobalState = {
   token: '',
   userInfo: {},
+  systemConfig: {
+    navTheme: 'light',
+    layout: 'mix',
+    contentWidth: 'Fluid',
+    fixedHeader: true,
+    fixSiderbar: true,
+    colorPrimary: '#FA541C',
+    splitMenus: true,
+    siderMenuType: 'sub',
+  },
 };
 /**
  * @description:  global reducer 内部已经使用了immer不用手动使用
@@ -32,6 +42,11 @@ const global = (state: GlobalState = globalState, action: AnyAction) => {
         ...state,
         token: '',
         userInfo: {},
+      };
+    case types.SET_SYSTEM_CONFIG:
+      return {
+        ...state,
+        systemConfig: action.systemConfig,
       };
     default:
       // 必须返回state

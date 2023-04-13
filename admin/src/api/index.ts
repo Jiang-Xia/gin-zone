@@ -54,7 +54,7 @@ class RequestHttp {
         axiosCanceler.removePending(config);
         tryHideFullScreenLoading();
         // * 登录失效 code === 1&& data.data.reload
-        console.log({ data });
+        // console.log({ data });
         if (data.code === 1 && data.data.reload) {
           store.dispatch(logout());
           message.error(data.msg);

@@ -4,7 +4,6 @@ import { RouteObject, lazyLoad } from '@/routers';
 // moment 模块
 const momentRouter: RouteObject = {
   element: <Layout />,
-  path: '/moment',
   children: [
     {
       path: '/moment/list',

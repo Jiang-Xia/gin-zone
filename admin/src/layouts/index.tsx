@@ -1,17 +1,18 @@
-import { GithubFilled, InfoCircleFilled, QuestionCircleFilled, SmileFilled } from '@ant-design/icons';
+import { GithubFilled, InfoCircleFilled, LogoutOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import type { ProSettings } from '@ant-design/pro-components';
 import * as Icons from '@ant-design/icons';
-import { PageContainer, ProLayout, SettingDrawer, ProCard } from '@ant-design/pro-components';
+import { ProConfigProvider, PageContainer, ProLayout, SettingDrawer, ProCard } from '@ant-design/pro-components';
 import { useState, useEffect } from 'react';
 import React from 'react';
 import defaultProps from './_defaultProps';
-import defaultSettings from './defaultSettings';
 import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import { RouteObject } from '@/routers';
 import { getMenuList } from '@/api/modules/user';
-import { logout } from '@/redux/modules/global/action';
+import { setSystemConfig } from '@/redux/modules/global/action';
 import { connect } from 'react-redux';
-import AvatarIcon from './components/AvatarIcon';
+import { Dropdown } from 'antd';
+
+const isDev = process.env.NODE_ENV === 'development';
 interface MenuItem {
   component: string;
   path: string;
@@ -47,10 +48,9 @@ const dealMenuList = (list: RouteObject[]): MenuItem[] => {
   });
 };
 const Container: React.FC = (props: any) => {
+  const { userInfo, systemConfig: settings, setSystemConfig } = props;
+  console.log({ settings });
   const { pathname: curPathname } = useLocation();
-  const [settings, setSetting] = useState<Partial<ProSettings> | undefined>({
-    ...defaultSettings,
-  });
   // 设置选中菜单项
   const [pathname, setPathname] = useState(curPathname);
   const navigate = useNavigate();
@@ -75,11 +75,11 @@ const Container: React.FC = (props: any) => {
       layoutConfig.menu.loading = false;
     }
   };
-
-  const userinfo = props.userInfo;
+  const onSettingChange = (changeSetting: ProSettings) => {
+    setSystemConfig(changeSetting);
+  };
   // 需要设置第二个参数依懒性，不然会无限循环
   useEffect(() => {
-    // console.log({ settings });
     getMenuData(layoutConfig);
   }, [layoutConfig, settings]);
   return (
@@ -89,91 +89,111 @@ const Container: React.FC = (props: any) => {
         height: '100vh',
       }}
     >
-      <ProLayout
-        siderWidth={216}
-        bgLayoutImgList={[
-          {
-            src: 'https://img.alicdn.com/imgextra/i2/O1CN01O4etvp1DvpFLKfuWq_!!6000000000279-2-tps-609-606.png',
-            left: 85,
-            bottom: 100,
-            height: '303px',
-          },
-          {
-            src: 'https://img.alicdn.com/imgextra/i2/O1CN01O4etvp1DvpFLKfuWq_!!6000000000279-2-tps-609-606.png',
-            bottom: -68,
-            right: -45,
-            height: '303px',
-          },
-          {
-            src: 'https://img.alicdn.com/imgextra/i3/O1CN018NxReL1shX85Yz6Cx_!!6000000005798-2-tps-884-496.png',
-            bottom: 0,
-            left: 0,
-            width: '331px',
-          },
-        ]}
-        {...layoutConfig}
-        route={route}
-        location={{
-          pathname,
-        }}
-        avatarProps={{
-          src: <AvatarIcon avatar={userinfo.avatar} />,
-          title: userinfo.nickName,
-          size: 'small',
-        }}
-        actionsRender={props => {
-          if (props.isMobile) return [];
-          return [
-            <InfoCircleFilled key="InfoCircleFilled" />,
-            <QuestionCircleFilled key="QuestionCircleFilled" />,
-            <Link to="https://github.com/Jiang-Xia/gin-zone/tree/master/admin">
-              <GithubFilled key="GithubFilled" />
-            </Link>,
-          ];
-        }}
-        menuItemRender={(item, dom) => (
-          <div
-            onClick={() => {
-              setPathname(item.path || '/welcome');
-              navigate(item.path || '/welcome');
-            }}
-          >
-            {dom}
-          </div>
-        )}
-        {...settings}
-      >
-        <PageContainer>
-          <ProCard
-            style={{
-              height: '100vh',
-              minHeight: 800,
-            }}
-          >
-            {/* 类似vue-router的router-view */}
-            <Outlet />
-            <div />
-          </ProCard>
-        </PageContainer>
-      </ProLayout>
-      <SettingDrawer
-        pathname={pathname}
-        enableDarkTheme
-        disableUrlParams={true}
-        getContainer={() => document.getElementById('app-pro-layout')}
-        settings={settings}
-        onSettingChange={changeSetting => {
-          setSetting({ ...changeSetting });
-          console.log({ settings });
-        }}
-      />
+      <ProConfigProvider hashed={false}>
+        <ProLayout
+          siderWidth={216}
+          bgLayoutImgList={[
+            {
+              src: 'https://img.alicdn.com/imgextra/i2/O1CN01O4etvp1DvpFLKfuWq_!!6000000000279-2-tps-609-606.png',
+              left: 85,
+              bottom: 100,
+              height: '303px',
+            },
+            {
+              src: 'https://img.alicdn.com/imgextra/i2/O1CN01O4etvp1DvpFLKfuWq_!!6000000000279-2-tps-609-606.png',
+              bottom: -68,
+              right: -45,
+              height: '303px',
+            },
+            {
+              src: 'https://img.alicdn.com/imgextra/i3/O1CN018NxReL1shX85Yz6Cx_!!6000000005798-2-tps-884-496.png',
+              bottom: 0,
+              left: 0,
+              width: '331px',
+            },
+          ]}
+          {...layoutConfig}
+          route={route}
+          location={{
+            pathname,
+          }}
+          // 头像下拉菜单
+          avatarProps={{
+            src: userInfo.avatar,
+            title: userInfo.nickName,
+            size: 'small',
+            render: (props, dom) => {
+              return (
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        key: 'logout',
+                        icon: <LogoutOutlined />,
+                        label: '退出登录',
+                      },
+                    ],
+                  }}
+                >
+                  {dom}
+                </Dropdown>
+              );
+            },
+          }}
+          actionsRender={props => {
+            if (props.isMobile) return [];
+            return [
+              <InfoCircleFilled key="InfoCircleFilled" />,
+              <QuestionCircleFilled key="QuestionCircleFilled" />,
+              <Link to="https://github.com/Jiang-Xia/gin-zone/tree/master/admin">
+                <GithubFilled key="GithubFilled" />
+              </Link>,
+            ];
+          }}
+          menuItemRender={(item, dom) => (
+            <div
+              onClick={() => {
+                setPathname(item.path || '/welcome');
+                navigate(item.path || '/welcome');
+              }}
+            >
+              {dom}
+            </div>
+          )}
+          {...settings}
+        >
+          <PageContainer>
+            <ProCard
+              style={{
+                height: '100vh',
+                minHeight: 800,
+              }}
+            >
+              {/* 类似vue-router的router-view */}
+              <Outlet />
+              <div />
+            </ProCard>
+          </PageContainer>
+          {/* 需要放在ProLayout里面，动态设置主题色才能全局生效 */}
+          {isDev && (
+            <SettingDrawer
+              pathname={pathname}
+              enableDarkTheme
+              disableUrlParams={true}
+              getContainer={() => document.getElementById('app-pro-layout')}
+              settings={settings}
+              onSettingChange={onSettingChange}
+            />
+          )}
+        </ProLayout>
+      </ProConfigProvider>
     </div>
   );
 };
 
 function mapStateToProps(state: any) {
-  const { userInfo } = state.global;
-  return { userInfo };
+  const { userInfo, systemConfig } = state.global;
+  return { userInfo, systemConfig };
 }
-const mapDispatchToProps = { logout };
+const mapDispatchToProps = { setSystemConfig };
 export default connect(mapStateToProps, mapDispatchToProps)(Container);
