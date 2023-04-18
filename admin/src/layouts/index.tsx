@@ -1,4 +1,10 @@
-import { GithubFilled, InfoCircleFilled, LogoutOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import {
+  ExclamationCircleOutlined,
+  GithubFilled,
+  InfoCircleFilled,
+  LogoutOutlined,
+  QuestionCircleFilled,
+} from '@ant-design/icons';
 import type { ProSettings } from '@ant-design/pro-components';
 import * as Icons from '@ant-design/icons';
 import { ProConfigProvider, PageContainer, ProLayout, SettingDrawer, ProCard } from '@ant-design/pro-components';
@@ -8,9 +14,9 @@ import defaultProps from './_defaultProps';
 import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import { RouteObject } from '@/routers';
 import { getMenuList } from '@/api/modules/user';
-import { setSystemConfig } from '@/redux/modules/global/action';
+import { setSystemConfig, logout } from '@/redux/modules/global/action';
 import { connect } from 'react-redux';
-import { Dropdown } from 'antd';
+import { Dropdown, Modal, message } from 'antd';
 
 const isDev = process.env.NODE_ENV === 'development';
 interface MenuItem {
@@ -19,6 +25,7 @@ interface MenuItem {
   icon: React.ReactNode;
   name: string;
   children?: MenuItem[];
+  redirect?: string;
 }
 const getItem = (menuItem: RouteObject): MenuItem => {
   return {
@@ -26,6 +33,7 @@ const getItem = (menuItem: RouteObject): MenuItem => {
     path: menuItem.path || '',
     icon: addIcon(menuItem.icon || ''),
     name: menuItem.name || '',
+    redirect: menuItem.redirect,
   };
 };
 // 动态渲染 Icon 图标
@@ -78,6 +86,22 @@ const Container: React.FC = (props: any) => {
   const onSettingChange = (changeSetting: ProSettings) => {
     setSystemConfig(changeSetting);
   };
+  // 退出登录
+  const logout = () => {
+    Modal.confirm({
+      title: '温馨提示 🧡',
+      icon: <ExclamationCircleOutlined />,
+      content: '是否确认退出登录？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        props.logout();
+        message.success('退出登录成功！');
+        navigate('/login');
+      },
+    });
+  };
+
   // 需要设置第二个参数依懒性，不然会无限循环
   useEffect(() => {
     getMenuData(layoutConfig);
@@ -131,6 +155,7 @@ const Container: React.FC = (props: any) => {
                         key: 'logout',
                         icon: <LogoutOutlined />,
                         label: '退出登录',
+                        onClick: logout,
                       },
                     ],
                   }}
@@ -143,9 +168,13 @@ const Container: React.FC = (props: any) => {
           actionsRender={props => {
             if (props.isMobile) return [];
             return [
-              <InfoCircleFilled key="InfoCircleFilled" />,
-              <QuestionCircleFilled key="QuestionCircleFilled" />,
-              <Link to="https://github.com/Jiang-Xia/gin-zone/tree/master/admin">
+              <Link to="https://jiang-xia.top/zone/admin/" target="blank">
+                <InfoCircleFilled key="InfoCircleFilled" />
+              </Link>,
+              <Link to="https://jiang-xia.top/about" target="blank">
+                <QuestionCircleFilled key="QuestionCircleFilled" />
+              </Link>,
+              <Link to="https://github.com/Jiang-Xia/gin-zone/tree/master/admin" target="blank">
                 <GithubFilled key="GithubFilled" />
               </Link>,
             ];
@@ -153,8 +182,8 @@ const Container: React.FC = (props: any) => {
           menuItemRender={(item, dom) => (
             <div
               onClick={() => {
-                setPathname(item.path || '/welcome');
-                navigate(item.path || '/welcome');
+                setPathname(item.redirect || item.path);
+                navigate(item.redirect || item.path);
               }}
             >
               {dom}
@@ -195,5 +224,5 @@ function mapStateToProps(state: any) {
   const { userInfo, systemConfig } = state.global;
   return { userInfo, systemConfig };
 }
-const mapDispatchToProps = { setSystemConfig };
+const mapDispatchToProps = { setSystemConfig, logout };
 export default connect(mapStateToProps, mapDispatchToProps)(Container);

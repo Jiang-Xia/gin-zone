@@ -62,7 +62,7 @@ export const rootRouter: RouteObject[] = [
   ...routerArray,
   {
     path: '*',
-    element: <Navigate to="/moment" />,
+    element: <Navigate to="/welcome" />,
   },
 ];
 
