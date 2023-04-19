@@ -55,7 +55,7 @@ class RequestHttp {
         tryHideFullScreenLoading();
         // * 登录失效 code === 1&& data.data.reload
         // console.log({ data });
-        if (data.code === 1 && data.data.reload) {
+        if (data.code === 1 && data.data?.reload) {
           store.dispatch(logout());
           message.error(data.msg);
           return Promise.reject(data);

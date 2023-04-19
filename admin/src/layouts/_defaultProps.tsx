@@ -1,12 +1,3 @@
-import { ChromeFilled, CrownFilled, SmileFilled } from '@ant-design/icons';
-import Layout from './index';
-import { lazy } from 'react';
-import Welcome from '../pages/Welcome';
-// 快速导入工具函数
-const lazyLoad = (moduleName: string) => {
-  const Module = lazy(() => import(`@/pages/${moduleName}`));
-  return <Module />;
-};
 const defaultProps: any = {
   route: {
     path: '/',
@@ -19,7 +10,7 @@ const defaultProps: any = {
     ],
   },
   title: 'Zone Admin',
-  logo: '/logo512.png',
+  logo: require('@/assets/images/logos/logo512.png'),
   location: {
     pathname: '/',
   },

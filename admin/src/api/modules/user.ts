@@ -1,5 +1,6 @@
 import http from '@/api';
 import axios, { AxiosResponse } from 'axios';
+const publicPath = process.env.REACT_APP_PUBLIC_PATH;
 /**
  * @name 用户模块
  */
@@ -14,5 +15,5 @@ export const userInfo = () => {
 
 // * 获取菜单列表
 export const getMenuList = () => {
-  return axios.get<any[]>(`/menu.json`).then((res: AxiosResponse) => res.data);
+  return axios.get<any[]>(`${publicPath}/menu.json`).then((res: AxiosResponse) => res.data);
 };

@@ -1,5 +1,5 @@
 import http from '@/api';
-import axios, { AxiosResponse } from 'axios';
+// import axios, { AxiosResponse } from 'axios';
 /**
  * @name 动态模块
  */

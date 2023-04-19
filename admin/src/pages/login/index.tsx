@@ -1,7 +1,7 @@
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText, ProConfigProvider } from '@ant-design/pro-components';
 import { message, Space, Tabs } from 'antd';
-import type { CSSProperties } from 'react';
+// import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import dayjs from 'dayjs';
 import { loginApi } from '@/api/modules/user';
@@ -11,13 +11,13 @@ import { HOME_URL } from '@/config/config';
 import { connect } from 'react-redux';
 type LoginType = 'phone' | 'account';
 
-const iconStyles: CSSProperties = {
-  marginInlineStart: '16px',
-  color: 'rgba(0, 0, 0, 0.2)',
-  fontSize: '24px',
-  verticalAlign: 'middle',
-  cursor: 'pointer',
-};
+// const iconStyles: CSSProperties = {
+//   marginInlineStart: '16px',
+//   color: 'rgba(0, 0, 0, 0.2)',
+//   fontSize: '24px',
+//   verticalAlign: 'middle',
+//   cursor: 'pointer',
+// };
 const now = () => dayjs().format('YYYY年M月DD日 HH:mm:ss');
 const LoginPage = (props: any) => {
   const [loginType, setLoginType] = useState<LoginType>('account');
@@ -46,7 +46,7 @@ const LoginPage = (props: any) => {
     <>
       <ProConfigProvider>
         <LoginForm
-          logo="/logo512.png"
+          logo={require('@/assets/images/logos/logo512.png')}
           title="Zone admin"
           subTitle="Zone 后台管理系统"
           onFinish={handleLogin}

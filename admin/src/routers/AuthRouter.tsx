@@ -3,11 +3,11 @@ import { useEffect } from 'react';
 import { matchRoutes, useLocation, useNavigate } from 'react-router-dom';
 import { rootRouter } from './index';
 
-import { AxiosCanceler } from '@/api/helper/axiosCancel';
+// import { AxiosCanceler } from '@/api/helper/axiosCancel';
 // import { searchRoute } from '@/utils/util';
 import { connect } from 'react-redux';
 
-const axiosCanceler = new AxiosCanceler();
+// const axiosCanceler = new AxiosCanceler();
 /**
  * @description 路由守卫组件
  * */

@@ -9,9 +9,11 @@ import { ConfigProvider } from 'antd';
 import { connect } from 'react-redux';
 const App: FC = (props: any) => {
   const { colorPrimary } = props;
+  const publicPath = process.env.REACT_APP_PUBLIC_PATH;
+  console.log({ publicPath });
   return (
     <div className="App">
-      <BrowserRouter>
+      <BrowserRouter basename={publicPath}>
         <ConfigProvider
           theme={{
             token: {
