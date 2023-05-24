@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"runtime"
 
-	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gopkg.in/ini.v1"
 )
 
@@ -76,7 +75,7 @@ func loadInI() {
 	var err error
 	AllConfig, err = ini.Load(filePath)
 	if err != nil {
-		log.Fatal("Fail to parse 'conf/env.ini': %v", err)
+		fmt.Printf("Fail to parse 'conf/env.ini': %v", err)
 	}
 	setApp()
 }

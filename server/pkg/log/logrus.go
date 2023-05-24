@@ -1,16 +1,15 @@
 package log
 
 import (
-	"io"
-	"os"
-	"path"
-
-	"time"
-
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"github.com/gin-gonic/gin"
 	rotatelogs "github.com/lestrrat/go-file-rotatelogs"
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
+	"io"
+	"os"
+	"path"
+	"time"
 )
 
 // Logger 需要创建一个实例，gorm那边使用到，不然会出现多个实例，导致多次打印和写入
@@ -51,11 +50,12 @@ func FileCut(fileName string) *rotatelogs.RotateLogs {
 
 // ConfigLog 初始化配置 实例
 func ConfigLog() {
+	logFilePath := config.Log.LogFilePath
 	// 没有logs 文件夹则创建
-	err := os.MkdirAll("./logs", 0755)
-	if err != nil {
-		return
-	}
+	//err := os.MkdirAll("./logs", 0755)
+	//if err != nil {
+	//	return
+	//}
 	//日志输出所在文件
 	//Logger.SetReportCaller(true)
 	// 设置日志输出控制台样式
@@ -64,7 +64,7 @@ func ConfigLog() {
 		//ForceColors:     true, // 控制台强制彩色
 	})
 	// 按天分割 logs/2006-01-02.log
-	logFileName := path.Join("./logs", "%Y%m%d") + ".info.log"
+	logFileName := path.Join(logFilePath, "%Y%m%d") + ".info.log"
 
 	// 配置日志分割
 	logFileCut := FileCut(logFileName)

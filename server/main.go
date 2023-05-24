@@ -46,6 +46,6 @@ func main() {
 		return
 	}
 	app := router.App()
-	log.Info("======App starting======")
+	log.Info("======App Starting======")
 	app.Run(":9600")
 }
