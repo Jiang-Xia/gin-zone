@@ -4,3 +4,4 @@ server/tmp
 server/logs
 server/tmp/build-errors.log
 server/public/uploads
+/public/

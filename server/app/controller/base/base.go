@@ -1,6 +1,7 @@
 package base
 
 import (
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"os"
 	"time"
 
@@ -29,7 +30,7 @@ func (t *Base) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	//fmt.Printf("fileInfo%+v", file)
 	date := time.Now().Format("2006-01")
-	pathName := "/public/uploads/" + date
+	pathName := config.App.PublicPath + "/uploads/" + date
 	// 根据当天日期创建文件夹
 	err = os.MkdirAll("."+pathName, 0755)
 	if err != nil {
