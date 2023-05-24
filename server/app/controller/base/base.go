@@ -28,7 +28,7 @@ type FileInfo struct {
 func (t *Base) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	//fmt.Printf("fileInfo%+v", file)
-	date := time.Now().Format("2006-01-02")
+	date := time.Now().Format("2006-01")
 	pathName := "/public/uploads/" + date
 	// 根据当天日期创建文件夹
 	err = os.MkdirAll("."+pathName, 0755)

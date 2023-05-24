@@ -67,7 +67,7 @@ func loadInI() {
 	//服务器和本地配置分开，不然取git的配置有些密钥容易过期
 	filePath := "config/env.ini"
 	if runtime.GOOS == "linux" {
-		filePath = "/root/server/config/env.ini"
+		filePath = "/home/server/config/env.ini"
 	} else if runtime.GOOS == "windows" {
 		filePath = "D:/study/gitee/config/env.ini"
 	}
