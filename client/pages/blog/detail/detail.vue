@@ -102,8 +102,7 @@
 
 <style lang="scss">
 	.article-detail {
-		// -webkit-user-select: text; 
-		// user-select: text;
+		user-select: text;
 		font-weight: 36rpx;
 		padding-bottom: 40rpx;
 

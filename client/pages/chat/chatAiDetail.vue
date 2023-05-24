@@ -347,7 +347,9 @@
 </script>
 
 <style lang="scss">
-	.container {}
+	.container {
+		user-select:text;
+	}
 
 	.chat-list-wrap {
 		padding: 12rpx 12rpx 140rpx 12rpx;
