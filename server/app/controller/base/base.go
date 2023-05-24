@@ -30,25 +30,29 @@ func (t *Base) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	//fmt.Printf("fileInfo%+v", file)
 	date := time.Now().Format("2006-01")
-	pathName := config.App.PublicPath + "/uploads/" + date
+	//当前文件路径加文件名
+	pathName := "/uploads/" + date + "/" + file.Filename
+	//目录路径
+	dirName := config.App.PublicPath + "/uploads/" + date
+	//fmt.Println(dirName)
 	// 根据当天日期创建文件夹
-	err = os.MkdirAll("."+pathName, 0755)
+	err = os.MkdirAll(dirName, 0755)
 	if err != nil {
 		response.Fail(c, "服务器错误", nil)
 		panic(err)
 		return
 	}
-	filePathName := pathName + "/" + file.Filename
+	//统一响应返回的url资源路径
+	urlPathName := "/public" + pathName
+	//保存到本地的文件路径
+	savePathName := config.App.PublicPath + pathName
 	fileInfo := &FileInfo{
 		Filename: file.Filename,
-		Url:      filePathName,
+		Url:      urlPathName,
 	}
-	// fileInfo2 := &FileInfo{
-	// 	Filename: "file.Filename",
-	// 	Url:      "filePathName",
-	// }
+
 	// 根据路劲保存文件
-	c.SaveUploadedFile(file, "."+filePathName)
+	c.SaveUploadedFile(file, savePathName)
 	// fmt.Printf("fileInfo%+v", fileInfo)
 	response.Success(c, fileInfo, "")
 }

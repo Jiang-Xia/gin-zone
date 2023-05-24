@@ -22,7 +22,7 @@ func App() (r *gin.Engine) {
 	// gin.SetMode(gin.TestMode)
 	router := gin.Default()
 	// 静态资源路由
-	router.Static("/public", "./public")
+	router.Static("/public", config.App.PublicPath)
 	// 跨域处理
 	router.Use(middleware.Cors())
 	router.Use(middleware.LoggerMiddleWare())
