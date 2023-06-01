@@ -12,15 +12,16 @@
 			avatar: "https://jiang-xia.top/x-blog/api/v1/static/uploads/2023-01-01/2kf3d768tj33vsgs6exbu8-默认头像.jpeg",
 			socketTask: null,
 		},
-		data(){
-			return{
-				timer:null
+		data() {
+			return {
+				timer: null
 			}
 		},
 		/* 应用生命周期 */
 		onLaunch: function() {
 			// console.warn('当前组件仅支持 uni_modules 目录结构 ，请升级 HBuilderX 到 3.1.0 版本以上！')
 			console.log('App Launch')
+			this.initPush()
 			const that = this
 			uni.getSystemInfo({
 				success: function(e) {
@@ -87,7 +88,7 @@
 		methods: {
 			// 初始化操作
 			initOpt() {
-				console.log(window)
+				// console.log(window)
 				window.addEventListener('resize', function() {
 					if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName ===
 						'TEXTAREA') { //滚动到当前元素的方法
@@ -188,6 +189,55 @@
 					});
 				}, 10000)
 			},
+			// 初始化推送功能
+			initPush() {
+				Notification.requestPermission().then(permission => {
+				  console.log(permission)
+				})
+				uni.getPushClientId({
+					success: (res) => {
+						console.log(res);
+					},
+					fail(err) {
+						console.log(err)
+					}
+				})
+				
+				uni.onPushMessage((res) => {
+					console.log('onPushMessage',res)
+					//获取到通知消息有分为点击与监听
+					if (res.type == 'click') {
+						clearTimeout(timer);
+
+						timer = setTimeout(() => {
+							// 处理跳转的业务可以写这边
+						}, 1500);
+					} else {
+						//aps为空说明是在线，aps有值的时候是离线，避免离线点击后再监听会出现两次通知栏
+						if (res.data.aps) {
+							return;
+						}
+						let platform = uni.getSystemInfoSync().platform;
+						let msg = res.data;
+						if (platform == 'ios') { //由于IOS 必须要创建本地消息 所以做这个判断
+							if (msg.payload && msg.payload != null) {
+								plus.push.createMessage(msg.content, msg.payload) //创建本地消息
+							}
+						}
+						if (platform == 'android') {
+							let options = {
+								cover: false,
+								sound: "system",
+								title: msg.title
+							}
+							plus.push.createMessage(msg.content, msg.payload, options);
+						}
+
+
+					}
+				})
+
+			}
 		}
 	}
 </script>

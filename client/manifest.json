@@ -91,7 +91,13 @@
                 "push" : {
                     "unipush" : {
                         "version" : "2",
-                        "offline" : false
+                        "offline" : true,
+                        "hms" : {},
+                        "oppo" : {},
+                        "vivo" : {},
+                        "mi" : {},
+                        "meizu" : {},
+                        "fcm" : {}
                     }
                 }
             },

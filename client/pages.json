@@ -191,7 +191,131 @@
 				"enablePullDownRefresh": false
 			}
 		}
-	],
+	,{
+    "path": "uni_modules/uni-id-pages/pages/userinfo/deactivate/deactivate",
+    "style": {
+        "navigationBarTitleText": "注销账号"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/userinfo/userinfo",
+    "style": {
+        "navigationBarTitleText": "个人资料"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/userinfo/bind-mobile/bind-mobile",
+    "style": {
+        "navigationBarTitleText": "绑定手机号码"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/userinfo/cropImage/cropImage",
+    "style": {
+        "navigationBarTitleText": ""
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/login/login-withoutpwd",
+    "style": {
+        "navigationBarTitleText": ""
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/login/login-withpwd",
+    "style": {
+        "navigationBarTitleText": ""
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/login/login-smscode",
+    "style": {
+        "navigationBarTitleText": "手机验证码登录"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/register/register",
+    "style": {
+        "navigationBarTitleText": "注册"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/register/register-by-email",
+    "style": {
+        "navigationBarTitleText": "邮箱验证码注册"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/retrieve/retrieve",
+    "style": {
+        "navigationBarTitleText": "重置密码"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/retrieve/retrieve-by-email",
+    "style": {
+        "navigationBarTitleText": "通过邮箱重置密码"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/common/webview/webview",
+    "style": {
+        "enablePullDownRefresh": false,
+        "navigationBarTitleText": ""
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/userinfo/change_pwd/change_pwd",
+    "style": {
+        "enablePullDownRefresh": false,
+        "navigationBarTitleText": "修改密码"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/register/register-admin",
+    "style": {
+        "enablePullDownRefresh": false,
+        "navigationBarTitleText": "注册管理员账号"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/userinfo/set-pwd/set-pwd",
+    "style": {
+        "enablePullDownRefresh": false,
+        "navigationBarTitleText": "设置密码"
+    }
+}
+,{
+    "path": "uni_modules/uni-id-pages/pages/userinfo/realname-verify/realname-verify",
+    "style": {
+        "enablePullDownRefresh": false,
+        "navigationBarTitleText": "实名认证"
+    }
+}
+,{
+    "path": "uni_modules/uni-im/pages/index/index",
+    "style": {
+        "enablePullDownRefresh": false,
+        "maxWidth": "960",
+        "navigationBarTitleText": "会话列表"
+    }
+}
+,{
+    "path": "uni_modules/uni-im/pages/chat/chat",
+    "style": {
+        "enablePullDownRefresh": false,
+        "maxWidth": "960",
+        "navigationBarTitleText": ""
+    }
+}
+,{
+    "path": "uni_modules/uni-im/pages/userList/userList",
+    "style": {
+        "enablePullDownRefresh": false,
+        "navigationBarTitleText": "用户列表"
+    }
+}
+],
 	"globalStyle": {
 		// "navigationStyle": "custom",
 		"navigationBarTextStyle": "black",
