@@ -69,7 +69,8 @@ func loadInI() {
 	if runtime.GOOS == "linux" {
 		filePath = "/home/server/config/env.ini"
 	} else if runtime.GOOS == "windows" {
-		filePath = "D:/study/gitee/config/env.ini"
+		// 切换电脑需要根据配置文件修改和增加public和logs目录
+		filePath = "D:/study/config/env.ini"
 	}
 	fmt.Println("配置文件路径:", filePath)
 	var err error

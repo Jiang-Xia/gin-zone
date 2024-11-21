@@ -16,7 +16,7 @@
 ##### 1.2.1 后台
 技术 | 说明 | 官网
 ----|----|----
-Golang - 1.19 | 开发语言 | [https://go.dev/](https://go.dev/)
+Golang - 1.23.3 | 开发语言 | [https://go.dev/](https://go.dev/)
 Gin - 1.8.1 | Gin Web Framework | [https://gin-gonic.com/zh-cn/docs/](https://gin-gonic.com/zh-cn/docs/)
 Mysql - 8.0.28 | 数据库 | [https://www.mysql.com/cn/](https://www.mysql.com/cn/)
 Gorm - 1.9.16 | Golang ORM | [https://gorm.io/zh_CN/docs/index.html](https://gorm.io/zh_CN/docs/index.html)
@@ -85,11 +85,15 @@ taskkill /pid 14172 /f
 
 ```bash
 go mod download
+# go env -w GOPROXY=https://goproxy.cn,direct
 ```
 
 - 运行
 
 ```bash
+# go install github.com/air-verse/air@latest
+# go install github.com/swaggo/swag/cmd/swag@latest
+# config/setting.go filePath改为本地路径
 air
 ```
 
