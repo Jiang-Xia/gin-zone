@@ -7,13 +7,13 @@ if (env === 'production') {
 	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
 	wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 } else {
-	fileUrl = "https://jiang-xia.top/x-zone/api/v1"
-	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
-	wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
+	// fileUrl = "https://jiang-xia.top/x-zone/api/v1"
+	// baseUrl = "https://jiang-xia.top/x-zone/api/v1"
+	// wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 	// // 本地
-	// fileUrl = "http://localhost:9600"
-	// baseUrl = "http://localhost:9600/api/v1"
-	// wsUrl = "ws://localhost:9600/api/v1"
+	fileUrl = "http://localhost:9600"
+	baseUrl = "http://localhost:9600/api/v1"
+	wsUrl = "ws://localhost:9600/api/v1"
 	
 	// fileUrl = "http://192.168.1.51:9600"
 	// baseUrl = "http://192.168.1.51:9600/api/v1"
@@ -87,7 +87,7 @@ export class Api {
 			reject(res.data)
 			const msg = res.data && res.data.msg
 			// 鉴权失败清空信息
-			if(res.data.data.reload){
+			if(res.data.data?.reload){
 				uni.setStorageSync("zoneToken", "")
 				uni.setStorageSync('zoneUserInfo', "")
 			}

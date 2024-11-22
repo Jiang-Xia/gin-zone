@@ -2,6 +2,7 @@
 node_modules
 server/tmp
 server/logs
+server/main.exe
 server/tmp/build-errors.log
 server/public/uploads
 /public/

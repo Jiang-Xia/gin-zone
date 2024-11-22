@@ -10,9 +10,9 @@ type Captcha struct {
 }
 
 // GenerateCaptcha 生成验证码
-func GenerateCaptcha() (id, bs64 string, err error) {
-	return base64Captcha.NewCaptcha(base64Driver, store).Generate()
-}
+//func GenerateCaptcha() (id, bs64 string, err error) {
+//	return base64Captcha.NewCaptcha(base64Driver, store).Generate()
+//}
 
 // Verify 验证
 func Verify(id, value string) bool {
