@@ -15,5 +15,5 @@ export const userInfo = () => {
 
 // * 获取菜单列表
 export const getMenuList = () => {
-  return axios.get<any[]>(`${publicPath}/menu.json`).then((res: AxiosResponse) => res.data);
+  return axios.get<any[]>(`/menu.json`).then((res: AxiosResponse) => res.data);
 };

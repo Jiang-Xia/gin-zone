@@ -23,8 +23,8 @@ func InitTable() {
 	err = db.AutoMigrate(&model.ChatLog{})
 	err = db.AutoMigrate(&model.Moment{})
 	if err != nil {
-		log.Info("建表失败！！！！！！！！！！！！！！！！！！！！", err.Error())
+		log.Info("建表失败==================>", err.Error())
 		return
 	}
-	log.Info("建表成功！！！！！！！！！！！！！！！！！！！！！")
+	log.Info("建表成功==================>")
 }
