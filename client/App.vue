@@ -191,9 +191,9 @@
 			},
 			// 初始化推送功能
 			initPush() {
-				Notification.requestPermission().then(permission => {
-				  console.log(permission)
-				})
+				// Notification.requestPermission().then(permission => {
+				//   console.log(permission)
+				// })
 				uni.getPushClientId({
 					success: (res) => {
 						console.log(res);

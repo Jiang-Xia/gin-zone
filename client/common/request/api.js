@@ -3,17 +3,19 @@ let fileUrl = ""
 let baseUrl = ""
 let wsUrl = ""
 if (env === 'production') {
-	// fileUrl = "https://jiang-xia.top/x-zone/api/v1"
-	// baseUrl = "https://jiang-xia.top/x-zone/api/v1"
-	// wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
-	fileUrl = "http://43.139.16.164/x-zone/api/v1"
-	baseUrl = "http://43.139.16.164/x-zone/api/v1"
-	wsUrl = "wss://43.139.16.164/x-zone/api/v1"
+	fileUrl = "https://jiang-xia.top/x-zone/api/v1"
+	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
+	wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
+	/* ubuntu 服务器 */
+	// fileUrl = "http://43.139.16.164/x-zone/api/v1"
+	// baseUrl = "http://43.139.16.164/x-zone/api/v1"
+	// wsUrl = "wss://43.139.16.164/x-zone/api/v1"
 } else {
 	// fileUrl = "https://jiang-xia.top/x-zone/api/v1"
 	// baseUrl = "https://jiang-xia.top/x-zone/api/v1"
 	// wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
-	// // 本地
+	
+	/* 本地 */
 	fileUrl = "http://localhost:9600"
 	baseUrl = "http://localhost:9600/api/v1"
 	wsUrl = "ws://localhost:9600/api/v1"
