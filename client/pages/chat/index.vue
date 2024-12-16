@@ -40,24 +40,25 @@
 			return {
 				groupIcon,
 				userIcon,
-				defaultList: [{
-						id: "001",
-						name: "知心小夏",
-						avatar: oneChat,
-						note: '对话聊天机器人小夏'
-					},
-					{
-						id: "002",
-						name: "可爱大白",
-						avatar: sevenChat,
-						note: '可可爱爱机器人大白'
-					},
-					{
-						id: "003",
-						name: "憨逼小木",
-						avatar: sixChat,
-						note: '憨憨机器人小木'
-					},
+				defaultList: [
+					// {
+					// 	id: "001",
+					// 	name: "知心小夏",
+					// 	avatar: oneChat,
+					// 	note: '对话聊天机器人小夏'
+					// },
+					// {
+					// 	id: "002",
+					// 	name: "可爱大白",
+					// 	avatar: sevenChat,
+					// 	note: '可可爱爱机器人大白'
+					// },
+					// {
+					// 	id: "003",
+					// 	name: "憨逼小木",
+					// 	avatar: sixChat,
+					// 	note: '憨憨机器人小木'
+					// },
 				],
 				userList: [],
 				options2: [{
