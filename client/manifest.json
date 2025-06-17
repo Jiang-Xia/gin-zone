@@ -149,6 +149,7 @@
             "minified" : true
         },
         "usingComponents" : true,
+        "lazyCodeLoading" : "requiredComponents",
         "permission" : {
             "scope.userLocation" : {
                 "desc" : "自己测试使用"

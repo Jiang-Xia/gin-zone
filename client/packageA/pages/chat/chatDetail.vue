@@ -524,7 +524,7 @@
 	/* #ifndef MP-WEIXIN */
 	@font-face {
 		font-family: 'emojifont';
-		src: url("~@/static/iconfont/emojifont.ttf") format("truetype");
+		src: url("https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-02/ae783d4e2fdd42a39f7e6d5042895b50-emojifont.ttf") format("truetype");
 	}
 
 	/* #endif */

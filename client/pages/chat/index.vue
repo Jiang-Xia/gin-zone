@@ -29,9 +29,6 @@
 <script>
 	import groupIcon from "../../static/images/group.png"
 	import userIcon from "../../static/images/user.png"
-	import oneChat from "../../static/images/chat/avatar/one.png"
-	import sevenChat from "../../static/images/chat/avatar/seven.webp"
-	import sixChat from "../../static/images/chat/avatar/six.png"
 	import {
 		formatDate
 	} from '../../common/utils/util.js';

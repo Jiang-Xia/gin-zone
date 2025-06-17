@@ -1,7 +1,7 @@
 <template>
 	<view class="auto-container">
 		<view v-if="showBtn" class="count-botton fade-in" @tap="navigateTo">跳过{{count}}s</view>
-		<image class="bg_img" src="./start_bg.png"></image>
+		<image class="bg_img" src="https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-02/721a15ba874043f29168bac00ba4a85a-start_bg.png"></image>
 	</view>
 </template>
 

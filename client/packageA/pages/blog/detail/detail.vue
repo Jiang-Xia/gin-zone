@@ -16,7 +16,6 @@
 </template>
 
 <script>
-	import parseHtml from "@/common/utils/html-parser.js"
 	// #ifdef MP-WEIXIN
 	import mpHtml from '@/node_modules/mp-html/dist/uni-app/components/mp-html/mp-html'
 	// #endif
