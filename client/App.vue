@@ -21,6 +21,12 @@
 		onLaunch: function() {
 			// console.warn('当前组件仅支持 uni_modules 目录结构 ，请升级 HBuilderX 到 3.1.0 版本以上！')
 			console.log('App Launch')
+			// #ifdef MP-WEIXIN
+				uni.authorize({
+					scope: 'scope.userLocation',
+					success() {}
+				})
+			// #endif
 			this.initPush()
 			const that = this
 			uni.getSystemInfo({

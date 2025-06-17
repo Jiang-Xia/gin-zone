@@ -145,14 +145,14 @@
         "appid" : "wx1df79a9834d74211",
         "setting" : {
             "urlCheck" : false,
-            "es6" : true,
+            "es6" : false,
             "minified" : true
         },
         "usingComponents" : true,
         "lazyCodeLoading" : "requiredComponents",
         "permission" : {
             "scope.userLocation" : {
-                "desc" : "自己测试使用"
+                "desc" : "需要获取您的位置信息，方可正常使用。"
             }
         },
         "unipush" : {

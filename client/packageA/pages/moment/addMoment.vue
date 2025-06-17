@@ -51,7 +51,7 @@
 				uploadList: []
 			}
 		},
-		onLoad(option) {
+		onShow(option) {
 			this.getLocation()
 		},
 		onPullDownRefresh() {},
@@ -63,7 +63,7 @@
 					geocode: true,
 					accuracy: true,
 					isHighAccuracy: true,
-					type: 'gcj02', //返回可以用于uni.openLocation的经纬度
+					type: 'wgs84', //返回可以用于uni.openLocation的经纬度
 					success: (res) => {
 						const {
 							latitude,
@@ -72,6 +72,7 @@
 						this.info.latitude = latitude;
 						this.info.longitude = longitude;
 						console.log('success', this.info);
+						this.getAddress()
 						if (res.address) {
 							const {
 								province,
@@ -85,6 +86,22 @@
 							this.info.address = '中国'
 						}
 
+					}
+				});
+			},
+			getAddress(){
+				let url = 'https://restapi.amap.com/v3/geocode/regeo'
+				const params = {
+					// WEB 服务 api key
+					key: '7279c02a8edb6f46df4fe81dbe8be1a4',
+					location:this.info.latitude + ',' + this.info.longitude 
+				}
+				uni.request({
+					url,
+					data: params,
+					method: "GET",
+					complete: (res) => {
+						console.log('地理地址编码：', res)
 					}
 				});
 			},
@@ -207,7 +224,7 @@
 			.zc-uploader-setting {
 				height: 100%;
 				width: 100%;
-				background-image: url(../../static/images/moment/ico_sc_tpsp@2x.png);
+				background-image: url(@/static/images/moment/ico_sc_tpsp@2x.png);
 				background-size: contain;
 			}
 		}

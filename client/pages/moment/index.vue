@@ -134,11 +134,9 @@
 					this.$common.showLoginModal()
 					return
 				}
-				// #ifndef MP-WEIXIN
 				uni.navigateTo({
 					url: "/packageA/pages/moment/addMoment"
 				})
-				// #endif
 			},
 			// 查看动态图片
 			previewImage(item) {

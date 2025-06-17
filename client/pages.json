@@ -203,13 +203,13 @@
 				"iconPath": "static/icon/index1.png",
 				"selectedIconPath": "static/icon/index.png"
 			},
-			// #ifndef MP-WEIXIN
 			{
 				"text": "动态",
 				"pagePath": "pages/moment/index",
 				"iconPath": "static/icon/dt1.png",
 				"selectedIconPath": "static/icon/dt.png"
 			},
+			// #ifndef MP-WEIXIN
 			// #endif
 			{
 				"text": "聊天",

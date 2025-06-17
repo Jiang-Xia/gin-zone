@@ -618,7 +618,7 @@
 			display: block;
 			font-size: 28rpx;
 
-			img {
+			image {
 				width: 50rpx;
 				height: 50rpx;
 			}
