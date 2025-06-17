@@ -136,7 +136,7 @@
 				}
 				// #ifndef MP-WEIXIN
 				uni.navigateTo({
-					url: "/pages/moment/addMoment"
+					url: "/packageA/pages/moment/addMoment"
 				})
 				// #endif
 			},

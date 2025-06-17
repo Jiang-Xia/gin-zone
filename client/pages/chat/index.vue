@@ -135,7 +135,7 @@
 					str = "&friendId=" + item.friendId
 				}
 				uni.navigateTo({
-					url: "/pages/chat/chatDetail?name=" + item.name + str
+					url: "/packageA/pages/chat/chatDetail?name=" + item.name + str
 				})
 			},
 			clickLeft() {
@@ -148,11 +148,11 @@
 					success: (res) => {
 						if (res.tapIndex === 0) {
 							uni.navigateTo({
-								url: "/pages/chat/addFriend?name=添加好友&type=friend"
+								url: "/packageA/pages/chat/addFriend?name=添加好友&type=friend"
 							})
 						} else if (res.tapIndex === 1) {
 							uni.navigateTo({
-								url: "/pages/chat/addFriend?name=添加群&type=group"
+								url: "/packageA/pages/chat/addFriend?name=添加群&type=group"
 							})
 						}
 					},
@@ -164,7 +164,7 @@
 			// 点击默认功能列表
 			clickDefaultItem(item) {
 				uni.navigateTo({
-					url: `/pages/chat/chatAiDetail?id=${item.id}&name=${item.name}&avatar=${item.avatar}`
+					url: `/packageA/pages/chat/chatAiDetail?id=${item.id}&name=${item.name}&avatar=${item.avatar}`
 				})
 			},
 			bindClick() {

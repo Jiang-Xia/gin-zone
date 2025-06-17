@@ -1,11 +1,6 @@
 {
 	"pages": [
-		// {
-		// 	"path": "pages/start/auto/auto",
-		// 	"style": {
-		// 		"navigationStyle": "custom"
-		// 	}
-		// },
+
 		{
 			"path": "pages/start/entrance/entrance",
 			"style": {
@@ -19,20 +14,7 @@
 				"enablePullDownRefresh": true
 			}
 		},
-		{
-			"path": "pages/blog/detail/detail",
-			"style": {
-				"navigationBarTitleText": "博客详情"
-			}
-		},
-		{
-			"path": "pages/blog/articles/articles",
-			"style": {
-				"navigationBarTitleText": "文章列表",
-				"enablePullDownRefresh": true
-			}
-		},
-		// #ifndef MP-WEIXIN
+		
 		{
 			"path": "pages/moment/index",
 			"style": {
@@ -64,13 +46,7 @@
 				}
 			}
 		},
-		{
-			"path": "pages/moment/addMoment",
-			"style": {
-				"navigationBarTitleText": "发动态"
-			}
-		},
-		// #endif
+
 		{
 			"path": "pages/chat/index",
 			"style": {
@@ -101,95 +77,104 @@
 				}
 			}
 		},
-		{
-			"path": "pages/chat/chatDetail",
-			"style": {
-				"navigationBarTitleText": "聊天详情",
-				"h5": {
-					"titleNView": {
-						"buttons": [{
-							"text": "\ue8c4",
-							"fontSrc": "/static/iconfont.ttf",
-							"fontSize": "20px",
-							"color": "#333"
-						}]
-					}
-				},
-				"app-plus": {
-					"titleNView": {
-						"buttons": [{
-							"text": "\ue8c4",
-							"fontSrc": "/static/iconfont.ttf",
-							"fontSize": "20px",
-							"color": "#333"
-						}]
-					}
-				}
-			}
-		},
-		{
-			"path": "pages/chat/chatAiDetail",
-			"style": {
-				"navigationBarTitleText": "AI聊天"
-				// "app-plus": {
-				// 	"titleNView": {
-				// 		"buttons": [{
-				// 			"select": true,
-				// 			"text": "\ue71f",
-				// 			"fontSrc": "/static/iconfont.ttf",
-				// 			"fontSize": "22px",
-				// 			"color": "#333"
-				// 		}]
-				// 	}
-				// },
-				// "h5": {
-				// 	"titleNView": {
-				// 		"buttons": [{
-				// 			"select": false,
-				// 			"float": "right",
-				// 			"text": "\ue71f",
-				// 			"fontSrc": "/static/iconfont.ttf",
-				// 			"fontSize": "22px",
-				// 			"color": "#333"
-				// 		}]
-				// 	}
-				// }
-			}
-		},
-		{
-			"path": "pages/chat/addFriend",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		},
+
 		{
 			"path": "pages/my/index",
 			"style": {
 				"navigationBarTitleText": "我的"
-				// "navigationStyle": "custom"
 			}
-		},
+		}
+	],
+	"subPackages": [
 		{
-			"path": "pages/my/login",
-			"style": {
-				"navigationBarTitleText": "登录",
-				"enablePullDownRefresh": false
-			}
-
-		},
-		{
-			"path": "pages/my/setting",
-			"style": {
-				"navigationBarTitleText": "个人资料",
-				"enablePullDownRefresh": false
-			}
-		},
-		{
-			"path": "pages/my/createGroup",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
+			"root": "packageA",
+			"pages": [
+				{
+					"path": "pages/start/auto/auto",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "pages/blog/detail/detail",
+					"style": {
+						"navigationBarTitleText": "博客详情"
+					}
+				},
+				{
+					"path": "pages/blog/articles/articles",
+					"style": {
+						"navigationBarTitleText": "文章列表",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "pages/moment/addMoment",
+					"style": {
+						"navigationBarTitleText": "发动态"
+					}
+				},
+				{
+					"path": "pages/chat/chatDetail",
+					"style": {
+						"navigationBarTitleText": "聊天详情",
+						"h5": {
+							"titleNView": {
+								"buttons": [{
+									"text": "\ue8c4",
+									"fontSrc": "/static/iconfont.ttf",
+									"fontSize": "20px",
+									"color": "#333"
+								}]
+							}
+						},
+						"app-plus": {
+							"titleNView": {
+								"buttons": [{
+									"text": "\ue8c4",
+									"fontSrc": "/static/iconfont.ttf",
+									"fontSize": "20px",
+									"color": "#333"
+								}]
+							}
+						}
+					}
+				},
+				{
+					"path": "pages/chat/chatAiDetail",
+					"style": {
+						"navigationBarTitleText": "AI聊天"
+					}
+				},
+				{
+					"path": "pages/chat/addFriend",
+					"style": {
+						"navigationBarTitleText": ""
+					}
+				},
+				{
+					"path": "pages/my/login",
+					"style": {
+						"navigationBarTitleText": "登录",
+						"enablePullDownRefresh": false
+					}
+				
+				},
+				{
+					"path": "pages/my/setting",
+					"style": {
+						"navigationBarTitleText": "个人资料",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "pages/my/createGroup",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+				}
+			]
 		}
 	],
 	"globalStyle": {

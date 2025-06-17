@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<image v-if="isLogin" class="my-bg" src="../../static/images/logined.png" mode=""></image>
-		<navigator v-if="isLogin" class="my-info" url="/pages/my/setting" hover-class="navigator-hover">
+		<navigator v-if="isLogin" class="my-info" url="/packageA/pages/my/setting" hover-class="navigator-hover">
 			<view class="top-box">
 				<image class="avatar" :src="userInfo.avatar" mode=""></image>
 				<view class="uni-flex-column">
@@ -52,7 +52,7 @@
 			login() {
 				// #ifdef H5|| APP
 				uni.navigateTo({
-					url: "/pages/my/login"
+					url: "/packageA/pages/my/login"
 				})
 				return
 				// #endif
@@ -142,7 +142,7 @@
 					itemList: list,
 					success: async ({tapIndex}) => {
 						if(tapIndex===0){
-							uni.navigateTo({url: "/pages/my/createGroup"})
+							uni.navigateTo({url: "/packageA/pages/my/createGroup"})
 						}
 					},
 					fail: function(res) {

@@ -89,12 +89,12 @@
 			},
 			goArticleList() {
 				uni.navigateTo({
-					url: "/pages/blog/articles/articles",
+					url: "/packageA/pages/blog/articles/articles",
 				})
 			},
 			goDetail(id) {
 				uni.navigateTo({
-					url: "/pages/blog/detail/detail?id=" + id,
+					url: "/packageA/pages/blog/detail/detail?id=" + id,
 				})
 			},
 			swiperChange(e) {
