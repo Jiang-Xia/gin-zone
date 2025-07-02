@@ -175,7 +175,18 @@
 					}
 				}
 			]
-		}
+		},
+        {
+        	"root": "packageB",
+        	"pages": [
+        		{
+        			"path": "pages/chart/chart",
+        			"style": {
+        				"navigationStyle": "custom"
+        			}
+        		}
+        	]
+        }
 	],
 	"globalStyle": {
 		// "navigationStyle": "custom",

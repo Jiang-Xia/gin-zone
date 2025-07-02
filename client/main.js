@@ -1,18 +1,7 @@
 import pageJson from "./pages"
-// #ifndef VUE3
-import Vue from 'vue'
-import App from './App'
-Vue.config.productionTip = false
 
-App.mpType = 'app'
-
-const app = new Vue({
-	...App
-})
-app.$mount()
-// #endif
-// #ifdef VUE3
 import {createSSRApp} from 'vue'
+import dayjs from 'dayjs'
 import * as Pinia from 'pinia';
 import App from './App.vue'
 import api from './common/request/api.js'
@@ -31,10 +20,18 @@ export function createApp() {
 	app.config.globalProperties.$fileUrl = fileUrl
 	app.config.globalProperties.$baseUrl = baseUrl
 	app.config.globalProperties.$pages = pageJson.pages,
+    app.config.globalProperties.$dayjs = dayjs
 	app.mixin(mixins)
 	return {
 		app,
 		Pinia // 此处必须将 Pinia 返回
 	}
 }
-// #endif
+
+/* 
+ 小程序打包优化：
+  1.使用分包，主包一般放tabbar中的页面，其他页面放到分包中
+  2.组件按需加载引入
+  3.禁止uni.scss写公共类名样式，因为会注入到每个页面中
+  4.static资源改为在线引入，图片字体等资源
+ */
