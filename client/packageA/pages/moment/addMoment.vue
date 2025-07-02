@@ -1,236 +1,207 @@
 <template>
-	<view class="container">
-		<div class="main-content">
-			<section class="main-wrap">
-				<textarea v-model="info.content" rows="4" :border="false" autosize type="textarea" maxlength="500"
-					placeholder="说说这一刻的想法…" />
-				<!-- show-word-limit -->
-				<div class="uploader-wrap">
-					<uni-file-picker v-model="fileLists" limit="9" title="" :imageStyles="imageStyles"
-						@delete="deleteHandle" @select="select" ref="files">
-						<div class="zc-uploader-setting"></div>
-					</uni-file-picker>
-				</div>
+    <view class="container">
+        <div class="main-content">
+            <section class="main-wrap">
+                <textarea v-model="info.content" rows="4" :border="false" autosize type="textarea" maxlength="500"
+                    placeholder="说说这一刻的想法…" />
+                <!-- show-word-limit -->
+                <div class="uploader-wrap">
+                    <uni-file-picker v-model="fileLists" limit="9" title="" :imageStyles="imageStyles"
+                        @delete="deleteHandle" @select="select" ref="files">
+                        <div class="zc-uploader-setting"></div>
+                    </uni-file-picker>
+                </div>
 
-				<div class="footer-bar" @click="chooseLocation">
-					<text class="adress-text">
-						<uni-icons type="location" color="#999"></uni-icons> 地点
-					</text>
-					<text class="uni-ellipsis">
-						{{ info.address }}
-					</text>
-					<uni-icons type="right" color="#999"></uni-icons>
-				</div>
-				<view class="btn-submit">
-					<button size="default" type="primary" style="width: 100%;" @click="addMoment">提交</button>
-				</view>
-			</section>
-		</div>
-	</view>
+                <div class="footer-bar" @click="chooseLocation">
+                    <text class="adress-text">
+                        <uni-icons type="location" color="#999"></uni-icons> 地点
+                    </text>
+                    <text class="uni-ellipsis">
+                        {{ info.address }}
+                    </text>
+                    <uni-icons type="right" color="#999"></uni-icons>
+                </div>
+                <view class="btn-submit">
+                    <button size="default" type="primary" style="width: 100%;" @click="addMoment">提交</button>
+                </view>
+            </section>
+        </div>
+    </view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				info: {
-					content: '',
-					address: '选择位置',
-					latitude: 0,
-					longitude: 0
-				},
-				imageStyles: {
-					border: {
-						color: 'transparent',
-						width: 1,
-						style: 'dashed',
-						radius: 2
-					}
-				},
-				fileLists: [],
-				uploadList: []
-			}
-		},
-		onShow(option) {
-			this.getLocation()
-		},
-		onPullDownRefresh() {},
-		computed: {},
-		methods: {
-			// 获取定位信息
-			getLocation() {
-				uni.getLocation({
-					geocode: true,
-					accuracy: true,
-					isHighAccuracy: true,
-					type: 'wgs84', //返回可以用于uni.openLocation的经纬度
-					success: (res) => {
-						const {
-							latitude,
-							longitude
-						} = res
-						this.info.latitude = latitude;
-						this.info.longitude = longitude;
-						console.log('success', this.info);
-						this.getAddress()
-						if (res.address) {
-							const {
-								province,
-								city,
-								district,
-								street
-							} = res.address
-							this.info.address = province + city + district + street
-							console.log('success', this.info.address);
-						} else {
-							this.info.address = '中国'
-						}
+    export default {
+        data() {
+            return {
+                info: {
+                    content: '',
+                    address: '选择位置',
+                    latitude: 0,
+                    longitude: 0
+                },
+                imageStyles: {
+                    border: {
+                        color: 'transparent',
+                        width: 1,
+                        style: 'dashed',
+                        radius: 2
+                    }
+                },
+                fileLists: [],
+                uploadList: []
+            }
+        },
+        onLoad(option) {
+            this.getLocation()
+        },
+        onPullDownRefresh() {},
+        computed: {},
+        methods: {
+            // 获取定位信息
+            getLocation() {
+                this.$_getCurrentAddressByLocation().then(res => {
+                    this.info.address = res.formattedAddress
+                    if (res.locationInfo.address) {
+                        const {
+                            province,
+                            city,
+                            district,
+                            street
+                        } = res.locationInfo.address
+                        this.info.address = province + city + district + street
+                        console.log('success', this.info.address);
+                    }
+                })
+            },
+            // 选择位置
+            chooseLocation() {
+                uni.chooseLocation({
+                    success: (res) => {
+                        const {
+                            latitude,
+                            longitude,
+                            name,
+                            address
+                        } = res
+                        this.info.latitude = latitude;
+                        this.info.longitude = longitude;
+                        this.info.address = name || address
+                    }
+                });
+            },
+            // 打开地图
+            openMap() {},
+            select(imageRes) {
+                imageRes.tempFilePaths.forEach((path, index) => {
+                    this.uploadFile(path)
+                })
+            },
+            deleteHandle(opt) {
+                this.uploadList.splice(this.uploadList.findIndex(v => v.path === opt.tempFilePath), 1)
+                // console.log(opt,this.uploadList)
+            },
+            async uploadFile(file) {
+                const res = await this.$api.upload(file)
+                this.uploadList.push({
+                    path: file,
+                    ...res.data
+                })
+                // console.log(this.uploadList)
+                return res
+            },
+            async addMoment() {
+                try {
+                    const userId = getApp().globalData.userInfo.userId
+                    const params = {
+                        content: this.info.content,
+                        location: this.info.address,
+                        urls: this.uploadList.map(v => v.url).join(),
+                        userId: userId,
+                    }
+                    if (!this.info.content || !this.fileLists.length) {
+                        uni.showToast({
+                            title: "请填写完整数据",
+                            icon: "none"
+                        })
+                    }
+                    const res = await this.$api.post('/mobile/moments', params)
+                    uni.showToast({
+                        title: "发表成功",
+                        icon: "none"
+                    })
+                    uni.switchTab({
+                        url: "/pages/moment/index"
+                    })
+                } catch (e) {
 
-					}
-				});
-			},
-			getAddress(){
-				let url = 'https://restapi.amap.com/v3/geocode/regeo'
-				const params = {
-					// WEB 服务 api key
-					key: '7279c02a8edb6f46df4fe81dbe8be1a4',
-					location:this.info.latitude + ',' + this.info.longitude 
-				}
-				uni.request({
-					url,
-					data: params,
-					method: "GET",
-					complete: (res) => {
-						console.log('地理地址编码：', res)
-					}
-				});
-			},
-			// 选择位置
-			chooseLocation() {
-				uni.chooseLocation({
-					success: (res) => {
-						const {
-							latitude,
-							longitude,
-							name,
-							address
-						} = res
-						this.info.latitude = latitude;
-						this.info.longitude = longitude;
-						this.info.address = name || address
-					}
-				});
-			},
-			// 打开地图
-			openMap() {},
-			select(imageRes) {
-				imageRes.tempFilePaths.forEach((path, index) => {
-					this.uploadFile(path)
-				})
-			},
-			deleteHandle(opt) {
-				this.uploadList.splice(this.uploadList.findIndex(v => v.path === opt.tempFilePath), 1)
-				// console.log(opt,this.uploadList)
-			},
-			async uploadFile(file) {
-				const res = await this.$api.upload(file)
-				this.uploadList.push({
-					path: file,
-					...res.data
-				})
-				// console.log(this.uploadList)
-				return res
-			},
-			async addMoment() {
-				try {
-					const userId = getApp().globalData.userInfo.userId
-					const params = {
-						content: this.info.content,
-						location: this.info.address,
-						urls: this.uploadList.map(v => v.url).join(),
-						userId: userId,
-					}
-					if (!this.info.content || !this.fileLists.length) {
-						uni.showToast({
-							title: "请填写完整数据",
-							icon: "none"
-						})
-					}
-					const res = await this.$api.post('/mobile/moments', params)
-					uni.showToast({
-						title: "发表成功",
-						icon: "none"
-					})
-					uni.switchTab({
-						url: "/pages/moment/index"
-					})
-				} catch (e) {
+                }
 
-				}
+            }
+        }
 
-			}
-		}
-
-	}
+    }
 </script>
 
 <style lang="scss">
-	.container {
-		.main-content {
-			background-color: #fff;
-			padding: 18px;
+    .container {
+        .main-content {
+            background-color: #fff;
+            padding: 18px;
 
-			.van-field {
-				padding: 18px 0;
-			}
+            .van-field {
+                padding: 18px 0;
+            }
 
-			.van-field__word-limit {
-				color: #999999;
-			}
+            .van-field__word-limit {
+                color: #999999;
+            }
 
-			.footer-bar {
-				margin-top: 16px;
-				padding: 14px 0;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				color: #333;
-				font-size: 15px;
-				border-bottom: 1px solid #eee;
-				border-top: 1px solid #eee;
-				.uni-ellipsis{
-					flex: 1;
-					text-align: right;
-				}
-				.adress-text{
-					padding-right: 18rpx;
-				}
-				.van-icon-arrow {
-					color: #999;
-				}
-			}
+            .footer-bar {
+                margin-top: 16px;
+                padding: 14px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                color: #333;
+                font-size: 15px;
+                border-bottom: 1px solid #eee;
+                border-top: 1px solid #eee;
 
-			.uni-file-picker__header {
-				.file-title {
-					font-size: 24rpx;
-					color: #666;
-				}
-			}
+                .uni-ellipsis {
+                    flex: 1;
+                    text-align: right;
+                }
 
-			.file-picker__box-content {
-				border: none !important;
-			}
+                .adress-text {
+                    padding-right: 18rpx;
+                }
 
-			.zc-uploader-setting {
-				height: 100%;
-				width: 100%;
-				background-image: url(@/static/images/moment/ico_sc_tpsp@2x.png);
-				background-size: contain;
-			}
-		}
+                .van-icon-arrow {
+                    color: #999;
+                }
+            }
 
-		.btn-submit {
-			margin-top: 56rpx;
-		}
-	}
+            .uni-file-picker__header {
+                .file-title {
+                    font-size: 24rpx;
+                    color: #666;
+                }
+            }
+
+            .file-picker__box-content {
+                border: none !important;
+            }
+
+            .zc-uploader-setting {
+                height: 100%;
+                width: 100%;
+                background-image: url(@/static/images/moment/ico_sc_tpsp@2x.png);
+                background-size: contain;
+            }
+        }
+
+        .btn-submit {
+            margin-top: 56rpx;
+        }
+    }
 </style>

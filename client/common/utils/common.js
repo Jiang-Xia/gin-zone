@@ -113,6 +113,49 @@ export const mixins = {
 				title = this.$pages.find(v=>v.path===path)?.style.navigationBarTitleText
 			}
 			return title||'江夏的博客'
+		},
+		// 获取当前定位经纬度和地址
+		$_getCurrentAddressByLocation(){
+            uni.showLoading({
+                title:'加载中'
+            })
+			return new Promise((resolve, reject) => {
+				uni.getLocation({
+					geocode: true,
+					accuracy: true,
+					isHighAccuracy: true,
+					type: 'wgs84', //返回可以用于uni.openLocation的经纬度
+					success: (locationInfo) => {
+						const {latitude,longitude} = locationInfo
+						let url = 'https://restapi.amap.com/v3/geocode/regeo'
+						const params = {
+							// WEB 服务 api key
+							key: '7279c02a8edb6f46df4fe81dbe8be1a4',
+							location: longitude + ',' + latitude
+						}
+						uni.request({
+							url,
+							data: params,
+							method: "GET",
+							complete: (res) => {
+								// console.log('地理地址编码：', res)
+								const regeocode = res.data.regeocode
+								const formattedAddress = regeocode.formatted_address
+                                const obj = {
+                                    locationInfo,
+                                    formattedAddress,
+                                }
+                                resolve(obj)
+                                uni.hideLoading()
+							}
+						});
+					},
+                    complete() {
+                        uni.hideLoading()
+                    }
+				});
+			})
+            setTimeout(()=>{ uni.hideLoading()}, 2000)
 		}
 	}
 }
