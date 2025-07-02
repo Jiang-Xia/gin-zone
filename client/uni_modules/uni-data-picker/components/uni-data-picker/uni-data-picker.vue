@@ -75,7 +75,7 @@
    */
   export default {
     name: 'UniDataPicker',
-    emits: ['popupopened', 'popupclosed', 'nodeclick', 'input', 'change', 'update:modelValue'],
+    emits: ['popupopened', 'popupclosed', 'nodeclick', 'input', 'change', 'update:modelValue','inputclick'],
     mixins: [dataPicker],
     components: {
       DataPickerView
@@ -131,9 +131,16 @@
         this.load();
       })
     },
+    watch: {
+			localdata: {
+				handler() {
+					this.load()
+				},
+        deep: true
+			},
+    },
     methods: {
       clear() {
-        this.modelValue = null;
         this._dispatchEvent([]);
       },
       onPropsChange() {
@@ -145,10 +152,6 @@
       load() {
         if (this.readonly) {
           this._processReadonly(this.localdata, this.dataValue);
-          return;
-        }
-
-        if (!this.hasValue) {
           return;
         }
 
@@ -184,6 +187,7 @@
       },
       handleInput() {
         if (this.readonly) {
+					this.$emit('inputclick')
           return
         }
         this.show()
@@ -228,15 +232,24 @@
         }
 
         let result = []
-        for (let i = 0; i < value.length; i++) {
-          var val = value[i]
-          var item = dataList.find((v) => {
-            return v.value == val
-          })
-          if (item) {
-            result.push(item)
-          }
-        }
+				if (Array.isArray(value)) {
+					for (let i = 0; i < value.length; i++) {
+						var val = value[i]
+						var item = dataList.find((v) => {
+							return v.value == val
+						})
+						if (item) {
+							result.push(item)
+						}
+					}
+				} else {
+					let item = dataList.find((v) => {
+						return v.value == value;
+					});
+					if (item) {
+						result.push(item);
+					}
+				}
         if (result.length) {
           this.inputSelected = result
         }

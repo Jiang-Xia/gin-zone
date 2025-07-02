@@ -14,6 +14,7 @@
 		<view class="login-wrap" v-if="!isLogin">
 			<image class="login-bg" src="../../static/images/approve.png" mode=""></image>
 			<button type="primary" @tap="login">登录</button>
+            <!-- <button type="primary" @tap="$common.goTo('/packageB/pages/chart/chart')">登录</button> -->
 		</view>
 
 		<view class="menu-list" v-if="isLogin">

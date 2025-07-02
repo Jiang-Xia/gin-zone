@@ -1,5 +1,13 @@
 /* 全局功能方法挂载 */
 export class Common {
+    goTo(url){
+      uni.navigateTo({
+          url
+      })  
+    }
+    back(delta){
+      uni.navigateBack({delta:1})  
+    }
 	getUserId() {
 		const userInfo = getApp().globalData.userInfo
 		console.log({

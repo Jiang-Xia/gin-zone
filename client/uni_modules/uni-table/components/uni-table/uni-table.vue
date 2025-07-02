@@ -3,9 +3,9 @@
 		<!-- #ifdef H5 -->
 		<table class="uni-table" border="0" cellpadding="0" cellspacing="0" :class="{ 'table--stripe': stripe }" :style="{ 'min-width': minWidth + 'px' }">
 			<slot></slot>
-			<view v-if="noData" class="uni-table-loading">
-				<view class="uni-table-text" :class="{ 'empty-border': border }">{{ emptyText }}</view>
-			</view>
+			<tr v-if="noData" class="uni-table-loading">
+				<td class="uni-table-text" :class="{ 'empty-border': border }">{{ emptyText }}</td>
+			</tr>
 			<view v-if="loading" class="uni-table-mask" :class="{ 'empty-border': border }"><div class="uni-table--loader"></div></view>
 		</table>
 		<!-- #endif -->
@@ -36,7 +36,12 @@
 export default {
 	name: 'uniTable',
 	options: {
+		// #ifdef MP-TOUTIAO
+		virtualHost: false,
+		// #endif
+		// #ifndef MP-TOUTIAO
 		virtualHost: true
+		// #endif
 	},
 	emits:['selection-change'],
 	props: {
@@ -90,10 +95,10 @@ export default {
 			if (this.theadChildren) {
 				rowspan = this.theadChildren.rowspan
 			}
-			
+
 			// this.trChildren.length - rowspan
 			this.noData = false
-			// this.noData = newVal.length === 0 
+			// this.noData = newVal.length === 0
 		}
 	},
 	created() {
@@ -247,9 +252,9 @@ export default {
 			if (!this.theadChildren) {
 				theadChildren = this.trChildren[0]
 			}
-			
-			
-			
+
+
+
 			let childDomIndex = this.trChildren.findIndex((item, index) => child === item)
 			if(childDomIndex < 0){
 				childDomIndex = this.data.findIndex(v=>v[this.rowKey] === keyValue) + 1
