@@ -28,6 +28,7 @@
 			</view>
 		</view>
 	</view>
+    <tabbar :tabBarShow="0"/>
 </pageConfig>
 </template>
 
@@ -55,6 +56,9 @@
 			this.init()
 			uni.stopPullDownRefresh()
 		},
+        onReady() {
+          uni.hideTabBar()  
+        },
 		onShow() {
 			this.init()
 		},

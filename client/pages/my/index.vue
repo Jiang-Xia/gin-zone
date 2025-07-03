@@ -25,6 +25,7 @@
 			</uni-list>
 		</view>
 	</view>
+    <tabbar :tabBarShow="3"/>
 </pageConfig>
 </template>
 
@@ -50,6 +51,9 @@
 				this.getZoneUserInfo()
 			}
 		},
+        onReady() {
+          uni.hideTabBar()  
+        },
 		methods: {
 			login() {
 				// #ifdef H5|| APP

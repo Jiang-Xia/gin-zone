@@ -26,7 +26,7 @@ export class Common {
 
 					// #ifndef MP-WEIXIN
 					uni.navigateTo({
-						url: "/pages/my/login"
+						url: "/packageA/pages/my/login"
 					})
 					// #endif
 					// #ifdef MP-WEIXIN

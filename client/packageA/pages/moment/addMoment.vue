@@ -197,7 +197,7 @@
             .zc-uploader-setting {
                 height: 100%;
                 width: 100%;
-                background-image: url(@/static/images/moment/ico_sc_tpsp@2x.png);
+                background-image: url(@/packageA/static/images/moment/ico_sc_tpsp@2x.png);
                 background-size: contain;
             }
         }

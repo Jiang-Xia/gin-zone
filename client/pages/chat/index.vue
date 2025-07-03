@@ -21,6 +21,7 @@
         		</uni-swipe-action>
         	</uni-list>
         </view>
+        <tabbar :tabBarShow="2"/>
     </pageConfig>
 </template>
 
@@ -78,6 +79,9 @@
 		onShow() {
 			this.init()
 		},
+        onReady() {
+          uni.hideTabBar()  
+        },
 		onNavigationBarButtonTap() {
 			this.clickLeft()
 		},

@@ -198,14 +198,17 @@
 		"usingComponents": {}
 	},
 	"tabBar": {
-		"color": "#999999",
-		"borderStyle": "white",
+        "custom": true,
+        "selectedColor": "#f23030",
+        "backgroundColor": "#ffffff",
+		// "color": "#999999",
+		// "borderStyle": "white",
 		// 注意：启用高斯模糊效果后不建议设置backgroundColor，如果需要设置的需要使用 rgba 设置透明度，不然看不到模糊效果
 		// "backgroundColor": "rgba(0,255,51,0.3)",
 		// "spacing": "5px",
 		// "backgroundColor": "#fff",
-		"height": "50px",
-		"selectedColor": "#0062cc",
+		// "height": "50px",
+		// "selectedColor": "#0062cc",
 		"list": [{
 				"text": "博客",
 				"pagePath": "pages/blog/index",

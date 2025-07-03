@@ -43,6 +43,7 @@
         	</section>
         	<uni-load-more v-if="loading || status === 'noMore' " :status="status" />
         </view>
+        <tabbar :tabBarShow="1"/>
     </pageConfig>
 </template>
 
@@ -69,6 +70,9 @@
 		onShow() {
 			this.init()
 		},
+        onReady() {
+          uni.hideTabBar()  
+        },
 		// 上拉加载回调函数
 		onReachBottom() {
 			this.getMomentList(true)
