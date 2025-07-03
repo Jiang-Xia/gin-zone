@@ -1,4 +1,5 @@
 <template>
+<pageConfig title="我的" :left="false">
 	<view class="container">
 		<image v-if="isLogin" class="my-bg" src="../../static/images/logined.png" mode=""></image>
 		<navigator v-if="isLogin" class="my-info" url="/packageA/pages/my/setting" hover-class="navigator-hover">
@@ -14,7 +15,7 @@
 		<view class="login-wrap" v-if="!isLogin">
 			<image class="login-bg" src="../../static/images/approve.png" mode=""></image>
 			<button type="primary" @tap="login">登录</button>
-            <!-- <button type="primary" @tap="$common.goTo('/packageB/pages/chart/chart')">登录</button> -->
+            <!-- <button type="primary" @tap="$common.goTo('/packageB/pages/chart/chart')">图表</button> -->
 		</view>
 
 		<view class="menu-list" v-if="isLogin">
@@ -24,7 +25,7 @@
 			</uni-list>
 		</view>
 	</view>
-
+</pageConfig>
 </template>
 
 <script>

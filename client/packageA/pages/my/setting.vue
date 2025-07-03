@@ -1,4 +1,5 @@
 <template>
+<pageConfig title="个人资料">
 	<view class="container">
 		<uni-section title="个人信息" type="line">
 			<view class="form-wrap">
@@ -34,6 +35,7 @@
 			</view>
 		</uni-section>
 	</view>
+</pageConfig>
 </template>
 
 <script>

@@ -1,4 +1,5 @@
 <template>
+ <pageConfig title="创建群聊">
 	<view class="container">
 		<uni-section title="群聊信息" type="line">
 			<view class="form-wrap">
@@ -26,6 +27,7 @@
 			</view>
 		</uni-section>
 	</view>
+</pageConfig>
 </template>
 
 <script>

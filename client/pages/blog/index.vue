@@ -1,4 +1,5 @@
 <template>
+<pageConfig title="博客" :left="false">
 	<view class="container">
 		<uni-swiper-dot :info="swiperList" :current="current" field="url" mode="round" :dotsStyles="dotsStyles">
 			<swiper class="swiper" @change="swiperChange" circular :autoplay="true" :interval="6000" :duration="500">
@@ -27,6 +28,7 @@
 			</view>
 		</view>
 	</view>
+</pageConfig>
 </template>
 
 <script>

@@ -1,51 +1,49 @@
 <template>
-	<view class="container moment-card-wrap">
-		<!--#ifdef MP-WEIXIN  -->
-		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" border fixed statusBar title="动态"
-			@clickLeft="clickLeft" />
-		<!--#endif -->
-		<section class="moment-card" v-for="(item, index) in cardList" :key="cardList.id">
-			<div class="card-top">
-				<image class="avatar" :src="item.userInfo.avatar" />
-				<div class="middle">
-					<p class="name">{{ item.userInfo.nickName }}</p>
-					<p class="date">{{ item.date }}</p>
-				</div>
-
-			</div>
-			<div class="card-message">{{ item.content }}</div>
-			<div class="card-images">
-				<image class="image-item" v-for="(item2, index2) in item.images"
-					:style="{ marginRight: (index2 + 1) % 3 === 0 ? '0px' : '4px' }" width="114" height="114" radius="8"
-					:src="$fileUrl+item2" :key="item2+index2" @click="previewImage(item)" />
-			</div>
-			<div class="card-bottom">
-				<div class="adress">
-					<uni-icons type="location" color="#999"></uni-icons> {{ item.location }}
-					<uni-icons type="right" color="#999"></uni-icons>
-				</div>
-				<div class="tool-wrap">
-					<view @click="dianzanHandle(item)">
-						<uni-icons :type="item.dianzaned ? 'hand-up-filled' : 'hand-up'" style="margin-bottom: 4px;"
-							:color="item.dianzaned ? '#0066cc' : '#666'"></uni-icons>
-						<text :style="{ color: item.dianzaned ? '#0066cc' : '' }">{{ item.likes }}</text>
-					</view>
-					<view>
-						<uni-icons type="chatbubble" color="#666"></uni-icons>
-						{{ 0 }}
-					</view>
-					<view>
-						<uni-icons type="eye" color="#666"></uni-icons>
-						{{ item.views }}
-					</view>
-					<view>
-						<uni-icons type="ellipsis" color="#666"></uni-icons>
-					</view>
-				</div>
-			</div>
-		</section>
-		<uni-load-more v-if="loading || status === 'noMore' " :status="status" />
-	</view>
+    <pageConfig title="动态" left-icon="plus" @clickLeft="clickLeft">
+        <view class="container moment-card-wrap">
+        	<section class="moment-card" v-for="(item, index) in cardList" :key="cardList.id">
+        		<div class="card-top">
+        			<image class="avatar" :src="item.userInfo.avatar" />
+        			<div class="middle">
+        				<p class="name">{{ item.userInfo.nickName }}</p>
+        				<p class="date">{{ item.date }}</p>
+        			</div>
+        
+        		</div>
+        		<div class="card-message">{{ item.content }}</div>
+        		<div class="card-images">
+        			<image class="image-item" v-for="(item2, index2) in item.images"
+        				:style="{ marginRight: (index2 + 1) % 3 === 0 ? '0px' : '4px' }" width="114" height="114" radius="8"
+        				:src="$fileUrl+item2" :key="item2+index2" @click="previewImage(item)" />
+        		</div>
+        		<div class="card-bottom">
+        			<div class="adress">
+        				<uni-icons type="location" color="#999"></uni-icons> {{ item.location }}
+        				<uni-icons type="right" color="#999"></uni-icons>
+        			</div>
+        			<div class="tool-wrap">
+        				<view @click="dianzanHandle(item)">
+        					<uni-icons :type="item.dianzaned ? 'hand-up-filled' : 'hand-up'" style="margin-bottom: 4px;"
+        						:color="item.dianzaned ? '#0066cc' : '#666'"></uni-icons>
+        					<text :style="{ color: item.dianzaned ? '#0066cc' : '' }">{{ item.likes }}</text>
+        				</view>
+        				<view>
+        					<uni-icons type="chatbubble" color="#666"></uni-icons>
+        					{{ 0 }}
+        				</view>
+        				<view>
+        					<uni-icons type="eye" color="#666"></uni-icons>
+        					{{ item.views }}
+        				</view>
+        				<view>
+        					<uni-icons type="ellipsis" color="#666"></uni-icons>
+        				</view>
+        			</div>
+        		</div>
+        	</section>
+        	<uni-load-more v-if="loading || status === 'noMore' " :status="status" />
+        </view>
+    </pageConfig>
 </template>
 
 <script>

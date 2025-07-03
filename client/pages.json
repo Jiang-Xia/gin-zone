@@ -11,7 +11,8 @@
 			"path": "pages/blog/index",
 			"style": {
 				"navigationBarTitleText": "博客",
-				"enablePullDownRefresh": true
+				"enablePullDownRefresh": true,
+                "navigationStyle": "custom"
 			}
 		},
 		
@@ -20,6 +21,7 @@
 			"style": {
 				"navigationBarTitleText": "动态",
 				"enablePullDownRefresh": true,
+                "navigationStyle": "custom",
 				"h5": {
 					"titleNView": {
 						"buttons": [{
@@ -40,9 +42,6 @@
 							"color": "#333"
 						}]
 					}
-				},
-				"mp-weixin": {
-					"navigationStyle": "custom"
 				}
 			}
 		},
@@ -52,6 +51,7 @@
 			"style": {
 				"navigationBarTitleText": "聊天",
 				"enablePullDownRefresh": true,
+                "navigationStyle": "custom",
 				"h5": {
 					"titleNView": {
 						"buttons": [{
@@ -71,9 +71,6 @@
 							"color": "#333"
 						}]
 					}
-				},
-				"mp-weixin": {
-					"navigationStyle": "custom"
 				}
 			}
 		},
@@ -81,7 +78,8 @@
 		{
 			"path": "pages/my/index",
 			"style": {
-				"navigationBarTitleText": "我的"
+				"navigationBarTitleText": "我的",
+                "navigationStyle": "custom"
 			}
 		}
 	],
@@ -170,7 +168,7 @@
 				{
 					"path": "pages/my/createGroup",
 					"style": {
-						"navigationBarTitleText": "",
+						"navigationBarTitleText": "创建群聊",
 						"enablePullDownRefresh": false
 					}
 				}
@@ -189,7 +187,7 @@
         }
 	],
 	"globalStyle": {
-		// "navigationStyle": "custom",
+		"navigationStyle": "custom",
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",

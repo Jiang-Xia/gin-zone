@@ -1,4 +1,5 @@
 <template>
+<pageConfig :title="title">
 	<view class="container">
 		<image v-if="history.loading" class="history-loaded" src="/static/images/loading.svg" />
 		<view v-else :class="history.allLoaded ? 'history-loaded':'load'" @click="loadHistoryMessage(false)">
@@ -76,6 +77,7 @@
 			</view>
 		</view>
 	</view>
+</pageConfig>
 </template>
 
 <script>
@@ -92,6 +94,7 @@
 	export default {
 		data() {
 			return {
+                title:'',
 				ws: '',
 				//聊天文本框
 				text: '',
@@ -165,6 +168,7 @@
 			uni.setNavigationBarTitle({
 				title: option.name
 			})
+            this.title = option.name
 			// uni.loadFontFace({
 			// 	global:true,
 			//   family: 'emojifont',

@@ -1,18 +1,20 @@
 <template>
-	<view class="article-detail">
-		<view class="cover">
-			<image :src="articleInfo.cover"></image>
-		</view>
-		<view class="article-content">
-			<!-- #ifdef H5||APP-PLUS -->
-			<rich-text selectable class="md-preview default-theme md md-previewOnly" :nodes="nodes"></rich-text>
-			<!-- #endif -->
-
-			<!-- #ifdef MP-WEIXIN -->
-			<mp-html :content="content" />
-			<!-- #endif -->
-		</view>
-	</view>
+    <pageConfig :title="title">
+        <view class="article-detail">
+        	<view class="cover">
+        		<image :src="articleInfo.cover"></image>
+        	</view>
+        	<view class="article-content">
+        		<!-- #ifdef H5||APP-PLUS -->
+        		<rich-text selectable class="md-preview default-theme md md-previewOnly" :nodes="nodes"></rich-text>
+        		<!-- #endif -->
+        
+        		<!-- #ifdef MP-WEIXIN -->
+        		<mp-html :content="content" />
+        		<!-- #endif -->
+        	</view>
+        </view>
+    </pageConfig>
 </template>
 
 <script>
@@ -37,7 +39,8 @@
 				id: "",
 				tagStyle: {
 					code: ``
-				}
+				},
+                title:'博客详情'
 			}
 		},
 		// 不可省略
@@ -62,6 +65,7 @@
 				this.markdownString = this.articleInfo.content
 				const title = this.articleInfo.title
 				uni.setNavigationBarTitle({title})
+                this.title = title
 				this.share.title = title
 				this.share.imageUrl = this.articleInfo.cover
 				this.transformMarkdown()

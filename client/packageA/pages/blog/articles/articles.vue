@@ -1,4 +1,5 @@
 <template>
+ <pageConfig title="文章列表">
 	<view>
 		<uni-search-bar @confirm="onSearch" @cancel="onSearch" cancel-text="搜索" :focus="false" v-model="content"
 			placeholder="输入关键字搜索文章">
@@ -38,6 +39,7 @@
 		</uni-list>
 		<uni-load-more v-if="loading || status === 'noMore' " :status="status" />
 	</view>
+ </pageConfig>
 </template>
 
 <script>

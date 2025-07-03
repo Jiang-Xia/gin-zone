@@ -1,4 +1,5 @@
 <template>
+ <pageConfig title="发动态">
     <view class="container">
         <div class="main-content">
             <section class="main-wrap">
@@ -27,6 +28,7 @@
             </section>
         </div>
     </view>
+</pageConfig>
 </template>
 
 <script>

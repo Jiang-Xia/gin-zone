@@ -1,11 +1,34 @@
 <template>
-  <view class="charts-box">
-    <qiun-data-charts 
-      type="column"
-      :opts="opts"
-      :chartData="chartData"
-    />
-  </view>
+  <pageConfig title="图表">
+      <view class="charts-box">
+        <qiun-data-charts 
+          type="column"
+          :opts="opts"
+          :chartData="chartData"
+        />
+      </view>
+      <view class="charts-box">
+        <qiun-data-charts 
+          type="column"
+          :opts="opts"
+          :chartData="chartData"
+        />
+      </view>
+      <view class="charts-box">
+        <qiun-data-charts 
+          type="column"
+          :opts="opts"
+          :chartData="chartData"
+        />
+      </view>
+      <view class="charts-box">
+        <qiun-data-charts 
+          type="column"
+          :opts="opts"
+          :chartData="chartData"
+        />
+      </view>
+  </pageConfig>
 </template>
 
 <script>

@@ -1,29 +1,27 @@
 <template>
-	<view class="container">
-		<!--#ifdef MP-WEIXIN  -->
-		<uni-nav-bar backgroundColor="#f8f8f8" left-icon="plus" :border="true" :shadow="false" fixed statusBar title="聊天"
-			@clickLeft="clickLeft" />
-		<!--#endif -->
-		<uni-list :border="true">
-			<!-- 默认列表 -->
-			<uni-list-chat v-for="(item,index) in defaultList" :key="index" :avatar-circle="true" :title="item.name"
-				:avatar="item.avatar" :note="item.note" :time="item.time" clickable @click="clickDefaultItem(item)">
-			</uni-list-chat>
-			<!-- 右侧带角标 -->
-			<!-- <uni-list-chat v-for="(item,index) in userList" :key="index" :avatar-circle="true" :title="item.name"
-				:avatar="item.avatar" :note="item.note" :time="item.time" :badge-text="item.noReadMsgCount" clickable
-				@click="clickUserItem(item)">
-			</uni-list-chat> -->
-			<uni-swipe-action>
-				<uni-swipe-action-item :threshold="50" :right-options="options2" @click="bindClick"
-					v-for="(item,index) in userList" :key="(item.userId||item.groupId)+index">
-					<uni-list-chat :avatar-circle="true" :title="item.name" :avatar="item.avatar" :note="item.note"
-						:time="item.time" :badge-text="item.noReadMsgCount" clickable @click="clickUserItem(item)">
-					</uni-list-chat>
-				</uni-swipe-action-item>
-			</uni-swipe-action>
-		</uni-list>
-	</view>
+    <pageConfig title="聊天" left-icon="plus" @clickLeft="clickLeft">
+        <view class="container">
+        	<uni-list :border="true">
+        		<!-- 默认列表 -->
+        		<uni-list-chat v-for="(item,index) in defaultList" :key="index" :avatar-circle="true" :title="item.name"
+        			:avatar="item.avatar" :note="item.note" :time="item.time" clickable @click="clickDefaultItem(item)">
+        		</uni-list-chat>
+        		<!-- 右侧带角标 -->
+        		<!-- <uni-list-chat v-for="(item,index) in userList" :key="index" :avatar-circle="true" :title="item.name"
+        			:avatar="item.avatar" :note="item.note" :time="item.time" :badge-text="item.noReadMsgCount" clickable
+        			@click="clickUserItem(item)">
+        		</uni-list-chat> -->
+        		<uni-swipe-action>
+        			<uni-swipe-action-item :threshold="50" :right-options="options2" @click="bindClick"
+        				v-for="(item,index) in userList" :key="(item.userId||item.groupId)+index">
+        				<uni-list-chat :avatar-circle="true" :title="item.name" :avatar="item.avatar" :note="item.note"
+        					:time="item.time" :badge-text="item.noReadMsgCount" clickable @click="clickUserItem(item)">
+        				</uni-list-chat>
+        			</uni-swipe-action-item>
+        		</uni-swipe-action>
+        	</uni-list>
+        </view>
+    </pageConfig>
 </template>
 
 <script>

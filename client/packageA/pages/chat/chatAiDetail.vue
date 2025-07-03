@@ -1,4 +1,5 @@
 <template>
+<pageConfig :title="title">
 	<view class="container">
 		<!-- <image v-if="history.loading" class="history-loaded" src="/static/images/loading.svg" />
 				<view v-else :class="history.allLoaded ? 'history-loaded':'load'" @click="loadHistoryMessage(false)">
@@ -41,6 +42,7 @@
 		<!-- <uni-fab ref="fab" :popMenu="false" :pattern="fabPattern" :content="fabContent" horizontal="right" vertical="top"
 			direction="horizontal" @trigger="trigger" @fabClick="fabClick" /> -->
 	</view>
+</pageConfig>
 </template>
 
 <script>
@@ -56,6 +58,7 @@
 	export default {
 		data() {
 			return {
+                title:'',
 				ws: '',
 				//聊天文本框
 				text: '',
@@ -198,6 +201,7 @@
 					title
 				})
 				this.share.title = title
+                this.title = title
 			},
 			clickLeft() {
 				uni.switchTab({

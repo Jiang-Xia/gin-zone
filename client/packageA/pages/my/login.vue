@@ -1,4 +1,5 @@
 <template>
+<pageConfig :navbar="false">
 	<view class="container">
 		<view class="bg bg-color-base margin-b20"></view>
 
@@ -68,6 +69,7 @@
 			</view>
 		</view>
 	</view>
+</pageConfig>
 </template>
 
 <script>

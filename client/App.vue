@@ -264,7 +264,9 @@
 	}
 
 	/* #endif */
-
+    page {
+    	background-color: $uni-bg-color-grey;
+    }
 	// 自定义导航栏公共样式
 	.uni-navbar {
 		.nav-title {
@@ -285,6 +287,30 @@
 			}
 		}
 	}
+    /* 自定导航栏样式*/
+    .page-config {
+      .global-nav{
+            .uni-navbar__header{
+                width: 100% !important;
+                box-sizing: border-box;
+                display: flex;
+                justify-content: space-between;
+            }
+            .uni-navbar__header-container{
+                flex: 1;
+            }
+            .uni-navbar__header-btns{
+                
+            }
+            .nav-title{
+                font-size: 18px;
+                font-weight: 500;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+    }
 /* app.vue写全局样式，uni.scss写全局样式会注入到每个页面，造成每个页面css臃肿*/
     .uni-flex {
     	display: flex;

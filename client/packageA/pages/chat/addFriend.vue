@@ -1,4 +1,5 @@
 <template>
+ <pageConfig :title="title">
 	<view>
 		<uni-search-bar @confirm="onSearch" @cancel="onSearch" cancel-text="搜索" :focus="false" v-model="content"
 			:placeholder="placeholder">
@@ -14,6 +15,7 @@
 		</uni-list>
 		<uni-load-more v-if="loading || status === 'noMore' " :status="status" />
 	</view>
+</pageConfig>
 </template>
 
 <script>
@@ -25,7 +27,8 @@
 				loading: false,
 				status: "more",
 				page: 1,
-				type: ""
+				type: "",
+                title:''
 			}
 		},
 		onLoad(option) {
@@ -33,6 +36,7 @@
 			uni.setNavigationBarTitle({
 				title: option.name
 			})
+            this.title = option.name
 		},
 		onPullDownRefresh() {
 			this.onSearch()
