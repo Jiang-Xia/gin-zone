@@ -182,7 +182,20 @@
         			"style": {
         				"navigationStyle": "custom"
         			}
-        		}
+        		},
+                {
+                	"path": "pages/pay/transfer/transfer",
+                	"style": {
+                		"navigationStyle": "custom"
+                	}
+                },
+                {
+                    "path" : "pages/demo/demo",
+                    "style" : 
+                    {
+                        "navigationBarTitleText" : ""
+                    }
+                }
         	]
         }
 	],
