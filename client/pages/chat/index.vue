@@ -77,10 +77,10 @@
 			this.init()
 		},
 		onShow() {
+            uni.hideTabBar()
 			this.init()
 		},
         onReady() {
-          uni.hideTabBar()  
         },
 		onNavigationBarButtonTap() {
 			this.clickLeft()

@@ -191,9 +191,8 @@
                 },
                 {
                     "path" : "pages/demo/demo",
-                    "style" : 
-                    {
-                        "navigationBarTitleText" : ""
+                    "style": {
+                    	"navigationStyle": "custom"
                     }
                 }
         	]

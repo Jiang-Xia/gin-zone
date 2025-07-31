@@ -68,10 +68,10 @@
 			this.init()
 		},
 		onShow() {
+            uni.hideTabBar()
 			this.init()
 		},
         onReady() {
-          uni.hideTabBar()  
         },
 		// 上拉加载回调函数
 		onReachBottom() {

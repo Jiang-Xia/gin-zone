@@ -57,9 +57,9 @@
 			uni.stopPullDownRefresh()
 		},
         onReady() {
-          uni.hideTabBar()  
         },
 		onShow() {
+            uni.hideTabBar()
 			this.init()
 		},
 		methods: {

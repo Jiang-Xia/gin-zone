@@ -194,5 +194,11 @@
     "locale" : "zh-Hans",
     "uniStatistics" : {
         "version" : "2"
+    },
+    "mp-alipay" : {
+        "appid" : "2021005172682351",
+        "unipush" : {
+            "enable" : true
+        }
     }
 }

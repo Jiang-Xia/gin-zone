@@ -21,14 +21,18 @@
 	// #ifdef MP-WEIXIN
 	import mpHtml from '@/node_modules/mp-html/dist/uni-app/components/mp-html/mp-html'
 	// #endif
-	import {
-		styleStr
-	} from './style.js'
-	import {
-		marked
-	} from 'marked'
-	import Prism from 'prismjs';
-	import 'prismjs/themes/prism-tomorrow.css';
+    
+    // #ifndef MP-ALIPAY
+    import {
+    	styleStr
+    } from './style.js'
+    import {
+    	marked
+    } from 'marked'
+    import Prism from 'prismjs';
+    import 'prismjs/themes/prism-tomorrow.css';
+    // #endif
+	
 	export default {
 		data() {
 			return {
@@ -91,7 +95,7 @@
 					this.content = this.setRichTextStyle(html)
 					// #endif
 
-					// #ifdef H5||APP-PLUS
+					// #ifdef H5||APP-PLUS||MP-ALIPAY
 					this.nodes = html
 					// #endif
 				});

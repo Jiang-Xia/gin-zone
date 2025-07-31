@@ -46,13 +46,13 @@
 			},
 		},
 		onShow() {
+            uni.hideTabBar()
 			const token = uni.getStorageSync("zoneToken")
 			if (token) {
 				this.getZoneUserInfo()
 			}
 		},
         onReady() {
-          uni.hideTabBar()  
         },
 		methods: {
 			login() {
