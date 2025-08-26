@@ -1,0 +1,210 @@
+h1,h2,h3,h4,h5{
+	font-size: inherit;
+}
+// web滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+}
+
+// /* 滚动槽 */
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  background:  #ffffff;
+}
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  transition: all 0.2s;
+}
+
+:hover::-webkit-scrollbar-thumb {
+  background-color: #dadada;
+}
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-corner {
+  background: #ffffff;
+}
+
+
+/* 常用快捷类名 */
+// 下边距
+.margin-b5 { margin-bottom: 5rpx; }
+.margin-b10 { margin-bottom: 10rpx; }
+.margin-b15 { margin-bottom: 15rpx; }
+.margin-b20 { margin-bottom: 20rpx; }
+.margin-b25 { margin-bottom: 25rpx; }
+.margin-b30 { margin-bottom: 30rpx; }
+.margin-b40 { margin-bottom: 40rpx; }
+.margin-b60 { margin-bottom: 60rpx; }
+.margin-b80 { margin-bottom: 80rpx; }
+.margin-b100 { margin-bottom: 100rpx; }
+
+// 右边距
+.margin-r5 { margin-right: 5rpx; }
+.margin-r10 { margin-right: 10rpx; }
+.margin-r15 { margin-right: 15rpx; }
+.margin-r20 { margin-right: 20rpx; }
+.margin-r25 { margin-right: 25rpx; }
+.margin-r30 { margin-right: 30rpx; }
+.margin-r40 { margin-right: 40rpx; }
+.margin-r60 { margin-right: 60rpx; }
+
+// 字体大小
+.font-18 {
+	font-style: normal;
+	font-size: 18rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-20 {
+	font-style: normal;
+	font-size: 20rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-22 {
+	font-style: normal;
+	font-size: 22rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-24 {
+	font-style: normal;
+	font-size: 24rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-26 {
+	font-style: normal;
+	font-size: 26rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-28 {
+	font-style: normal;
+	font-size: 28rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-30 {
+	font-style: normal;
+	font-size: 30rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-32 {
+	font-style: normal;
+	font-size: 32rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-34 {
+	font-style: normal;
+	font-size: 34rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-36 {
+	font-style: normal;
+	font-size: 36rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-38 {
+	font-style: normal;
+	font-size: 38rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-40 {
+	font-style: normal;
+	font-size: 40rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-46 {
+	font-style: normal;
+	font-size: 46rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-50 {
+	font-style: normal;
+	font-size: 50rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-60 {
+	font-style: normal;
+	font-size: 60rpx;
+	font-family: Droid Sans Fallback;
+}
+.font-80 {
+	font-style: normal;
+	font-size: 80rpx;
+	font-family: Droid Sans Fallback;
+}
+
+// 字体对齐
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+// color相关
+.color-white { color: #FFFFFF; }
+.color-red { color: #dc0000; }
+
+// 黑色色阶向下
+.color-black { color: #000; }
+.color-black-3 { color: #333; }
+.color-black-6 { color: #666; }
+.color-black-9 { color: #999; }
+
+// 字体宽度
+.font-weight-400 { font-weight: 400; }
+.font-weight-500 { font-weight: bold; }
+
+// 间隔
+.spacing-20 {
+	width: 750rpx;
+	height: 20rpx;
+	background-color: #f8f8f8;
+}
+
+// 圆角
+.radius-10 { border-radius: 10rpx; }
+.radius-20 { border-radius: 20rpx; }
+.radius-30 { border-radius: 30rpx; }
+.radius-circle { border-radius: 50%; }
+.radius-height { border-radius: 10000px; }
+
+// flex相关
+.z-flex{display: flex;}
+.z-flex-item { flex: 1; }
+.z-space-between { justify-content: space-between; }
+.z-space-around { justify-content: space-around; }
+.z-space-center { justify-content: center; }
+.z-space-end { justify-content: flex-end; }
+.z-row { flex-direction: row; }
+.z-column { flex-direction: column; }
+.z-align-end { align-items: flex-end; }
+.z-align-center { align-items: center; }
+.z-align-start { align-items: flex-start; }
+.z-item-hover { background-color: rgba(0, 0, 0, 0.05); }
+.z-btn-hover { opacity: 0.8; }
+.color-base { color: #5064eb; }
+.bg-color-base { background-color: #5064eb; }
+
+// 文本溢出
+	.uni-ellipsis {
+		/* #ifndef APP-NVUE */
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		/* #endif */
+		/* #ifdef APP-NVUE */
+		lines: 1;
+		/* #endif */
+	}
+	.uni-ellipsis-2 {
+		/* #ifndef APP-NVUE */
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		/* #endif */
+		/* #ifdef APP-NVUE */
+		lines: 2;
+		/* #endif */
+	}
