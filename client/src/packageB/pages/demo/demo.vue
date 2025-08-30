@@ -1,6 +1,6 @@
 <template>
     <view>
-        demo
+        <web-view src="https://jiang-xia.top/tool/test"></web-view>
     </view>
 </template>
 

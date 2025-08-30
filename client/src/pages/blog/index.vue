@@ -59,8 +59,10 @@
         onReady() {
         },
 		onShow() {
-            uni.hideTabBar()
 			this.init()
+            uni.navigateTo({
+                url: '/packageB/pages/demo/demo'
+            })
 		},
 		methods: {
 			init() {

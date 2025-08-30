@@ -68,7 +68,6 @@
 			this.init()
 		},
 		onShow() {
-            uni.hideTabBar()
 			this.init()
 		},
         onReady() {

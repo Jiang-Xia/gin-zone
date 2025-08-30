@@ -190,21 +190,21 @@
                 "enable" : true
             }
         }
-        // "devServer" : {
-        //     "https" : false,
-        //     "port" : 5173,
-        //     "proxy" : {
-        //         "/lz" : {
-        //             "target" : "https://jiang-xia.top",
-        //             "changeOrigin" : true,
-        //             "secure" : false,
-        //             "pathRewrite" : {
-        //                 "^/lz" : ""
-        //             }
-        //         },
-        //     }
-        // },
     },
+    // "devServer" : {
+    //     "https" : false,
+    //     "port" : 5173,
+    //     "proxy" : {
+    //         "/lz" : {
+    //             "target" : "https://jiang-xia.top",
+    //             "changeOrigin" : true,
+    //             "secure" : false,
+    //             "pathRewrite" : {
+    //                 "^/lz" : ""
+    //             }
+    //         },
+    //     }
+    // },
     "locale" : "zh-Hans",
     "uniStatistics" : {
         "version" : "2"
