@@ -60,9 +60,9 @@
         },
 		onShow() {
 			this.init()
-            uni.navigateTo({
-                url: '/packageB/pages/demo/demo'
-            })
+            // uni.navigateTo({
+            //     url: '/packageB/pages/demo/demo'
+            // })
 		},
 		methods: {
 			init() {

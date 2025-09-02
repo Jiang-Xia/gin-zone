@@ -170,8 +170,8 @@
         "title" : "zone",
         "template" : "index.html",
         "router" : {
-            "mode" : "history",
-            "base" : "/zone/"
+            "mode" : "hash",
+            "base" : "./"
         },
         "unipush" : {
             "enable" : true
