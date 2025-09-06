@@ -21,6 +21,16 @@
 		onLaunch: function() {
 			// console.warn('当前组件仅支持 uni_modules 目录结构 ，请升级 HBuilderX 到 3.1.0 版本以上！')
 			console.log('App Launch')
+            
+            /* tabbar中间按钮点击事件*/
+            uni.onTabBarMidButtonTap((res)=>{
+                uni.scanCode({
+                	success: function (res) {
+                		console.log('条码类型：' + res.scanType);
+                		console.log('条码内容：' + res.result);
+                	}
+                });
+            })
 			// #ifdef MP-WEIXIN
 				uni.authorize({
 					scope: 'scope.userLocation',
@@ -243,7 +253,7 @@
 					}
 				})
 
-			}
+			},
 		}
 	}
 </script>
@@ -257,16 +267,19 @@
 	@import 'common/css/editor-v3.style.css';
 
 	/* #ifndef APP-NVUE */
+    /* #endif */
+    
 	// 设置整个项目的背景色
 	page {
-		// background-color: #f5f5f5;
+		background-color: #f7f7f7;
+        // background-color: red;
 		user-select: auto;
 	}
 
-	/* #endif */
-    page {
-    	background-color: $uni-bg-color-grey;
-    }
+	
+    // page {
+    // 	background-color: $uni-bg-color-grey;
+    // }
 	// 自定义导航栏公共样式
 	.uni-navbar {
 		.nav-title {

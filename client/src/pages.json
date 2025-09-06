@@ -197,6 +197,13 @@
                     "style": {
                     	"navigationStyle": "custom"
                     }
+                },
+                {
+                    "path" : "pages/webview/webview",
+                    "style" : 
+                    {
+                        "navigationBarTitleText" : "webview"
+                    }
                 }
         	]
         }
@@ -213,22 +220,22 @@
 		"usingComponents": {}
 	},
 	"tabBar": {
-        "custom": true,
-        "selectedColor": "#f23030",
-        "backgroundColor": "#ffffff",
-		// "color": "#999999",
-		// "borderStyle": "white",
+        // "custom": true, // app端不生效
+		"color": "#999999",
+		"borderStyle": "white",
+        // "backgroundColor": "#ffffff",
+        "blurEffect": "extralight",
 		// 注意：启用高斯模糊效果后不建议设置backgroundColor，如果需要设置的需要使用 rgba 设置透明度，不然看不到模糊效果
-		// "backgroundColor": "rgba(0,255,51,0.3)",
-		// "spacing": "5px",
-		// "backgroundColor": "#fff",
-		// "height": "50px",
-		// "selectedColor": "#0062cc",
+		// "backgroundColor": "rgba(0, 122, 255,0.3)",
+		"spacing": "5px",
+		"height": "50px",
+		"selectedColor": "#0062cc",
 		"list": [{
 				"text": "博客",
 				"pagePath": "pages/blog/index",
 				"iconPath": "static/icon/index1.png",
-				"selectedIconPath": "static/icon/index.png"
+				"selectedIconPath": "static/icon/index.png",
+                "iconWidth": "24px"
 			},
 			{
 				"text": "动态",
@@ -250,6 +257,19 @@
 				"iconPath": "static/icon/my1.png",
 				"selectedIconPath": "static/icon/my.png"
 			}
-		]
+		],
+        "midButton": {
+            "width": "80px",
+            
+            // "height": "50px",
+            // "text": "扫一扫",
+            // "iconWidth": "24px",
+            
+            "height": "72px",
+            "text": "",
+            "iconWidth": "44px",
+            "iconPath": "static/icon/scanA.png",
+            "backgroundImage": "static/icon/midBg.png"
+        }
 	}
 }

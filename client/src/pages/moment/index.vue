@@ -12,9 +12,12 @@
         		</div>
         		<div class="card-message">{{ item.content }}</div>
         		<div class="card-images">
-        			<image class="image-item" v-for="(item2, index2) in item.images"
+        			<!-- <image class="image-item" v-for="(item2, index2) in item.images"
         				:style="{ marginRight: (index2 + 1) % 3 === 0 ? '0px' : '4px' }" width="114" height="114" radius="8"
-        				:src="$fileUrl+item2" :key="item2+index2" @click="previewImage(item)" />
+        				:src="$fileUrl+item2" :key="item2+index2" @click="previewImage(item)" /> -->
+                    <uv-image class="image-item" v-for="(item2, index2) in item.images"
+                        :style="{ marginRight: (index2 + 1) % 3 === 0 ? '0px' : '4px' }" width="114" height="114" radius="8"
+                        :src="$fileUrl+item2" :key="item2+index2" @click="previewImage(item)" />
         		</div>
         		<div class="card-bottom">
         			<div class="adress">
@@ -43,7 +46,7 @@
         	</section>
         	<uni-load-more v-if="loading || status === 'noMore' " :status="status" />
         </view>
-        <tabbar :tabBarShow="1"/>
+        <!-- <tabbar :tabBarShow="1"/> -->
     </pageConfig>
 </template>
 
@@ -167,10 +170,16 @@
 
 <style lang="scss">
 	.moment-card-wrap {
+        padding-bottom: 50px;
+        padding-right: 24rpx;
+        padding-left: 24rpx;
+        padding-top: 24rpx;
 		.moment-card {
 			padding: 12px 12px 12px 12px;
 			margin-bottom: 12px;
 			border-bottom: 1rpx solid $uni-border-1;
+            background-color: #fff;
+            border-radius: 16rpx;
 		}
 
 		.card-top {
@@ -185,6 +194,7 @@
 				height: 80rpx;
 				width: 80rpx;
 				border-radius: 50%;
+                background-color: #f5f5f5;
 			}
 
 			.name {
@@ -207,6 +217,8 @@
 		}
 
 		.card-images {
+            display: flex;
+            flex-wrap: wrap;
 			.image-item {
 				height: 228rpx;
 				width: 228rpx;

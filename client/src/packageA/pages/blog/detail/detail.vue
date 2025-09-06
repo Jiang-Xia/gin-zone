@@ -4,15 +4,17 @@
         	<view class="cover">
         		<image :src="articleInfo.cover"></image>
         	</view>
-        	<view class="article-content">
-        		<!-- #ifdef H5||APP-PLUS -->
-        		<rich-text selectable class="md-preview default-theme md md-previewOnly" :nodes="nodes"></rich-text>
-        		<!-- #endif -->
-        
-        		<!-- #ifdef MP-WEIXIN -->
-        		<mp-html :content="content" />
-        		<!-- #endif -->
-        	</view>
+            <view class="main-container">
+                <view class="article-content">
+                	<!-- #ifdef H5||APP-PLUS -->
+                	<rich-text selectable class="md-preview default-theme md md-previewOnly" :nodes="nodes"></rich-text>
+                	<!-- #endif -->
+                        
+                	<!-- #ifdef MP-WEIXIN -->
+                	<mp-html :content="content" />
+                	<!-- #endif -->
+                </view>
+            </view>
         </view>
     </pageConfig>
 </template>
@@ -108,7 +110,9 @@
 		user-select: text;
 		font-weight: 36rpx;
 		padding-bottom: 40rpx;
-
+        .main-container{
+            margin-top: 24rpx;
+        }
 		.cover {
 			height: 400rpx;
 			image{
@@ -119,6 +123,7 @@
 
 		.article-content {
 			padding:24rpx;
+            background-color: #fff;
 		}
 	}
 </style>

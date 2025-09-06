@@ -18,7 +18,8 @@
 		</view>
 		<view class="news">
 			<view class="news-item" v-for="item in articleList" :key="item.id" @tap="goDetail(item.id)">
-				<image :src="item.cover" :fade-show="true"></image>
+				<!-- <image :src="item.cover" :fade-show="true"></image> -->
+                <uv-image :src="item.cover" width="100%" height="100%" radius="8"></uv-image>
 				<!-- #ifndef MP-WEIXIN -->
 				<view class="news-item__title">
 					<text class="text  uni-ellipsis">{{item.title}}</text>
@@ -28,7 +29,7 @@
 			</view>
 		</view>
 	</view>
-    <tabbar :tabBarShow="0"/>
+    <!-- <tabbar :tabBarShow="0"/> -->
 </pageConfig>
 </template>
 
@@ -112,14 +113,16 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.container {
 		padding-bottom: 50px;
 		padding-right: 24rpx;
 		padding-left: 24rpx;
-
+        padding-top: 24rpx;
 		.swiper {
 			height: 400rpx;
+            background-color: #fff;
+            border-radius: 16rpx;
 			box-shadow: 0px 1px 7px 5px rgba(186,190,197,0.2);
 			:deep(.uni-swiper__warp){
 				border-radius: 16rpx;
@@ -150,7 +153,8 @@
 				border-radius: 16rpx;
 				box-sizing: border-box;
 				margin-bottom: 32rpx;
-				box-shadow: 0px 1px 7px 5px rgba(186,190,197,0.2);
+				// box-shadow: 0px 1px 7px 5px rgba(186,190,197,0.2);
+                background-color: #fff;
 			}
 
 			image {
@@ -171,7 +175,7 @@
 				color: #f9f9f9;
 				display: flex;
 				justify-content: space-between;
-				box-shadow: 0rpx 0rpx 20rpx rgba(0, 0, 0, .3);
+				// box-shadow: 0rpx 0rpx 20rpx rgba(0, 0, 0, .3);
 			}
 
 			.text {

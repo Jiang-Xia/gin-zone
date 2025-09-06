@@ -24,7 +24,7 @@ if (env === 'production') {
 	// baseUrl = "http://192.168.1.51:9600/api/v1"
 	// wsUrl = "ws://192.168.1.51:9600/api/v1"
 }
-
+console.log('当前环境------------------------->', env)
 export {
 	fileUrl,
 	baseUrl,

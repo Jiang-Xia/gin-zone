@@ -1,7 +1,7 @@
 <template>
 <pageConfig title="我的" :left="false">
 	<view class="container">
-		<image v-if="isLogin" class="my-bg" src="../../static/images/logined.png" mode=""></image>
+		<image v-if="isLogin" class="my-bg" src="/static/images/logined.png" mode=""></image>
 		<navigator v-if="isLogin" class="my-info" url="/packageA/pages/my/setting" hover-class="navigator-hover">
 			<view class="top-box">
 				<image class="avatar" :src="userInfo.avatar" mode=""></image>
@@ -13,7 +13,7 @@
 			</view>
 		</navigator>
 		<view class="login-wrap" v-if="!isLogin">
-			<image class="login-bg" src="../../static/images/approve.png" mode=""></image>
+			<image class="login-bg" src="/static/images/approve.png" mode=""></image>
 			<button type="primary" @tap="login">登录</button>
             <!-- <button type="primary" @tap="$common.goTo('/packageB/pages/chart/chart')">图表</button> -->
 		</view>
@@ -25,7 +25,7 @@
 			</uni-list>
 		</view>
 	</view>
-    <tabbar :tabBarShow="3"/>
+    <!-- <tabbar :tabBarShow="3"/> -->
 </pageConfig>
 </template>
 
@@ -170,10 +170,6 @@
 		width: 100%;
 		height: 324rpx;
 		margin-bottom: 16rpx;
-	}
-
-	page {
-		background-color: #f9f9f9;
 	}
 
 	.my-info {

@@ -31,7 +31,7 @@
 				:to="'/packageA/pages/blog/detail/detail?id='+item.id">
 				<template v-slot:header>
 					<view class="uni-thumb">
-						<image :src="item.cover" mode="aspectFill"></image>
+                        <uv-image :src="item.cover" mode="aspectFill" width="100%" height="100%"></uv-image>
 					</view>
 				</template>
 			</uni-list-item>
@@ -115,7 +115,10 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+    .uni-searchbar{
+        background-color: #fff;
+    }
 	.content {
 		width: 100%;
 		display: flex;

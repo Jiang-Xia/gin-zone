@@ -1,7 +1,10 @@
 <template>
     <pageConfig title="聊天" left-icon="plus" @clickLeft="clickLeft">
         <view class="container">
-        	<uni-list :border="true">
+            <view class="tip" v-if="!defaultList.length&&!userList.length">
+                没有好友快去添加吧~
+            </view>
+        	<uni-list :border="true" v-else>
         		<!-- 默认列表 -->
         		<uni-list-chat v-for="(item,index) in defaultList" :key="index" :avatar-circle="true" :title="item.name"
         			:avatar="item.avatar" :note="item.note" :time="item.time" clickable @click="clickDefaultItem(item)">
@@ -21,7 +24,7 @@
         		</uni-swipe-action>
         	</uni-list>
         </view>
-        <tabbar :tabBarShow="2"/>
+        <!-- <tabbar :tabBarShow="2"/> -->
     </pageConfig>
 </template>
 
@@ -198,8 +201,15 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.container {
 		font-size: 14px;
+        min-height: 60vh;
+        .tip{
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            padding: 60rpx;
+        }
 	}
 </style>
