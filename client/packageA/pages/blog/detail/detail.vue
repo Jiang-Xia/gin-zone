@@ -11,7 +11,7 @@
                 	<!-- #endif -->
                         
                 	<!-- #ifdef MP-WEIXIN -->
-                	<mp-html :content="content" />
+                	<!-- <mp-html :content="content" /> -->
                 	<!-- #endif -->
                 </view>
             </view>
@@ -48,7 +48,7 @@
 		// 不可省略
 		components: {
 			// #ifdef MP-WEIXIN
-			mpHtml
+			// mpHtml
 			// #endif
 		},
 		onLoad(option) {

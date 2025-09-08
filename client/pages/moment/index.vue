@@ -175,7 +175,7 @@
         padding-left: 24rpx;
         padding-top: 24rpx;
 		.moment-card {
-			padding: 12px 12px 12px 12px;
+			padding: 24rpx 12rpx;
 			margin-bottom: 12px;
 			border-bottom: 1rpx solid $uni-border-1;
             background-color: #fff;

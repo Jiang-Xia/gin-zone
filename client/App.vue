@@ -22,15 +22,17 @@
 			// console.warn('当前组件仅支持 uni_modules 目录结构 ，请升级 HBuilderX 到 3.1.0 版本以上！')
 			console.log('App Launch')
             
-            /* tabbar中间按钮点击事件*/
-            uni.onTabBarMidButtonTap((res)=>{
-                uni.scanCode({
-                	success: function (res) {
-                		console.log('条码类型：' + res.scanType);
-                		console.log('条码内容：' + res.result);
-                	}
-                });
-            })
+            // #ifdef H5 || APP-PLUS
+            	/* tabbar中间按钮点击事件*/
+            	uni.onTabBarMidButtonTap((res)=>{
+            	    uni.scanCode({
+            	    	success: function (res) {
+            	    		console.log('条码类型：' + res.scanType);
+            	    		console.log('条码内容：' + res.result);
+            	    	}
+            	    });
+            	})
+            // #endif
 			// #ifdef MP-WEIXIN
 				uni.authorize({
 					scope: 'scope.userLocation',
