@@ -90,7 +90,8 @@
                 // #endif
                 
                 // #ifdef MP-WEIXIN
-                this.content = markdownString
+                // 设置语言才会高亮
+                this.content = markdownString.replace(/(```language|```javascript|```typescript|```golang|```sql)/ig, '```javascript')
                 // #endif
                 
             },

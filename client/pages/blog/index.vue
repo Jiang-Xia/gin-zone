@@ -20,11 +20,11 @@
 			<view class="news-item" v-for="item in articleList" :key="item.id" @tap="goDetail(item.id)">
 				<!-- <image :src="item.cover" :fade-show="true"></image> -->
                 <uv-image :src="item.cover" width="100%" height="100%" radius="8"></uv-image>
-				<!-- #ifndef MP-WEIXIN -->
 				<view class="news-item__title">
 					<text class="text  uni-ellipsis">{{item.title}}</text>
 					<uni-icons type="forward" size="18" color="#f9f9f9"></uni-icons>
 				</view>
+                <!-- #ifndef MP-WEIXIN -->
 				<!-- #endif -->
 			</view>
 		</view>
