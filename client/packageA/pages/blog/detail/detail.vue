@@ -11,7 +11,7 @@
                     <!-- #endif -->
 
                     <!-- #ifdef MP-WEIXIN -->
-                    <mp-html :content="content" markdown/>
+                    <mpHtml :content="content" markdown />
                     <!-- #endif -->
                 </view>
             </view>
@@ -31,6 +31,10 @@
     import 'prismjs/themes/prism-tomorrow.css';
     // #endif
 
+    // #ifdef MP-WEIXIN
+    import mpHtml from '../../../components/mp-html/mp-html.vue'
+    // #endif
+
     export default {
         data() {
             return {
@@ -47,6 +51,9 @@
         },
         // 不可省略
         components: {
+            // #ifdef MP-WEIXIN
+            mpHtml
+            // #endif
         },
         onLoad(option) {
             this.id = option.id
@@ -88,12 +95,13 @@
                     this.nodes = html
                 });
                 // #endif
-                
+
                 // #ifdef MP-WEIXIN
                 // 设置语言才会高亮
-                this.content = markdownString.replace(/(```language|```javascript|```typescript|```golang|```sql)/ig, '```javascript')
+                this.content = markdownString.replace(/(```language|```javascript|```typescript|```golang|```sql)/ig,
+                    '```javascript')
                 // #endif
-                
+
             },
             setRichTextStyle(html) {
                 return html
