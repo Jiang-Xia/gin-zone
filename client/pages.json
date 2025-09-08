@@ -99,7 +99,7 @@
 						"navigationBarTitleText": "博客详情"
 					},
                     "usingComponents": {
-                        "mp-html": "mp-html"
+                        // "mp-html": "mp-html"
                     }
 				},
 				{
