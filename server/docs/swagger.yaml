@@ -373,6 +373,8 @@ definitions:
         default: 0
         type: integer
       data: {}
+      encrypt:
+        type: string
       msg:
         default: 操作成功
         type: string

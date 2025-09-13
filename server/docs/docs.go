@@ -1482,6 +1482,9 @@ const docTemplate = `{
                     "default": 0
                 },
                 "data": {},
+                "encrypt": {
+                    "type": "string"
+                },
                 "msg": {
                     "type": "string",
                     "default": "操作成功"

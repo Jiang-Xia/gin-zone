@@ -23,6 +23,8 @@ type appModel struct {
 	WechatAppSecret string `ini:"wechat_app_secret"`
 	OpenaiAppKey    string `ini:"openai_app_key"`
 	PublicPath      string `ini:"public_path"`
+	PublicKey       string `ini:"public_key"`
+	PrivateKey      string `ini:"private_key"`
 }
 
 // 数据库配置

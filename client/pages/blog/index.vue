@@ -60,7 +60,9 @@
         onReady() {
         },
 		onShow() {
-			this.init()
+            this.$api.signIn().then(()=>{
+                this.init()
+            })
             // uni.navigateTo({
             //     url: '/packageB/pages/demo/demo'
             // })

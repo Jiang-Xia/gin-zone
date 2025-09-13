@@ -7,35 +7,35 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "uni-app": {
-       "scripts": {  
-           "sit": {
-               "title":"sit环境",
-               "browser":"Edge",
-               "UNI_OUTPUT_DIR":"dist/sit",
-               "env": {
-                   "UNI_PLATFORM": "h5",
-                   "MY_ENV": "sit"
-                }
-           },
-           "uat": {
-               "title":"uat环境",
-               "browser":"Edge",
-               "UNI_OUTPUT_DIR":"dist/uat",
-               "env": {
-                   "UNI_PLATFORM": "h5",
-                   "MY_ENV": "uat"
-                }
-           },
-           "prod": {
-               "title":"prod环境",
-               "browser":"Edge",
-               "UNI_OUTPUT_DIR":"dist/prod",
-               "env": {
-                   "UNI_PLATFORM": "h5",
-                   "MY_ENV": "prod"
-                }
-           }
-       }      
+    "scripts": {
+      "sit": {
+        "title": "sit环境",
+        "browser": "Edge",
+        "UNI_OUTPUT_DIR": "dist/sit",
+        "env": {
+          "UNI_PLATFORM": "h5",
+          "MY_ENV": "sit"
+        }
+      },
+      "uat": {
+        "title": "uat环境",
+        "browser": "Edge",
+        "UNI_OUTPUT_DIR": "dist/uat",
+        "env": {
+          "UNI_PLATFORM": "h5",
+          "MY_ENV": "uat"
+        }
+      },
+      "prod": {
+        "title": "prod环境",
+        "browser": "Edge",
+        "UNI_OUTPUT_DIR": "dist/prod",
+        "env": {
+          "UNI_PLATFORM": "h5",
+          "MY_ENV": "prod"
+        }
+      }
+    }
   },
   "keywords": [],
   "author": "",
@@ -44,7 +44,8 @@
     "dayjs": "^1.11.13",
     "marked": "^4.2.12",
     "mp-html": "^2.4.1",
-    "prismjs": "^1.29.0"
+    "prismjs": "^1.29.0",
+    "sm-crypto": "^0.3.13"
   },
   "devDependencies": {
     "vite-plugin-pwa": "^0.14.1"

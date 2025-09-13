@@ -3,10 +3,11 @@ package cron
 import (
 	"context"
 	"fmt"
-	"gitee.com/jiang-xia/gin-zone/server/app/database"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+
+	"gitee.com/jiang-xia/gin-zone/server/app/database"
 )
 
 var ctx = context.Background()

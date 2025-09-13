@@ -1,12 +1,13 @@
 package model
 
 import (
+	"strconv"
+
 	"gitee.com/jiang-xia/gin-zone/server/pkg/hash"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 type User struct {
