@@ -53,7 +53,7 @@
                     </view>
                     <!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
                     <input v-else v-model="text" class="consult-input emojifont" confirm-type="send" maxlength="700"
-                        placeholder="发送消息" type="text" />
+                        placeholder="发送消息" type="text" @done="sendTextMessage" />
                     <view @click="switchEmojiKeyboard">
                         <image class="more" v-if="emoji.visible" src="/static/images/jianpan.png"></image>
                         <image class="more" v-else src="/static/images/emoji.png"></image>

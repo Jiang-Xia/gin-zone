@@ -221,7 +221,7 @@ export class Api {
 				url: rest.url,
 				data: rest.data,
 				method: rest.config.method,
-				header: config.header,
+				header: rest.config.header,
 				complete: (res) => {
 					this.complete(res, resolve, reject, url)
 				}
@@ -231,11 +231,12 @@ export class Api {
 	del(url, data, config = {}) {
 		return new Promise(async (resolve, reject) => {
 			const rest = await this.restful(url, data, {...config, method: "DELETE"})
+            console.log('del---', rest)
 			uni.request({
 				url: rest.url,
 				data: rest.data,
 				method: rest.config.method,
-				header: config.header,
+				header: rest.config.header,
 				complete: (res) => {
 					this.complete(res, resolve, reject, url)
 				}

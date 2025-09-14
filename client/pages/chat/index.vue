@@ -14,9 +14,9 @@
         			:avatar="item.avatar" :note="item.note" :time="item.time" :badge-text="item.noReadMsgCount" clickable
         			@click="clickUserItem(item)">
         		</uni-list-chat> -->
-                <uni-swipe-action>
-                    <uni-swipe-action-item :threshold="50" :right-options="options2" @click="bindClick"
-                        v-for="(item,index) in userList" :key="(item.userId||item.groupId)+index">
+                <uni-swipe-action ref="swipeAction">
+                    <uni-swipe-action-item :threshold="50" :right-options="options2" v-for="(item,index) in userList"
+                        :key="(item.userId||item.groupId)+index" @click="(e)=>{bindClick(item,e.index)}">
                         <!-- <uni-list-chat :avatar-circle="true" :title="item.name" :avatar="item.avatar" :note="item.note"
                             :time="item.time" :badge-text="item.noReadMsgCount" clickable @click="clickUserItem(item)">
                         </uni-list-chat> -->
@@ -87,12 +87,12 @@
                             backgroundColor: '#007aff'
                         }
                     },
-                    // {
-                    // 	text: '删除',
-                    // 	style: {
-                    // 		backgroundColor: '#F56C6C'
-                    // 	}
-                    // }
+                    {
+                        text: '删除',
+                        style: {
+                            backgroundColor: '#F56C6C'
+                        }
+                    }
                 ],
             }
         },
@@ -123,8 +123,8 @@
                     uni.stopPullDownRefresh()
                     this.userList = res.data.map((v, i) => {
                         v.avatar = v.userInfo.avatar || userIcon
-                        if (v.chatGroup.groupId) {
-                            v.avatar = groupIcon
+                        if (v.groupId) {
+                            v.avatar = v.chatGroup.avatar || groupIcon
                         }
                         v.name = v.userInfo.nickName || v.chatGroup.groupName
                         v.time = formatDate(v.lastInfoTime)
@@ -188,8 +188,20 @@
                     url: `/packageA/pages/chat/chatAiDetail?id=${item.id}&name=${item.name}&avatar=${item.avatar}`
                 })
             },
-            bindClick() {
-
+            bindClick(item, index) {
+                if (index === 1) {
+                    this.$api.del("/mobile/chat/friends/{friendId}", {
+                        friendId: item.friendId
+                    }).then(res => {
+                        uni.showToast({
+                        	title: "删除成功",
+                        });
+                        this.$refs.swipeAction.closeAll()
+                        this.init()
+                    })
+                }else{
+                    this.$refs.swipeAction.closeAll()
+                }
             },
             initFriend() {
                 this.socketTask = getApp().globalData.socketTask
@@ -260,6 +272,7 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+
                 .name {
                     font-size: 16px;
                     color: #333;
@@ -275,6 +288,7 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+
                 .note {
                     color: #999;
                     font-size: 14px;
