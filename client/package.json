@@ -42,12 +42,14 @@
   "license": "ISC",
   "dependencies": {
     "dayjs": "^1.11.13",
+    "emojilib": "^4.0.2",
     "marked": "^4.2.12",
     "mp-html": "^2.4.1",
     "prismjs": "^1.29.0",
     "sm-crypto": "^0.3.13"
   },
   "devDependencies": {
+    "vconsole": "^3.15.1",
     "vite-plugin-pwa": "^0.14.1"
   }
 }

@@ -268,8 +268,8 @@
             "height": "72px",
             "text": "",
             "iconWidth": "44px",
-            "iconPath": "static/icon/scanA.png",
-            "backgroundImage": "static/icon/midBg.png"
+            "iconPath": "static/icon/scanIcon.png"
+            // "backgroundImage": "static/icon/midBg.png"
         }
 	}
 }

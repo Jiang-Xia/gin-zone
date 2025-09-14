@@ -35,9 +35,13 @@
                 type: String,
                 default: 'left',
             },
+            customBack: {
+                type: Boolean,
+                default: false,
+            },
             border: {
                 type: Boolean,
-                default: true,
+                default: false,
             },
             navbar: {
                 type: Boolean,
@@ -56,7 +60,12 @@
         methods:{
             clickLeft(){
                 if(this.leftIcon === 'left'){
-                    this.$common.back()
+                    console.log('clickLeft ------------>', )
+                    if(this.customBack){
+                        this.$emit('back')
+                    }else{
+                        this.$common.back()
+                    }
                 }
                 this.$emit('clickLeft')
             }

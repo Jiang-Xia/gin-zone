@@ -1,86 +1,95 @@
 <template>
-	<view ref="confirm" class="emoji-list">
-		<view class="emoji-list__content">
-			<scroll-view :scroll-top="scrollTop" :scroll-y="true" :show-scrollbar="true">
-				<view class="scroll-content">
-					<text class="emojifont" @click="onClick(val)" v-for="(val,index) in [...emojis]"
-						:key="val+index">{{val}}</text>
-				</view>
-			</scroll-view>
-		</view>
-	</view>
+    <view ref="confirm" class="emoji-list">
+        <view class="emoji-list__content">
+            <scroll-view :scroll-top="scrollTop" :scroll-y="true" :show-scrollbar="true">
+                <view class="scroll-content">
+                   <view class="emoji-item-wrap" v-for="(value, key) in emojiJson" :title="emojiJson[key]" :key="value" @click="onClick(key)">
+                        <view class="emoji-item">{{key}}</view>
+                    </view>
+                </view>
+            </scroll-view>
+        </view>
+    </view>
 </template>
 
 <script>
-	import emojis from './emojis.js';
-	let timer = null
-	export default {
-		name: 'EmojiList',
-		props: {},
-		data() {
-			return {
-				scrollTop: 0,
-				confirm: null,
-				emojis: emojis,
-			}
-		},
-		watch: {},
-		computed: {
+    import emojis from './emojis.js';
+    let timer = null
+    export default {
+        name: 'EmojiList',
+        props: {},
+        data() {
+            return {
+                scrollTop: 0,
+                confirm: null,
+                emojis: emojis,
+                emojiJson: {},
+                emojiHtml: ''
+            }
+        },
+        watch: {},
+        computed: {
 
-		},
-		async created() {
-			// let emojisList = [];
-			// for (let i = 0; i <= 82; i++) {
-			// 	emojisList.push(`/uC${this.transformnum(i)}`)
-			// }
-			// console.log({emojisList})
-		},
-		methods: {
-			// transformnum(num) {
-			// 	let len = 3 //显示的长度，如果以0001则长度为4
-			// 	num = parseInt(num, 10) + 1 //转数据类型，以十进制自增
-			// 	num = num.toString() //转为字符串
-			// 	while (num.length < len) { //当字符串长度小于设定长度时，在前面加0
-			// 		num = "0" + num
-			// 	}
-			// 	return num
-			// },
-			onClick(e) {
-				this.confirm(e)
-			},
-			open({
-				confirm
-			}) {
-				// 赋值回调方法
-				if (confirm) this.confirm = confirm
-				this.scrollTop = 0
-			},
-		}
-	}
+        },
+        async created() {
+            uni.request({
+                url: './static/data/emoji-en-US.json',
+                complete: (res) => {
+                    this.renderEmoji(res.data)
+                }
+            })
+        },
+        methods: {
+            renderEmoji(json) {
+                this.emojiJson = json
+            },
+            onClick(e) {
+                this.confirm(e)
+            },
+            open({
+                confirm
+            }) {
+                // 赋值回调方法
+                if (confirm) this.confirm = confirm
+                this.scrollTop = 0
+            },
+        }
+    }
 </script>
 
 <style lang="scss">
-	.emoji-list {
-		min-height: 300rpx;
+    .emoji-list {
+        min-height: 300rpx;
+        width: 100%;
+        .emoji-list__content {
+            height: 100%;
+            width: 100%;
+        }
 
-		.emoji-list__content {
-			height: 100%;
-		}
+        uni-scroll-view {
+            height: 300rpx;
+            width: 100%;
+        }
 
-		uni-scroll-view {
-			height: 300rpx;
-			width: 100%;
-		}
+        .scroll-content {
+            padding-bottom: 40rpx;
+            width: 100%;
+        }
 
-		.scroll-content {
-			padding-bottom: 40rpx;
-		}
-
-		.emojifont {
-			font-family: emojifont !important;
-			font-style: normal;
-			font-size: 70rpx;
-			padding: 8rpx;
-		}
-	}
+        .emojifont {
+            font-family: emojifont !important;
+            font-style: normal;
+            font-size: 70rpx;
+            padding: 8rpx;
+        }
+        .emoji-item-wrap{
+            display: inline-block;
+            .emoji-item{
+                display: inline-block;
+                font-size: 60rpx;
+                line-height: 60rpx;
+                padding: 12rpx 0;
+            }
+        }
+    }
 </style>

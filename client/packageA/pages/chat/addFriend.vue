@@ -90,4 +90,7 @@
 		align-items: center;
 		height: 100%;
 	}
+    .uni-searchbar{
+        background-color: #fff;
+    }
 </style>

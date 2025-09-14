@@ -26,9 +26,9 @@ if (env === 'production') {
 	// wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 	
 	/* 本地 */
-	fileUrl = "http://localhost:9600"
-	baseUrl = "http://localhost:9600/api/v1"
-	wsUrl = "ws://localhost:9600/api/v1"
+	fileUrl = "http://192.168.1.6:9600"
+	baseUrl = "http://192.168.1.6:9600/api/v1"
+	wsUrl = "ws://192.168.1.6:9600/api/v1"
 	
 	// fileUrl = "http://192.168.1.51:9600"
 	// baseUrl = "http://192.168.1.51:9600/api/v1"
@@ -256,7 +256,7 @@ export class Api {
 					if(res.data){
 						res.data = JSON.parse(res.data)
 					}
-					this.complete(res, resolve, reject, url)
+					this.complete(res, resolve, reject, '/base/upload')
 				}
 			});
 		})
