@@ -117,8 +117,7 @@ func (u *User) Login(c *gin.Context) {
 		return
 	}
 	user, errCode := service.User.SignIn(login.UserName, login.Password)
-	log.Info(login)
-
+	//log.Info(login)
 	if errCode == 0 {
 		generateToken(c, user)
 	} else if errCode == tip.AuthUserNotFound {

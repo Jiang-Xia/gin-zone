@@ -264,20 +264,25 @@ export class Api {
     
     // 统一签到
     signIn(){
-        return this.post('/common/signIn', {sence: 'blog'}).then(res => {
-           if(res.data){
-               res.data = res.data.slice(2, res.data.length)
-               // console.log('en ----------->', res.data)
-               res.data = sm2.doDecrypt(res.data, privateKey, 1)
-               res.data = JSON.parse(res.data)
-               console.log('de ----------->', res.data)
-               uni.setStorageSync('zoneSessionId', res.data.sessionId)
-               uni.setStorageSync('zoneWorkKey', res.data.workKey)
-           }
-        }).catch(err => {
-            uni.setStorageSync('zoneSessionId', '')
-            uni.setStorageSync('zoneWorkKey', '')
-        })
+        if(openCrypto){
+            return this.post('/common/signIn', {sence: 'blog'}).then(res => {
+               if(res.data){
+                   res.data = res.data.slice(2, res.data.length)
+                   // console.log('en ----------->', res.data)
+                   res.data = sm2.doDecrypt(res.data, privateKey, 1)
+                   res.data = JSON.parse(res.data)
+                   console.log('de ----------->', res.data)
+                   uni.setStorageSync('zoneSessionId', res.data.sessionId)
+                   uni.setStorageSync('zoneWorkKey', res.data.workKey)
+               }
+            }).catch(err => {
+                uni.setStorageSync('zoneSessionId', '')
+                uni.setStorageSync('zoneWorkKey', '')
+            })
+        }else{
+            return Promise.resolve()
+        }
+       
     }
 }
 

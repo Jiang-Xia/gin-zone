@@ -59,8 +59,10 @@ func (u *user) SignIn(username string, password string) (userModel *model.User, 
 	}
 	//fmt.Println("result", userModel.Password, password)
 	// 比较密码
+	// start := time.Now()
 	PasswordErr = bcrypt.CompareHashAndPassword([]byte(userModel.Password), []byte(password))
-
+	// latency := time.Since(start)
+	// log.Infof("耗时=================>: %s", latency)
 	if userModel.ID == 0 {
 		return userModel, 1002
 	}
@@ -68,7 +70,6 @@ func (u *user) SignIn(username string, password string) (userModel *model.User, 
 	if PasswordErr != nil {
 		return userModel, 100
 	}
-
 	return userModel, 0
 }
 

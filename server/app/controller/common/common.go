@@ -35,11 +35,8 @@ func (m *Common) SignIn(c *gin.Context) {
 	//	response.Fail(c, "参数错误", err.Error())
 	//	return
 	//}
-	id := make([]byte, 16)
-	_, err = rand.Read(id)
-	// 将字节切片转换为32个字符的十六进制字符串
-	workKey := hex.EncodeToString(id)
-	sessionId := utils.GenId() + hex.EncodeToString(id)
+	workKey := getId()
+	sessionId := utils.GenId() + getId()
 
 	key := "sessionId:" + sessionId
 	err = database.Redis().Set(ctx, key, workKey, 180*time.Minute).Err()
@@ -57,4 +54,12 @@ func (m *Common) SignIn(c *gin.Context) {
 		return
 	}
 	response.Success(c, hexStr, "签到成功")
+}
+
+func getId() string {
+	id := make([]byte, 16)
+	_, _ = rand.Read(id)
+	// 将字节切片转换为32个字符的十六进制字符串
+	key := hex.EncodeToString(id)
+	return key
 }

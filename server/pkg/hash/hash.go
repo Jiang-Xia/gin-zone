@@ -9,7 +9,8 @@ import (
 // BcryptHash 使用 bcrypt 对密码进行加密
 func BcryptHash(password string) string {
 	// GenerateFromPassword 的第二个参数是 cost 值。建议大于 12，数值越大耗费时间越长
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	// cost=12 在安全性和性能之间提供良好平衡，验证时间约400ms
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	logrus.Error(err)
 
 	return string(bytes)

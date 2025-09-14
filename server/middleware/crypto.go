@@ -27,7 +27,7 @@ func GMSMMiddleware() gin.HandlerFunc {
 		security := c.Request.Header.Get("Jx-Security")
 		sessionId := c.Request.Header.Get("Jx-SessionId")
 		method := c.Request.Method
-		log.Info("security:", security)
+		// log.Info("security:", security)
 		if security == "Jx-Security" && (method == "POST" || method == "PUT" || method == "PATCH") {
 			// 开始时间（可用于计算耗时）
 			start := time.Now()
