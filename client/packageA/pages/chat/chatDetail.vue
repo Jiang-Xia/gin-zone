@@ -18,7 +18,7 @@
                     <view class="message-item"
                         :class="[message.senderId===userId?'message-item-me':'',message.groupId?'message-item-group':'']">
                         <view class="avatar">
-                            <image :src="message.userInfo?.avatar"></image>
+                            <uv-image radius="50%"  width="100%" height="100%" :src="message.userInfo?.avatar" bgColor="#fff"></uv-image>
                         </view>
                         <view class="content">
                             <!-- 群聊时显示用户名称 -->
@@ -35,6 +35,9 @@
                                 <video id="videoId" :src="$fileUrl+message.content" :danmu-list="[]" enable-danmu
                                     danmu-btn controls @play="play" @ended="ended"
                                     @fullscreenchange="fullscreenchange"></video>
+                            </view>
+                            <view class="text-content audio-content" v-if="message.msgType===4" @click="playVoice($fileUrl+message.content)">
+                                语音 <uni-icons class="audio-icon" type="sound" size="24" :color="message.senderId===userId?'#fff':''"></uni-icons>
                             </view>
                         </view>
                     </view>
@@ -101,6 +104,11 @@
     import {
         watch
     } from "vue";
+    // #ifndef H5
+    const recorderManager = uni.getRecorderManager();
+    // #endif
+    const innerAudioContext = uni.createInnerAudioContext();
+    innerAudioContext.autoplay = true;
     export default {
         data() {
             return {
@@ -132,7 +140,8 @@
                     //语音录音中
                     recording: false,
                     //录音按钮展示
-                    visible: false
+                    visible: false,
+                    voicePath: ''
                 },
                 // 音频播放
                 audioPlayer: {
@@ -164,7 +173,7 @@
                 curOption: {},
                 timer: null,
                 selectList: ["删除好友"],
-                
+
                 // 视频
                 videoContext: null
             }
@@ -182,6 +191,14 @@
                 title: option.name
             })
             this.title = option.name
+
+            // #ifndef H5
+            recorderManager.onStop((res) => {
+                console.log('recorder stop' + JSON.stringify(res));
+                this.audio.voicePath = res.tempFilePath;
+                this.sendAudioMessage()
+            });
+            // #endif
             // uni.loadFontFace({
             // 	global:true,
             //   family: 'emojifont',
@@ -328,6 +345,13 @@
             },
             //语音录制按钮和键盘输入的切换
             switchAudioKeyboard() {
+                // #ifdef H5
+                uni.showModal({
+                    title: '提示',
+                    content: 'H5不支持发送语音消息！'
+                });
+                return
+                // #endif
                 this.audio.visible = !this.audio.visible;
                 if (uni.authorize) {
                     uni.authorize({
@@ -353,6 +377,7 @@
             // 开始录音
             onRecordStart() {
                 try {
+                    console.log('开始录音');
                     recorderManager.start();
                 } catch (e) {
                     uni.showModal({
@@ -363,10 +388,18 @@
             },
             // 结束录音
             onRecordEnd() {
+                console.log('开始录音');
                 try {
                     recorderManager.stop();
                 } catch (e) {
                     console.log(e);
+                }
+            },
+            playVoice(voicePath) {
+                console.log('播放录音');
+                if (voicePath) {
+                    innerAudioContext.src = voicePath;
+                    innerAudioContext.play();
                 }
             },
             // 其他功能
@@ -428,6 +461,20 @@
                         })
                     }
                 });
+            },
+            // 发送语音
+            sendAudioMessage() {
+                console.log('上传语音：', this.audio.voicePath)
+                this.uploadFile(this.audio.voicePath).then(res => {
+                    const sendObj = {
+                        cmd: "text",
+                        content: res.data.url,
+                        filename: res.data.filename,
+                        msgType: 4
+                    }
+                    this.sendSocketMessage(sendObj);
+                    this.otherTypesMessagePanelVisible = false
+                })
             },
             // 选择消息
             selectMessages() {},
@@ -556,16 +603,20 @@
                 videoContext.requestFullScreen()
                 this.videoContext = videoContext
             },
-            ended(){
+            ended() {
                 this.videoContext.exitFullScreen()
-                setTimeout(()=>{this.resetBottom()},500)
+                setTimeout(() => {
+                    this.resetBottom()
+                }, 500)
             },
             //退出全屏时停止
             fullscreenchange(e) {
                 if (!e.detail.fullScreen) {
                     this.videoContext.stop()
                 }
-                setTimeout(()=>{this.resetBottom()},500)
+                setTimeout(() => {
+                    this.resetBottom()
+                }, 500)
             }
         }
     }
@@ -636,7 +687,7 @@
             flex-shrink: 0;
             flex-grow: 0;
 
-            image {
+            uv-image {
                 width: 100%;
                 height: 100%;
                 border-radius: 50%;
@@ -708,6 +759,11 @@
                 height: 180rpx;
             }
         }
+        .audio-content{
+            border-radius: 12rpx;
+            display: flex;
+            align-items: center;
+        }
     }
 
     // 我的消息
@@ -738,6 +794,12 @@
         .image-content {
             .image-item {
                 align-items: flex-end;
+            }
+        }
+        .audio-content{
+            border-radius: 12rpx;
+            uni-icons{
+                color: #fff;
             }
         }
     }
@@ -866,6 +928,7 @@
         color: #FFFFFF;
         font-size: 28rpx;
         text-align: center;
+        user-select: none;
     }
 
     /* 输入框 结束  */

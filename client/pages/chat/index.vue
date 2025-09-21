@@ -133,6 +133,8 @@
                             v.note = "[图片]"
                         } else if (v.msgType === 3) {
                             v.note = "[视频]"
+                        }else if (v.msgType === 4) {
+                            v.note = "[语音]"
                         }
                         return v
                     })

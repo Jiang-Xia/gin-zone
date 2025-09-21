@@ -1,5 +1,4 @@
 import pageJson from "./pages"
-import VConsole from "vconsole"
 import {
     createSSRApp
 } from 'vue'
@@ -12,9 +11,13 @@ import common, {
 } from './common/utils/common.js'
 const mode = import.meta.env.MODE;
 // console.log('mode =========>', mode)
+
+// #ifdef H5
+import VConsole from "vconsole"
 if(mode === 'development'){
     const vConsole = new VConsole();
 }
+// #endif
 import {
     baseUrl,
     fileUrl

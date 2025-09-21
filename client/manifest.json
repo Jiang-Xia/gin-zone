@@ -88,18 +88,7 @@
                         "UniversalLinks" : ""
                     }
                 },
-                "push" : {
-                    "unipush" : {
-                        "version" : "2",
-                        "offline" : true,
-                        "hms" : {},
-                        "oppo" : {},
-                        "vivo" : {},
-                        "mi" : {},
-                        "meizu" : {},
-                        "fcm" : {}
-                    }
-                }
+                "push" : {}
             },
             "icons" : {
                 "android" : {
@@ -134,7 +123,8 @@
                 }
             },
             "splashscreen" : {
-                "iosStyle" : "common"
+                "iosStyle" : "common",
+                "useOriginalMsgbox" : true
             }
         }
     },

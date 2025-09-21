@@ -88,10 +88,10 @@ export const mixins = {
 		let pages = getCurrentPages(); //获取所有页面栈实例列表
 		let nowPage = pages[pages.length - 1]; //当前页页面实例
 		this.share.title = this.getShareTitle(nowPage.route)
-		this.share.path = nowPage.$page.fullPath
+		this.share.query = nowPage.$page.query
 		return {
 			title: this.share.title,
-			path: this.share.path,
+			query: this.share.query,
 			imageUrl: this.share.imageUrl,
 			success(res) {
 				uni.showToast({

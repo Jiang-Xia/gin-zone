@@ -21,14 +21,14 @@ if (env === 'production') {
 	// baseUrl = "http://43.139.16.164/x-zone/api/v1"
 	// wsUrl = "wss://43.139.16.164/x-zone/api/v1"
 } else {
-	// fileUrl = "https://jiang-xia.top/x-zone/api/v1"
-	// baseUrl = "https://jiang-xia.top/x-zone/api/v1"
-	// wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
+	fileUrl = "https://jiang-xia.top/x-zone/api/v1"
+	baseUrl = "https://jiang-xia.top/x-zone/api/v1"
+	wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 	
 	/* 本地 */
-	fileUrl = "http://192.168.1.6:9600"
-	baseUrl = "http://192.168.1.6:9600/api/v1"
-	wsUrl = "ws://192.168.1.6:9600/api/v1"
+	// fileUrl = "http://192.168.1.6:9600"
+	// baseUrl = "http://192.168.1.6:9600/api/v1"
+	// wsUrl = "ws://192.168.1.6:9600/api/v1"
 	
 	// fileUrl = "http://192.168.1.51:9600"
 	// baseUrl = "http://192.168.1.51:9600/api/v1"
