@@ -2,6 +2,7 @@
 import { sm2, sm3, sm4 } from 'sm-crypto'
 
 const env = process.env.NODE_ENV;
+const myEnv = process.env.MY_ENV;
 // 后台加密公钥
 const publicKey = '04d6c60496e5d6231de536259e8d6abdb28b6c3e3621108856abc07feb9a742a43bfd6ed7f4b485dcccc7a52e59eba85f7315c11d62abddaef42721d79218fa3d0'
 // 前端解密私钥
@@ -35,7 +36,22 @@ if (env === 'production') {
 	// wsUrl = "ws://192.168.1.51:9600/api/v1"
 }
 
-console.log('当前环境------------------------->', env)
+if(env === 'development'){
+    fileUrl = '/dev-api'
+    baseUrl = '/dev-api'
+    wsUrl = 'dev-ws'
+    if(myEnv === 'prod'){
+        fileUrl = '/prod-api'
+        baseUrl = '/prod-api'
+        wsUrl = 'prod-ws'
+    }
+}
+console.log('当前环境------------------------->',env, myEnv)
+console.log('当前配置------------------------->',{
+    fileUrl,
+    baseUrl,
+    wsUrl,
+})
 export {
 	fileUrl,
 	baseUrl,

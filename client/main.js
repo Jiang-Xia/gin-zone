@@ -23,6 +23,9 @@ import {
     fileUrl
 } from './common/request/api.js'
 
+const subPages = pageJson.subPackages.map(v => v.pages).flat()
+// console.log('subPages', subPages)
+const pages = [...pageJson.pages, ...subPages]
 export function createApp() {
     const app = createSSRApp(App)
     app.use(Pinia.createPinia());
@@ -30,7 +33,7 @@ export function createApp() {
     app.config.globalProperties.$common = common
     app.config.globalProperties.$fileUrl = fileUrl
     app.config.globalProperties.$baseUrl = baseUrl
-    app.config.globalProperties.$pages = pageJson.pages,
+    app.config.globalProperties.$pages = pages,
         app.config.globalProperties.$dayjs = dayjs
     app.mixin(mixins)
     return {
