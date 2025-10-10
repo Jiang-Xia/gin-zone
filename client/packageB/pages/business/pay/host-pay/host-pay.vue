@@ -3,7 +3,7 @@
         <view class="content-page">
             <view class="flex-direction">
                 <view class="logo-box">
-                    <image src="/static/business/images/all-pay/logo.png"></image>
+                    <image src="/static/business/images/all-pay/bank-logo.png"></image>
                 </view>
                 <view class="flex-center title1" style="align-items: center; margin-top: 20rpx">
                     <view style="font-size: 40px; font-weight: 400; margin-bottom: 0px;margin-top: 6px;color:#f6585d;">¥

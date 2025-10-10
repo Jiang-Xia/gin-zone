@@ -203,20 +203,27 @@
                 {
                 	"path": "pages/business/pay/transfer/transfer",
                 	"style": {
-                		"navigationBarTitleText" : "中转页"
+                		"navigationBarTitleText" : "江海市商业银行收银台-中转页"
                 	}
                 },
                 {
                 	"path": "pages/business/pay/all-pay/all-pay",
                 	"style": {
-                		"navigationBarTitleText" : "支付方式"
+                		"navigationBarTitleText" : "江海市商业银行收银台-支付方式"
                 	}
                 },
                 {
                 	"path": "pages/business/pay/host-pay/host-pay",
                 	"style": {
-                		"navigationBarTitleText" : "本行卡支付"
+                		"navigationBarTitleText" : "江海市商业银行收银台-本行卡支付"
                 	}
+                },
+                {
+                    "path" : "pages/business/pay/cashier/cashier",
+                    "style" : 
+                    {
+                        "navigationBarTitleText" : "江海市商业银行收银台-收银台"
+                    }
                 }
                 
                 /* 编写工作业务组件business 结束*/ 

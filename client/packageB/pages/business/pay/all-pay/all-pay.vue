@@ -3,7 +3,7 @@
         <view class="content-page">
             <view class="flex-direction">
                 <view class="logo-box">
-                    <image src="/static/business/images/all-pay/logo.png"></image>
+                    <image src="/static/business/images/all-pay/bank-logo.png"></image>
                 </view>
                 <view class="" style="font-size: 36rpx;font-weight: bold;margin-bottom: 6px">
                     {{ qrCodeInfo.storeBrief }}
@@ -173,7 +173,7 @@
                         desc: ''
                     },
                     {
-                        iconImg: '/static/logo/person/jiang.png',
+                        iconImg: '/static/business/images/all-pay/js-pay.png',
                         title: '江氏银行卡支付',
                         value: 'hostpay',
                         desc: ''
@@ -235,9 +235,6 @@
                         userIp: this.ip,
                         userRemark: this.pageInfo.remark
                     }
-                    uni.navigateTo({
-                        url: '/pages/host-pay/host-pay?qrCodeInfo='+JSON.stringify(pageInfo)
-                    });
                     uni.redirectTo({
                         url: '/packageB/pages/business/pay/host-pay/host-pay?qrCodeInfo='+JSON.stringify(params)
                     });
