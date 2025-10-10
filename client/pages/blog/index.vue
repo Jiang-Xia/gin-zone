@@ -64,7 +64,7 @@
                 this.init()
             })
             // uni.navigateTo({
-            //     url: '/packageB/pages/demo/demo'
+            //     url: '/packageB/pages/business/webview/webview'
             // })
 		},
 		methods: {

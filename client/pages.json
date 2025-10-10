@@ -187,24 +187,39 @@
         			}
         		},
                 {
-                	"path": "pages/pay/transfer/transfer",
-                	"style": {
-                		"navigationStyle": "custom"
-                	}
-                },
-                {
                     "path" : "pages/demo/demo",
                     "style": {
                     	"navigationStyle": "custom"
                     }
                 },
+                /* 编写工作业务组件business 开始*/ 
                 {
-                    "path" : "pages/webview/webview",
+                    "path" : "pages/business/webview/webview",
                     "style" : 
                     {
-                        "navigationBarTitleText" : "webview"
+                        "navigationBarTitleText" : "手机号登录"
                     }
+                },
+                {
+                	"path": "pages/business/pay/transfer/transfer",
+                	"style": {
+                		"navigationBarTitleText" : "中转页"
+                	}
+                },
+                {
+                	"path": "pages/business/pay/all-pay/all-pay",
+                	"style": {
+                		"navigationBarTitleText" : "支付方式"
+                	}
+                },
+                {
+                	"path": "pages/business/pay/host-pay/host-pay",
+                	"style": {
+                		"navigationBarTitleText" : "本行卡支付"
+                	}
                 }
+                
+                /* 编写工作业务组件business 结束*/ 
         	]
         }
 	],

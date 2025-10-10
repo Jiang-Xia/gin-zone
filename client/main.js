@@ -9,6 +9,7 @@ import api from './common/request/api.js'
 import common, {
     mixins
 } from './common/utils/common.js'
+import tool from './common/utils/tool.js'
 const mode = import.meta.env.MODE;
 // console.log('mode =========>', mode)
 
@@ -31,6 +32,7 @@ export function createApp() {
     app.use(Pinia.createPinia());
     app.config.globalProperties.$api = api
     app.config.globalProperties.$common = common
+    app.config.globalProperties.$tool = tool
     app.config.globalProperties.$fileUrl = fileUrl
     app.config.globalProperties.$baseUrl = baseUrl
     app.config.globalProperties.$pages = pages,

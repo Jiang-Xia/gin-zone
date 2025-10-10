@@ -23,7 +23,7 @@
                 title: "加载中",
                 mask: true
             })
-            const payType = this.$isWxOrAli()
+            const payType = this.$tool.isWxOrAli()
             if (options.code) {
                 this.$uni.post({
                     url: this.$url.rsa + 'GetOpenid',
@@ -57,7 +57,7 @@
         methods: {
             initPage() {
                 const url = this.baseUrl + this.pageUrl
-                const payType = this.$isWxOrAli()
+                const payType = this.$tool.isWxOrAli()
                 if (payType == 'WXPAY') {
                     window.location.replace(
                         'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' +
@@ -86,7 +86,7 @@
             },
             // 微信内置浏览器或者支付宝内置浏览器调起支付控件
             payH5(payInfo) {
-                const type = this.$isWxOrAli()
+                const type = this.$tool.isWxOrAli()
                 switch (type) {
                     case 'WXPAY': //微信h5支付
                         WeixinJSBridge.invoke(

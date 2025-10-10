@@ -41,6 +41,29 @@ export class Common {
 			}
 		})
 	}
+    // 打开pdf
+    openPdf(url){
+        uni.showLoading({
+            title:'加载中'
+        })
+        uni.downloadFile({
+            url,
+            success(res) {
+                let filePath = res.tempFilePath;
+                uni.openDocument({
+                    filePath:filePath,
+                    showMenu:true,
+                    success() {
+                        uni.hideLoading()
+                        console.log('打开文档成功')
+                    },
+                    complete() {
+                        uni.hideLoading()
+                    }
+                })
+            }
+        })
+    }
 }
 const common = new Common()
 export default common

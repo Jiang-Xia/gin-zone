@@ -208,3 +208,51 @@ h1,h2,h3,h4,h5{
 		lines: 2;
 		/* #endif */
 	}
+    
+    // 公共类名
+    
+    /**flex布局1   --水品居中靠两侧*/
+    .flex-hori {
+    	display: flex;
+    	align-items: center;
+    	justify-content: space-between;
+    }
+    .flex-center {
+    	display: flex;
+    	justify-content: center;
+    	align-items: center;
+    }
+    .flex-between {
+    	display: flex;
+    	justify-content: space-between;
+    	align-items: center;
+    }
+    .flex-direction {
+    	display: flex;
+    	flex-direction: column;
+    	justify-content: center;
+    	align-items: center;
+    }
+    .flex-direction-start {
+    	display: flex;
+    	flex-direction: column;
+    	justify-content: center;
+    }
+    .flex-start {
+    	display: flex;
+    	justify-content: flex-start;
+    	align-items: center;
+    }
+    .flex-end {
+    	display: flex;
+    	justify-content: flex-end;
+    	align-items: center;
+    }
+        
+    /* 文字超出省略 */
+    .text-overflow-skip {
+    	white-space: nowrap;
+    	overflow: hidden;
+    	text-overflow: ellipsis;
+    }
+    
