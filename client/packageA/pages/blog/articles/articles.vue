@@ -1,6 +1,6 @@
 <template>
  <pageConfig title="文章列表">
-	<view>
+	<view class="article-list">
 		<uni-search-bar @confirm="onSearch" @cancel="onSearch" cancel-text="搜索" :focus="false" v-model="content"
 			placeholder="输入关键字搜索文章">
 		</uni-search-bar>
@@ -71,8 +71,8 @@
 		methods: {
 			init() {
 				// #ifndef MP-WEIXIN
-				this.onSearch()
 				// #endif
+                this.onSearch()
 			},
 			onSearch() {
 				this.getArticleList()
@@ -116,6 +116,9 @@
 </script>
 
 <style lang="scss" scoped>
+    .article-list{
+        background-color: #fff;
+    }
     .uni-searchbar{
         background-color: #fff;
     }

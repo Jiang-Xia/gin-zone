@@ -65,6 +65,7 @@
 					// console.log(that.globalData)
 				}
 			})
+            this.globalData.initChat = this.initChat
 			const userInfo = uni.getStorageSync("zoneUserInfo")
 			if (userInfo) {
 				this.globalData.userInfo = userInfo
@@ -171,10 +172,14 @@
 				this.globalData.socketTask = uni.connectSocket({
 					url,
 					method: 'GET',
-					complete: () => {
-						console.log('WebSocket已连接！');
-					}
+					success(){
+						console.log('WebSocket连接成功！');
+					},
+                    fail() {
+                        console.log('WebSocket连接失败！');
+                    }
 				});
+                console.log('this.globalData.socketTask', this.globalData.socketTask)
 				// 监听服务端发送消息
 				this.globalData.socketTask.onMessage((res) => {
 					// if (res.data) {
@@ -183,11 +188,11 @@
 					// 	}
 				});
 				this.globalData.socketTask.onOpen((res) => {
-					console.log('WebSocket连接已打开！');
+					console.log('WebSocket连接打开成功！', res);
 					this.heartbeat()
 				});
 				this.globalData.socketTask.onError((res) => {
-					console.log('WebSocket连接打开失败，请检查！');
+					console.log('WebSocket连接打开失败，请检查！', res);
 				});
 			},
 			heartbeat(userId) {

@@ -1,31 +1,43 @@
 <template>
     <view ref="confirm" class="emoji-list">
         <view class="emoji-list__content">
-            <scroll-view :scroll-top="scrollTop" :scroll-y="true" :show-scrollbar="true">
-                <view class="scroll-content">
-                   <view class="emoji-item-wrap" v-for="(value, key) in emojiJson" :title="emojiJson[key]" :key="emojiJson[key]" @click="onClick(key)">
-                        <view class="emoji-item">{{key}}</view>
+            <z-paging ref="paging" use-virtual-list :force-close-inner-list="true" v-model="dataList"
+                :cell-height-mode="'fixed'" @virtualListChange="virtualListChange" :preload-page="12" height="156px"
+                :paging-style="{
+                    top: 'inherit',
+                }"
+                @query="queryList">
+                <view class="emoji-item-wrap" v-for="(item,index) in dataList" :id="`zp-id-${item.zp_index}`"
+                    :key="item.zp_index">
+                    <view class="emoji-item" v-for="(item2,index2) in item.data" @click="onClick(item2.key)"
+                        :title="item2.title" :key="item2.data">
+                        {{item2.key}}
                     </view>
                 </view>
-            </scroll-view>
+            </z-paging>
         </view>
     </view>
 </template>
 
 <script>
-    import emojis from './emojis.js';
     import emojiJson from './emoji-en-US.json'
     let timer = null
     export default {
         name: 'EmojiList',
-        props: {},
+        props: {
+            height: {
+                type: String,
+                default: '0px'
+            }
+        },
         data() {
             return {
                 scrollTop: 0,
-                confirm: null,
-                emojis: emojis,
                 emojiJson: {},
-                emojiHtml: ''
+                emojiHtml: '',
+                emojiJsonList: [],
+                virtualList: [], // 使用虚拟列表渲染有问题
+                dataList: []
             }
         },
         watch: {},
@@ -33,30 +45,45 @@
 
         },
         async created() {
-            // app内部请求不了
-            // uni.request({
-            //     url: './static/data/emoji-en-US.json',
-            //     complete: (res) => {
-            //         this.renderEmoji(res.data)
-            //     }
-            // })
             this.renderEmoji(emojiJson)
         },
         methods: {
             renderEmoji(json) {
-                this.emojiJson = json
-                // console.log('emojiJson', this.emojiJson)
+                let list = []
+                for (let key in json) {
+                    list.push({
+                        key: key,
+                        title: json[key]
+                    })
+                }
+                list = this.groupArray(list, 8)
+                // console.log('表情个数', emojiJsonList.length)
+                // console.log('emojiJsonList', list)
+                this.emojiJsonList = list
+            },
+            groupArray(arr, groupSize = 2) {
+                const result = [];
+                for (let i = 0; i < arr.length; i += groupSize) {
+                    const chunk = arr.slice(i, i + groupSize);
+                    result.push({
+                        data: chunk
+                    });
+                }
+
+                return result;
+            },
+            virtualListChange(vList) {
+                // console.log('vList', vList)
+                this.virtualList = vList;
+            },
+            queryList(pageNo, pageSize) {
+                setTimeout(() => {
+                    this.$refs.paging.setLocalPaging(this.emojiJsonList);
+                    // this.$refs.paging.complete(this.emojiJsonList);
+                }, 200)
             },
             onClick(e) {
-                this.confirm(e)
-            },
-            open({
-                confirm
-            }) {
-                // console.log('打开表情面板')
-                // 赋值回调方法
-                if (confirm) this.confirm = confirm
-                this.scrollTop = 0
+                this.$emit('confirm', e)
             },
         }
     }
@@ -64,36 +91,24 @@
 
 <style lang="scss">
     .emoji-list {
-        min-height: 300rpx;
+        height: 156px;
         width: 100%;
+        overflow: hidden;
         .emoji-list__content {
             height: 100%;
             width: 100%;
         }
 
-        uni-scroll-view {
-            height: 300rpx;
-            width: 100%;
-        }
-
-        .scroll-content {
-            padding-bottom: 40rpx;
-            width: 100%;
-        }
-
-        .emojifont {
-            font-family: emojifont !important;
-            font-style: normal;
-            font-size: 70rpx;
-            padding: 8rpx;
-        }
-        .emoji-item-wrap{
-            display: inline-block;
-            .emoji-item{
+        .emoji-item-wrap {
+            display: flex;
+            justify-content: space-around;
+            .emoji-item {
                 display: inline-block;
                 font-size: 60rpx;
                 line-height: 60rpx;
-                padding: 12rpx 0;
+                // padding: 12rpx 0;
+                margin-left: 8rpx;
+                margin-top: 8rpx;
             }
         }
     }

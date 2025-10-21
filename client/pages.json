@@ -245,7 +245,7 @@
         // "custom": true, // app端不生效
 		"color": "#999999",
 		"borderStyle": "white",
-        // "backgroundColor": "#ffffff",
+        // "backgroundColor": "rgba(255,255,255, 0.1)",
         "blurEffect": "extralight",
 		// 注意：启用高斯模糊效果后不建议设置backgroundColor，如果需要设置的需要使用 rgba 设置透明度，不然看不到模糊效果
 		// "backgroundColor": "rgba(0, 122, 255,0.3)",

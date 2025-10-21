@@ -124,7 +124,11 @@
 					uni.setStorageSync("zoneToken", res.data.token)
 					const res2 = await this.$api.get('/base/users/info')
 					uni.setStorageSync('zoneUserInfo', res2.data)
-					getApp().globalData.userInfo = res2.data
+                    const app = getApp()
+                    app.globalData.userInfo = res2.data
+                    if(app.globalData.initChat){
+                        app.globalData.initChat()
+                    }
 					uni.showToast({
 						title: "登录成功",
 						icon: 'none'

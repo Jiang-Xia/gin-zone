@@ -18,7 +18,8 @@
                     <view class="message-item"
                         :class="[message.senderId===userId?'message-item-me':'',message.groupId?'message-item-group':'']">
                         <view class="avatar">
-                            <uv-image radius="50%"  width="100%" height="100%" :src="message.userInfo?.avatar" bgColor="#fff"></uv-image>
+                            <uv-image radius="50%" width="100%" height="100%" :src="message.userInfo?.avatar"
+                                bgColor="#fff"></uv-image>
                         </view>
                         <view class="content">
                             <!-- 群聊时显示用户名称 -->
@@ -36,8 +37,10 @@
                                     danmu-btn controls @play="play" @ended="ended"
                                     @fullscreenchange="fullscreenchange"></video>
                             </view>
-                            <view class="text-content audio-content" v-if="message.msgType===4" @click="playVoice($fileUrl+message.content)">
-                                语音 <uni-icons class="audio-icon" type="sound" size="24" :color="message.senderId===userId?'#fff':''"></uni-icons>
+                            <view class="text-content audio-content" v-if="message.msgType===4"
+                                @click="playVoice($fileUrl+message.content)">
+                                语音 <uni-icons class="audio-icon" type="sound" size="24"
+                                    :color="message.senderId===userId?'#fff':''"></uni-icons>
                             </view>
                         </view>
                     </view>
@@ -50,9 +53,11 @@
                         <image class="more" v-if="audio.visible" src="/static/images/jianpan.png"></image>
                         <image class="more" v-else src="/static/images/audio.png"></image>
                     </view>
-                    <view v-if="audio.visible" class="record-input" @click="onRecordStart" @touchend.stop="onRecordEnd"
-                        @touchstart.stop="onRecordStart">
-                        {{ audio.recording ? '松开发送' : '按住录音' }}
+                    <view v-if="audio.visible" class="record-input"  :class="audio.recording?'recording':''">
+                        <view class="flex-center" v-if="audio.recording" @click="onRecordEnd">
+                            <uni-icons type="mic-filled" size="14" color="#fff" /><text>停止录音</text>
+                        </view>
+                        <view v-else class="flex-center" @click="onRecordStart"><uni-icons type="mic-filled" size="14" color="#fff" /><text>开始录音</text></view>
                     </view>
                     <!-- GoEasyIM最大支持3k的文本消息，如需发送长文本，需调整输入框maxlength值 -->
                     <input v-else v-model="text" class="consult-input emojifont" confirm-type="send" maxlength="700"
@@ -70,9 +75,7 @@
                 </view>
                 <!--展示表情列表-->
                 <view class="action-bottom action-bottom-emoji" v-show="emoji.visible">
-                    <!-- #ifndef MP-WEIXIN -->
-                    <emojiList ref="emojifont-list"></emojiList>
-                    <!-- #endif -->
+                    <emojiList ref="emojifont-list" @confirm="emojiConfirm"></emojiList>
                 </view>
                 <!--其他类型消息面板-->
                 <view v-if="otherTypesMessagePanelVisible" class="action-bottom">
@@ -104,9 +107,6 @@
     import {
         watch
     } from "vue";
-    // #ifndef H5
-    const recorderManager = uni.getRecorderManager();
-    // #endif
     const innerAudioContext = uni.createInnerAudioContext();
     innerAudioContext.autoplay = true;
     export default {
@@ -141,7 +141,9 @@
                     recording: false,
                     //录音按钮展示
                     visible: false,
-                    voicePath: ''
+                    voicePath: '',
+                    second: 0,
+                    timer: null
                 },
                 // 音频播放
                 audioPlayer: {
@@ -175,7 +177,9 @@
                 selectList: ["删除好友"],
 
                 // 视频
-                videoContext: null
+                videoContext: null,
+
+                recorderManager: null
             }
         },
         components: {
@@ -191,14 +195,6 @@
                 title: option.name
             })
             this.title = option.name
-
-            // #ifndef H5
-            recorderManager.onStop((res) => {
-                console.log('recorder stop' + JSON.stringify(res));
-                this.audio.voicePath = res.tempFilePath;
-                this.sendAudioMessage()
-            });
-            // #endif
             // uni.loadFontFace({
             // 	global:true,
             //   family: 'emojifont',
@@ -214,6 +210,27 @@
         },
         onReady() {
             this.loadHistoryMessage(true);
+            // #ifndef H5
+            const recorderManager = uni.getRecorderManager();
+            this.recorderManager = recorderManager
+            this.recorderManager.onStop((res) => {
+                if (this.audio.second <= 1) {
+                    uni.showModal({
+                        title: '提示',
+                        content: '时间太短了！'
+                    });
+                    return
+                }
+                console.log('recorder stop' + JSON.stringify(res));
+                this.audio.voicePath = res.tempFilePath;
+                this.sendAudioMessage()
+            });
+            this.recorderManager.onError((res) => {
+                console.log('onError 录音错误', res);
+            });
+
+            console.log('recorderManager', this.recorderManager)
+            // #endif
         },
         onPullDownRefresh(e) {
             this.loadHistoryMessage(false);
@@ -246,18 +263,13 @@
         },
         watch: {
             'emoji.visible'(n) {
-                this.$nextTick(() => {
-                    // #ifndef MP-WEIXIN
-                    this.$refs['emojifont-list'].open({
-                        confirm: (content) => {
-                            this.text += content
-                        }
-                    })
-                    // #endif
-                })
+                // console.log('emoji.visible------------->', this.emoji.visible)
             }
         },
         methods: {
+            emojiConfirm(content) {
+                this.text += content
+            },
             heartbeat() {
                 this.timer = setInterval(() => {
                     this.sendSocketMessage({
@@ -293,6 +305,9 @@
             },
             // 发送消息
             sendSocketMessage(messageData) {
+                uni.showLoading({
+                    title: ''
+                })
                 console.log("sendSocketMessage", messageData)
                 const {
                     friendId = "", groupId = 0
@@ -333,15 +348,18 @@
                         data: JSON.stringify(sendObj),
                         success: () => {
                             console.log('发送成功：', sendObj);
+                            uni.hideLoading()
                         },
                         fail: (error) => {
                             console.log('发送失败:', error);
+                            uni.hideLoading()
                         }
                     });
                 } else {
                     this.resetBottom()
                     // this.socketMsgQueue.push(sendObj);
                 }
+
             },
             //语音录制按钮和键盘输入的切换
             switchAudioKeyboard() {
@@ -353,17 +371,33 @@
                 return
                 // #endif
                 this.audio.visible = !this.audio.visible;
-                if (uni.authorize) {
-                    uni.authorize({
-                        scope: 'scope.record',
-                        fail: () => {
-                            uni.showModal({
-                                title: '获取录音权限失败',
-                                content: '请先授权才能发送语音消息！'
-                            });
-                        }
-                    });
-                }
+                uni.authorize({
+                    scope: 'scope.record',
+                    success: function(res) {
+                        // 用户同意授权，进行录音操作
+                    },
+                    fail: function(err) {
+                        // 用户拒绝授权，引导用户手动开启权限
+                        uni.showModal({
+                            title: '提示',
+                            content: '未授权录音权限，是否前往设置？',
+                            success: function(res) {
+                                if (res.confirm) {
+                                    uni.openSetting({
+                                        success: function(settingData) {
+                                            if (settingData.authSetting[
+                                                    'scope.record']) {
+                                                console.log('用户已授权录音权限');
+                                            } else {
+                                                console.log('用户未授权录音权限');
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        })
+                    }
+                });
             },
             // 表情面板展开
             switchEmojiKeyboard() {
@@ -378,7 +412,11 @@
             onRecordStart() {
                 try {
                     console.log('开始录音');
-                    recorderManager.start();
+                    this.audio.timer = setInterval(() => {
+                        this.audio.second++
+                    }, 1000)
+                    this.$set(this.audio,'recording', true)
+                    this.recorderManager.start();
                 } catch (e) {
                     uni.showModal({
                         title: '录音错误',
@@ -388,9 +426,11 @@
             },
             // 结束录音
             onRecordEnd() {
-                console.log('开始录音');
+                console.log('结束录音');
                 try {
-                    recorderManager.stop();
+                    clearInterval(this.audio.timer)
+                    this.recorderManager.stop();
+                    this.$set(this.audio,'recording', false)
                 } catch (e) {
                     console.log(e);
                 }
@@ -505,7 +545,7 @@
                     } = res.data
                     uni.stopPullDownRefresh();
                     list = list.sort((v1, v2) => {
-                        return new Date(v1.createdAt).getTime() - new Date(v2.createdAt).getTime()
+                        return this.$dayjs(v1.createdAt).valueOf() - this.$dayjs(v2.createdAt).valueOf()
                     })
                     // console.log(list.map(v=>v.content))
                     this.history.loading = false;
@@ -527,8 +567,8 @@
             },
             // 渲染消息时间
             renderMessageDate(item, index) {
-                const timestamp = new Date(item.createdAt).getTime()
-                const now = new Date().getTime()
+                const timestamp = this.$dayjs(item.createdAt).valueOf()
+                const now = this.$dayjs().valueOf()
                 const min5 = 5 * 60 * 1000
                 if (index === 0) {
                     if (now - timestamp > min5) {
@@ -537,7 +577,7 @@
                         return ''
                     }
                 } else {
-                    const preTimestamp = new Date(this.history.messages[index - 1].createdAt).getTime()
+                    const preTimestamp = this.$dayjs(this.history.messages[index - 1].createdAt).valueOf()
                     // 判断一批信息时间是否在五分钟区间内
                     if (timestamp - preTimestamp > min5) {
                         return beforeTimeNow(timestamp)
@@ -759,7 +799,8 @@
                 height: 180rpx;
             }
         }
-        .audio-content{
+
+        .audio-content {
             border-radius: 12rpx;
             display: flex;
             align-items: center;
@@ -796,9 +837,11 @@
                 align-items: flex-end;
             }
         }
-        .audio-content{
+
+        .audio-content {
             border-radius: 12rpx;
-            uni-icons{
+
+            uni-icons {
                 color: #fff;
             }
         }
@@ -875,9 +918,10 @@
     .action-bottom {
         height: 300rpx;
         width: 100%;
-        padding: 20rpx;
+        padding: 10px;
         box-sizing: border-box;
         display: flex;
+        // transition: height 0.3s ease-in;
     }
 
     .action-bottom-emoji {
@@ -929,8 +973,17 @@
         font-size: 28rpx;
         text-align: center;
         user-select: none;
-    }
 
+        .flex-center {
+            width: 100%;
+            height: 80rpx;
+            line-height: 80rpx;
+            color: #fff;
+        }
+    }
+    .action-box .action-top .recording {
+        background: $uni-color-primary;
+    }
     /* 输入框 结束  */
 
     /* 历史记录消息 */

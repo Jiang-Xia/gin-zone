@@ -52,9 +52,6 @@
 <script>
     import groupIcon from "../../static/images/group.png"
     import userIcon from "../../static/images/user.png"
-    import {
-        formatDate
-    } from '../../common/utils/util.js';
     export default {
         data() {
             return {
@@ -127,7 +124,7 @@
                             v.avatar = v.chatGroup.avatar || groupIcon
                         }
                         v.name = v.userInfo.nickName || v.chatGroup.groupName
-                        v.time = formatDate(v.lastInfoTime)
+                        v.time = this.$dayjs(v.lastInfoTime).format('MM-DD HH:mm')
                         v.note = v.lastMsg
                         if (v.msgType === 2) {
                             v.note = "[图片]"
@@ -216,7 +213,7 @@
                         // console.log('revObj', revObj.cmd, revObj)
                         const cb = (v) => {
                             v.note = revObj.content
-                            v.time = formatDate()
+                            v.time = this.$dayjs().format('MM-DD HH:mm')
                             v.noReadMsgCount++
                             if (v.msgType === 2) {
                                 v.note = "[图片]"
@@ -261,7 +258,7 @@
         .chat-item {
             display: flex;
             padding: 20rpx 30rpx;
-            border-bottom: 1rpx solid #999;
+            border-bottom: 1rpx solid #ddd;
 
             .chat-item-right {
                 display: flex;

@@ -126,8 +126,12 @@
 			async getZoneUserInfo() {
 				const res = await this.$api.get('/base/users/info')
 				this.userInfo = res.data
-				getApp().globalData.userInfo = res.data
+                const app = getApp()
+				app.globalData.userInfo = res.data
 				uni.setStorageSync('zoneUserInfo', res.data)
+                if(app.globalData.initChat){
+                    app.globalData.initChat()
+                }
 			},
 			setToken(token) {
 				uni.setStorageSync("zoneToken", token)
