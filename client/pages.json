@@ -200,6 +200,7 @@
                         "navigationBarTitleText" : "手机号登录"
                     }
                 },
+                // #ifndef MP-WEIXIN
                 {
                 	"path": "pages/business/pay/transfer/transfer",
                 	"style": {
@@ -224,8 +225,15 @@
                     {
                         "navigationBarTitleText" : "江海市商业银行收银台-收银台"
                     }
+                },
+                {
+                    "path" : "pages/business/pay/status/status",
+                    "style" : 
+                    {
+                        "navigationBarTitleText" : "江海市商业银行收银台-支付结果"
+                    }
                 }
-                
+                // #endif
                 /* 编写工作业务组件business 结束*/ 
         	]
         }

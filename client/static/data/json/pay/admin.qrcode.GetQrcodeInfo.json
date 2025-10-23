@@ -1,0 +1,23 @@
+{
+    "retCode": "0000",
+    "retMsg": "处理完成",
+    "action": {
+        "qrNo": "SE00001602",
+        "qrInfo": {
+            "qrNo": "SE00001602",
+            "qrName": "清算",
+            "mchtNo": "M00003423",
+            "storeNo": "S00004426",
+            "amount": 0,
+            "bindDate": "20250729",
+            "status": "ACTIVE",
+            "createDate": "20241210",
+            "storeName": "江江糖果店",
+            "storeBrief": "江江糖果店",
+            "mchtName": "江江糖果店",
+            "useType": "BARCODE_HELP_PAY",
+            "areaCode": "530302",
+            "preNo": "PRE00001001"
+        }
+    }
+}

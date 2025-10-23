@@ -3,7 +3,7 @@
         <view class="content-page">
             <view class="flex-direction">
                 <view class="logo-box">
-                    <image src="/static/business/images/all-pay/bank-logo.png"></image>
+                    <image src="/static/business/images/pay/bank-logo.png"></image>
                 </view>
                 <view class="" style="font-size: 36rpx;font-weight: bold;margin-bottom: 6px">
                     {{ qrCodeInfo.storeBrief }}
@@ -111,7 +111,7 @@
 
                 // 二维码信息
                 qrCodeInfo: {
-                    storeBrief: '糖果店'
+                    storeBrief: ''
                 },
                 userAuthCode: '',
                 
@@ -126,11 +126,11 @@
                 remark: options.remark || '备注',
             }
             const qrcode = uni.getStorageSync('qrcode_no')
-            this.getQrcodeInfo(qrcode)
+            this.getQrcodeInfo(qrcode||'SE00001602')
             console.log('this.pageInfo', this.pageInfo)
             // 获取授权码
             this.userAuthCode = this.$tool.getQueryVariable('code') || options.auth_code || uni.getStorageSync('userAuthCode');
-            // this.userAuthCode = '1111'
+            this.userAuthCode = '1111'
             // big-pay进来也换缓存
             uni.setStorageSync('userAuthCode', this.userAuthCode)
         },
@@ -143,37 +143,37 @@
             },
             payTypeList() {
                 let list = [{
-                        iconImg: '/static/business/images/all-pay/alipay.png',
+                        iconImg: '/static/business/images/pay/alipay.png',
                         title: '支付宝支付',
                         value: 'zfb',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/all-pay/huabeifenqi.png',
+                        iconImg: '/static/business/images/pay/huabeifenqi.png',
                         title: '花呗分期',
                         value: 'hb',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/all-pay/xinyongkafenqi.png',
+                        iconImg: '/static/business/images/pay/xinyongkafenqi.png',
                         title: '信用卡分期',
                         value: 'xyk',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/all-pay/jindong.png',
+                        iconImg: '/static/business/images/pay/jindong.png',
                         title: '京东白条',
                         value: 'jdbt',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/all-pay/weixin.png',
+                        iconImg: '/static/business/images/pay/weixin.png',
                         title: '微信支付',
                         value: 'wx',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/all-pay/js-pay.png',
+                        iconImg: '/static/business/images/pay/js-pay.png',
                         title: '江氏银行卡支付',
                         value: 'hostpay',
                         desc: ''
@@ -251,7 +251,8 @@
             },
             getQrcodeInfo(qrNo) {
                 this.$tool.Post('admin.qrcode.GetQrcodeInfo', {
-                    qrNo
+                    qrNo,
+                    qrType:"STATIC"
                 }, false, (data) => {
                     console.log(data, "二维码信息")
                     if (!data.action.qrInfo && !data.action.qrCodeInfoModel) {
@@ -301,11 +302,11 @@
                 })
             },
             QueryOrder(mchtNo, orderNo) {
-                let param = {
+                let params = {
                     orderNo,
                     mchtNo
                 };
-                this.$tool.Post('QueryOrder', param, true, (data) => {
+                this.$tool.Post('QueryOrder', params, true, (data) => {
                     this.orderInfo.orderSubs = data.orderInfo.orderSubs
                     this.payOrder(mchtNo)
                 })
@@ -333,7 +334,8 @@
                 params.tradeInfo = tradeInfo
                 this.$tool.Post('PayOrder', params, false, (res) => {
                     if (res.payInfo) {
-                        this.payInfo = JSON.parse(res.payInfo);
+                        // this.payInfo = JSON.parse(res.payInfo);
+                        this.payInfo = res.payInfo;
                         this.payH5(this.payInfo)
                     }
                 })
@@ -342,11 +344,17 @@
                 const goTo = () => {
                     // 跳转逻辑
                     uni.redirectTo({
-                        url: '/pages/paystatus/index'
+                        url: '/packageB/pages/business/pay/status/status'
                     });
                 }
                 const type = this.payType
                 console.log('type, payInfo', type, payInfo)
+                uni.showModal({
+                    title: '提示',
+                    content: '支付成功',
+                    showCancel: false,
+                });
+                // return goTo()
                 switch (type) {
                     case 'WXPAY': //微信h5支付
                         WeixinJSBridge.invoke(

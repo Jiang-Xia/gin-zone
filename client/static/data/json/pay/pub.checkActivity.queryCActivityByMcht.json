@@ -1,0 +1,19 @@
+{
+    "retCode": "0000",
+    "retMsg": "处理完成",
+    "action": {
+        "offset": 0,
+        "limit": 100,
+        "mode": 0,
+        "count": 0,
+        "list": {
+            "total": 0,
+            "data": []
+        },
+        "mchtNo": "M00003423",
+        "storeNo": "S00004426",
+        "status": "ACTIVE",
+        "activityStatus": "PROCESSING",
+        "sign": true
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "retMsg": "处理完成",
+    "status": "SUCCESS",
+    "orderNo": "O2025102309571158400052604de64a8dc",
+    "orderDate": "20251023",
+    "orderTime": "095711",
+    "agrFee": 0,
+    "payInfo": {"appId":"123456","timeStamp":"111111","nonceStr":"222222","package":"333333","signType":"444444","paySign":"555555"}
+}

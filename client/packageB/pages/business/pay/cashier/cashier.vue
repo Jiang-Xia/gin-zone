@@ -1,7 +1,7 @@
 <template>
     <view class="main">
         <view class="tapin-container">
-            <view class="flex-center"><img class="logo-img" src="/static/business/images/all-pay/bank-logo.png" />
+            <view class="flex-center"><img class="logo-img" src="/static/business/images/pay/bank-logo.png" />
             </view>
             <view class="flex-center title-name">{{ storeBrief }}</view>
             <view class="top-content">
@@ -75,8 +75,9 @@
         onShow: function() {},
         onLoad: async function(options) {
             const userAuthCode = uni.getStorageSync('userAuthCode')
-            console.log('-cashier-userAuthCode', userAuthCode)
+            console.log('cashier-userAuthCode', userAuthCode)
             that = this
+            this.getQrcodeInfo(options.qrcode||'SE00001602')
         },
         methods: {
             /*键盘点击事件**/
@@ -133,6 +134,25 @@
                 var key = e.target.id;
                 that[key] = e.detail.value;
             },
+            getQrcodeInfo(qrNo) {
+                this.$tool.Post('admin.qrcode.GetQrcodeInfo', {
+                    qrNo,
+                    qrType:"STATIC"
+                }, false, (data) => {
+                    if (!data.action.qrInfo && !data.action.qrCodeInfoModel) {
+                        uni.showModal({
+                            title: '提示',
+                            content: '二维码信息有误，请联系商家谨慎操作',
+                            showCancel: false
+                        });
+                        return;
+                    }
+                    if (data.action.qrInfo) {
+                        this.storeBrief = data.action.qrInfo.storeBrief
+                    }
+                });
+            },
+            
         }
     };
 </script>

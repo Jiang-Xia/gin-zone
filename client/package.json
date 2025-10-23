@@ -9,7 +9,7 @@
   "uni-app": {
     "scripts": {
       "sit": {
-        "title": "zone-sit环境",
+        "title": "Zone sit环境",
         "browser": "Edge",
         "UNI_OUTPUT_DIR": "dist/sit",
         "env": {
@@ -18,7 +18,7 @@
         }
       },
       "uat": {
-        "title": "zone-uat环境",
+        "title": "Zone uat环境",
         "browser": "Edge",
         "UNI_OUTPUT_DIR": "dist/uat",
         "env": {
@@ -27,7 +27,7 @@
         }
       },
       "prod": {
-        "title": "zone-prod环境",
+        "title": "Zone prod环境",
         "browser": "Edge",
         "UNI_OUTPUT_DIR": "dist/prod",
         "env": {
