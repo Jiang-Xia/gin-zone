@@ -1,5 +1,5 @@
 <template>
-    <pageConfig title="聊天" left-icon="plus" @clickLeft="clickLeft">
+    <pageConfig title="聊天" :left="false">
         <view class="container">
             <view class="tip" v-if="!defaultList.length&&!userList.length">
                 没有好友快去添加吧~
@@ -44,6 +44,7 @@
                     </uni-swipe-action-item>
                 </uni-swipe-action>
             </uni-list>
+            <uni-fab @fabClick="clickLeft()" :pop-menu="false" horizontal="right" vertical="bottom"></uni-fab>
         </view>
         <!-- <tabbar :tabBarShow="2"/> -->
     </pageConfig>
@@ -247,7 +248,7 @@
 
     .container {
         font-size: 14px;
-        min-height: 60vh;
+        min-height: 35vh;
 
         // 表情样式
         .emojifont {
@@ -259,7 +260,7 @@
             display: flex;
             padding: 20rpx 30rpx;
             border-bottom: 1rpx solid #ddd;
-
+            width: 100%;
             .chat-item-right {
                 display: flex;
                 flex-direction: column;

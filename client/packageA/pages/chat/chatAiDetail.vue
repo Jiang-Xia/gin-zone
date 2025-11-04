@@ -53,8 +53,10 @@
 	import {
 		marked
 	} from 'marked'
+    // #ifndef MP-ALIPAY
 	import Prism from 'prismjs';
 	import 'prismjs/themes/prism-tomorrow.css';
+    // #endif
 	export default {
 		data() {
 			return {

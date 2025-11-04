@@ -174,9 +174,10 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.container {
 		position: relative;
+        background-color: #fff;
 	}
 
 	.bg {
@@ -213,6 +214,9 @@
 	.login,
 	.register {
 		padding: 0 60rpx;
+        .z-flex-item{
+            background-color: transparent;
+        }
 	}
 
 	.input {

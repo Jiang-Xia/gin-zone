@@ -169,9 +169,10 @@
 				})
 				const url = wsUrl + '/mobile/chat?userId=' + userId
 				const token = uni.getStorageSync("zoneToken")
-				this.globalData.socketTask = uni.connectSocket({
+				const socketTask = uni.connectSocket({
 					url,
 					method: 'GET',
+                    multiple: true,
 					success(){
 						console.log('WebSocket连接成功！');
 					},
@@ -179,7 +180,8 @@
                         console.log('WebSocket连接失败！');
                     }
 				});
-                console.log('this.globalData.socketTask', this.globalData.socketTask)
+                this.globalData.socketTask = socketTask
+                console.log('socketTask',socketTask)
 				// 监听服务端发送消息
 				this.globalData.socketTask.onMessage((res) => {
 					// if (res.data) {
@@ -278,12 +280,16 @@
     
 	// 设置整个项目的背景色
 	page {
-		background-color: #f7f7f7;
+        background-color: #f1f1f1;
+        /* #ifndef H5 ||APP-NVUE */
+        background-color: #f7f7f7;
+        /* #endif */
         // background-color: red;
 		user-select: auto;
 	}
-
-	
+	image{
+	    background-size: contain;
+	}
     // page {
     // 	background-color: $uni-bg-color-grey;
     // }

@@ -43,7 +43,9 @@
   "dependencies": {
     "dayjs": "^1.11.13",
     "emojilib": "^4.0.2",
-    "marked": "^4.2.12",
+    "highlight.js": "^11.11.1",
+    "marked": "^4.3.0",
+    "marked-highlight": "^2.2.2",
     "mp-html": "^2.4.1",
     "prismjs": "^1.29.0",
     "sm-crypto": "^0.3.13"

@@ -1,5 +1,6 @@
 <template>
     <view class="page-config">
+        <!-- #ifndef MP-ALIPAY-->
         <uni-nav-bar backgroundColor="#ffffff" v-if="navbar" class="global-nav" fixed :border="border" statusBar @clickLeft="clickLeft">
             <view class="nav-title">{{title}}</view>
             <template v-slot:left>
@@ -13,6 +14,7 @@
                 </slot>
             </template>
         </uni-nav-bar>
+        <!-- #endif -->
         <view class="page-container">
             <slot></slot>
         </view>
@@ -49,13 +51,25 @@
             },
             title: {
                 type: String,
-                default: '标题栏'
+                default: ''
             }
         },
         data() {
             return {
 
             };
+        },
+        created() {
+            // #ifdef MP-ALIPAY
+            if(this.title){
+                uni.setNavigationBarTitle({
+                  title: this.title,
+                });
+            }
+            uni.setNavigationBarColor({
+              backgroundColor:'#ffffff',
+            });
+            // #endif
         },
         methods:{
             clickLeft(){

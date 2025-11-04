@@ -1,29 +1,34 @@
 <template>
 <pageConfig title="我的" :left="false">
 	<view class="container">
-		<image v-if="isLogin" class="my-bg" src="/static/images/logined.png" mode=""></image>
-		<navigator v-if="isLogin" class="my-info" url="/packageA/pages/my/setting" hover-class="navigator-hover">
-			<view class="top-box">
-				<image class="avatar" :src="userInfo.avatar" mode=""></image>
-				<view class="uni-flex-column">
-					<text class="name">{{userInfo.nickName}}</text>
-					<text>{{userInfo.intro||'难将心事和人说 说与青天明月知'}}</text>
-				</view>
-				<uni-icons custom-prefix="zonefont" color="#bbbbb" type="zone-gerenziliao" size="17"></uni-icons>
-			</view>
-		</navigator>
-		<view class="login-wrap" v-if="!isLogin">
-			<image class="login-bg" src="/static/images/approve.png" mode=""></image>
-			<button type="primary" @tap="login">登录</button>
+        <view class="login-wrap" v-if="!isLogin">
+        	<image class="login-bg" src="/static/images/approve.png" mode=""></image>
+        	<button type="primary" @tap="login">登录</button>
             <!-- <button type="primary" @tap="$common.goTo('/packageB/pages/chart/chart')">图表</button> -->
-		</view>
-
-		<view class="menu-list" v-if="isLogin">
-			<uni-list :border="false">
-				<uni-list-item showArrow title="其他功能" @click="other" clickable></uni-list-item>
-				<uni-list-item showArrow title="退出登录" @click="logout" clickable></uni-list-item>
-			</uni-list>
-		</view>
+        </view>
+        <view class="main-content" v-if="isLogin">
+            <view class="bg-wrap">
+                <image class="my-bg" src="/static/images/logined.png" mode=""></image>
+            </view>
+            <view class="card-wrap">
+                <navigator class="my-info" url="/packageA/pages/my/setting" hover-class="navigator-hover">
+                	<view class="top-box">
+                		<image class="avatar" :src="userInfo.avatar" mode=""></image>
+                		<view class="uni-flex-column">
+                			<text class="name">{{userInfo.nickName}}</text>
+                			<text>{{userInfo.intro||'难将心事和人说 说与青天明月知'}}</text>
+                		</view>
+                		<uni-icons custom-prefix="zonefont" color="#bbbbb" type="zone-gerenziliao" size="17"></uni-icons>
+                	</view>
+                </navigator>            
+                <view class="menu-list">
+                	<uni-list :border="false">
+                		<uni-list-item showArrow title="其他功能" @click="other" clickable></uni-list-item>
+                		<uni-list-item showArrow title="退出登录" @click="logout" clickable></uni-list-item>
+                	</uni-list>
+                </view>
+            </view>
+        </view>
 	</view>
     <!-- <tabbar :tabBarShow="3"/> -->
 </pageConfig>
@@ -55,7 +60,7 @@
         },
 		methods: {
 			login() {
-				// #ifdef H5|| APP
+				// #ifdef H5 || APP || MP-ALIPAY
 				uni.navigateTo({
 					url: "/packageA/pages/my/login"
 				})
@@ -163,17 +168,25 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.container {
 		font-size: 14px;
 		line-height: 24px;
-		padding: 88rpx 32rpx 32rpx 32rpx;
+		padding: 0 0 0 0;
 	}
-
+    .bg-wrap{
+        background-color: #fff
+    }
+    .main-content{
+        .card-wrap{
+            padding: 32rpx;
+        }
+    }
 	.my-bg {
 		width: 100%;
 		height: 324rpx;
 		margin-bottom: 16rpx;
+        margin: 0 32rpx;
 	}
 
 	.my-info {
@@ -232,13 +245,18 @@
 
 	.login-wrap {
 		text-align: center;
-
+        background-color: #fff;
+        padding-top: 88rpx;
+        padding-bottom: 32rpx;
 		.login-bg {
 			margin: 0 auto 32rpx;
+            height: 480rpx;
+            width: 100%;
 		}
 
 		button {
 			width: 110px;
+            display: inline-block;
 		}
 	}
 </style>

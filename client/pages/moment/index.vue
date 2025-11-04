@@ -1,5 +1,5 @@
 <template>
-    <pageConfig title="动态" left-icon="plus" @clickLeft="clickLeft">
+    <pageConfig title="动态" :left="false">
         <view class="container moment-card-wrap">
         	<section class="moment-card" v-for="(item, index) in cardList" :key="cardList.id">
         		<div class="card-top">
@@ -45,6 +45,7 @@
         		</div>
         	</section>
         	<uni-load-more v-if="loading || status === 'noMore' " :status="status" />
+            <uni-fab @fabClick="clickLeft()" :pop-menu="false" horizontal="right" vertical="bottom"></uni-fab>
         </view>
         <!-- <tabbar :tabBarShow="1"/> -->
     </pageConfig>

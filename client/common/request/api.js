@@ -58,6 +58,12 @@ console.log('当前配置------------------------->', {
     baseUrl,
     wsUrl,
 })
+// #ifdef MP-ALIPAY || MP-WEIXIN
+const { miniProgram } = uni.getAccountInfoSync()
+// develop trial release
+console.log('小程序版本：', miniProgram.envVersion)
+// #endif
+
 export {
     fileUrl,
     baseUrl,

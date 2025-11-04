@@ -6,7 +6,7 @@
             </view>
             <view class="main-container">
                 <view class="article-content">
-                    <!-- #ifdef H5||APP-PLUS-->
+                    <!-- #ifdef H5||APP-PLUS || MP-ALIPAY-->
                     <rich-text selectable class="md-preview default-theme md md-previewOnly" :nodes="nodes"></rich-text>
                     <!-- #endif -->
 
@@ -20,17 +20,20 @@
 </template>
 
 <script>
-    // #ifndef MP-ALIPAY||MP-WEIXIN
-    import {
-        styleStr
-    } from './style.js'
-    import {
-        marked
-    } from 'marked'
+    import {styleStr} from './style.js'
+    import { marked } from 'marked'
+    
+    // #ifdef MP-ALIPAY
+    // import { markedHighlight } from "marked-highlight";
+    // import hljs from 'highlight.js';
+    // import 'highlight.js/styles/atom-one-dark-reasonable.min.css';
+    // #endif
+    
+    // #ifndef MP-WEIXIN||MP-ALIPAY
     import Prism from 'prismjs';
     import 'prismjs/themes/prism-tomorrow.css';
     // #endif
-
+        
     // #ifdef MP-WEIXIN
     import mpHtml from '../../../components/mp-html/mp-html.vue'
     // #endif
@@ -86,22 +89,39 @@
                 marked.setOptions({
                     // 设置代码高亮插件
                     highlight: function(code, lang, callback) {
-                        let result = ''
+                        let result = code
+                        // #ifndef MP-ALIPAY
                         result = Prism.highlight(code, Prism.languages.javascript, "javascript")
+                        // #endif
                         callback("", result.toString());
                     }
                 });
-                marked.parse(markdownString, (err, html) => {
-                    this.nodes = html
-                });
                 // #endif
-
+                // #ifdef MP-ALIPAY
+               // marked.setOptions({
+               //     emptyLangClass: 'hljs',
+               //     langPrefix: 'hljs language-',
+               //     highlight(code, lang, callback) {
+               //       const language = hljs.getLanguage(lang) ? lang : 'javascript';
+               //       let result = hljs.highlight(code, { language }).value;
+               //       // console.log('result', result)
+               //       callback("", result.toString());
+               //     }
+               // });
+                // #endif
+                
+                // #ifndef MP-WEIXIN
+                const html =  marked.parse(markdownString, (err, html) => {
+                     // console.log('html', err, html)
+                     this.nodes = html
+                 });
+                // #endif
+                
                 // #ifdef MP-WEIXIN
                 // 设置语言才会高亮
                 this.content = markdownString.replace(/(```language|```javascript|```typescript|```golang|```sql)/ig,
                     '```javascript')
                 // #endif
-
             },
             setRichTextStyle(html) {
                 return html

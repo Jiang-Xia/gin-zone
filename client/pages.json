@@ -247,14 +247,17 @@
 		"app-plus": {
 			"background": "#efeff4"
 		},
-		"usingComponents": {}
+		"usingComponents": {
+        }
 	},
 	"tabBar": {
         // "custom": true, // app端不生效
 		"color": "#999999",
 		"borderStyle": "white",
         // "backgroundColor": "rgba(255,255,255, 0.1)",
+        // #ifndef MP-WEIXIN
         "blurEffect": "extralight",
+        // #endif
 		// 注意：启用高斯模糊效果后不建议设置backgroundColor，如果需要设置的需要使用 rgba 设置透明度，不然看不到模糊效果
 		// "backgroundColor": "rgba(0, 122, 255,0.3)",
 		"spacing": "5px",
@@ -264,8 +267,7 @@
 				"text": "博客",
 				"pagePath": "pages/blog/index",
 				"iconPath": "static/icon/index1.png",
-				"selectedIconPath": "static/icon/index.png",
-                "iconWidth": "24px"
+				"selectedIconPath": "static/icon/index.png"
 			},
 			// #ifndef MP-WEIXIN
             {
@@ -298,7 +300,7 @@
             "height": "72px",
             "text": "",
             "iconWidth": "44px",
-            "iconPath": "static/icon/scanIcon.png"
+            "iconPath": "/static/icon/scanIcon.png"
             // "backgroundImage": "static/icon/midBg.png"
         }
 	}
