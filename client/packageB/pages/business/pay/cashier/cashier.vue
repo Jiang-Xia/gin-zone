@@ -26,32 +26,34 @@
 
         <view class="keyboard">
 
-            <table>
-                <tr>
-                    <td class="number" data-value="1" @tap="nubTap" value="1">1</td>
-                    <td class="number" data-value="2" @tap="nubTap" value="2">2</td>
-                    <td class="number" data-value="3" @tap="nubTap" value="3">3</td>
-                    <td class="back-td" @tap="backTap">
+            <view class="table">
+                <view class="tr">
+                    <view class="td number" data-value="1" @tap="nubTap" value="1">1</view>
+                    <view class="td number" data-value="2" @tap="nubTap" value="2">2</view>
+                    <view class="td number" data-value="3" @tap="nubTap" value="3">3</view>
+                    <view class="td back-td" @tap="backTap">
                         <uni-icons class="back-btn" type="closeempty" size="30"></uni-icons>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="number" data-value="4" @tap="nubTap" value="4">4</td>
-                    <td class="number" data-value="5" @tap="nubTap" value="5">5</td>
-                    <td class="number" data-value="6" @tap="nubTap" value="6">6</td>
-                    <td rowspan="3" id="sure-btn" @tap="sureTap">支付</td>
-                </tr>
-                <tr>
-                    <td class="number" data-value="7" @tap="nubTap" value="7">7</td>
-                    <td class="number" data-value="8" @tap="nubTap" value="8">8</td>
-                    <td class="number" data-value="9" @tap="nubTap" value="9">9</td>
-                </tr>
-                <tr>
-                    <td class="number" data-value="0" @tap="nubTap" value="0">0</td>
-                    <td class="number" data-value="." @tap="nubTap" value=".">·</td>
-                    <td class="clear-btn" @tap="clearTap">清除</td>
-                </tr>
-            </table>
+                    </view>
+                </view>
+                <view class="tr">
+                    <view class="td number" data-value="4" @tap="nubTap" value="4">4</view>
+                    <view class="td number" data-value="5" @tap="nubTap" value="5">5</view>
+                    <view class="td number" data-value="6" @tap="nubTap" value="6">6</view>
+                    <view class="td" rowspan="3" id="sure-btn" @tap="sureTap"></view>
+                </view>
+                <view class="tr">
+                    <view class="td number" data-value="7" @tap="nubTap" value="7">7</view>
+                    <view class="td number" data-value="8" @tap="nubTap" value="8">8</view>
+                    <view class="td number" data-value="9" @tap="nubTap" value="9">9</view>
+                    <view class="td" rowspan="3" id="sure-btn" @tap="sureTap">支付</view>
+                </view>
+                <view class="tr">
+                    <view class="td number" data-value="0" @tap="nubTap" value="0">0</view>
+                    <view class="td number" data-value="." @tap="nubTap" value=".">·</view>
+                    <view class="td clear-btn" @tap="clearTap">清除</view>
+                    <view class="td" rowspan="3" id="sure-btn" @tap="sureTap"></view>
+                </view>
+            </view>
         </view>
     </view>
 </template>
@@ -78,8 +80,32 @@
             console.log('cashier-userAuthCode', userAuthCode)
             that = this
             this.getQrcodeInfo(options.qrcode||'SE00001602')
+            // #ifdef MP-ALIPAY|| MP-WEIXIN
+            this.getOpenId()
+            // #endif
         },
         methods: {
+            getOpenId(){
+                uni.login({
+                	"onlyAuthorize": true, // 微信登录仅请求授权认证
+                	success: async (event) => {
+                		const code = event.code
+                		console.log("event.code", event.code)
+                        const res = await this.$api.post('/blog/pay/openid', {code,type:'alipay'})
+                		// console.log('----->',  res.data)
+                		uni.setStorageSync('userOpenId', res.data.openId)
+                        uni.setStorageSync('userAccessToken', res.data.accessToken)
+                	},
+                	fail: (err) => {
+                		uni.showToast({
+                			title: "授权失败",
+                			icon: "error"
+                		})
+                		// 登录授权失败  
+                		// err.code是错误码
+                	}
+                })
+            },
             /*键盘点击事件**/
             backTap(e) {
                 if (that.amount) {
@@ -116,6 +142,13 @@
                     amt = '0.';
                     that.inputamt = amt;
                 }
+            },
+            clearTap(e) {
+            	if (that.amount) {
+            		return;
+            	}
+            	amt = '';
+            	that.inputamt = amt;
             },
             sureTap(e) {
                 if (!amt || parseFloat(amt) <= 0) {
@@ -157,7 +190,7 @@
     };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     page {
         height: 100%;
     }
@@ -165,6 +198,7 @@
     .main {
         position: relative;
         height: 100%;
+        overflow: hidden;
     }
 
     .logo-img {
@@ -242,7 +276,7 @@
 
     .keyboard {
         background-color: #ffffff;
-        position: absolute;
+        position: fixed;
         bottom: 0;
         width: 100%;
         box-shadow: 2px 0px 4px #aaa;
@@ -266,20 +300,21 @@
         line-height: 90rpx;
     }
 
-    table {
+    .table {
         width: 100%;
         height: 80%;
         border-collapse: collapse;
     }
 
-    tr {
+    .tr {
         width: 100%;
         /* height: 140rpx; */
         height: 9vh;
-        border-bottom: 1px solid #eee;
+        // border-bottom: 1px solid #eee;
+        display: flex;
     }
 
-    td {
+    .td {
         width: 25%;
         text-align: center;
         vertical-align: middle;
@@ -287,12 +322,18 @@
         font-size: 40rpx;
         font-weight: bold;
         border-right: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     #sure-btn {
         font-size: 38rpx;
         background: $uni-color-primary;
         color: #ffffff;
+        border: none;
+        transform: scaleY(1.01);
     }
 
     .sure-btn {

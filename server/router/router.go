@@ -30,7 +30,7 @@ func App() (r *gin.Engine) {
 
 	// 路由匹配发生在中间件执行之前
 	router.Use(middleware.GMSMMiddleware())
-	
+
 	// 不需要经过token验证的路由
 	// authController := new(admin.Auth)
 	// router.POST("/admin/login", authController.SignIn)
@@ -109,6 +109,11 @@ func App() (r *gin.Engine) {
 		blog.GET("comment/findAll", middleware.ReverseProxy())
 		blog.GET("article/views", middleware.ReverseProxy())
 		blog.GET("resources/daily-img", middleware.ReverseProxy())
+		blog.POST("pay/trade/create", middleware.ReverseProxy())
+		blog.POST("pay/trade/query", middleware.ReverseProxy())
+		blog.POST("pay/trade/refund", middleware.ReverseProxy())
+		blog.POST("pay/trade/close", middleware.ReverseProxy())
+		blog.POST("pay/openid", middleware.ReverseProxy())
 
 		// 用于 这个模块转发其他第三方接口
 		third := v1.Group("third")

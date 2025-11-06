@@ -63,9 +63,11 @@
             this.$api.signIn().then(()=>{
                 this.init()
             })
-            // uni.navigateTo({
-            //     url: '/packageB/pages/business/webview/webview'
-            // })
+            // setTimeout(()=>{
+            //     uni.navigateTo({
+            //         url: '/packageB/pages/business/pay/cashier/cashier'
+            //     })
+            // },500)
 		},
 		methods: {
 			init() {

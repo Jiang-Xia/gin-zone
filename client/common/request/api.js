@@ -30,13 +30,13 @@ if (env === 'production') {
     wsUrl = "wss://jiang-xia.top/x-zone/api/v1"
 
     /* 本地 */
-    // fileUrl = "http://127.0.0.1:9600"
-    // baseUrl = "http://127.0.0.1:9600/api/v1"
-    // wsUrl = "ws://127.0.0.1:9600/api/v1"
+    fileUrl = "http://127.0.0.1:9600"
+    baseUrl = "http://127.0.0.1:9600/api/v1"
+    wsUrl = "ws://127.0.0.1:9600/api/v1"
 
-    // fileUrl = "http://192.168.1.51:9600"
-    // baseUrl = "http://192.168.1.51:9600/api/v1"
-    // wsUrl = "ws://192.168.1.51:9600/api/v1"
+    fileUrl = "http://192.168.31.248:9600"
+    baseUrl = "http://192.168.31.248:9600/api/v1"
+    wsUrl = "ws://192.168.31.248:9600/api/v1"
 }
 // // #ifndef MP-WEIXIN
 // const myEnv = process.env.MY_ENV;

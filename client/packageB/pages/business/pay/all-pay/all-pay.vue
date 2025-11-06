@@ -12,12 +12,15 @@
                     <view style="font-size: 40px; font-weight: 400; margin-bottom: 0px;color:#f6585d;">¥
                     </view>
                     <view class="amount" style="font-size: 40px;color:#f6585d;" v-if="randomcutFlag">
-                        {{ moneyFormatter(pageInfo.amount) }}</view>
+                        {{ moneyFormatter(pageInfo.amount) }}
+                    </view>
                     <view class="amount" style="font-size: 40px;color:#f6585d;"
                         v-else-if="pageInfo.payScene='WEB'&&pageInfo.batchNo&&pageInfo.batchNo.length!==6">
-                        {{ moneyFormatter(pageInfo.realAmount) }}</view>
+                        {{ moneyFormatter(pageInfo.realAmount) }}
+                    </view>
                     <view class="amount" style="font-size: 40px;color:#f6585d;" v-else>
-                        {{ moneyFormatter(realAmt ? realAmt : pageInfo.amount) }}</view>
+                        {{ moneyFormatter(realAmt ? realAmt : pageInfo.amount) }}
+                    </view>
 
                 </view>
                 <view v-if="pageInfo.remark" style="font-size: 28rpx;margin-top: 6px;color: #999;">
@@ -67,7 +70,8 @@
         <view class="operation-btn2 operation-btn-top">
             <view style="width: 100%">
                 <view class="flex-center sure-btn" @tap="sureTap">确认支付（¥
-                    {{ moneyFormatter(realAmt ? realAmt : pageInfo.amount) }}）</view>
+                    {{ moneyFormatter(realAmt ? realAmt : pageInfo.amount) }}）
+                </view>
             </view>
         </view>
     </view>
@@ -75,7 +79,7 @@
 <script>
     import fqPay from '../components/fq-pay/fq-pay.vue';
     export default {
-        components:{
+        components: {
             fqPay,
         },
         data() {
@@ -114,25 +118,27 @@
                     storeBrief: ''
                 },
                 userAuthCode: '',
-                
+
             };
         },
         onLoad(options) {
             this.getIp()
-            const payType = this.$tool.isWxOrAli() || 'ALIPAY'
+            const payType = this.$tool.isWxOrAli() /* || 'ALIPAY' */
             this.payType = payType
             this.pageInfo = {
                 amount: Number(options.amount),
                 remark: options.remark || '备注',
             }
             const qrcode = uni.getStorageSync('qrcode_no')
-            this.getQrcodeInfo(qrcode||'SE00001602')
+            this.getQrcodeInfo(qrcode || 'SE00001602')
             console.log('this.pageInfo', this.pageInfo)
+            // #ifdef H5
             // 获取授权码
-            this.userAuthCode = this.$tool.getQueryVariable('code') || options.auth_code || uni.getStorageSync('userAuthCode');
-            this.userAuthCode = '1111'
+            this.userAuthCode = this.$tool.getQueryVariable('code') || options.auth_code || uni.getStorageSync(
+                'userAuthCode');
             // big-pay进来也换缓存
             uni.setStorageSync('userAuthCode', this.userAuthCode)
+            // #endif
         },
         computed: {
             isAli() {
@@ -179,41 +185,38 @@
                         desc: ''
                     }
                 ]
-                const am = this.pageInfo.amount
                 if (this.isAli) {
-                    if (am >= 100 && am <= 4999.99) {
-                        const sortNum = ['hb', 'xyk', 'zfb', 'hostpay']
-                        list = this.sortPayType(sortNum, list)
-                        this.currentPayMethod = 'hb'
-                    } else if (am >= 5000) {
-                        const sortNum = ['xyk', 'hb', 'zfb', 'hostpay']
-                        list = this.sortPayType(sortNum, list)
-                        this.currentPayMethod = 'xyk'
-                    } else {
-                        const sortNum = ['zfb', 'hostpay']
-                        list = list = this.sortPayType(sortNum, list)
-                        this.currentPayMethod = 'zfb'
-                    }
+                    list = this.dealPay(list)
                 } else if (this.isWx) {
-                    if (am >= 100) {
-                        // 京东白条先隐藏
-                        // const sortNum = ['jdbt', 'wx', 'hostpay']
-                        // list = this.sortPayType(sortNum, list)
-                        // this.currentPayMethod = 'jdbt'
-                        const sortNum = ['wx', 'hostpay']
-                        list = this.sortPayType(sortNum, list)
-                        this.currentPayMethod = 'wx'
-                    } else {
-                        const sortNum = ['wx', 'hostpay']
-                        list = list = this.sortPayType(sortNum, list)
-                        this.currentPayMethod = 'wx'
-                    }
+                    const sortNum = ['wx', 'hostpay']
+                    list = list = this.sortPayType(sortNum, list)
+                    this.currentPayMethod = 'wx'
+                } else if (!this.isAli && !this.isWx) { // 非支付宝和微信中(浏览器或者其他app环境中)
+                    list = this.dealPay(list, ['wx'])
                 }
                 console.log('payTypeList', list.map(v => v.title))
                 return list
             }
         },
         methods: {
+            // 支付方式列表， wxpay 非支付宝和微信中传
+            dealPay(list, wxpay = []) {
+                const am = this.pageInfo.amount
+                if (am >= 100 && am <= 4999.99) {
+                    const sortNum = ['hb', 'xyk', 'zfb', ...wxpay, 'hostpay']
+                    list = this.sortPayType(sortNum, list)
+                    this.currentPayMethod = 'hb'
+                } else if (am >= 5000) {
+                    const sortNum = ['xyk', 'hb', 'zfb', ...wxpay, 'hostpay']
+                    list = this.sortPayType(sortNum, list)
+                    this.currentPayMethod = 'xyk'
+                } else {
+                    const sortNum = ['zfb', ...wxpay, 'hostpay']
+                    list = list = this.sortPayType(sortNum, list)
+                    this.currentPayMethod = 'zfb'
+                }
+                return list
+            },
             // 排列支付方式
             sortPayType(sortNum, payList) {
                 let list = sortNum.map(v => {
@@ -236,7 +239,8 @@
                         userRemark: this.pageInfo.remark
                     }
                     uni.redirectTo({
-                        url: '/packageB/pages/business/pay/host-pay/host-pay?qrCodeInfo='+JSON.stringify(params)
+                        url: '/packageB/pages/business/pay/host-pay/host-pay?qrCodeInfo=' + JSON.stringify(
+                            params)
                     });
                     return
                 }
@@ -252,7 +256,7 @@
             getQrcodeInfo(qrNo) {
                 this.$tool.Post('admin.qrcode.GetQrcodeInfo', {
                     qrNo,
-                    qrType:"STATIC"
+                    qrType: "STATIC"
                 }, false, (data) => {
                     console.log(data, "二维码信息")
                     if (!data.action.qrInfo && !data.action.qrCodeInfoModel) {
@@ -326,27 +330,48 @@
                     code: this.userAuthCode
                 }
                 // 分期
-                if(this.currentPayMethod === 'hb'){
-                    params.tradeFqInfo = {fqChannels: "alipayfq", fqNum: this.currentFQ, fqSellerPercent: 0}
-                }else if(this.currentPayMethod === 'xyk'){
-                    params.tradeFqInfo = {fqChannels: "alipayfq_cc", fqNum : this.currentFQ , fqSellerPercent : 0,}
+                if (this.currentPayMethod === 'hb') {
+                    params.tradeFqInfo = {
+                        fqChannels: "alipayfq",
+                        fqNum: this.currentFQ,
+                        fqSellerPercent: 0
+                    }
+                } else if (this.currentPayMethod === 'xyk') {
+                    params.tradeFqInfo = {
+                        fqChannels: "alipayfq_cc",
+                        fqNum: this.currentFQ,
+                        fqSellerPercent: 0,
+                    }
                 }
                 params.tradeInfo = tradeInfo
                 this.$tool.Post('PayOrder', params, false, (res) => {
                     if (res.payInfo) {
                         // this.payInfo = JSON.parse(res.payInfo);
                         this.payInfo = res.payInfo;
-                        this.payH5(this.payInfo)
+                        // #ifdef MP-ALIPAY || MP-WEIXIN
+                        this.payMini(this.payInfo);
+                        return
+                        // #endif
+                        this.payH5(this.payInfo);
                     }
                 })
             },
+            goto() {
+                // 跳转逻辑
+                try {
+                    uni.setStorageSync('pay_order_params', {
+                        orderNo: this.orderInfo.orderNo,
+                        mchtNo: this.qrCodeInfo.mchtNo,
+                        amount: this.realAmt ? this.realAmt : this.pageInfo.amount,
+                        storeName: this.qrCodeInfo.storeBrief || this.qrCodeInfo.storeName || ''
+                    })
+                } catch (e) {}
+                uni.redirectTo({
+                    url: '/packageB/pages/business/pay/status/status'
+                });
+            },
             payH5(payInfo) {
-                const goTo = () => {
-                    // 跳转逻辑
-                    uni.redirectTo({
-                        url: '/packageB/pages/business/pay/status/status'
-                    });
-                }
+                const goTo = this.goto
                 const type = this.payType
                 console.log('type, payInfo', type, payInfo)
                 uni.showModal({
@@ -416,6 +441,28 @@
                         return false;
                 }
             },
+            // 小程序内支付
+            async payMini(type) {
+                uni.showLoading({title: ''})
+                if (this.isAli) {
+                    const params = {
+                        out_trade_no: this.$tool.getYesterday('', 0) + this.$tool.guid(3),
+                        subject: '商品',
+                        buyer_open_id: uni.getStorageSync('userOpenId'),
+                        total_amount: String(this.pageInfo.amount)
+                    }
+                    const res = await this.$api.post('/blog/pay/trade/create', params)
+                    uni.requestPayment({
+                        tradeNO: res.data.tradeNo,
+                        success: (res) => {
+                            this.goto()
+                        },
+                        complete: (res) => {
+                            uni.hideLoading()
+                        },
+                    });
+                }
+            },
             getIp() {
                 uni.request({
                     url: 'https://myip.ipip.net',
@@ -483,8 +530,7 @@
                     }
                 });
             },
-            /* 计算营销活动金额 介绍 */
-
+            /* 计算营销活动金额 结束 */
         }
     }
 </script>

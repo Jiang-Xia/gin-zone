@@ -151,13 +151,22 @@
 			// 其他功能
 			other(){
 				const isAdmin = this.userInfo.isAdmin
-				const list = ["创建群聊"].filter(v=>isAdmin)
+				let list = ["收银台","测试"]
+                if(isAdmin){
+                    list.unshift("创建群聊")
+                }
 				uni.showActionSheet({
 					itemList: list,
 					success: async ({tapIndex}) => {
+                        let url = ""
 						if(tapIndex===0){
-							uni.navigateTo({url: "/packageA/pages/my/createGroup"})
-						}
+                            url = "/packageA/pages/my/createGroup"
+						}else if(tapIndex===1){
+                            url = "/packageB/pages/business/pay/cashier/cashier"
+                        }else if(tapIndex===2){
+                            url = "/packageB/pages/demo/demo"
+                        }
+                        uni.navigateTo({url})
 					},
 					fail: function(res) {
 						console.log(res.errMsg);
@@ -175,7 +184,8 @@
 		padding: 0 0 0 0;
 	}
     .bg-wrap{
-        background-color: #fff
+        background-color: #fff;
+        padding-left: 84rpx;
     }
     .main-content{
         .card-wrap{
@@ -186,7 +196,6 @@
 		width: 100%;
 		height: 324rpx;
 		margin-bottom: 16rpx;
-        margin: 0 32rpx;
 	}
 
 	.my-info {

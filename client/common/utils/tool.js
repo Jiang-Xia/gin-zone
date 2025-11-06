@@ -96,7 +96,7 @@ function moneyFormatter2(num) {
 }
 // 获取url参数
 function getQueryVariable(variable) {
-    var query = window.location.search.substring(1);
+    var query = location.search.substring(1);
     var vars = query.split('&');
     for (var i = 0; i < vars.length; i++) {
         var pair = vars[i].split('=');
@@ -106,29 +106,65 @@ function getQueryVariable(variable) {
     }
     return false;
 }
-
-const request = (url, ) => {
+// #ifdef MP-ALIPAY||MP-WEIXIN
+import data1 from '/static/data/json/pay/ACalculateActivity.json'
+import data2 from '/static/data/json/pay/admin.qrcode.GetQrcodeInfo.json'
+import data3 from '/static/data/json/pay/ApplyOrder.json'
+import data4 from '/static/data/json/pay/PayOrder.json'
+import data5 from '/static/data/json/pay/pub.checkActivity.queryCActivityByMcht.json'
+import data6 from '/static/data/json/pay/QueryOrder.json'
+// #endif
+const request = (url) => {
     return new Promise((resolve, reject) => {
-        uni.request({
-            url,
-            success(res) {
-                resolve(res.data)
-            },
-            fail() {
-                reject(res)
+        try {
+            // #ifdef MP-ALIPAY||MP-WEIXIN
+            const dict = {
+                'ACalculateActivity': data1,
+                'admin.qrcode.GetQrcodeInfo': data2,
+                'ApplyOrder': data3,
+                'PayOrder': data4,
+                'pub.checkActivity.queryCActivityByMcht': data5,
+                'QueryOrder': data6,
             }
-        })
+            setTimeout(() => {
+                // console.log(url + ' 接口响应参数------>', dict[url])
+                resolve(dict[url])
+            }, 500)
+            // #endif
+            // #ifndef MP-ALIPAY||MP-WEIXIN
+            uni.request({
+                url,
+                success(res) {
+                    setTimeout(() => {
+                        // console.log(url + ' 接口响应参数------>', res)
+                        resolve(res.data)
+                    }, 500)
+                },
+                fail() {
+                    reject(res)
+                }
+            })
+            // #endif
+        } catch (error) {
+            //TODO handle the exception
+            reject(error)
+        }
     })
 }
 // 请求方法,根据实际业务封装, 这里模拟请求数据
 function Post(url, params, bool, cb) {
-    console.log(url + ' 接口请求参数------>', params)
-    const jsonUrl = `./static/data/json/pay/${url}.json`
-    return request(jsonUrl).then( res => {
-        setTimeout(() => {
-            cb(res)
-        }, 100)
-    })
+   try {
+       console.log(url + ' 接口请求参数------>', params)
+       let jsonUrl = `./static/data/json/pay/${url}.json`
+       // #ifdef MP-ALIPAY||MP-WEIXIN
+       jsonUrl = url
+       // #endif
+       request(jsonUrl).then(res => {
+           cb(res)
+       })
+   } catch (error) {
+      console.error(error)
+   }
 }
 export default {
     Post,

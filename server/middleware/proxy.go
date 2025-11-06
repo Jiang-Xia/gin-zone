@@ -9,9 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var BlogUrl = "https://jiang-xia.top/x-blog/api/v1"
+// var BlogUrl = "https://jiang-xia.top/x-blog/api/v1" // 线上环境
 
-//var BlogUrl = "http://localhost:5000"
+var BlogUrl = "http://localhost:5000/api/v1" // 本地调试
 
 // https://jiang-xia.top/x-doc/blog-doc/ 文档地址
 
