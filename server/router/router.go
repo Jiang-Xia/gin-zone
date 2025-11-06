@@ -114,6 +114,7 @@ func App() (r *gin.Engine) {
 		blog.POST("pay/trade/refund", middleware.ReverseProxy())
 		blog.POST("pay/trade/close", middleware.ReverseProxy())
 		blog.POST("pay/openid", middleware.ReverseProxy())
+		blog.POST("pay/h5-open-mini", middleware.ReverseProxy())
 
 		// 用于 这个模块转发其他第三方接口
 		third := v1.Group("third")

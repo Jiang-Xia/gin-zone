@@ -104,7 +104,8 @@
             finishTap() {
                 // H5 环境使用 JSBridge 关闭，其他平台回首页
                 // #ifdef H5
-                this.$tool.closeWindow()
+                // this.$tool.closeWindow()
+                this.goHome()
                 // #endif
                 // #ifndef H5
                 this.goHome()
@@ -112,7 +113,7 @@
             },
             goHome() {
                 uni.reLaunch({
-                    url: '/pages/start/entrance/index'
+                    url: '/pages/blog/index'
                 })
             }
         }
@@ -133,6 +134,7 @@
         .logo-box {
             margin-top: 10px;
             margin-bottom: 10px;
+            text-align: center;
             image {
                 height: 32px;
                 width: 260px;

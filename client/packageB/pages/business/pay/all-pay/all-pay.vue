@@ -229,6 +229,14 @@
                 return this.$tool.moneyFormatter2(arg)
             },
             sureTap() {
+                if (!this.isAli && !this.isWx) {
+                    let type = 'WXPAY'
+                    if(['xyk', 'hb', 'zfb',].includes(this.currentPayMethod)){
+                        type = 'ALIPAY'
+                        this.h5OpenMini(type)
+                        return
+                    }
+                }
                 // 本行卡支付
                 if (this.currentPayMethod === 'hostpay') {
                     const params = {
@@ -242,9 +250,9 @@
                         url: '/packageB/pages/business/pay/host-pay/host-pay?qrCodeInfo=' + JSON.stringify(
                             params)
                     });
-                    return
+                }else{
+                    this.applyOrder()
                 }
-                this.applyOrder()
             },
             radioChange(e) {
                 this.currentPayMethod = e.detail.value
@@ -277,6 +285,9 @@
 
             /* 下单支付相关接口 开始*/
             applyOrder() {
+                uni.showLoading({
+                    title:'支付中'
+                })
                 const amount = this.pageInfo.amount
                 const mchtNo = this.qrCodeInfo.mchtNo
                 const storeNo = this.qrCodeInfo.storeNo
@@ -374,12 +385,13 @@
                 const goTo = this.goto
                 const type = this.payType
                 console.log('type, payInfo', type, payInfo)
-                uni.showModal({
-                    title: '提示',
-                    content: '支付成功',
-                    showCancel: false,
-                });
-                // return goTo()
+                // uni.showModal({
+                //     title: '提示',
+                //     content: '支付成功',
+                //     showCancel: false,
+                // });
+                uni.hideLoading()
+                return goTo()
                 switch (type) {
                     case 'WXPAY': //微信h5支付
                         WeixinJSBridge.invoke(
@@ -443,7 +455,7 @@
             },
             // 小程序内支付
             async payMini(type) {
-                uni.showLoading({title: ''})
+                uni.showLoading({title: '加载中'})
                 if (this.isAli) {
                     const params = {
                         out_trade_no: this.$tool.getYesterday('', 0) + this.$tool.guid(3),
@@ -531,6 +543,25 @@
                 });
             },
             /* 计算营销活动金额 结束 */
+            /* 唤起小程序 开始*/
+            async h5OpenMini (type){
+                try {
+                    uni.showLoading({title: '加载中'})
+                    const params = {
+                        page: '/packageB/pages/business/pay/all-pay/all-pay',
+                        query: {amount:this.pageInfo.amount,remark: this.pageInfo.remark}
+                    }
+                    const res = await this.$api.post('/blog/pay/h5-open-mini', params)
+                    uni.hideLoading()
+                    console.log(res, '------->')
+                    location.href = res.data.scheme;
+                    // location.href = res.data.universalLink;
+                    
+                } catch (error) {
+                    uni.hideLoading()
+                }
+            }
+            /* 唤起小程序 结束*/
         }
     }
 </script>
