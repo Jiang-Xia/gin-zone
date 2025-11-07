@@ -151,15 +151,20 @@
 			// 其他功能
 			other(){
 				const isAdmin = this.userInfo.isAdmin
-				let list = ["收银台","测试"]
-                if(isAdmin){
-                    list.unshift("创建群聊")
-                }
+				let list = ["创建群聊", "收银台","测试"]
+                
 				uni.showActionSheet({
 					itemList: list,
 					success: async ({tapIndex}) => {
                         let url = ""
 						if(tapIndex===0){
+                            if(!isAdmin){
+                                uni.showToast({
+                                	title: "您不是管理员",
+                                	icon: "error"
+                                })
+                                return
+                            }
                             url = "/packageA/pages/my/createGroup"
 						}else if(tapIndex===1){
                             url = "/packageB/pages/business/pay/cashier/cashier"

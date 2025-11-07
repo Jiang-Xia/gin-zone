@@ -45,7 +45,9 @@
         		</div>
         	</section>
         	<uni-load-more v-if="loading || status === 'noMore' " :status="status" />
+            <!-- #ifndef APP -->
             <uni-fab @fabClick="clickLeft()" :pop-menu="false" horizontal="right" vertical="bottom"></uni-fab>
+            <!-- #endif -->
         </view>
         <!-- <tabbar :tabBarShow="1"/> -->
     </pageConfig>

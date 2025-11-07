@@ -44,7 +44,9 @@
                     </uni-swipe-action-item>
                 </uni-swipe-action>
             </uni-list>
+            <!-- #ifndef APP -->
             <uni-fab @fabClick="clickLeft()" :pop-menu="false" horizontal="right" vertical="bottom"></uni-fab>
+            <!-- #endif -->
         </view>
         <!-- <tabbar :tabBarShow="2"/> -->
     </pageConfig>

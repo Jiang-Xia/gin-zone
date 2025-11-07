@@ -80,16 +80,7 @@
 
             </view>
         </view>
-        <view style="width: 100%; margin-top: 40rpx" @tap="sureTap">
-            <button style="background: rgb(31, 52, 106); color: #fff; border-radius: 18rpx">
-            </button>
-        </view>
         <view class="operation-btn2">
-            <!-- <view style="width: 100%">
-                <view class="flex-center sure-btn" @tap="sureTap">确认支付（¥
-                    {{ $tool.moneyFormatter2(qrCodeInfo.userAmount) }}）
-                </view>
-            </view> -->
             <button class="btn-box" @tap="sureTap" type="primary">确认支付（¥{{ $tool.moneyFormatter2(qrCodeInfo.userAmount) }})</button>
         </view>
 
@@ -111,7 +102,7 @@
                 day: 0,
                 payType: '',
                 hostpay: {
-                    phone: '13777777777',
+                    phone: '18888888888',
                     name: '江湖',
                     idCardLastSix: '123456',
                     authCode: '',

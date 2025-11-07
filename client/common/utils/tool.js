@@ -27,7 +27,8 @@ function guid(loop) {
 }
 // 判断是微信还是支付宝环境
 function isWxOrAli() {
-    const ua = navigator.userAgent.toLowerCase();
+    const ua = navigator?.userAgent.toLowerCase();
+    if(!ua){return}
     let payType = ''
     if (ua.match(/MicroMessenger/i) == 'micromessenger') {
         uni.setStorageSync('user_agent', 'WXPAY');
@@ -96,7 +97,7 @@ function moneyFormatter2(num) {
 }
 // 获取url参数
 function getQueryVariable(variable) {
-    var query = location.search.substring(1);
+    var query = location?.search.substring(1);
     var vars = query.split('&');
     for (var i = 0; i < vars.length; i++) {
         var pair = vars[i].split('=');
@@ -106,7 +107,7 @@ function getQueryVariable(variable) {
     }
     return false;
 }
-// #ifdef MP-ALIPAY||MP-WEIXIN
+// #ifdef MP-ALIPAY||MP-WEIXIN||APP
 import data1 from '/static/data/json/pay/ACalculateActivity.json'
 import data2 from '/static/data/json/pay/admin.qrcode.GetQrcodeInfo.json'
 import data3 from '/static/data/json/pay/ApplyOrder.json'
@@ -117,7 +118,7 @@ import data6 from '/static/data/json/pay/QueryOrder.json'
 const request = (url) => {
     return new Promise((resolve, reject) => {
         try {
-            // #ifdef MP-ALIPAY||MP-WEIXIN
+            // #ifdef MP-ALIPAY||MP-WEIXIN||APP
             const dict = {
                 'ACalculateActivity': data1,
                 'admin.qrcode.GetQrcodeInfo': data2,
@@ -127,11 +128,11 @@ const request = (url) => {
                 'QueryOrder': data6,
             }
             setTimeout(() => {
-                // console.log(url + ' 接口响应参数------>', dict[url])
+                console.log(url + ' 接口响应参数------>', dict[url])
                 resolve(dict[url])
             }, 500)
             // #endif
-            // #ifndef MP-ALIPAY||MP-WEIXIN
+            // #ifndef MP-ALIPAY||MP-WEIXIN||APP
             uni.request({
                 url,
                 success(res) {
@@ -140,14 +141,14 @@ const request = (url) => {
                         resolve(res.data)
                     }, 500)
                 },
-                fail() {
-                    reject(res)
+                fail(err) {
+                    reject(err)
                 }
             })
             // #endif
         } catch (error) {
-            //TODO handle the exception
             reject(error)
+            console.error(error)
         }
     })
 }
@@ -156,7 +157,7 @@ function Post(url, params, bool, cb) {
    try {
        console.log(url + ' 接口请求参数------>', params)
        let jsonUrl = `./static/data/json/pay/${url}.json`
-       // #ifdef MP-ALIPAY||MP-WEIXIN
+       // #ifdef MP-ALIPAY||MP-WEIXIN||APP
        jsonUrl = url
        // #endif
        request(jsonUrl).then(res => {

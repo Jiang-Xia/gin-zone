@@ -118,13 +118,14 @@
                     storeBrief: ''
                 },
                 userAuthCode: '',
-
+                // options: ''
             };
         },
         onLoad(options) {
             this.getIp()
             const payType = this.$tool.isWxOrAli() /* || 'ALIPAY' */
             this.payType = payType
+            // this.options = options
             this.pageInfo = {
                 amount: Number(options.amount),
                 remark: options.remark || '备注',
@@ -139,6 +140,8 @@
             // big-pay进来也换缓存
             uni.setStorageSync('userAuthCode', this.userAuthCode)
             // #endif
+        },
+        onshow(){
         },
         computed: {
             isAli() {
@@ -367,10 +370,11 @@
                     }
                 })
             },
-            goto() {
+            goto(status = 'PROCESSING') {
                 // 跳转逻辑
                 try {
                     uni.setStorageSync('pay_order_params', {
+                        status:status,
                         orderNo: this.orderInfo.orderNo,
                         mchtNo: this.qrCodeInfo.mchtNo,
                         amount: this.realAmt ? this.realAmt : this.pageInfo.amount,
@@ -464,10 +468,15 @@
                         total_amount: String(this.pageInfo.amount)
                     }
                     const res = await this.$api.post('/blog/pay/trade/create', params)
+                    uni.setStorageSync('payOutTradeNo', params.out_trade_no)
                     uni.requestPayment({
                         tradeNO: res.data.tradeNo,
                         success: (res) => {
-                            this.goto()
+                            if(res.resultCode === '9000'){
+                                this.goto('SUCCESS')
+                            }else{
+                                this.goto('PROCESSING')   
+                            }
                         },
                         complete: (res) => {
                             uni.hideLoading()
@@ -553,10 +562,24 @@
                     }
                     const res = await this.$api.post('/blog/pay/h5-open-mini', params)
                     uni.hideLoading()
-                    console.log(res, '------->')
-                    location.href = res.data.scheme;
+                    // console.log(res, '------->')
                     // location.href = res.data.universalLink;
-                    
+                    const schemeUrl = res.data.scheme
+                      // #ifdef APP-PLUS
+                      plus.runtime.openURL(schemeUrl, (error) => {
+                        if (error) {
+                          console.error('唤起失败:', error);
+                          uni.showToast({
+                            title: '唤起失败或未安装支付宝',
+                            icon: 'none'
+                          });
+                        }
+                      });
+                      // #endif
+                      
+                      // #ifndef
+                      location.href = schemeUrl;
+                      // #endif
                 } catch (error) {
                     uni.hideLoading()
                 }

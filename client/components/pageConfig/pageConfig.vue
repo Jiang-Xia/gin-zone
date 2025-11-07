@@ -1,6 +1,6 @@
 <template>
     <view class="page-config">
-        <!-- #ifndef MP-ALIPAY-->
+        <!-- #ifndef MP-ALIPAY || APP-PLUS -->
         <uni-nav-bar backgroundColor="#ffffff" v-if="navbar" class="global-nav" fixed :border="border" statusBar @clickLeft="clickLeft">
             <view class="nav-title">{{title}}</view>
             <template v-slot:left>

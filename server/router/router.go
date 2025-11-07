@@ -110,7 +110,7 @@ func App() (r *gin.Engine) {
 		blog.GET("article/views", middleware.ReverseProxy())
 		blog.GET("resources/daily-img", middleware.ReverseProxy())
 		blog.POST("pay/trade/create", middleware.ReverseProxy())
-		blog.POST("pay/trade/query", middleware.ReverseProxy())
+		blog.GET("pay/trade/query", middleware.ReverseProxy())
 		blog.POST("pay/trade/refund", middleware.ReverseProxy())
 		blog.POST("pay/trade/close", middleware.ReverseProxy())
 		blog.POST("pay/openid", middleware.ReverseProxy())

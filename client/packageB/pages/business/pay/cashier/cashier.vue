@@ -1,7 +1,7 @@
 <template>
     <view class="main">
         <view class="tapin-container">
-            <view class="flex-center"><img class="logo-img" src="/static/business/images/pay/bank-logo.png" />
+            <view class="flex-center"><image class="logo-img" src="/static/business/images/pay/bank-logo.png" />
             </view>
             <view class="flex-center title-name">{{ storeBrief }}</view>
             <view class="top-content">

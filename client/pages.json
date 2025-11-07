@@ -11,8 +11,8 @@
 			"path": "pages/blog/index",
 			"style": {
 				"navigationBarTitleText": "博客",
-				"enablePullDownRefresh": true,
-                "navigationStyle": "custom"
+				"enablePullDownRefresh": true
+                // "navigationStyle": "custom"
 			}
 		},
 		
@@ -21,7 +21,7 @@
 			"style": {
 				"navigationBarTitleText": "动态",
 				"enablePullDownRefresh": true,
-                "navigationStyle": "custom",
+                // "navigationStyle": "custom",
 				"h5": {
 					"titleNView": {
 						"buttons": [{
@@ -51,7 +51,7 @@
 			"style": {
 				"navigationBarTitleText": "聊天",
 				"enablePullDownRefresh": true,
-                "navigationStyle": "custom",
+                // "navigationStyle": "custom",
 				"h5": {
 					"titleNView": {
 						"buttons": [{
@@ -150,14 +150,15 @@
 				{
 					"path": "pages/chat/addFriend",
 					"style": {
-						"navigationBarTitleText": ""
+						"navigationBarTitleText": "添加好友"
 					}
 				},
 				{
 					"path": "pages/my/login",
 					"style": {
 						"navigationBarTitleText": "登录",
-						"enablePullDownRefresh": false
+						"enablePullDownRefresh": false,
+                        "navigationStyle": "custom"
 					}
 				
 				},
@@ -183,13 +184,13 @@
         		{
         			"path": "pages/chart/chart",
         			"style": {
-        				"navigationStyle": "custom"
+        				"navigationBarTitleText": "图表"
         			}
         		},
                 {
                     "path" : "pages/demo/demo",
                     "style": {
-                    	"navigationStyle": "custom"
+                    	"navigationBarTitleText": "demo"
                     }
                 },
                 /* 编写工作业务组件business 开始*/ 
@@ -239,11 +240,16 @@
         }
 	],
 	"globalStyle": {
-		"navigationStyle": "custom",
+        
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "zone",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8",
+        "navigationBarBackgroundColor": "#ffffff",
+        "backgroundColor": "#ffffff",
+        // #ifndef APP
+        "navigationStyle": "custom",
+        // "navigationBarBackgroundColor": "#f7f7f7",
+        // "backgroundColor": "#f7f7f7",
+        // #endif 
 		"app-plus": {
 			"background": "#efeff4"
 		},

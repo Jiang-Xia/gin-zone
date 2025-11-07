@@ -16,8 +16,8 @@
             </view>
 
             <view class="btn-group">
-                <view class="btn primary" @tap="finishTap">完成</view>
-                <view class="btn ghost" @tap="goHome">返回首页</view>
+                <view class="btn primary" @tap="goHome">首页</view>
+                <view class="btn ghost" @tap="returnTap">返回</view>
             </view>
         </view>
     </view>
@@ -31,6 +31,12 @@
                 amount: null,
                 storeName: '',
                 timer: null,
+                statusDict:{
+                    WAIT_BUYER_PAY: '支付中',
+                    TRADE_CLOSED: '交易关闭',
+                    TRADE_SUCCESS: '支付成功',
+                    TRADE_FINISHED: '交易结束',
+                }
             }
         },
         onLoad() {
@@ -43,7 +49,12 @@
                     this._mchtNo = cache.mchtNo
                 }
             } catch (e) {}
+            // #ifdef MP-ALIPAY
+            this.queryStatus()
+            // #endif
+            // #ifndef MP-ALIPAY
             this.queryOrder()
+            // #endif
         },
         onUnload() {
             if (this.timer) clearTimeout(this.timer)
@@ -65,6 +76,22 @@
         methods: {
             moneyFormatter(arg) {
                 return this.$tool.moneyFormatter2(arg)
+            },
+            async queryStatus(type) {
+                try {
+                    uni.showLoading({title: '加载中'})
+                    const params = {
+                        out_trade_no: uni.getStorageSync('payOutTradeNo'),
+                    }
+                    const res = await this.$api.get('/blog/pay/trade/query', params)
+                    console.log('query',res)
+                    if(res.data.tradeStatus === 'TRADE_SUCCESS'){
+                        this.status = 'SUCCESS'
+                    }
+                    uni.hideLoading()
+                } catch (error) {
+                    uni.hideLoading()
+                }
             },
             queryOrder() {
                 // 由于模拟数据不依赖入参，这里直接请求即可
@@ -101,15 +128,8 @@
                     }
                 })
             },
-            finishTap() {
-                // H5 环境使用 JSBridge 关闭，其他平台回首页
-                // #ifdef H5
-                // this.$tool.closeWindow()
-                this.goHome()
-                // #endif
-                // #ifndef H5
-                this.goHome()
-                // #endif
+            returnTap() {
+               uni.navigateBack()
             },
             goHome() {
                 uni.reLaunch({
