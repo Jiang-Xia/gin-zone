@@ -4,7 +4,10 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npm run dev:h5",
+    "dev:h5": "uni -p h5",
+    "build:h5": "uni build -p h5"
   },
   "uni-app": {
     "scripts": {

@@ -14,11 +14,17 @@
             <view class="tips" v-if="isProcessing">
                 支付结果获取中，请稍候...
             </view>
-
+            <!--#ifndef MP -->
             <view class="btn-group">
-                <view class="btn primary" @tap="goHome">首页</view>
+                <view class="btn primary" @tap="goHome">完成</view>
                 <view class="btn ghost" @tap="returnTap">返回</view>
             </view>
+            <!-- #endif -->
+            <!--#ifdef MP -->
+            <view class="btn-group">
+                <view class="btn primary" @tap="goHome">完成</view>
+            </view>
+            <!-- #endif -->
         </view>
     </view>
 </template>
@@ -109,7 +115,7 @@
                         } else {
                             this.status = 'PROCESSING'
                         }
-                        this.amount = typeof info.amount === 'number' ? info.amount : (info.realAmount || null)
+                        // this.amount = typeof info.amount === 'number' ? info.amount : (info.realAmount || null)
                         this.storeName = info.storeName || info.mchtName || ''
                     } catch (e) {
                         this.status = 'PROCESSING'
@@ -132,9 +138,14 @@
                uni.navigateBack()
             },
             goHome() {
+                // #ifdef H5||APP
                 uni.reLaunch({
                     url: '/pages/blog/index'
                 })
+                // #endif
+                // #ifdef MP-ALIPAY||MP-WEIXIN
+                uni.exitMiniProgram()
+                // #endif
             }
         }
     }

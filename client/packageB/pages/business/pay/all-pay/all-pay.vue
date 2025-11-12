@@ -191,7 +191,7 @@
                 if (this.isAli) {
                     list = this.dealPay(list)
                 } else if (this.isWx) {
-                    const sortNum = ['wx', 'hostpay']
+                    const sortNum = ['wx', /* 'zfb', */ 'hostpay']
                     list = list = this.sortPayType(sortNum, list)
                     this.currentPayMethod = 'wx'
                 } else if (!this.isAli && !this.isWx) { // 非支付宝和微信中(浏览器或者其他app环境中)
@@ -232,7 +232,8 @@
                 return this.$tool.moneyFormatter2(arg)
             },
             sureTap() {
-                if (!this.isAli && !this.isWx) {
+                // 非支付宝里都跳
+                if ((!this.isAli && !this.isWx)/* ||this.isWx */) {
                     let type = 'WXPAY'
                     if(['xyk', 'hb', 'zfb',].includes(this.currentPayMethod)){
                         type = 'ALIPAY'
@@ -565,7 +566,7 @@
                     // console.log(res, '------->')
                     // location.href = res.data.universalLink;
                     const schemeUrl = res.data.scheme
-                      // #ifdef APP-PLUS
+                      // #ifdef APP
                       plus.runtime.openURL(schemeUrl, (error) => {
                         if (error) {
                           console.error('唤起失败:', error);
@@ -577,7 +578,7 @@
                       });
                       // #endif
                       
-                      // #ifndef
+                      // #ifndef APP
                       location.href = schemeUrl;
                       // #endif
                 } catch (error) {

@@ -15,7 +15,7 @@
                 <view style="font-size: 28rpx;color: rgb(100, 100, 100);margin-top: 10rpx;">添加备注(60字以内)</view>
 
                 <view class="flex-start item">
-                    <input class="cell-input" maxlength="60" id="mark" @input="onCommonBlur" :value="mark"
+                    <input class="cell-input" maxlength="60" id="mark" @input="onCommonBlur" :value="mark" @focus="keyboard=false" @blur="keyboard=true"
                         placeholder-style="color:#ddd" placeholder="请输入" />
                 </view>
             </view>
@@ -24,8 +24,7 @@
             <view class="flex-center sure-btn" @tap="sureTap">立即支付</view>
         </view>
 
-        <view class="keyboard">
-
+        <view class="keyboard" v-show="keyboard">
             <view class="table">
                 <view class="tr">
                     <view class="td number" data-value="1" @tap="nubTap" value="1">1</view>
@@ -72,6 +71,7 @@
                 orderInfo: {},
                 options: {},
                 ip: '',
+                keyboard:true
             };
         },
         onShow: function() {},

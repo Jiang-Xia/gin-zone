@@ -11,8 +11,13 @@
 			"path": "pages/blog/index",
 			"style": {
 				"navigationBarTitleText": "博客",
-				"enablePullDownRefresh": true
-                // "navigationStyle": "custom"
+				"enablePullDownRefresh": true,
+                "navigationStyle": "custom",
+                "mp-alipay": {
+                    "transparentTitle": "always",
+                    "titlePenetrate": "YES",
+                    "titleImage":""
+                }
 			}
 		},
 		

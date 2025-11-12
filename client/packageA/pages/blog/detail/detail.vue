@@ -4,6 +4,37 @@
             <view class="cover">
                 <image :src="articleInfo.cover"></image>
             </view>
+            <view class="article-meta">
+                <view class="article-title">{{ articleInfo.description }}</view>
+                <view class="meta-info">
+                    <view class="meta-item">
+                        <uni-icons type="person" size="14" color="#666"></uni-icons>
+                        <text class="meta-text">{{ articleInfo.userInfo?.nickname || '未知作者' }}</text>
+                    </view>
+                    <view class="meta-item">
+                        <uni-icons type="calendar" size="14" color="#666"></uni-icons>
+                        <text class="meta-text">{{ articleInfo.uTime }}</text>
+                    </view>
+                    <view class="meta-item">
+                        <uni-icons type="eye" size="14" color="#666"></uni-icons>
+                        <text class="meta-text">{{ articleInfo.views || 0 }}</text>
+                        <uni-icons type="hand-up" size="14" color="#666"></uni-icons>
+                        <text class="meta-text">{{ articleInfo.likes || 0 }}</text>
+                    </view>
+                </view>
+                <view class="article-tags" v-if="articleInfo.tags && articleInfo.tags.length > 0">
+                     <text>标签：</text>
+                    <view class="tag" v-for="tag in articleInfo.tags" :key="tag" :style="{backgroundColor: tag.color}">
+                        <text class="tag-text">{{ tag.label }}</text>
+                    </view>
+                </view>
+                <view class="article-tags" v-if="articleInfo.category">
+                    <text>分类：</text>
+                    <view class="tag" :style="{backgroundColor: articleInfo.category.color}">
+                        <text class="tag-text">{{ articleInfo.category.label }}</text>
+                    </view>
+                </view>
+            </view>
             <view class="main-container">
                 <view class="article-content">
                     <!-- #ifdef H5||APP-PLUS || MP-ALIPAY-->
@@ -22,6 +53,7 @@
 <script>
     import {styleStr} from './style.js'
     import { marked } from 'marked'
+    import { formatTime } from '@/common/utils/util.js'
     
     // #ifdef MP-ALIPAY
     // import { markedHighlight } from "marked-highlight";
@@ -63,6 +95,7 @@
             this.getArticleInfo(this.id)
         },
         methods: {
+            formatTime,
             async getArticleInfo(id, ctx) {
                 uni.showLoading({
                     title: ''
@@ -135,6 +168,72 @@
         user-select: text;
         font-weight: 36rpx;
         padding-bottom: 40rpx;
+        position: relative;
+        .article-meta {
+            box-sizing: border-box;
+            position: absolute;
+            top: 20rpx;
+            left: 20rpx;
+            width: calc(100% - 40rpx);
+            background: rgba(255, 255, 255, 0.7); /* 半透明白色背景 */
+            border-radius: 16rpx;
+            padding: 20rpx 0;
+            backdrop-filter: blur(15px); /* 毛玻璃效果 */
+            padding: 24rpx;
+            margin-bottom: 6rpx;
+            box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+            min-height: 360rpx;
+
+            .article-title {
+                font-size: 30rpx;
+                font-weight: 500;
+                color: #333;
+                line-height: 1.2;
+                margin-bottom: 20rpx;
+                max-height: 112rpx;
+                overflow: hidden;
+            }
+
+            .meta-info {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 24rpx;
+                margin-bottom: 20rpx;
+
+                .meta-item {
+                    display: flex;
+                    align-items: center;
+                    font-size: 24rpx;
+                    color: #666;
+
+                    .meta-text {
+                        margin-left: 8rpx;
+                    }
+                }
+            }
+
+            .article-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 16rpx;
+                margin-bottom: 20rpx;
+                font-size: 24rpx;
+                color: #666;
+                .tag {
+                    display: flex;
+                    align-items: center;
+                    background-color: rgba(255, 255, 255, 0.4);
+                    border-radius: 30rpx;
+                    padding: 6rpx 16rpx;
+                    font-size: 20rpx;
+                    color: #fff;
+
+                    .tag-text {
+                        margin-left: 6rpx;
+                    }
+                }
+            }
+        }
 
         .main-container {
             margin-top: 24rpx;
@@ -142,7 +241,7 @@
 
         .cover {
             height: 400rpx;
-
+            // filter: blur(28px) brightness(.95);
             image {
                 width: 100%;
                 height: 100%;

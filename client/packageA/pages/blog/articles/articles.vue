@@ -25,8 +25,9 @@
 			</uni-list-item> -->
 			
 			<!-- 左图右文 -->
+            <!-- :rightText="item.userInfo.nickname" -->
 			<uni-list-item direction="row" clickable v-for="item in articleList" :key="item.id" :title="item.title"
-			showArrow
+                showArrow
 				:note="item.userInfo.nickname + ' '+item.createTime"
 				:to="'/packageA/pages/blog/detail/detail?id='+item.id">
 				<template v-slot:header>
