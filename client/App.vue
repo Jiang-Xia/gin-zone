@@ -270,13 +270,11 @@
 	@import "@/static/iconfont.css";
 	@import "common/css/base.scss";
 	@import "common/css/animate.min.css";
-	/*每个页面公共css 引入辅助样式*/
+	/*每个页面公共css 引入辅助样式(类型)*/
+    // 文档 https://uniapp.dcloud.net.cn/component/uniui/uni-sass.html
 	@import '@/uni_modules/uni-scss/index.scss';
 	// 编辑器样式
 	@import 'common/css/editor-v3.style.css';
-
-	/* #ifndef APP-NVUE */
-    /* #endif */
     
 	// 设置整个项目的背景色
 	page {
@@ -287,12 +285,11 @@
         // background-color: red;
 		user-select: auto;
 	}
+    
 	image{
 	    background-size: contain;
 	}
-    // page {
-    // 	background-color: $uni-bg-color-grey;
-    // }
+  
 	// 自定义导航栏公共样式
 	.uni-navbar {
 		.nav-title {
@@ -356,45 +353,14 @@
     .uni-color-gary {
     	color: #3b4144;
     }
-    
-    /* 标题 */
-    .uni-title {
-    	display: flex;
-    	margin-bottom: $uni-spacing-col-base;
-    	font-size: $uni-font-size-lg;
-    	font-weight: bold;
-    	color: #3b4144;
-    }
-    
-    .uni-title-sub {
-    	display: flex;
-    	// margin-bottom: $uni-spacing-col-base;
-    	font-size: $uni-font-size-base;
-    	font-weight: 500;
-    	color: #3b4144;
-    }
-    
-    /* 描述 额外文本 */
-    .uni-note {
-    	margin-top: 10px;
-    	color: #999;
-    	font-size: $uni-font-size-sm;
-    }
-    
-    /* 列表内容 */
-    .uni-list-box {
-    	@extend .uni-flex-row;
-    	flex: 1;
-    	margin-top: 10px;
-    }
-    
+
     /* 略缩图 */
     .uni-thumb {
     	flex-shrink: 0;
-    	margin-right: $uni-spacing-row-base;
+    	margin-right:$uni-spacing-sm;
     	width: 125px;
     	height: 75px;
-    	border-radius: $uni-border-radius-lg;
+    	border-radius: $uni-radius-root;
     	overflow: hidden;
     	border: 1px #f5f5f5 solid;
     	image {
@@ -402,79 +368,4 @@
     		height: 100%;
     	}
     }
-    
-    .uni-media-box {
-    	@extend .uni-flex-row;
-    	// margin-bottom: $uni-spacing-col-base;
-    	border-radius: $uni-border-radius-lg;
-    	overflow: hidden;
-    	.uni-thumb {
-    		margin: 0;
-    		margin-left: 4px;
-    		flex-shrink: 1;
-    		width: 33%;
-    		border-radius:0;
-    		&:first-child {
-    			margin: 0;
-    		}
-    	}
-    }
-    
-    /* 内容 */
-    .uni-content {
-    	@extend .uni-flex-column;
-    	justify-content: space-between;
-    }
-    
-    /* 列表footer */
-    .uni-footer {
-    	@extend .uni-flex-row;
-    	justify-content: space-between;
-    	margin-top: $uni-spacing-col-lg;
-    }
-    .uni-footer-text {
-    	font-size: $uni-font-size-sm;
-    	color: $uni-text-color-grey;
-    	margin-left: 5px;
-    }
-    
-    /* 标签 */
-    
-    .uni-tag {
-    	flex-shrink: 0;
-    	padding: 0 5px;
-    	border: 1px $uni-border-color solid;
-    	margin-right: $uni-spacing-row-sm;
-    	border-radius: $uni-border-radius-base;
-    	background: $uni-bg-color-grey;
-    	color: $uni-text-color;
-    	font-size: $uni-font-size-sm;
-    }
-    
-    /* 链接 */
-    .uni-link {
-    	margin-left: 10px;
-    	color: $uni-text-color;
-    	text-decoration: underline;
-    }
-    
-    .ellipsis {
-    	display: flex;
-    	overflow: hidden;
-    }
-    
-    .uni-ellipsis-1 {
-    	overflow: hidden;
-    	white-space: nowrap;
-    	text-overflow: ellipsis;
-    }
-    
-    .uni-ellipsis-2 {
-    	overflow: hidden;
-    	text-overflow: ellipsis;
-    	display: -webkit-box;
-    	-webkit-line-clamp: 2;
-    	-webkit-box-orient: vertical;
-    }
-    
 </style>

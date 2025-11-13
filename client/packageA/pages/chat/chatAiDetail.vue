@@ -423,7 +423,7 @@
 
 		// 昵称
 		.nickname {
-			color: $uni-text-color-grey;
+			color: $uni-extra-color;
 			font-size: 13px;
 		}
 
@@ -558,7 +558,7 @@
 		width: 110rpx;
 		height: 60rpx;
 		border-radius: 10rpx;
-		background: $uni-color-primary;
+		background: $uni-primary;
 
 	}
 

@@ -161,7 +161,7 @@ export default {
         }
 
         .action {
-            color: $uni-color-primary;
+            color: $uni-primary;
         }
     }
 }

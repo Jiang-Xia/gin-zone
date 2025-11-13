@@ -68,6 +68,7 @@
             }
             uni.setNavigationBarColor({
               backgroundColor:'#ffffff',
+              frontColor:'#000000'
             });
             // #endif
         },

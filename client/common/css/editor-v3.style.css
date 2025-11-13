@@ -216,7 +216,7 @@
 .md-catalog-editor {
     --md-color: #222;
     --md-hover-color: #000;
-    --md-bk-color: #fff;
+    --md-bk-color: $uni-white;
     --md-bk-color-outstand: #f6f6f6;
     --md-bk-hover-color: #f5f7fa;
     --md-border-color: #e6e6e6;
@@ -303,7 +303,7 @@
 .md {
     --md-color: #222;
     --md-hover-color: #000;
-    --md-bk-color: #fff;
+    --md-bk-color: $uni-white;
     --md-bk-color-outstand: #f6f6f6;
     --md-bk-hover-color: #f5f7fa;
     --md-border-color: #e6e6e6;
@@ -1300,7 +1300,7 @@
 }
 
 .github-theme table tr {
-    background-color: #fff;
+    background-color: $uni-white;
     border-top: 1px solid #d8dee4
 }
 
@@ -2155,7 +2155,7 @@
     --cyanosis-linkh-color: #007fff;
     --cyanosis-border-color: #bedcff;
     --cyanosis-border-color-2: #ececec;
-    --cyanosis-bg-color: #fff;
+    --cyanosis-bg-color: $uni-white;
     --cyanosis-blockquote-color: #8c8c8c;
     --cyanosis-blockquote-bg-color: #f0fdff;
     --cyanosis-code-color: #c2185b;

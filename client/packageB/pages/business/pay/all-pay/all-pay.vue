@@ -601,7 +601,7 @@
             margin: 30rpx;
             margin-top: 30rpx;
             margin-bottom: 100px;
-            background: #fff;
+            background: $uni-white;
             padding: 6px;
             border-radius: 8px;
             min-height: 600rpx;
@@ -623,7 +623,7 @@
         .cell-right {
             flex: 1;
             height: 100rpx;
-            border-bottom: 1rpx solid $uni-border-color2;
+            border-bottom: 1rpx solid $uni-border-2;
             margin-left: 20rpx;
         }
 
@@ -638,7 +638,7 @@
 
         .sure-btn {
             margin: -30rpx 30rpx 0rpx 30rpx;
-            background-color: $uni-color-primary;
+            background-color: $uni-primary;
             height: 110rpx;
             line-height: 110rpx;
             text-align: center;
@@ -663,7 +663,7 @@
         .pay-time {
             margin-top: 20rpx;
             font-size: 24rpx;
-            color: $uni-text-color;
+            color: $uni-main-color;
             height: 40rpx;
             line-height: 40rpx;
             // margin-bottom: 50px;
@@ -671,7 +671,7 @@
 
         .van-count-down {
             font-size: 24rpx;
-            color: $uni-text-color;
+            color: $uni-main-color;
         }
 
         .time-box {

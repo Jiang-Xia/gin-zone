@@ -124,7 +124,7 @@
 <style lang="scss">
 	.form-wrap {
 		padding: 15px;
-		background-color: #fff;
+		background-color: $uni-white;
 
 		.btn-wrap {
 			&::after {

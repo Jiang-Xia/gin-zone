@@ -6,24 +6,6 @@
 		</uni-search-bar>
 
 		<uni-list>
-			<!-- 大图模式 -->
-			<!-- <uni-list-item v-for="item in articleList" direction="column" clickable showArrow :rightText="String(item.views)" 
-			:note="item.userInfo.nickname + ' '+item.createTime"
-			:to="'/packageA/pages/blog/detail/detail?id='+item.id"
-			>
-				<template v-slot:header>
-					<view class="uni-title">{{item.title}}</view>
-					<view class="uni-thumb uni-content list-picture">
-						<image :src="item.cover" mode="aspectFill"></image>
-					</view>
-				</template>
-				<template v-slot:body1>
-					<view class="custom-note">
-						{{item.userInfo.nickname + ' '+item.createTime+' '+item.views}}
-					</view>
-				</template>
-			</uni-list-item> -->
-			
 			<!-- 左图右文 -->
             <!-- :rightText="item.userInfo.nickname" -->
 			<uni-list-item direction="row" clickable v-for="item in articleList" :key="item.id" :title="item.title"
@@ -118,10 +100,10 @@
 
 <style lang="scss" scoped>
     .article-list{
-        background-color: #fff;
+        background-color: $uni-white;
     }
     .uni-searchbar{
-        background-color: #fff;
+        background-color: $uni-white;
     }
 	.content {
 		width: 100%;

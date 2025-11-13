@@ -226,7 +226,7 @@
                     border-radius: 30rpx;
                     padding: 6rpx 16rpx;
                     font-size: 20rpx;
-                    color: #fff;
+                    color: $uni-white;
 
                     .tag-text {
                         margin-left: 6rpx;
@@ -250,7 +250,7 @@
 
         .article-content {
             padding: 24rpx;
-            background-color: #fff;
+            background-color: $uni-white;
         }
     }
 </style>

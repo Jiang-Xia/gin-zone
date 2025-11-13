@@ -12,20 +12,20 @@
             </view>
             <view class="card-wrap">
                 <navigator class="my-info" url="/packageA/pages/my/setting" hover-class="navigator-hover">
-                	<view class="top-box">
-                		<image class="avatar" :src="userInfo.avatar" mode=""></image>
-                		<view class="uni-flex-column">
-                			<text class="name">{{userInfo.nickName}}</text>
-                			<text>{{userInfo.intro||'难将心事和人说 说与青天明月知'}}</text>
-                		</view>
-                		<uni-icons custom-prefix="zonefont" color="#bbbbb" type="zone-gerenziliao" size="17"></uni-icons>
-                	</view>
-                </navigator>            
+                    <view class="top-box">
+                        <image class="avatar" :src="userInfo.avatar" mode=""></image>
+                        <view class="uni-flex-column">
+                            <text class="name flex-between">{{userInfo.nickName}}<uni-tag :inverted="true" :circle="true" v-if="userInfo.isAdmin" text="管理员"  size="mini" /></text>
+                            <text class="intro">{{userInfo.intro||'难将心事和人说 说与青天明月知'}}</text>
+                        </view>
+                       <uni-icons custom-prefix="zonefont" color="#bbbbb" type="zone-gerenziliao" size="17"></uni-icons>
+                    </view>
+                </navigator>
                 <view class="menu-list">
-                	<uni-list :border="false">
-                		<uni-list-item showArrow title="其他功能" @click="other" clickable></uni-list-item>
-                		<uni-list-item showArrow title="退出登录" @click="logout" clickable></uni-list-item>
-                	</uni-list>
+                    <uni-list :border="false">
+                        <uni-list-item showArrow title="其他功能" @click="other" clickable></uni-list-item>
+                        <uni-list-item showArrow title="退出登录" @click="confirmLogout" clickable></uni-list-item>
+                    </uni-list>
                 </view>
             </view>
         </view>
@@ -58,7 +58,7 @@
 		},
         onReady() {
         },
-		methods: {
+        methods: {
 			login() {
 				// #ifdef H5 || APP || MP-ALIPAY
 				uni.navigateTo({
@@ -141,13 +141,28 @@
 			setToken(token) {
 				uni.setStorageSync("zoneToken", token)
 			},
-			logout() {
-				this.userInfo = {}
-				getApp().globalData.userInfo = {}
-				this.setToken('')
-				uni.setStorageSync('zoneUserInfo', '')
-				console.log("退出登录")
-			},
+            confirmLogout(){
+                uni.showModal({
+                    title: '确认退出',
+                    content: '退出后将清空本地登录状态',
+                    confirmColor: '#5064eb',
+                    success: ({confirm}) => {
+                        if(confirm){
+                            this.logout()
+                        }
+                    }
+                })
+            },
+            logout() {
+                this.userInfo = {}
+                getApp().globalData.userInfo = {}
+                this.setToken('')
+                uni.setStorageSync('zoneUserInfo', '')
+                uni.showToast({
+                    title: '已退出登录',
+                    icon: 'none'
+                })
+            },
 			// 其他功能
 			other(){
 				const isAdmin = this.userInfo.isAdmin
@@ -189,7 +204,7 @@
 		padding: 0 0 0 0;
 	}
     .bg-wrap{
-        background-color: #fff;
+        background-color: $uni-white;
         padding-left: 84rpx;
     }
     .main-content{
@@ -203,10 +218,10 @@
 		margin-bottom: 16rpx;
 	}
 
-	.my-info {
+.my-info {
 		display: flex;
 		border-radius: 10rpx;
-		background-color: #fff;
+		background-color: $uni-white;
 		padding: 24rpx;
 
 		.top-box {
@@ -230,12 +245,15 @@
 			margin-right: 18rpx;
 		}
 
-		.name {
-			font-weight: 500;
-			font-size: 36rpx;
-			color: #333;
-		}
-
+        .name {
+            font-weight: 500;
+            font-size: 36rpx;
+            color: #333;
+        }
+        .intro{
+            color: #666;
+            font-size: 24rpx;
+        }
 		image {
 			border-radius: 50%;
 			height: 100rpx;
@@ -259,7 +277,7 @@
 
 	.login-wrap {
 		text-align: center;
-        background-color: #fff;
+        background-color: $uni-white;
         padding-top: 88rpx;
         padding-bottom: 32rpx;
 		.login-bg {

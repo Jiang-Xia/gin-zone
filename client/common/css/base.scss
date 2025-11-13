@@ -182,8 +182,8 @@ h1,h2,h3,h4,h5{
 .z-align-start { align-items: flex-start; }
 .z-item-hover { background-color: rgba(0, 0, 0, 0.05); }
 .z-btn-hover { opacity: 0.8; }
-.color-base { color: #5064eb; }
-.bg-color-base { background-color: #5064eb; }
+.color-base { color: $uni-primary; }
+.bg-color-base { background-color: $uni-primary; }
 
 // 文本溢出
 	.uni-ellipsis {
@@ -256,3 +256,6 @@ h1,h2,h3,h4,h5{
     	text-overflow: ellipsis;
     }
     
+.w-full{
+    width: 100%;
+}

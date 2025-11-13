@@ -156,7 +156,7 @@
         .content {
             margin: 30rpx;
             margin-top: 30rpx;
-            background: #fff;
+            background: $uni-white;
             padding: 24rpx;
             border-radius: 8px;
             min-height: 600rpx;
@@ -217,13 +217,13 @@
                 font-size: 30rpx;
             }
             .primary {
-                background-color: $uni-color-primary;
-                color: #fff;
+                background-color: $uni-primary;
+                color: $uni-white;
             }
             .ghost {
-                border: 1rpx solid $uni-border-color;
+                border: 1rpx solid $uni-border-1;
                 color: #333;
-                background: #fff;
+                background: $uni-white;
             }
         }
     }

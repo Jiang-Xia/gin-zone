@@ -147,7 +147,7 @@
 <style lang="scss">
     .container {
         .main-content {
-            background-color: #fff;
+            background-color: $uni-white;
             padding: 18px;
 
             .van-field {

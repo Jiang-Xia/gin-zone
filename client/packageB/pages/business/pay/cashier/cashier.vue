@@ -227,7 +227,7 @@
     }
 
     #input-amt {
-        color: $uni-color-primary;
+        color: $uni-primary;
         font-size: 70rpx;
         /* width: 150px; */
         margin-left: 20rpx;
@@ -330,7 +330,7 @@
 
     #sure-btn {
         font-size: 38rpx;
-        background: $uni-color-primary;
+        background: $uni-primary;
         color: #ffffff;
         border: none;
         transform: scaleY(1.01);
@@ -342,7 +342,7 @@
         color: white;
         border-radius: 16rpx;
         font-size: 32rpx;
-        background: $uni-color-primary;
+        background: $uni-primary;
     }
 
     .back-btn {
@@ -383,7 +383,7 @@
         margin: 15px;
         margin-top: 15px;
         margin-bottom: 100px;
-        background: #fff;
+        background: $uni-white;
         padding: 32rpx;
         border-radius: 8px;
         min-height: 312px;

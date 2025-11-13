@@ -18,41 +18,43 @@
 			</view>
 		</view>
 
-		<view class="login margin-b80" v-if="!cur">
-			<view class="input z-flex z-row z-align-center margin-b40">
-				<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
-				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text" :maxlength="11"
-					placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
-			</view>
-			<view class="input z-flex z-row z-align-center margin-b40">
-				<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
-				<input v-model="form.password" class="z-flex-item color-base font-30" type="text" password
-					placeholder="请输入您的登录密码" placeholder-class="input-placeholder" />
-			</view>
-		</view>
+        <view class="login margin-b80" v-if="!cur">
+            <view class="input z-flex z-row z-align-center margin-b40">
+                <image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
+                <input v-model="form.userName" class="z-flex-item color-base font-30" type="text" :maxlength="11"
+                    placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
+            </view>
+            <view class="input z-flex z-row z-align-center margin-b40">
+                <image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
+                <input v-model="form.password" class="z-flex-item color-base font-30" type="text" :password="!showPwd"
+                    placeholder="请输入您的登录密码" placeholder-class="input-placeholder" @confirm="confirm" />
+                <uni-icons class="pwd-toggle" :type="showPwd ? 'eye-slash' : 'eye'" size="22" color="#999" @tap="showPwd = !showPwd"></uni-icons>
+            </view>
+        </view>
 
-		<view class="register margin-b80" v-if="cur">
-			<view class="input z-flex z-row z-align-center margin-b40">
-				<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
-				<input v-model="form.userName" class="z-flex-item color-base font-30" type="text" :maxlength="11"
-					placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
-			</view>
-			<view class="input z-flex z-row z-align-center margin-b40">
-				<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
-				<input v-model="form.password" class="z-flex-item color-base font-30" type="text" password
-					placeholder="请输入您的登录密码" placeholder-class="input-placeholder" />
-			</view>
-		</view>
+        <view class="register margin-b80" v-if="cur">
+            <view class="input z-flex z-row z-align-center margin-b40">
+                <image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
+                <input v-model="form.userName" class="z-flex-item color-base font-30" type="text" :maxlength="11"
+                    placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
+            </view>
+            <view class="input z-flex z-row z-align-center margin-b40">
+                <image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
+                <input v-model="form.password" class="z-flex-item color-base font-30" type="text" :password="!showPwd"
+                    placeholder="请输入您的登录密码" placeholder-class="input-placeholder" @confirm="confirm" />
+                <uni-icons class="pwd-toggle" :type="showPwd ? 'eye-slash' : 'eye'" size="22" color="#999" @tap="showPwd = !showPwd"></uni-icons>
+            </view>
+        </view>
 
-		<view class="button-wrap">
-			<view class="button bg-color-base z-flex z-row z-align-center z-space-center margin-b20" @tap="confirm">
-				<text class="color-white font-34">立即{{ cur ? '注册': '登录' }}</text>
-			</view>
-		</view>
+        <view class="button-wrap">
+            <view class="button bg-color-base z-flex z-row z-align-center z-space-center margin-b20" :class="[isValid ? '':'btn-disabled']" @tap="confirm">
+                <text class="color-white font-34">立即{{ cur ? '注册': '登录' }}</text>
+            </view>
+        </view>
 
-		<view class="z-flex z-row z-align-center z-space-center margin-b100">
-			<text class="color-base font-28">忘记密码？</text>
-		</view>
+        <view class="z-flex z-row z-align-center z-space-center margin-b100">
+            <text class="color-base font-28" @tap="forgotPwd">忘记密码？</text>
+        </view>
 
 		<view class="other">
 			<view class="z-flex z-row z-align-center margin-b40">
@@ -90,94 +92,121 @@
 		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodl9q-头像_金牛座.png',
 		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9x6d-头像_射手座.png'
 	]
-	export default {
-		data() {
-			return {
-				cur: 0,
-				nowTime: formatTime(new Date(), "-").slice(0, 10),
-				form: {
-					userName: "",
-					password: ""
-				},
-			}
-		},
-		methods: {
-			confirm() {
-				if (this.cur === 0) {
-					this.login()
-				} else {
-					this.register()
-				}
-			},
+export default {
+    data() {
+        return {
+            cur: 0,
+            nowTime: formatTime(new Date(), "-").slice(0, 10),
+            form: {
+                userName: "",
+                password: ""
+            },
+            showPwd: false,
+        }
+    },
+    computed: {
+        isValid(){
+            const u = this.form.userName?.trim()
+            const p = this.form.password?.trim()
+            return !!u && u.length >= 3 && !!p && p.length >= 6
+        }
+    },
+    methods: {
+            confirm() {
+                if(!this.isValid){
+                    uni.showToast({
+                        title: this.cur ? '请输入有效的用户名和密码以注册' : '请输入有效的用户名和密码以登录',
+                        icon: 'none'
+                    })
+                    return
+                }
+                if (this.cur === 0) {
+                    this.login()
+                } else {
+                    this.register()
+                }
+            },
 			getRandomAvatars() {
 				return avatars[Math.round(Math.random() * avatars.length)]
 			},
-			async login() {
-				try {
-					uni.showLoading({
-						title: ''
-					})
-					const res = await this.$api.post('/base/users/login', {
-						...this.form
-					})
-					uni.hideLoading()
-					uni.setStorageSync("zoneToken", res.data.token)
-					const res2 = await this.$api.get('/base/users/info')
-					uni.setStorageSync('zoneUserInfo', res2.data)
+            async login() {
+                try {
+                    uni.showLoading({
+                        title: ''
+                    })
+                    const res = await this.$api.post('/base/users/login', {
+                        ...this.form
+                    })
+                    uni.hideLoading()
+                    uni.setStorageSync("zoneToken", res.data.token)
+                    const res2 = await this.$api.get('/base/users/info')
+                    uni.setStorageSync('zoneUserInfo', res2.data)
                     const app = getApp()
                     app.globalData.userInfo = res2.data
                     if(app.globalData.initChat){
                         app.globalData.initChat()
                     }
-					uni.showToast({
-						title: "登录成功",
-						icon: 'none'
-					});
-					setTimeout(() => {
-						uni.switchTab({
-							url: "/pages/chat/index"
-						})
-					}, 800)
-				} catch (e) {
-					uni.hideLoading()
-					console.error(e)
-				}
-			},
-			async register() {
-				try {
-					const {
-						userName,
-						password
-					} = this.form
-					const params = {
-						userName,
-						password,
-						avatar: this.getRandomAvatars(),
-						nickName: "用户" + userName,
-						intro: "这个人很懒，什么都没有留下。",
-					}
-					const res = await this.$api.post('/base/users', params)
-					uni.showToast({
-						title: "注册成功,快去登录吧!",
-						icon: 'none'
-					});
-					this.form = {
-						userName:"",
-						password:""
-					}
-					this.cur = 0
-				} catch (e) {
-					console.error(e)
-				}
-			}
-		}
-	}
+                    uni.showToast({
+                        title: "登录成功",
+                        icon: 'none'
+                    });
+                    setTimeout(() => {
+                        uni.switchTab({
+                            url: "/pages/chat/index"
+                        })
+                    }, 800)
+                } catch (e) {
+                    uni.hideLoading()
+                    uni.showToast({
+                        title: '登录失败，请稍后重试',
+                        icon: 'none'
+                    })
+                }
+            },
+            async register() {
+                try {
+                    const {
+                        userName,
+                        password
+                    } = this.form
+                    const params = {
+                        userName,
+                        password,
+                        avatar: this.getRandomAvatars(),
+                        nickName: "用户" + userName,
+                        intro: "这个人很懒，什么都没有留下。",
+                    }
+                    const res = await this.$api.post('/base/users', params)
+                    uni.showToast({
+                        title: "注册成功,快去登录吧!",
+                        icon: 'none'
+                    });
+                    this.form = {
+                        userName:"",
+                        password:""
+                    }
+                    this.cur = 0
+                } catch (e) {
+                    uni.showToast({
+                        title: '注册失败，请稍后重试',
+                        icon: 'none'
+                    })
+                }
+            },
+            forgotPwd(){
+                uni.showToast({
+                    title: '请联系管理员重置密码',
+                    icon: 'none'
+                })
+            }
+    }
+}
 </script>
 
 <style lang="scss" scoped>
 	.container {
 		position: relative;
-        background-color: #fff;
+        background-color: $uni-white;
 	}
 
 	.bg {
@@ -193,7 +222,7 @@
 		right: 20rpx;
 		height: 150rpx;
 		padding: 0 50rpx;
-		background-color: #fff;
+		background-color: $uni-white;
 		border-top-left-radius: 20rpx;
 		border-top-right-radius: 20rpx;
 
@@ -219,33 +248,39 @@
         }
 	}
 
-	.input {
-		width: 100%;
-		height: 90rpx;
-		padding: 0 30rpx;
-		background-color: rgba(80, 100, 235, 0.1);
-		border-radius: 45rpx;
-		box-sizing: border-box;
+    .input {
+        width: 100%;
+        height: 90rpx;
+        padding: 0 30rpx;
+        background-color: rgba($uni-primary, 0.1);
+        border-radius: 45rpx;
+        box-sizing: border-box;
 
-		&-icon {
-			width: 30rpx;
-			height: 38rpx;
-		}
+        &-icon {
+            width: 30rpx;
+            height: 38rpx;
+        }
 
-		&-placeholder {
-			color: #5064eb;
-		}
-	}
+        &-placeholder {
+            color: $uni-primary;
+        }
+    }
 
 	.button-wrap {
 		padding: 0 60rpx;
 	}
 
-	.button {
-		width: 100%;
-		height: 90rpx;
-		border-radius: 45rpx;
-	}
+    .button {
+        width: 100%;
+        height: 90rpx;
+        border-radius: 45rpx;
+    }
+    .btn-disabled{
+        opacity: 0.5;
+    }
+    .pwd-toggle{
+        margin-left: 20rpx;
+    }
 
 	.separator {
 		height: 2rpx;

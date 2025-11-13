@@ -91,6 +91,6 @@
 		height: 100%;
 	}
     .uni-searchbar{
-        background-color: #fff;
+        background-color: $uni-white;
     }
 </style>

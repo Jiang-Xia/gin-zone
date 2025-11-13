@@ -1,0 +1,50 @@
+{
+	"light": {
+		"navigationBarTextStyle": "black",
+		"navigationBarBackgroundColor": "#ffffff",
+		"backgroundColor": "#ffffff",
+
+		"tabBarColor": "#999999",
+		"tabBarSelectedColor": "#0062cc",
+		"tabBarBorderStyle": "black",
+		"tabBarBackgroundColor": "#ffffff",
+
+		"iconPathBlog": "static/icon/index1.png",
+		"selectedIconPathBlog": "static/icon/index.png",
+        
+		"iconPathMoment": "static/icon/dt1.png",
+		"selectedIconPathMoment": "static/icon/dt.png",
+        
+        "iconPathChat": "static/icon/chat1.png",
+        "selectedIconPathChat": "static/icon/chat.png",
+        
+        "iconPathMy": "static/icon/my1.png",
+        "selectedIconPathMy": "static/icon/my.png",
+		
+		"midButtonImage": "/static/icon/scanIcon.png"
+	},
+	"dark": {
+        "navigationBarTextStyle": "white",
+        "navigationBarBackgroundColor": "#1F1F1F",
+        "backgroundColor": "#1F1F1F",
+        
+        "tabBarColor": "#cacaca",
+        "tabBarSelectedColor": "#0062cc",
+        "tabBarBorderStyle": "white",
+        "tabBarBackgroundColor": "#1F1F1F",
+        
+        "iconPathBlog": "static/icon/index1.png",
+        "selectedIconPathBlog": "static/icon/index.png",
+        
+        "iconPathMoment": "static/icon/dt1.png",
+        "selectedIconPathMoment": "static/icon/dt.png",
+        
+        "iconPathChat": "static/icon/chat1.png",
+        "selectedIconPathChat": "static/icon/chat.png",
+        
+        "iconPathMy": "static/icon/my1.png",
+        "selectedIconPathMy": "static/icon/my.png",
+        
+        "midButtonImage": "/static/icon/scanIcon.png"
+	}
+}

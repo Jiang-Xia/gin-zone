@@ -102,9 +102,12 @@
                 day: 0,
                 payType: '',
                 hostpay: {
-                    phone: '18888888888',
-                    name: '江湖',
-                    idCardLastSix: '123456',
+                    // phone: '18888888888',
+                    // name: '江湖',
+                    // idCardLastSix: '123456',
+                    phone: '',
+                    name: '',
+                    idCardLastSix: '',
                     authCode: '',
                 },
                 cardNo: '',
@@ -316,7 +319,7 @@
 
     .content-page {
         margin: 0 30rpx 100px 30rpx;
-        background: #fff;
+        background: $uni-white;
         padding: 6px;
         border-radius: 8px;
         min-height: 600rpx;
@@ -352,7 +355,7 @@
         /* width: 100%; */
         /* margin-top: -30rpx; */
         margin: -30rpx 30rpx 0rpx 30rpx;
-        background-color: $uni-color-primary;
+        background-color: $uni-primary;
         height: 110rpx;
         line-height: 110rpx;
         text-align: center;
@@ -374,7 +377,7 @@
     .pay-time {
         margin-top: 20px;
         font-size: 24rpx;
-        color: $uni-color-primary;
+        color: $uni-primary;
         height: 40rpx;
         line-height: 40rpx;
 
@@ -387,7 +390,7 @@
 
     .van-count-down {
         font-size: 24rpx;
-        color: $uni-color-primary;
+        color: $uni-primary;
     }
 
     .logo-box {

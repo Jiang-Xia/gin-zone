@@ -263,6 +263,7 @@
             padding: 20rpx 30rpx;
             border-bottom: 1rpx solid #ddd;
             width: 100%;
+            box-sizing: border-box;
             .chat-item-right {
                 display: flex;
                 flex-direction: column;

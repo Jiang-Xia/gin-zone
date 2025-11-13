@@ -93,7 +93,7 @@
 					{ icon: 'person', color: '#1CBBB4', text: '我的', type: 'tabbar', url: '/pages/my/index' },
 					{ icon: 'image', color: '#FF6B6B', text: '动态', type: 'tabbar', url: '/pages/moment/index' },
 					{ icon: 'gear', color: '#999999', text: '设置', type: '', url: '' },
-					{ icon: 'tune', color: '#FF9900', text: '测试', type: '', url: '/packageB/pages/demo/demo' },
+					{ icon: 'tune', color: '#FF9900', text: '其他', type: '', url: '/packageB/pages/demo/demo' },
 					{ icon: 'more', color: '#333333', text: '更多', type: '', url: '' }
 				]
 			}
@@ -198,7 +198,7 @@
 		
 		.top-container {
 			position: absolute;
-			top: 64rpx;
+			top: 32px;
 			left: 0;
 			right: 0;
 			z-index: 999;
@@ -221,7 +221,7 @@
 				justify-content: center;
 				margin: 0 20rpx;
 				// #ifdef MP
-				margin: 0 110rpx;
+				margin: 0 120rpx;
 				// #endif
 				.search-box {
 					display: flex;
@@ -258,7 +258,7 @@
 		
 		.swiper {
 			height: 500rpx;
-            background-color: #fff;
+            background-color: $uni-white;
             border-radius: 0 0 15rpx 15rpx;
 			box-shadow: none;
 			:deep(.uni-swiper__warp){
@@ -316,6 +316,7 @@
         .news-container{
             padding-right: 24rpx;
             padding-left: 24rpx;
+            padding-bottom: 92rpx;
             .heading {
             	font-weight: 500;
             	font-size: 14px;
@@ -338,7 +339,7 @@
             		border-radius: 16rpx;
             		box-sizing: border-box;
             		margin-bottom: 32rpx;
-                    background-color: #fff;
+                    background-color: $uni-white;
                     box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
                     overflow: hidden;
             	}

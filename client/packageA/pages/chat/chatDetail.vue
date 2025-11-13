@@ -736,7 +736,7 @@
 
         // 昵称
         .nickname {
-            color: $uni-text-color-grey;
+            color: $uni-secondary-color;
             font-size: 13px;
         }
 
@@ -842,7 +842,7 @@
             border-radius: 12rpx;
 
             uni-icons {
-                color: #fff;
+                color: $uni-white;
             }
         }
     }
@@ -906,7 +906,7 @@
         width: 110rpx;
         height: 60rpx;
         border-radius: 10rpx;
-        background: $uni-color-primary;
+        background: $uni-primary;
 
     }
 
@@ -978,11 +978,11 @@
             width: 100%;
             height: 80rpx;
             line-height: 80rpx;
-            color: #fff;
+            color: $uni-white;
         }
     }
     .action-box .action-top .recording {
-        background: $uni-color-primary;
+        background: $uni-primary;
     }
     /* 输入框 结束  */
 

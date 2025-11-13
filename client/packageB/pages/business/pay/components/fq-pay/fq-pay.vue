@@ -105,7 +105,7 @@
         }
 
         .active {
-            border-color: $uni-color-primary;
+            border-color: $uni-primary;
         }
     }
 </style>

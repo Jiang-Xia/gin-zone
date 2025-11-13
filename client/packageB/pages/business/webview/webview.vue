@@ -180,7 +180,7 @@
         }
     }
 </script>
-<style lang="less">
+<style lang="scss">
     .webview-container {
         height: 100vh;
 
@@ -189,7 +189,7 @@
             width: 100%;
         }
 
-        background-color: #fff;
+        background-color: $uni-white;
 
         .popupContent {
             height: 25vh;
@@ -210,7 +210,7 @@
                     display: inline-block;
                 }
                 .label{
-                    // color: #fff;
+                    // color: $uni-white;
                 }
                 .agreement {
                     // color: red;
