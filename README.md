@@ -236,10 +236,10 @@ npm run dev:mp-weixin
 - **API文档**: [Swagger文档](https://jiang-xia.top/x-zone/api/v1/swagger/index.html)
 
 ### 📱 移动端体验
-| 微信小程序 | APP下载 |
-|-----------|--------|
-| <img src="https://jiang-xia.top/_nuxt/mini-program-code.7wTjEkFg.jpg" width="120"> | <img src="https://jiang-xia.top/_nuxt/app-code.Bsz8QBxF.png" width="120"> |
-| 扫码体验小程序 | 扫码下载APP |
+| APP下载 | H5页面 | 微信小程序 | 支付宝小程序 |
+|-----------|--------|-----------|--------|
+| <img src="https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/2e5d10df027b4cf28545b44901f7e8a4-app-code.png" width="120"> | <img src="https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/ea68358e78fd433fb5d2123e2cc0763b-h5.png" width="120"> | <img src="https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/1d6c3ffe42c3498a820965d9a46e0e2b-mini-program-code.jpg" width="120"> | <img src="https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/68a238667168490ea59c417e7f438b4b-circle_blue_slogan_50cm.png" width="120"> |
+| 扫码下载APP | 扫码体验H5页面| 扫码体验小程序 | 扫码体验小程序 |
 
 ## 📚 详细文档
 
@@ -285,7 +285,13 @@ docker-compose up -d
 
 ### 传统部署
 ```bash
-# 后端编译
+# 后端编译 部署linux系统
+set CGO_ENABLED=0
+# 坑点：这是window cmd中的语法
+set GOOS=linux
+# powershell 需要使用以下命令设置
+$env:GOOS="linux"
+set GOARCH=amd64
 cd server
 go build -o zone-server main.go
 
