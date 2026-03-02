@@ -1,4 +1,5 @@
 import pageJson from "./pages"
+import '@tdesign/uniapp/common/style/theme/index.less';
 import {
     createSSRApp
 } from 'vue'

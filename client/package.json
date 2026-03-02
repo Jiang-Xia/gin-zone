@@ -44,6 +44,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tdesign/uniapp": "^0.7.2",
     "dayjs": "^1.11.13",
     "emojilib": "^4.0.2",
     "highlight.js": "^11.11.1",
