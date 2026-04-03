@@ -73,7 +73,7 @@
 					desc: '用户注册',
 					success: async (info) => {
 						console.log("getUserProfile success", info)
-						const res = await this.$api.post('/base/auth/wxlogin', {
+						const res = await this.$apis.auth.wxLogin({
 							code: this.code,
 							...info.userInfo
 						})
@@ -111,7 +111,7 @@
 					provider: 'weixin',
 					success: async (info) => {
 						console.log("获取授权用户信息成功", info)
-						const res = await this.$api.post('/base/auth/wxlogin', {
+						const res = await this.$apis.auth.wxLogin({
 							code: this.code,
 							...info.userInfo
 						})
@@ -129,7 +129,7 @@
 			},
 			// 用户信息
 			async getZoneUserInfo() {
-				const res = await this.$api.get('/base/users/info')
+				const res = await this.$apis.auth.getUserInfo()
 				this.userInfo = res.data
                 const app = getApp()
 				app.globalData.userInfo = res.data

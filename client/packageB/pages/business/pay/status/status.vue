@@ -30,6 +30,8 @@
 </template>
 
 <script>
+    import { loadPayOrderParams, queryOrder as queryOrderService } from '@/packageB/services/payService.js'
+
     export default {
         data() {
             return {
@@ -47,7 +49,7 @@
         },
         onLoad() {
             try {
-                const cache = uni.getStorageSync('pay_order_params') || {}
+                const cache = loadPayOrderParams()
                 if (cache && typeof cache === 'object') {
                     if (cache.amount != null) this.amount = cache.amount
                     if (cache.storeName) this.storeName = cache.storeName
@@ -89,7 +91,7 @@
                     const params = {
                         out_trade_no: uni.getStorageSync('payOutTradeNo'),
                     }
-                    const res = await this.$api.get('/blog/pay/trade/query', params)
+                    const res = await this.$apis.pay.tradeQuery(params)
                     console.log('query',res)
                     if(res.data.tradeStatus === 'TRADE_SUCCESS'){
                         this.status = 'SUCCESS'
@@ -99,40 +101,42 @@
                     uni.hideLoading()
                 }
             },
-            queryOrder() {
-                // 由于模拟数据不依赖入参，这里直接请求即可
-                const params = this._orderNo && this._mchtNo ? { orderNo: this._orderNo, mchtNo: this._mchtNo } : {}
-                this.$tool.Post('QueryOrder', params, false, (data) => {
-                    try {
-                        const info = data.orderInfo || {}
-                        // 优先使用接口顶层/内部状态
-                        const s = data.status || info.status
-                        // 将 UNPAY 等待支付视作处理中
-                        if (s === 'SUCCESS') {
-                            this.status = 'SUCCESS'
-                        } else if (s === 'FAIL') {
-                            this.status = 'FAIL'
-                        } else {
-                            this.status = 'PROCESSING'
-                        }
-                        // this.amount = typeof info.amount === 'number' ? info.amount : (info.realAmount || null)
-                        this.storeName = info.storeName || info.mchtName || ''
-                    } catch (e) {
+            async queryOrder() {
+                const params = this._orderNo && this._mchtNo
+                    ? { orderNo: this._orderNo, mchtNo: this._mchtNo }
+                    : null
+                if (!params) return
+
+                await this.queryOrderOnce(params)
+            },
+            async queryOrderOnce(params) {
+                try {
+                    const data = await queryOrderService(this.$tool, {
+                        mchtNo: params.mchtNo,
+                        orderNo: params.orderNo,
+                    })
+                    const info = data?.orderInfo || {}
+
+                    // 优先使用接口顶层/内部状态
+                    const s = data?.status || info.status
+                    if (s === 'SUCCESS') {
+                        this.status = 'SUCCESS'
+                    } else if (s === 'FAIL') {
+                        this.status = 'FAIL'
+                    } else {
                         this.status = 'PROCESSING'
                     }
-                    // 若为处理中，延迟重试一次（模拟轮询）
-                    if (this.status === 'PROCESSING') {
-                        this.timer = setTimeout(() => {
-                            this.$tool.Post('QueryOrder', params, false, (data2) => {
-                                const info2 = data2.orderInfo || {}
-                                const s2 = data2.status || info2.status
-                                if (s2 === 'SUCCESS') {
-                                    this.status = 'SUCCESS'
-                                }
-                            })
-                        }, 1200)
-                    }
-                })
+                    this.storeName = info.storeName || info.mchtName || ''
+                } catch (e) {
+                    this.status = 'PROCESSING'
+                }
+
+                // 若为处理中，延迟重试一次（模拟轮询）
+                if (this.status === 'PROCESSING') {
+                    this.timer = setTimeout(() => {
+                        this.queryOrderOnce(params)
+                    }, 1200)
+                }
             },
             returnTap() {
                uni.navigateBack()

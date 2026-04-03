@@ -108,7 +108,7 @@
 					...this.baseFormData
 				}
 				// console.log({...params})
-				const res = await this.$api.patch('/base/users/{id}',params)
+				const res = await this.$apis.auth.updateUser(this.userInfo.id, params)
 				uni.showToast({
 					title: "修改成功",
 				});

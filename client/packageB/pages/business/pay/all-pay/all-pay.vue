@@ -78,6 +78,15 @@
 </template>
 <script>
     import fqPay from '../components/fq-pay/fq-pay.vue';
+    import {
+        savePayOrderParams,
+        applyOrder as applyOrderService,
+        queryOrder as queryOrderService,
+        payOrder as payOrderService,
+        getQrcodeInfo as getQrcodeInfoService,
+        listMchtJoinActivity as listMchtJoinActivityService,
+        calculateActivity as calculateActivityService
+    } from '@/packageB/services/payService.js';
     export default {
         components: {
             fqPay,
@@ -266,116 +275,86 @@
                 this.currentFQ = value
             },
             getQrcodeInfo(qrNo) {
-                this.$tool.Post('admin.qrcode.GetQrcodeInfo', {
+                this.getQrcodeInfoAsync(qrNo)
+            },
+            async getQrcodeInfoAsync(qrNo) {
+                const data = await getQrcodeInfoService(this.$tool, {
                     qrNo,
-                    qrType: "STATIC"
-                }, false, (data) => {
-                    console.log(data, "二维码信息")
-                    if (!data.action.qrInfo && !data.action.qrCodeInfoModel) {
-                        uni.showModal({
-                            title: '提示',
-                            content: '二维码信息有误，请联系商家谨慎操作',
-                            showCancel: false
-                        });
-                        return;
-                    }
-                    if (data.action.qrInfo) {
-                        this.qrCodeInfo = data.action.qrInfo
-                    }
-                    this.ListMchtJoinActivity()
-                });
+                    qrType: 'STATIC'
+                })
+                console.log(data, '二维码信息')
+
+                if (!data?.action?.qrInfo && !data?.action?.qrCodeInfoModel) {
+                    uni.showModal({
+                        title: '提示',
+                        content: '二维码信息有误，请联系商家谨慎操作',
+                        showCancel: false
+                    })
+                    return
+                }
+
+                if (data?.action?.qrInfo) {
+                    this.qrCodeInfo = data.action.qrInfo
+                }
+
+                await this.ListMchtJoinActivity()
             },
 
 
             /* 下单支付相关接口 开始*/
-            applyOrder() {
+            async applyOrder() {
                 uni.showLoading({
                     title:'支付中'
                 })
-                const amount = this.pageInfo.amount
                 const mchtNo = this.qrCodeInfo.mchtNo
-                const storeNo = this.qrCodeInfo.storeNo
-                let params = {
-                    version: '1.0',
-                    mchtNo,
-                    storeNo,
-                    qrCodeNo: this.qrCodeInfo.qrcodeNo,
-                    payScene: 'WEB',
-                    payType: this.payType,
-                    tradeNo: this.$tool.getYesterday('', 0) + this.$tool.guid(3),
-                    currency: 'CNY',
+                const amount = this.pageInfo.amount
+
+                const applyRes = await applyOrderService(this.$tool, {
                     amount,
-                    remark: this.pageInfo.remark,
-                    orderType: 'COMMON',
-                    orderSubs: [{
-                        subMchtNo: this.qrCodeInfo.mchtNo,
-                        subOrderNo: 'S' + this.$tool.getYesterday('', 0) + this.$tool.guid(3),
-                        goods: '商品',
-                        storeNo: this.qrCodeInfo.storeNo,
-                        amount
-                    }]
-                };
-                this.$tool.Post('ApplyOrder', params, false, (data) => {
-                    this.orderInfo.orderNo = data.orderNo
-                    this.QueryOrder(mchtNo, data.orderNo)
+                    qrCodeInfo: this.qrCodeInfo,
+                    payType: this.payType,
+                    remark: this.pageInfo.remark
                 })
+
+                this.orderInfo.orderNo = applyRes.orderNo
+                await this.QueryOrder(mchtNo, applyRes.orderNo)
             },
-            QueryOrder(mchtNo, orderNo) {
-                let params = {
-                    orderNo,
-                    mchtNo
-                };
-                this.$tool.Post('QueryOrder', params, true, (data) => {
-                    this.orderInfo.orderSubs = data.orderInfo.orderSubs
-                    this.payOrder(mchtNo)
-                })
-            },
-            payOrder(mchtNo) {
-                const payType = this.payType
-                const params = {
-                    orderNo: this.orderInfo.orderNo,
-                    storeNo: this.qrCodeInfo.storeNo,
-                    orderSubs: this.orderInfo.orderSubs,
+            async QueryOrder(mchtNo, orderNo) {
+                const data = await queryOrderService(this.$tool, {
                     mchtNo,
-                    payType,
-                    bizType: 'JSAPI',
-                }
-                let tradeInfo = {
-                    createIp: this.ip || '127.0.0.1',
-                    code: this.userAuthCode
-                }
-                // 分期
-                if (this.currentPayMethod === 'hb') {
-                    params.tradeFqInfo = {
-                        fqChannels: "alipayfq",
-                        fqNum: this.currentFQ,
-                        fqSellerPercent: 0
-                    }
-                } else if (this.currentPayMethod === 'xyk') {
-                    params.tradeFqInfo = {
-                        fqChannels: "alipayfq_cc",
-                        fqNum: this.currentFQ,
-                        fqSellerPercent: 0,
-                    }
-                }
-                params.tradeInfo = tradeInfo
-                this.$tool.Post('PayOrder', params, false, (res) => {
-                    if (res.payInfo) {
-                        // this.payInfo = JSON.parse(res.payInfo);
-                        this.payInfo = res.payInfo;
-                        // #ifdef MP-ALIPAY || MP-WEIXIN
-                        this.payMini(this.payInfo);
-                        return
-                        // #endif
-                        this.payH5(this.payInfo);
-                    }
+                    orderNo
                 })
+                this.orderInfo.orderSubs = data.orderInfo.orderSubs
+                await this.payOrder(mchtNo)
+            },
+            async payOrder(mchtNo) {
+                const res = await payOrderService(this.$tool, {
+                    mchtNo,
+                    storeNo: this.qrCodeInfo.storeNo,
+                    orderNo: this.orderInfo.orderNo,
+                    orderSubs: this.orderInfo.orderSubs,
+                    payType: this.payType,
+                    currentPayMethod: this.currentPayMethod,
+                    currentFQ: this.currentFQ,
+                    ip: this.ip,
+                    userAuthCode: this.userAuthCode
+                })
+
+                if (res.payInfo) {
+                    // this.payInfo = JSON.parse(res.payInfo);
+                    this.payInfo = res.payInfo;
+                    // #ifdef MP-ALIPAY || MP-WEIXIN
+                    this.payMini(this.payInfo);
+                    return
+                    // #endif
+                    this.payH5(this.payInfo);
+                }
             },
             goto(status = 'PROCESSING') {
                 // 跳转逻辑
                 try {
-                    uni.setStorageSync('pay_order_params', {
-                        status:status,
+                    savePayOrderParams({
+                        status,
                         orderNo: this.orderInfo.orderNo,
                         mchtNo: this.qrCodeInfo.mchtNo,
                         amount: this.realAmt ? this.realAmt : this.pageInfo.amount,
@@ -468,7 +447,7 @@
                         buyer_open_id: uni.getStorageSync('userOpenId'),
                         total_amount: String(this.pageInfo.amount)
                     }
-                    const res = await this.$api.post('/blog/pay/trade/create', params)
+                    const res = await this.$apis.pay.tradeCreate(params)
                     uni.setStorageSync('payOutTradeNo', params.out_trade_no)
                     uni.requestPayment({
                         tradeNO: res.data.tradeNo,
@@ -503,7 +482,7 @@
 
             /* 计算营销活动金额 开始 */
             //查询活动
-            ListMchtJoinActivity() {
+            async ListMchtJoinActivity() {
                 let param = {
                     limit: 100,
                     offset: 0,
@@ -513,15 +492,14 @@
                     mchtNo: this.qrCodeInfo.mchtNo,
                     storeNo: this.qrCodeInfo.storeNo,
                 };
-                this.$tool.Post('pub.checkActivity.queryCActivityByMcht', param, false, (res) => {
-                    let list = res.action.list.data;
-                    if (res.action.list.data.length > 0) {
-                        this.ACalculateActivity(list[0]);
-                    }
-                });
+                const res = await listMchtJoinActivityService(this.$tool, param)
+                const list = res?.action?.list?.data || []
+                if (list.length > 0) {
+                    await this.ACalculateActivity(list[0])
+                }
             },
             //计算活动
-            ACalculateActivity(activity) {
+            async ACalculateActivity(activity) {
                 let param = {
                     activityNo: activity.activityNo,
                     oriAmt: this.pageInfo.amount,
@@ -531,26 +509,24 @@
                     mchtNo: this.qrCodeInfo.mchtNo,
                     storeNo: this.qrCodeInfo.storeNo,
                 };
-                this.$tool.Post('ACalculateActivity', param, false, (res) => {
-                    if (res.disAmt > 0) {
-                        this.realAmt = res.amount;
-                        this.activity = activity;
-                        if (activity.publishParty == 'MCHT') {
-                            uni.setStorageSync('mchtActivityNo', activity.activityNo);
-                        } else if (activity.publishParty == 'BANK') {
-                            uni.setStorageSync('bankActivityNo', activity.activityNo);
-                        }
-                        //判断是否是随机立减活动
-                        this.randomcutFlag = false;
-                        for (var i = 0; i < res.rules.length; i++) {
-                            var activityType = res.rules[i].type;
-                            if (activityType === 'RANDOMCUT') {
-                                //随机立减
-                                this.randomcutFlag = true;
-                            }
+                const res = await calculateActivityService(this.$tool, param)
+                if (res?.disAmt > 0) {
+                    this.realAmt = res.amount
+                    this.activity = activity
+                    if (activity.publishParty == 'MCHT') {
+                        uni.setStorageSync('mchtActivityNo', activity.activityNo)
+                    } else if (activity.publishParty == 'BANK') {
+                        uni.setStorageSync('bankActivityNo', activity.activityNo)
+                    }
+                    // 判断是否是随机立减活动
+                    this.randomcutFlag = false
+                    for (var i = 0; i < (res?.rules || []).length; i++) {
+                        var activityType = res.rules[i].type
+                        if (activityType === 'RANDOMCUT') {
+                            this.randomcutFlag = true
                         }
                     }
-                });
+                }
             },
             /* 计算营销活动金额 结束 */
             /* 唤起小程序 开始*/
@@ -561,7 +537,7 @@
                         page: '/packageB/pages/business/pay/all-pay/all-pay',
                         query: {amount:this.pageInfo.amount,remark: this.pageInfo.remark}
                     }
-                    const res = await this.$api.post('/blog/pay/h5-open-mini', params)
+                    const res = await this.$apis.pay.h5OpenMini(params)
                     uni.hideLoading()
                     // console.log(res, '------->')
                     // location.href = res.data.universalLink;

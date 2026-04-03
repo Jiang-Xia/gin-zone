@@ -1,7 +1,8 @@
 <script>
 	import {
 		wsUrl,
-	} from '@/common/request/api.js'
+	} from '@/common/request/config.js'
+	import { useUserStore } from '@/stores/user.js'
 	export default {
 		// 全局变量 全端支持
 		globalData: {
@@ -66,21 +67,23 @@
 				}
 			})
             this.globalData.initChat = this.initChat
-			const userInfo = uni.getStorageSync("zoneUserInfo")
-			if (userInfo) {
+			const userStore = useUserStore()
+			userStore.hydrateFromStorage()
+
+			const userInfo = userStore.userInfo
+			if (userInfo && userInfo.userId) {
 				this.globalData.userInfo = userInfo
 				this.initChat(userInfo.userId)
 			}
 
 			/* 全局用户信息处理 */
-			if (uni.getStorageSync("zoneToken") && !userInfo) {
-				this.$api.get('/base/users/info').then(res => {
-					uni.setStorageSync('zoneUserInfo', res.data)
+			if (userStore.token && (!userInfo || !userInfo.userId)) {
+				this.$apis.auth.getUserInfo().then(res => {
+					userStore.setUserInfo(res.data)
 					this.globalData.userInfo = res.data
 					this.initChat(res.data.userId)
-				}).catch((err) => {
-					uni.setStorageSync("zoneToken", "")
-					uni.setStorageSync('zoneUserInfo', "")
+				}).catch(() => {
+					userStore.logout()
 				})
 			}
 			// #ifdef MP-WEIXIN

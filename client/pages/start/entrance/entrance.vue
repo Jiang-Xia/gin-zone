@@ -38,7 +38,7 @@
 		},
 		created() {
 				
-			this.$api.get('/third/gushici').then(res=>{
+			this.$apis.third.gushici().then(res=>{
 				const {content,author,origin} =  res.data
 				let index = 0
 				for(let sign of ["，","？","。"]){

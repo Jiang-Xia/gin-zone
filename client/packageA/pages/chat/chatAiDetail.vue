@@ -168,8 +168,8 @@
 			this.setNavBarTitle()
 			const {
 				data: openAiKey
-			} = await this.$api.post('/third/chatGPT', {
-				keyCode: 'j123456'
+			} = await this.$apis.chatAi.getOpenAiKey({
+				keyCode: 'j123456',
 			})
 			this.openAiKey = openAiKey.slice(0, openAiKey.length - 2)
 		},
@@ -240,7 +240,7 @@
 						message: content
 					}
 					let message = ''
-					const res = await this.$api.post('/third/chatGPTApi', sendParams)
+					const res = await this.$apis.chatAi.sendMessage(sendParams)
 					if (res) {
 						message = res.data.text
 					}

@@ -57,11 +57,11 @@
 				let res = {}
 				if (this.type === 'group') {
 					params.groupName = this.content
-					res = await this.$api.get('/mobile/chat/groups', params)
+					res = await this.$apis.chat.groups(params)
 					this.addList = res.data
 				} else if (this.type === 'friend') {
 					params.q = this.content
-					res = await this.$api.get('/base/users', params)
+					res = await this.$apis.chat.users(params)
 					this.addList = res.data.list.filter(v=>v.userId!==userId)
 				}
 			},
@@ -75,7 +75,7 @@
 				} else if (this.type === 'friend') {
 					params.friendId = item.userId
 				}
-				const res = await this.$api.post('/mobile/chat/friends', params)
+				const res = await this.$apis.chat.addFriend(params)
 				uni.showToast({
 					title: res.msg,
 				});

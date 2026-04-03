@@ -126,7 +126,7 @@
                             icon: "none"
                         })
                     }
-                    const res = await this.$api.post('/mobile/moments', params)
+                    const res = await this.$apis.moment.create(params)
                     uni.showToast({
                         title: "发表成功",
                         icon: "none"

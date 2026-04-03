@@ -106,7 +106,7 @@
         onReady() {
         },
 		onShow() {
-            this.$api.signIn().then(()=>{
+            this.$apis.auth.signIn().then(()=>{
                 this.init()
             })
             // setTimeout(()=>{
@@ -121,9 +121,7 @@
 				this.getArticleList()
 			},
 			async getImage() {
-				const res = await this.$api.get('/blog/resources/daily-img', {
-					n: 7
-				})
+				const res = await this.$apis.blog.dailyImg(7)
 				// console.log(res)
 				this.swiperList = res.data.images
 			},
@@ -138,7 +136,7 @@
 					pageSize,
 					client: true
 				}
-				const res = await this.$api.post('/blog/article/list', params)
+				const res = await this.$apis.blog.articleList(params)
 				const list = res.data.list.map((v) => {
 					v.createTime = formatTime(new Date(v.createTime))
 					return v

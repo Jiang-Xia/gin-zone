@@ -94,7 +94,7 @@
 					...this.baseFormData
 				}
 				this.$refs[ref].validate().then(async (res2) => {
-					const res = await this.$api.post('/mobile/chat/groups', params)
+					const res = await this.$apis.chat.createGroup(params)
 					uni.showToast({
 						title: "新增成功",
 					});

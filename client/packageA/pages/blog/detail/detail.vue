@@ -100,9 +100,7 @@
                 uni.showLoading({
                     title: ''
                 })
-                const res = await this.$api.get('/blog/article/info', {
-                    id
-                })
+                const res = await this.$apis.blog.articleInfo(id)
                 this.articleInfo = res.data.info
                 this.markdownString = this.articleInfo.content
                 const title = this.articleInfo.title

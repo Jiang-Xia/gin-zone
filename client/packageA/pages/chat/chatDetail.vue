@@ -100,7 +100,7 @@
     import emojiList from './components/emojifont-list.vue';
     import {
         wsUrl,
-    } from '@/common/request/api.js'
+    } from '@/common/request/config.js'
     import {
         beforeTimeNow
     } from '@/common/utils/util.js';
@@ -240,7 +240,7 @@
         },
         onShow() {
             // 阅读消息
-            this.$api.post("/mobile/chat/updateReadTime", this.getCurOption())
+            this.$apis.chat.updateReadTime(this.getCurOption())
             const url = wsUrl + '/mobile/chat?userId=' + this.userId
             const token = uni.getStorageSync("zoneToken")
             this.socketTask = getApp().globalData.socketTask
@@ -538,7 +538,7 @@
                     receiverId: friendId, // 好友接收的信息
                     groupId: Number(groupId), // 群组的消息
                 }
-                this.$api.post("/mobile/chat/logs", params).then(res => {
+                this.$apis.chat.logs(params).then(res => {
                     let {
                         list,
                         total
@@ -594,9 +594,7 @@
                     }) => {
                         const groupId = this.curOption.groupId
                         if (tapIndex === 0 && groupId) {
-                            const res = await this.$api.del("/mobile/chat/groupMembers/{groupId}", {
-                                groupId: groupId
-                            })
+                            const res = await this.$apis.chat.delGroupMember(groupId)
                             uni.showToast({
                                 title: res.msg,
                             })
@@ -605,9 +603,7 @@
                             })
 
                         } else {
-                            const res = await this.$api.del("/mobile/chat/friends/{friendId}", {
-                                friendId: this.curOption.friendId
-                            })
+                            const res = await this.$apis.chat.delFriend(this.curOption.friendId)
                             uni.showToast({
                                 title: res.msg,
                             })

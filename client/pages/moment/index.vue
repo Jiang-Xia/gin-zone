@@ -114,7 +114,7 @@
 						page: this.page,
 						pageSize: 20,
 					}
-					const res = await this.$api.get('/mobile/moments', params)
+					const res = await this.$apis.moment.list(params)
 					const list = res.data.list.map(v => {
 						v.images = v.urls.split(',')
 						v.date = formatDate(v.createdAt)
@@ -162,7 +162,7 @@
 				} else {
 					item.views++
 				}
-				const res = await this.$api.get('/mobile/moments/UpdateMoment', {
+				const res = await this.$apis.moment.update({
 					id: item.id,
 					t:type
 				})

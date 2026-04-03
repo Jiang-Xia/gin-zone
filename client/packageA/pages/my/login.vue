@@ -78,6 +78,7 @@
 	import {
 		formatTime
 	} from '@/common/utils/util'
+	import { useUserStore } from '@/stores/user.js'
 	const avatars = [
 		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodlzz-头像_天秤座.png',
 		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9xk9-头像_天蝎座.png',
@@ -134,13 +135,14 @@ export default {
                     uni.showLoading({
                         title: ''
                     })
-                    const res = await this.$api.post('/base/users/login', {
-                        ...this.form
+                    const res = await this.$apis.auth.login({
+                        ...this.form,
                     })
                     uni.hideLoading()
-                    uni.setStorageSync("zoneToken", res.data.token)
-                    const res2 = await this.$api.get('/base/users/info')
-                    uni.setStorageSync('zoneUserInfo', res2.data)
+                    const userStore = useUserStore()
+                    userStore.setToken(res.data.token)
+                    const res2 = await this.$apis.auth.getUserInfo()
+                    userStore.setUserInfo(res2.data)
                     const app = getApp()
                     app.globalData.userInfo = res2.data
                     if(app.globalData.initChat){
@@ -176,7 +178,7 @@ export default {
                         nickName: "用户" + userName,
                         intro: "这个人很懒，什么都没有留下。",
                     }
-                    const res = await this.$api.post('/base/users', params)
+                    const res = await this.$apis.auth.register(params)
                     uni.showToast({
                         title: "注册成功,快去登录吧!",
                         icon: 'none'

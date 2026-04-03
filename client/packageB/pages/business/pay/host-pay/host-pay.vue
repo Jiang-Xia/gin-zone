@@ -180,7 +180,7 @@
                 params.gateHostPayReq = {
                     cardNo: this.cardNo
                 }
-                this.$api.post('/WeixinQuickPay', params).then(res => {
+                this.$apis.pay.weixinQuickPay(params).then(res => {
 
                     if (res.bookAction.retCode === '2000') {
                         this.tranNo = res.tranNo
@@ -262,7 +262,7 @@
                     phone: this.hostpay.phone,
                     bizType: 'HOSTPAY',
                 };
-                this.$api.post('/GetValidateCode', params).then(res => {
+                this.$apis.pay.getValidateCode(params).then(res => {
                     this.sended = true
                 })
             },
@@ -277,7 +277,7 @@
                 let param = {
                     ...this.hostpay,
                 };
-                this.$api.post('/QjbankCardQuery', params).then(res => {
+                this.$apis.pay.queryJQBankCard(param).then(res => {
                     // console.log('QjbankCardQuery--->', res)
                     if (res.cardList) {
                         this.hostList = res.cardList.map(v => {

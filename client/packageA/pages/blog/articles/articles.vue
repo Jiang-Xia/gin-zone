@@ -81,7 +81,7 @@
 					description: content,
 					title: content
 				}
-				const res = await this.$api.post('/blog/article/list', params)
+				const res = await this.$apis.blog.articleList(params)
 				const list = res.data.list.map((v) => {
 					v.createTime = formatTime(new Date(v.createTime))
 					return v

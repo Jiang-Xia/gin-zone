@@ -125,7 +125,7 @@
                 uni.login({
                     success: async (res) => {
                         if (res.code) {
-                            const res1 = await this.$api.post('/WC0001', {
+                            const res1 = await this.$apis.webview.wc0001({
                                 code: res.code
                             })
                         }
@@ -141,7 +141,7 @@
                         mask: true
                     })
 
-                    const res2 = await this.$api.post('/WC0002', {
+                    const res2 = await this.$apis.webview.wc0002({
                         code
                     })
 

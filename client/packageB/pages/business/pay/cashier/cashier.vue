@@ -58,6 +58,9 @@
 </template>
 
 <script>
+    import {
+        getQrcodeInfo as getQrcodeInfoService
+    } from '@/packageB/services/payService.js'
     let that = null
     let amt = ''
     export default {
@@ -91,7 +94,7 @@
                 	success: async (event) => {
                 		const code = event.code
                 		console.log("event.code", event.code)
-                        const res = await this.$api.post('/blog/pay/openid', {code,type:'alipay'})
+                        const res = await this.$apis.pay.openid(code, 'alipay')
                 		// console.log('----->',  res.data)
                 		uni.setStorageSync('userOpenId', res.data.openId)
                         uni.setStorageSync('userAccessToken', res.data.accessToken)
@@ -167,23 +170,22 @@
                 var key = e.target.id;
                 that[key] = e.detail.value;
             },
-            getQrcodeInfo(qrNo) {
-                this.$tool.Post('admin.qrcode.GetQrcodeInfo', {
+            async getQrcodeInfo(qrNo) {
+                const data = await getQrcodeInfoService(this.$tool, {
                     qrNo,
-                    qrType:"STATIC"
-                }, false, (data) => {
-                    if (!data.action.qrInfo && !data.action.qrCodeInfoModel) {
-                        uni.showModal({
-                            title: '提示',
-                            content: '二维码信息有误，请联系商家谨慎操作',
-                            showCancel: false
-                        });
-                        return;
-                    }
-                    if (data.action.qrInfo) {
-                        this.storeBrief = data.action.qrInfo.storeBrief
-                    }
-                });
+                    qrType: 'STATIC'
+                })
+                if (!data?.action?.qrInfo && !data?.action?.qrCodeInfoModel) {
+                    uni.showModal({
+                        title: '提示',
+                        content: '二维码信息有误，请联系商家谨慎操作',
+                        showCancel: false
+                    })
+                    return
+                }
+                if (data?.action?.qrInfo) {
+                    this.storeBrief = data.action.qrInfo.storeBrief
+                }
             },
             
         }

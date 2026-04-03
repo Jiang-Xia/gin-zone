@@ -6,11 +6,12 @@ import {
 import dayjs from 'dayjs'
 import * as Pinia from 'pinia';
 import App from './App.vue'
-import api from './common/request/api.js'
+import api from './common/request/api.commercial.js'
 import common, {
     mixins
 } from './common/utils/common.js'
 import tool from './common/utils/tool.js'
+import { createApis } from './common/request/apis/index.js'
 const mode = import.meta.env.MODE;
 // console.log('mode =========>', mode)
 
@@ -23,7 +24,7 @@ if(mode === 'development'){
 import {
     baseUrl,
     fileUrl
-} from './common/request/api.js'
+} from './common/request/config.js'
 
 const subPages = pageJson.subPackages.map(v => v.pages).flat()
 // console.log('subPages', subPages)
@@ -32,6 +33,7 @@ export function createApp() {
     const app = createSSRApp(App)
     app.use(Pinia.createPinia());
     app.config.globalProperties.$api = api
+    app.config.globalProperties.$apis = createApis(api)
     app.config.globalProperties.$common = common
     app.config.globalProperties.$tool = tool
     app.config.globalProperties.$fileUrl = fileUrl

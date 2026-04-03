@@ -117,7 +117,7 @@
                     this.userList = []
                     return
                 }
-                this.$api.get("/mobile/chat/friends", {
+                this.$apis.chat.friends({
                     userId: userId
                 }).then(res => {
                     uni.stopPullDownRefresh()
@@ -192,9 +192,7 @@
             },
             bindClick(item, index) {
                 if (index === 1) {
-                    this.$api.del("/mobile/chat/friends/{friendId}", {
-                        friendId: item.friendId
-                    }).then(res => {
+                    this.$apis.chat.delFriend(item.friendId).then(res => {
                         uni.showToast({
                         	title: "删除成功",
                         });
