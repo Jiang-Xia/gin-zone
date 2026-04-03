@@ -5,6 +5,7 @@ import {
   isCryptoEnabled,
   privateKey,
   sm4Key,
+  enableRequestCryptoDebugLog,
 } from './config.js'
 import {
   getToken,
@@ -26,6 +27,7 @@ function showToastAfterLoading(options) {
   }, 0)
 }
 
+// 日志打印时对 Authorization 做脱敏，避免把完整 token 打到控制台
 export class CommercialApi {
   // 是否开启加解密：由本地存储 `zoneOpenCrypto` 控制（兼容旧版 openCrypto）
   shouldOpenCrypto() {
@@ -60,7 +62,11 @@ export class CommercialApi {
     }
 
     const method = config.method
-
+    const shouldLogCryptoRequest =
+      enableRequestCryptoDebugLog &&
+      this.shouldOpenCrypto() &&
+      !url.includes('/common/signIn') &&
+      ['POST', 'PUT', 'PATCH'].includes(method)
     // 自定义 baseUrl
     if (config.baseUrl) {
       url = config.baseUrl + url
@@ -83,6 +89,10 @@ export class CommercialApi {
 
         // 只有 POST/PUT/PATCH 且 payload 存在时才加密
         if (['POST', 'PUT', 'PATCH'].includes(method) && payload !== undefined) {
+          // 加密前打印：帮助你确认“实际上传了哪些主要字段”（明文请求体）
+          if (shouldLogCryptoRequest) {
+            console.log('[crypto] request(encrypted):', url, payload)
+          }
           let content = ''
           try {
             content = JSON.stringify(payload)
@@ -122,6 +132,12 @@ export class CommercialApi {
     // res.data 即后端响应体；旧版返回成功/失败字段约定为 code/msg/encrypt/data
     const body = res?.data
     const code = body && body.code
+    // 仅在：加密开启 + 有响应体 + 非 signIn 时，才打印调试日志
+    const shouldDebugCrypto =
+      enableRequestCryptoDebugLog &&
+      this.shouldOpenCrypto() &&
+      body &&
+      !url.includes('/common/signIn')
 
     if (this.shouldOpenCrypto() && body && !url.includes('/common/signIn')) {
       // crypto 模式：若响应体包含 encrypt，则解密后把解析结果写回 body.data
@@ -131,6 +147,10 @@ export class CommercialApi {
           const workKey = getWorkKey() || sm4Key
           const decrypted = sm4.decrypt(body.encrypt, workKey)
           body.data = JSON.parse(decrypted)
+          if (shouldDebugCrypto) {
+            // 解密后的业务数据（data）
+            console.log('[crypto] response(decrypted):', url, body.data)
+          }
         } catch (error) {
           console.error('解密报文失败', error)
           reject(error)

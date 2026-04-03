@@ -19,11 +19,11 @@ if (env === 'production') {
   fileUrl = 'https://jiang-xia.top/x-zone/api/v1'
   baseUrl = 'https://jiang-xia.top/x-zone/api/v1'
   wsUrl = 'wss://jiang-xia.top/x-zone/api/v1'
-  /* 本地
+  // 本地
   fileUrl = "http://127.0.0.1:9600"
   baseUrl = "http://127.0.0.1:9600/api/v1"
   wsUrl = "ws://127.0.0.1:9600/api/v1"
-  */
+ 
 }
 
 // 后台加密公钥（注意：生产环境建议不要硬编码敏感信息）
@@ -37,7 +37,7 @@ const privateKey =
 // sm4 固定 key（兼容旧版逻辑；后续建议与 workKey 解耦）
 const sm4Key = '0123456789abcdeffedcba9876543210'
 
-// 控制加解密是否开启：保持与旧版兼容（旧版 openCrypto=false）
+// 控制加解密是否开启
 // 联调/灰度时可通过本地存储 zoneOpenCrypto=1 来开启
 function isCryptoEnabled() {
   try {
@@ -46,6 +46,16 @@ function isCryptoEnabled() {
     return false
   }
 }
+
+// 是否打印加密请求/响应调试日志（默认：开发环境开启，生产环境建议关闭）
+// 可用本地存储 `zoneCryptoDebugLog=1` 强制打开（或关闭时可不设置该值）
+const enableRequestCryptoDebugLog = (() => {
+  try {
+    return uni.getStorageSync('zoneCryptoDebugLog') === '1' || env !== 'production'
+  } catch (e) {
+    return env !== 'production'
+  }
+})()
 
 export {
   env,
@@ -56,5 +66,6 @@ export {
   privateKey,
   sm4Key,
   isCryptoEnabled,
+  enableRequestCryptoDebugLog,
 }
 
