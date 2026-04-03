@@ -108,6 +108,7 @@
 					...this.baseFormData
 				}
 				// console.log({...params})
+				// 更新个人资料：走接口层避免散落 URL
 				const res = await this.$apis.auth.updateUser(this.userInfo.id, params)
 				uni.showToast({
 					title: "修改成功",

@@ -1,5 +1,5 @@
-// API 接口层：把“接口路径 + 参数组织 + 返回处理”收敛到固定命名下
-// 页面不再直接关心 `/base/users/info` 这种 URL 字符串
+// API 接口层：把“接口路径 + 参数组织”收敛到固定命名下
+// 目标：页面只关心 `this.$apis.auth.login(...)` 这种语义，不再到处散落 URL 字符串
 
 export function createApis(api) {
   return {

@@ -94,6 +94,7 @@
 					...this.baseFormData
 				}
 				this.$refs[ref].validate().then(async (res2) => {
+					// 创建群聊：接口层负责拼装与请求入口
 					const res = await this.$apis.chat.createGroup(params)
 					uni.showToast({
 						title: "新增成功",

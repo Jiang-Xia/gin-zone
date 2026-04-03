@@ -114,6 +114,7 @@
 						page: this.page,
 						pageSize: 20,
 					}
+					// 动态列表：走接口层统一入口
 					const res = await this.$apis.moment.list(params)
 					const list = res.data.list.map(v => {
 						v.images = v.urls.split(',')
@@ -162,6 +163,7 @@
 				} else {
 					item.views++
 				}
+				// 点赞/浏览更新：走接口层
 				const res = await this.$apis.moment.update({
 					id: item.id,
 					t:type

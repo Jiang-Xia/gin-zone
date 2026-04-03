@@ -240,6 +240,7 @@
         },
         onShow() {
             // 阅读消息
+            // 通过接口层更新已读时间（避免页面直接拼 URL）
             this.$apis.chat.updateReadTime(this.getCurOption())
             const url = wsUrl + '/mobile/chat?userId=' + this.userId
             const token = uni.getStorageSync("zoneToken")
@@ -538,6 +539,7 @@
                     receiverId: friendId, // 好友接收的信息
                     groupId: Number(groupId), // 群组的消息
                 }
+                // 拉取历史消息：聊天日志使用接口层收敛入口
                 this.$apis.chat.logs(params).then(res => {
                     let {
                         list,
@@ -594,6 +596,7 @@
                     }) => {
                         const groupId = this.curOption.groupId
                         if (tapIndex === 0 && groupId) {
+                            // 群成员删除：由接口层封装
                             const res = await this.$apis.chat.delGroupMember(groupId)
                             uni.showToast({
                                 title: res.msg,
@@ -603,6 +606,7 @@
                             })
 
                         } else {
+                            // 好友删除：由接口层封装
                             const res = await this.$apis.chat.delFriend(this.curOption.friendId)
                             uni.showToast({
                                 title: res.msg,

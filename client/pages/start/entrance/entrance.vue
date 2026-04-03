@@ -37,7 +37,8 @@
 			}
 		},
 		created() {
-				
+
+			// 启动加载：获取诗词内容用于页面视觉展示
 			this.$apis.third.gushici().then(res=>{
 				const {content,author,origin} =  res.data
 				let index = 0

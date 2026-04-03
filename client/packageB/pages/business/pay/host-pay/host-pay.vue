@@ -180,6 +180,7 @@
                 params.gateHostPayReq = {
                     cardNo: this.cardNo
                 }
+                // 本行卡支付：调用接口层 pay.weixinQuickPay 发起支付
                 this.$apis.pay.weixinQuickPay(params).then(res => {
 
                     if (res.bookAction.retCode === '2000') {
@@ -262,6 +263,7 @@
                     phone: this.hostpay.phone,
                     bizType: 'HOSTPAY',
                 };
+                // 获取短信验证码：接口层负责封装入口与 mock 请求
                 this.$apis.pay.getValidateCode(params).then(res => {
                     this.sended = true
                 })
@@ -277,6 +279,7 @@
                 let param = {
                     ...this.hostpay,
                 };
+                // 查询本行绑卡列表：由接口层统一请求并返回 cardList
                 this.$apis.pay.queryJQBankCard(param).then(res => {
                     // console.log('QjbankCardQuery--->', res)
                     if (res.cardList) {

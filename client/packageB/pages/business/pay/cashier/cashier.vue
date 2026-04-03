@@ -170,7 +170,9 @@
                 var key = e.target.id;
                 that[key] = e.detail.value;
             },
+            // 收银台入口：根据二维码号拉取 storeBrief（用于页面标题）
             async getQrcodeInfo(qrNo) {
+                // 二维码信息请求：payService 封装了工具层 mock（tool.Post）
                 const data = await getQrcodeInfoService(this.$tool, {
                     qrNo,
                     qrType: 'STATIC'

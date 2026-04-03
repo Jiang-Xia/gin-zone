@@ -125,6 +125,7 @@
                 uni.login({
                     success: async (res) => {
                         if (res.code) {
+                            // 小程序登录：wc0001 获取登录态/手机号等所需字段
                             const res1 = await this.$apis.webview.wc0001({
                                 code: res.code
                             })
@@ -141,6 +142,7 @@
                         mask: true
                     })
 
+                    // 小程序登录：wc0002 提交授权 code，返回 phone + sign
                     const res2 = await this.$apis.webview.wc0002({
                         code
                     })

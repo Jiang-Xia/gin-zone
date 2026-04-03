@@ -73,6 +73,7 @@
 					desc: '用户注册',
 					success: async (info) => {
 						console.log("getUserProfile success", info)
+						// 微信授权后：通过接口层完成 wxlogin 并获得 zoneToken
 						const res = await this.$apis.auth.wxLogin({
 							code: this.code,
 							...info.userInfo
@@ -111,6 +112,7 @@
 					provider: 'weixin',
 					success: async (info) => {
 						console.log("获取授权用户信息成功", info)
+						// 微信授权后：通过接口层完成 wxlogin 并获得 zoneToken
 						const res = await this.$apis.auth.wxLogin({
 							code: this.code,
 							...info.userInfo

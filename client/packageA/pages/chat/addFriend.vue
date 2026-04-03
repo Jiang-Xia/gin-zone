@@ -57,10 +57,12 @@
 				let res = {}
 				if (this.type === 'group') {
 					params.groupName = this.content
+					// 群搜索：使用接口层 groups
 					res = await this.$apis.chat.groups(params)
 					this.addList = res.data
 				} else if (this.type === 'friend') {
 					params.q = this.content
+					// 用户搜索：使用接口层 users
 					res = await this.$apis.chat.users(params)
 					this.addList = res.data.list.filter(v=>v.userId!==userId)
 				}
@@ -75,6 +77,7 @@
 				} else if (this.type === 'friend') {
 					params.friendId = item.userId
 				}
+				// 添加：由接口层统一处理 create friend/group join
 				const res = await this.$apis.chat.addFriend(params)
 				uni.showToast({
 					title: res.msg,

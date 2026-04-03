@@ -100,6 +100,7 @@
                 uni.showLoading({
                     title: ''
                 })
+                // 文章详情：由接口层提供统一入口
                 const res = await this.$apis.blog.articleInfo(id)
                 this.articleInfo = res.data.info
                 this.markdownString = this.articleInfo.content

@@ -275,9 +275,11 @@
                 this.currentFQ = value
             },
             getQrcodeInfo(qrNo) {
+                // 二维码信息入口：填充 qrCodeInfo，并驱动营销活动计算
                 this.getQrcodeInfoAsync(qrNo)
             },
             async getQrcodeInfoAsync(qrNo) {
+                // 获取二维码模型：后续需要 mchtNo/storeNo/qrcodeNo 用于串联下单
                 const data = await getQrcodeInfoService(this.$tool, {
                     qrNo,
                     qrType: 'STATIC'
@@ -483,6 +485,8 @@
             /* 计算营销活动金额 开始 */
             //查询活动
             async ListMchtJoinActivity() {
+                // 查询商户侧活动列表：只取第一条参与计算（mock 数据结构约定）
+                // 查找“商户侧”正在生效的营销活动，取第一条参与计算
                 let param = {
                     limit: 100,
                     offset: 0,
@@ -500,6 +504,7 @@
             },
             //计算活动
             async ACalculateActivity(activity) {
+                // 计算活动后的实际支付金额 realAmt，并设置 randomcutFlag 决定展示方式
                 let param = {
                     activityNo: activity.activityNo,
                     oriAmt: this.pageInfo.amount,
@@ -518,7 +523,7 @@
                     } else if (activity.publishParty == 'BANK') {
                         uni.setStorageSync('bankActivityNo', activity.activityNo)
                     }
-                    // 判断是否是随机立减活动
+                    // 判断规则里是否包含 RANDOMCUT：如果包含则使用随机立减金额展示
                     this.randomcutFlag = false
                     for (var i = 0; i < (res?.rules || []).length; i++) {
                         var activityType = res.rules[i].type

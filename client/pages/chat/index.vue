@@ -117,6 +117,7 @@
                     this.userList = []
                     return
                 }
+                // 好友/群列表：聊天模块使用接口层收敛请求入口
                 this.$apis.chat.friends({
                     userId: userId
                 }).then(res => {

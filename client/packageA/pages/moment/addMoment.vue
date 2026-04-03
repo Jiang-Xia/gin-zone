@@ -126,6 +126,7 @@
                             icon: "none"
                         })
                     }
+                    // 发布动态：通过接口层创建
                     const res = await this.$apis.moment.create(params)
                     uni.showToast({
                         title: "发表成功",

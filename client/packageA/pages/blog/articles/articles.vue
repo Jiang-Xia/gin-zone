@@ -81,6 +81,7 @@
 					description: content,
 					title: content
 				}
+				// 文章列表：通过接口层获取，便于复用/替换实现
 				const res = await this.$apis.blog.articleList(params)
 				const list = res.data.list.map((v) => {
 					v.createTime = formatTime(new Date(v.createTime))

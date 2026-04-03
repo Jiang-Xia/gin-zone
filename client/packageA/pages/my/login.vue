@@ -135,12 +135,14 @@ export default {
                     uni.showLoading({
                         title: ''
                     })
+                    // 登录：由接口层统一处理登录请求与 token 获取
                     const res = await this.$apis.auth.login({
                         ...this.form,
                     })
                     uni.hideLoading()
                     const userStore = useUserStore()
                     userStore.setToken(res.data.token)
+                    // 拉取用户信息：成功后驱动聊天初始化
                     const res2 = await this.$apis.auth.getUserInfo()
                     userStore.setUserInfo(res2.data)
                     const app = getApp()
@@ -178,6 +180,7 @@ export default {
                         nickName: "用户" + userName,
                         intro: "这个人很懒，什么都没有留下。",
                     }
+                    // 注册：由接口层统一处理注册请求
                     const res = await this.$apis.auth.register(params)
                     uni.showToast({
                         title: "注册成功,快去登录吧!",

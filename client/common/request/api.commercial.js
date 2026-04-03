@@ -27,20 +27,25 @@ function showToastAfterLoading(options) {
 }
 
 export class CommercialApi {
+  // 是否开启加解密：由本地存储 `zoneOpenCrypto` 控制（兼容旧版 openCrypto）
   shouldOpenCrypto() {
     return isCryptoEnabled()
   }
 
+  // 获取鉴权 token（zoneToken）
   getToken() {
+    // 这里的同名方法会调用同文件导入的 `getToken()`（storage 读取）
     return getToken()
   }
 
   // 转化 rest 风格 api：把 "/path/{id}" 里的 "{id}" 替换成 data[id]
   restful(url, data = {}, config = {}) {
     const defaultHeaderConfig = {
+      // 后端通用鉴权头
       Authorization: this.getToken(),
     }
 
+    // payload：请求 body（GET/DELETE 会通过空对象策略变成 undefined；避免后端异常）
     let payload = data
     if (!payload || typeof payload !== 'object') payload = {}
 
@@ -63,6 +68,8 @@ export class CommercialApi {
       url = url
     } else {
       if (this.shouldOpenCrypto() && !url.includes('/common/signIn')) {
+        // crypto 模式下：除 signIn 外，把请求发往 baseUrl，并加会话头/请求体加密
+        // 只有非 signIn 才走请求体加密 + 会话头（zoneSessionId）
         url = baseUrl + url
 
         const id = getSessionId()
@@ -74,7 +81,7 @@ export class CommercialApi {
           }
         }
 
-        // 有请求体才加密
+        // 只有 POST/PUT/PATCH 且 payload 存在时才加密
         if (['POST', 'PUT', 'PATCH'].includes(method) && payload !== undefined) {
           let content = ''
           try {
@@ -82,11 +89,13 @@ export class CommercialApi {
           } catch (e) {
             content = String(payload)
           }
+          // workKey 来自 signIn 初始化的 zoneWorkKey；为空则回退 sm4Key（联调兜底）
           const workKey = getWorkKey() || sm4Key
           content = sm4.encrypt(content, workKey)
           payload = { content }
         }
       } else {
+        // 不走 crypto 时：只做 baseUrl 拼接
         url = baseUrl + url
       }
     }
@@ -110,12 +119,15 @@ export class CommercialApi {
 
   // 请求响应完成：处理响应 code / 解密 / 错误提示
   complete(res, resolve, reject, url) {
+    // res.data 即后端响应体；旧版返回成功/失败字段约定为 code/msg/encrypt/data
     const body = res?.data
     const code = body && body.code
 
     if (this.shouldOpenCrypto() && body && !url.includes('/common/signIn')) {
+      // crypto 模式：若响应体包含 encrypt，则解密后把解析结果写回 body.data
       if (body.encrypt) {
         try {
+          // 响应解密：同样依赖 zoneWorkKey
           const workKey = getWorkKey() || sm4Key
           const decrypted = sm4.decrypt(body.encrypt, workKey)
           body.data = JSON.parse(decrypted)
@@ -132,6 +144,7 @@ export class CommercialApi {
     }
 
     if (code === 0 || code === 200) {
+      // code 命中成功：resolve body（与旧版行为保持一致）
       resolve(body)
       return
     }
@@ -147,6 +160,7 @@ export class CommercialApi {
 
     // 鉴权失败清空信息（兼容旧版约定：res.data.data?.reload）
     if (body.data?.reload) {
+      // 统一失效处理：清理 token + userInfo + 会话密钥
       clearSession()
     }
 
@@ -358,6 +372,8 @@ export class CommercialApi {
 
   // 统一签到（加密会话密钥初始化）
   signIn() {
+    // signIn：初始化 zoneSessionId + zoneWorkKey
+    // 旧版约定：响应 data 为“加密字符串”，需要 sm2 解密后 JSON.parse
     if (!this.shouldOpenCrypto()) return Promise.resolve()
 
     return this.post('/common/signIn', { sence: 'blog' })

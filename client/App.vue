@@ -68,6 +68,7 @@
 			})
             this.globalData.initChat = this.initChat
 			const userStore = useUserStore()
+			// onLaunch：从 storage 把 user 态 hydrate 到 pinia
 			userStore.hydrateFromStorage()
 
 			const userInfo = userStore.userInfo
@@ -77,6 +78,7 @@
 			}
 
 			/* 全局用户信息处理 */
+			// token 存在但 userInfo 缺失：补拉一次用户信息（失败则清空登录态）
 			if (userStore.token && (!userInfo || !userInfo.userId)) {
 				this.$apis.auth.getUserInfo().then(res => {
 					userStore.setUserInfo(res.data)

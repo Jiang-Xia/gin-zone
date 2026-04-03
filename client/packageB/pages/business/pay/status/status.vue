@@ -88,6 +88,7 @@
             async queryStatus(type) {
                 try {
                     uni.showLoading({title: '加载中'})
+                    // 小程序支付结果：通过接口层 tradeQuery 获取交易状态
                     const params = {
                         out_trade_no: uni.getStorageSync('payOutTradeNo'),
                     }
@@ -111,6 +112,8 @@
             },
             async queryOrderOnce(params) {
                 try {
+                    // 轮询：只重试一次（模拟联调场景；真实接入可改为指数退避/多次重试）
+                    // params.orderNo / params.mchtNo：来自 all-pay 页面写入的 pay_order_params
                     const data = await queryOrderService(this.$tool, {
                         mchtNo: params.mchtNo,
                         orderNo: params.orderNo,

@@ -106,6 +106,7 @@
         onReady() {
         },
 		onShow() {
+            // 进入博客页前：先完成 signIn（初始化加密会话密钥）再拉取首页数据
             this.$apis.auth.signIn().then(()=>{
                 this.init()
             })
@@ -121,6 +122,7 @@
 				this.getArticleList()
 			},
 			async getImage() {
+				// 首页轮播图：使用接口层，避免页面散落 URL
 				const res = await this.$apis.blog.dailyImg(7)
 				// console.log(res)
 				this.swiperList = res.data.images
@@ -136,6 +138,7 @@
 					pageSize,
 					client: true
 				}
+				// 文章列表：使用接口层收敛入口
 				const res = await this.$apis.blog.articleList(params)
 				const list = res.data.list.map((v) => {
 					v.createTime = formatTime(new Date(v.createTime))

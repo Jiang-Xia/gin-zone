@@ -169,6 +169,7 @@
 			const {
 				data: openAiKey
 			} = await this.$apis.chatAi.getOpenAiKey({
+				// 获取 AI API key：由接口层统一管理
 				keyCode: 'j123456',
 			})
 			this.openAiKey = openAiKey.slice(0, openAiKey.length - 2)
@@ -240,6 +241,7 @@
 						message: content
 					}
 					let message = ''
+					// 发送 AI 消息：走接口层统一请求入口
 					const res = await this.$apis.chatAi.sendMessage(sendParams)
 					if (res) {
 						message = res.data.text
