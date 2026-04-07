@@ -11,14 +11,14 @@
                         </view>
                     </swiper-item>
                 </swiper>
-                <image v-else class="header-bg" src="/static/images/logined.png" mode="aspectFill"></image>
+                <image v-else class="header-bg" :src="$getImg('/static/images/logined.png')" mode="aspectFill"></image>
             </view>
             <view class="main-content">
                 <view class="my-info" @click="onClickProfile">
                     <view class="avatar-wrap">
-                        <image class="avatar" :src="isLogin ? userInfo.avatar : '/static/images/my.png'" mode="aspectFill">
+                        <image class="avatar" :src="isLogin ? userInfo.avatar : $getImg('/static/images/my.png')" mode="aspectFill">
                         </image>
-                        <!-- <image class="avatar-camera" src="/static/images/my.png" mode="aspectFill"></image> -->
+                        <!-- <image class="avatar-camera" :src="$getImg('/static/images/my.png')" mode="aspectFill"></image> -->
                     </view>
                     <view class="text-wrap">
                         <view class="name-row">
@@ -42,7 +42,7 @@
 
                         <t-cell title="收银台" arrow @click="goCashier">
                             <template #image>
-                                <uni-icons custom-prefix="zonefont" type="zone-qita-circle" size="20"
+                                <uni-icons type="wallet" size="20"
                                     color="#f00057"></uni-icons>
                             </template>
                         </t-cell>
@@ -56,7 +56,7 @@
 
                         <t-cell title="关于" arrow @click="goAbout">
                             <template #image>
-                                <uni-icons custom-prefix="zonefont" type="zone-qita-circle" size="20"
+                                <uni-icons type="info" size="20"
                                     color="#f00057"></uni-icons>
                             </template>
                         </t-cell>

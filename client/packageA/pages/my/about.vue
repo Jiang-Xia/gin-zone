@@ -2,7 +2,7 @@
 	<pageConfig title="关于我们">
 		<view class="about-page">
 			<view class="brand">
-				<image class="logo" src="/static/logo/android-chrome-192x192.png" mode="aspectFill" />
+				<image class="logo" :src="$getImg('/static/logo/android-chrome-192x192.png')" mode="aspectFill" />
 				<view class="name">{{ appName }}</view>
 				<view class="slogan">{{ slogan }}</view>
 			</view>

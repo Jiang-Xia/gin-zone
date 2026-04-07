@@ -33,6 +33,7 @@ export function createApp() {
     const app = createSSRApp(App)
     app.use(Pinia.createPinia());
     app.config.globalProperties.$api = api
+    app.config.globalProperties.$getImg = tool.getImg
     // $apis：业务接口语义层（由 common/request/apis/index.js 生成）
     app.config.globalProperties.$apis = createApis(api)
     app.config.globalProperties.$common = common

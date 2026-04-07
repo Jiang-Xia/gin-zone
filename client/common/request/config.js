@@ -5,11 +5,15 @@ let env = process.env.NODE_ENV
 let fileUrl = ''
 let baseUrl = ''
 let wsUrl = ''
+// 静态资源域名（用于 /static/... 图片走 CDN）
+// 默认与 fileUrl 一致；如需区分，可单独改这里
+let imageUrl = ''
 
 if (env === 'production') {
   fileUrl = 'https://jiang-xia.top/x-zone/api/v1'
   baseUrl = 'https://jiang-xia.top/x-zone/api/v1'
   wsUrl = 'wss://jiang-xia.top/x-zone/api/v1'
+  imageUrl = ''
   /* ubuntu 服务器
   fileUrl = "http://43.139.16.164/x-zone/api/v1"
   baseUrl = "http://43.139.16.164/x-zone/api/v1"
@@ -19,6 +23,7 @@ if (env === 'production') {
   fileUrl = 'https://jiang-xia.top/x-zone/api/v1'
   baseUrl = 'https://jiang-xia.top/x-zone/api/v1'
   wsUrl = 'wss://jiang-xia.top/x-zone/api/v1'
+  imageUrl = ''
   // 本地
   // fileUrl = "http://127.0.0.1:9600"
   // baseUrl = "http://127.0.0.1:9600/api/v1"
@@ -60,6 +65,7 @@ const enableRequestCryptoDebugLog = (() => {
 export {
   env,
   fileUrl,
+  imageUrl,
   baseUrl,
   wsUrl,
   publicKey,

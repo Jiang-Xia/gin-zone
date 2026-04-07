@@ -3,7 +3,7 @@
         <view class="content-page">
             <view class="flex-direction">
                 <view class="logo-box">
-                    <image src="/static/business/images/pay/bank-logo.png"></image>
+                    <image :src="$getImg('/static/business/images/pay/bank-logo.png')"></image>
                 </view>
                 <view class="" style="font-size: 36rpx;font-weight: bold;margin-bottom: 6px">
                     {{ qrCodeInfo.storeBrief }}
@@ -52,7 +52,7 @@
                 <view class="pay-wrap">
                     <view class="pay-method" v-for="(item, index) in payTypeList" :key="item.value">
                         <view class="flex-between pay-cell">
-                            <image style="width: 40rpx; height: auto" :src="item.iconImg" mode="widthFix"></image>
+                            <image style="width: 40rpx; height: auto" :src="$getImg(item.iconImg)" mode="widthFix"></image>
                             <view class="flex-between cell-right">
                                 <view class="pay-title">{{ item.title }}</view>
                                 <radio class="check-radio" :value="item.value"

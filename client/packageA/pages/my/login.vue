@@ -4,7 +4,7 @@
 			<view class="bg bg-color-base margin-b20"></view>
 
 			<view class="tab z-flex z-flex z-row z-align-center">
-				<image class="tab-bg" src="/static/login/banner-icon.png" mode=""></image>
+				<image class="tab-bg" :src="$getImg('/static/login/banner-icon.png')" mode=""></image>
 
 				<view class="z-flex z-flex z-row z-align-center">
 					<view class="z-flex z-column z-align-center margin-r40" @click="cur = 0">
@@ -20,7 +20,7 @@
 
 			<view class="login margin-b80" v-if="!cur">
 				<view class="input z-flex z-row z-align-center margin-b40">
-					<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
+					<image class="input-icon margin-r20" :src="$getImg('/static/login/account.png')" mode=""></image>
 					<t-input
 						v-model:value="form.userName"
 						class="z-flex-item color-base font-30"
@@ -32,7 +32,7 @@
 					/>
 				</view>
 				<view class="input z-flex z-row z-align-center margin-b40">
-					<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
+					<image class="input-icon margin-r20" :src="$getImg('/static/login/password.png')" mode=""></image>
 					<t-input
 						v-model:value="form.password"
 						class="z-flex-item color-base font-30"
@@ -54,7 +54,7 @@
 
 			<view class="register margin-b80" v-if="cur">
 				<view class="input z-flex z-row z-align-center margin-b40">
-					<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
+					<image class="input-icon margin-r20" :src="$getImg('/static/login/account.png')" mode=""></image>
 					<t-input
 						v-model:value="form.userName"
 						class="z-flex-item color-base font-30"
@@ -66,7 +66,7 @@
 					/>
 				</view>
 				<view class="input z-flex z-row z-align-center margin-b40">
-					<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
+					<image class="input-icon margin-r20" :src="$getImg('/static/login/password.png')" mode=""></image>
 					<t-input
 						v-model:value="form.password"
 						class="z-flex-item color-base font-30"
@@ -109,9 +109,9 @@
 				</view>
 
 				<view class="other-items z-flex z-row z-align-center z-space-around">
-					<!-- <image class="other-icon" src="/static/login/wechat.png" mode=""></image> -->
-					<!-- <image class="other-icon" src="/static/login/qq.png" mode=""></image> -->
-					<!-- <image class="other-icon" src="/static/login/apple.png" mode=""></image> -->
+					<!-- <image class="other-icon" :src="$getImg('/static/login/wechat.png')" mode=""></image> -->
+					<!-- <image class="other-icon" :src="$getImg('/static/login/qq.png')" mode=""></image> -->
+					<!-- <image class="other-icon" :src="$getImg('/static/login/apple.png')" mode=""></image> -->
 				</view>
 			</view>
 		</view>

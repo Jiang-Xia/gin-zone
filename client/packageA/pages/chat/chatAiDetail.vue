@@ -1,7 +1,7 @@
 <template>
 <pageConfig :title="title">
 	<view class="container">
-		<!-- <image v-if="history.loading" class="history-loaded" src="/static/images/loading.svg" />
+		<!-- <image v-if="history.loading" class="history-loaded" :src="$getImg('/static/images/loading.svg')" />
 				<view v-else :class="history.allLoaded ? 'history-loaded':'load'" @click="loadHistoryMessage(false)">
 					<view>{{ history.allLoaded ? '已经没有更多的历史消息' : '点击获取历史消息' }}</view>
 				</view>

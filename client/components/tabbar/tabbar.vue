@@ -2,8 +2,8 @@
     <view class="page-total">
         <view class="tab-list">
             <view class="list" v-for="(item, index) in TabBarList" @click="onTabBar(item, index)" :key="index">
-                <image :src="item.selectedIconPath" mode="widthFix" v-show="tabBarShow === index"></image>
-                <image :src="item.iconPath" mode="widthFix" v-show="tabBarShow != index"></image>
+                <image :src="$getImg(item.selectedIconPath)" mode="widthFix" v-show="tabBarShow === index"></image>
+                <image :src="$getImg(item.iconPath)" mode="widthFix" v-show="tabBarShow != index"></image>
                 <text :class="{ action: tabBarShow === index }">{{ item.text }}</text>
             </view>
         </view>

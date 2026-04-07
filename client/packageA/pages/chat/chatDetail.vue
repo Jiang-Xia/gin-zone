@@ -3,7 +3,7 @@
         url: '/pages/chat/index'
     })}">
         <view class="container">
-            <image v-if="history.loading" class="history-loaded" src="/static/images/loading.svg" />
+            <image v-if="history.loading" class="history-loaded" :src="$getImg('/static/images/loading.svg')" />
             <view v-else :class="history.allLoaded ? 'history-loaded':'load'" @click="loadHistoryMessage(false)">
                 <view>{{ history.allLoaded ? '已经没有更多的历史消息' : '点击获取历史消息' }}</view>
             </view>
@@ -50,8 +50,8 @@
             <view class="action-box" v-if="!videoPlayer.visible && !messageSelector.visible">
                 <view class="action-top">
                     <view @click="switchAudioKeyboard">
-                        <image class="more" v-if="audio.visible" src="/static/images/jianpan.png"></image>
-                        <image class="more" v-else src="/static/images/audio.png"></image>
+                        <image class="more" v-if="audio.visible" :src="$getImg('/static/images/jianpan.png')"></image>
+                        <image class="more" v-else :src="$getImg('/static/images/audio.png')"></image>
                     </view>
                     <view v-if="audio.visible" class="record-input"  :class="audio.recording?'recording':''">
                         <view class="flex-center" v-if="audio.recording" @click="onRecordEnd">
@@ -63,11 +63,11 @@
                     <input v-else v-model="text" class="consult-input emojifont" confirm-type="send" maxlength="700"
                         placeholder="发送消息" type="text" @done="sendTextMessage" />
                     <view @click="switchEmojiKeyboard">
-                        <image class="more" v-if="emoji.visible" src="/static/images/jianpan.png"></image>
-                        <image class="more" v-else src="/static/images/emoji.png"></image>
+                        <image class="more" v-if="emoji.visible" :src="$getImg('/static/images/jianpan.png')"></image>
+                        <image class="more" v-else :src="$getImg('/static/images/emoji.png')"></image>
                     </view>
                     <view>
-                        <image @click="showOtherTypesMessagePanel()" class="more" src="/static/images/more.png" />
+                        <image @click="showOtherTypesMessagePanel()" class="more" :src="$getImg('/static/images/more.png')" />
                     </view>
                     <view v-if="text" class="send-btn-box">
                         <text class="btn" @click="sendTextMessage()">发送</text>
@@ -81,12 +81,12 @@
                 <view v-if="otherTypesMessagePanelVisible" class="action-bottom">
 
                     <view class="more-icon">
-                        <image @click="sendImageMessage()" class="operation-icon" src="/static/images/picture.png">
+                        <image @click="sendImageMessage()" class="operation-icon" :src="$getImg('/static/images/picture.png')">
                         </image>
                         <view class="operation-title">图片</view>
                     </view>
                     <view class="more-icon">
-                        <image @click="sendVideoMessage()" class="operation-icon" src="/static/images/video.png">
+                        <image @click="sendVideoMessage()" class="operation-icon" :src="$getImg('/static/images/video.png')">
                         </image>
                         <view class="operation-title">视频</view>
                     </view>
