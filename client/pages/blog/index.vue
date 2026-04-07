@@ -87,7 +87,7 @@
 				current:0,
 				// 菜单列表
 				menuList: [
-					{ icon: 'chat', color: '#007AFF', text: '聊天',type: 'tabbar', url: '/pages/chat/index' },
+					{ icon: 'chat', color: '#f00057', text: '聊天',type: 'tabbar', url: '/pages/chat/index' },
 					{ icon: 'wallet', color: '#FF9900', text: '收银台', type: '',url: '/packageB/pages/business/pay/cashier/cashier' },
 					{ icon: 'heart', color: '#FF5A5F', text: '关注', type: '', url: '' },
 					{ icon: 'person', color: '#1CBBB4', text: '我的', type: 'tabbar', url: '/pages/my/index' },
@@ -327,7 +327,7 @@
             	margin-top: 28rpx; /* 为浮动菜单留出空间 */
                 
                 .uni-info {
-                    color: #007AFF;
+                    color: #f00057;
                     font-size: 28rpx;
                 }
             }

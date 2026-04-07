@@ -283,6 +283,10 @@
 	// 编辑器样式
 	@import 'common/css/editor-v3.style.css';
     
+    $uni-primary: #f00057;
+    $uni-primary-disable:mix(#fff,$uni-primary,50%);
+    $uni-primary-light: mix(#fff,$uni-primary,80%);
+    
 	// 设置整个项目的背景色
 	page {
         background-color: #f1f1f1;

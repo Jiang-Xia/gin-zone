@@ -83,7 +83,7 @@
 		{
 			"path": "pages/my/index",
 			"style": {
-				"navigationBarTitleText": "我的",
+				"navigationBarTitleText": "个人中心",
                 "navigationStyle": "custom"
 			}
 		}
@@ -168,9 +168,16 @@
 				
 				},
 				{
-					"path": "pages/my/setting",
+					"path": "pages/my/profileEdit",
 					"style": {
 						"navigationBarTitleText": "个人资料",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "pages/my/about",
+					"style": {
+						"navigationBarTitleText": "关于",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -278,7 +285,7 @@
 		// "backgroundColor": "rgba(0, 122, 255,0.3)",
 		"spacing": "5px",
 		"height": "50px",
-		"selectedColor": "#0062cc",
+		"selectedColor": "#f00057",
 		"list": [{
 				"text": "博客",
 				"pagePath": "pages/blog/index",

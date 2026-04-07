@@ -6,16 +6,16 @@
 /* #endif */
 page,
 .page, .default-theme {
-    --td-brand-color-1: #fff1eb;
-    --td-brand-color-2: #ffd9c9;
-    --td-brand-color-3: #ffb99a;
-    --td-brand-color-4: #ff905d;
-    --td-brand-color-5: #eb641f;
-    --td-brand-color-6: #cb4d01;
-    --td-brand-color-7: #a23a00;
-    --td-brand-color-8: #7b2a00;
-    --td-brand-color-9: #5a1d00;
-    --td-brand-color-10: #411200;
+    --td-brand-color-1: #fff0f1;
+    --td-brand-color-2: #ffd8dc;
+    --td-brand-color-3: #ffb7c0;
+    --td-brand-color-4: #ff8fa0;
+    --td-brand-color-5: #ff5a7c;
+    --td-brand-color-6: #f00057;
+    --td-brand-color-7: #c00042;
+    --td-brand-color-8: #930030;
+    --td-brand-color-9: #690020;
+    --td-brand-color-10: #480013;
     --td-warning-color-1: #fff1e9;
     --td-warning-color-2: #ffd9c2;
     --td-warning-color-3: #ffb98c;
@@ -46,20 +46,20 @@ page,
     --td-success-color-8: #005334;
     --td-success-color-9: #003b23;
     --td-success-color-10: #002515;
-    --td-gray-color-1: #f4f3f2;
-    --td-gray-color-2: #f0edec;
-    --td-gray-color-3: #ebe7e6;
-    --td-gray-color-4: #e1dcda;
-    --td-gray-color-5: #cdc4c0;
-    --td-gray-color-6: #b1a29b;
-    --td-gray-color-7: #96867e;
-    --td-gray-color-8: #817269;
-    --td-gray-color-9: #675a53;
-    --td-gray-color-10: #524842;
-    --td-gray-color-11: #3f3632;
-    --td-gray-color-12: #312a27;
-    --td-gray-color-13: #282220;
-    --td-gray-color-14: #1b1615;
+    --td-gray-color-1: #f6f6f6;
+    --td-gray-color-2: #eeeceb;
+    --td-gray-color-3: #dddbdb;
+    --td-gray-color-4: #cac9c9;
+    --td-gray-color-5: #b6b6b6;
+    --td-gray-color-6: #a2a2a2;
+    --td-gray-color-7: #8f8f8f;
+    --td-gray-color-8: #7b7c7c;
+    --td-gray-color-9: #6a6b6b;
+    --td-gray-color-10: #585a5a;
+    --td-gray-color-11: #494a4a;
+    --td-gray-color-12: #3a3b3b;
+    --td-gray-color-13: #2c2e2e;
+    --td-gray-color-14: #202222;
     --td-font-white-1: rgba(255, 255, 255, 1);
     --td-font-white-2: rgba(255, 255, 255, .55);
     --td-font-white-3: rgba(255, 255, 255, .35);
@@ -68,12 +68,12 @@ page,
     --td-font-gray-2: rgba(0, 0, 0, .6);
     --td-font-gray-3: rgba(0, 0, 0, .4);
     --td-font-gray-4: rgba(0, 0, 0, .26);
-    --td-brand-color: var(--td-brand-color-5);
+    --td-brand-color: var(--td-brand-color-6);
     --td-warning-color: var(--td-warning-color-5);
     --td-error-color: var(--td-error-color-6);
     --td-success-color: var(--td-success-color-5);
     --td-brand-color-focus: var(--td-brand-color-1);
-    --td-brand-color-active: var(--td-brand-color-6);
+    --td-brand-color-active: var(--td-brand-color-7);
     --td-brand-color-disabled: var(--td-brand-color-3);
     --td-brand-color-light: var(--td-brand-color-1);
     --td-brand-color-light-active: var(--td-brand-color-2);
@@ -128,50 +128,6 @@ page,
     --td-scrollbar-color: rgba(0, 0, 0, .1);
     --td-scrollbar-hover-color: rgba(0, 0, 0, .3);
     --td-scroll-track-color: #fff;
-}
-/* } */
-
-/* #ifdef H5 */
-:root,
-/* #endif */
-page,
-.page, .default-theme {
-    --td-font-family: pingfang sc, microsoft yahei, arial regular;
-    --td-font-family-medium: pingfang sc, microsoft yahei, arial medium;
-    --td-font-size-link-small: 12px;
-    --td-font-size-link-medium: 14px;
-    --td-font-size-link-large: 16px;
-    --td-font-size-mark-extraSmall: 10px;
-    --td-font-size-mark-small: 12px;
-    --td-font-size-mark-medium: 14px;
-    --td-font-size-mark-large: 16px;
-    --td-font-size-body-extraSmall: 10px;
-    --td-font-size-body-small: 12px;
-    --td-font-size-body-medium: 14px;
-    --td-font-size-body-large: 16px;
-    --td-font-size-title-small: 14px;
-    --td-font-size-title-medium: 16px;
-    --td-font-size-title-large: 18px;
-    --td-font-size-title-extraLarge: 20px;
-    --td-font-size-headline-small: 24px;
-    --td-font-size-headline-medium: 28px;
-    --td-font-size-headline-large: 36px;
-    --td-font-size-display-medium: 48px;
-    --td-font-size-display-large: 64px;
-    --td-font-size: 10px;
-    --td-font-size-xs: var(--td-font-size-body-extraSmall);
-    --td-font-size-s: var(--td-font-size-body-small);
-    --td-font-size-base: var(--td-font-size-title-small);
-    --td-font-size-m: var(--td-font-size-title-medium);
-    --td-font-size-l: var(--td-font-size-title-large);
-    --td-font-size-xl: var(--td-font-size-title-extraLarge);
-    --td-font-size-xxl: var(--td-font-size-headline-large);
-    --td-radius-small: 3px;
-    --td-radius-default: 6px;
-    --td-radius-large: 9px;
-    --td-radius-extraLarge: 12px;
-    --td-radius-round: 999px;
-    --td-radius-circle: 50%;
 
     /* 自定义主题设置 */
     --td-button-font-weight: 500;

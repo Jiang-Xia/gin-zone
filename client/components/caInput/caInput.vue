@@ -1,6 +1,6 @@
 <template>
     <t-input class="ca-input" align="right" :type="type" :placeholder="!readonly?placeholder:''" :readonly="readonly"
-        :disabled="disabled" :maxlength="maxlength" :value="innerValue" @change="change" @blur="blur">
+        :disabled="disabled" :maxlength="maxlength" :borderless="borderless" :value="innerValue" @change="change" @blur="blur">
         <template #label>
             <view :class="required?'sr-required':''">
                 {{label}}
@@ -22,6 +22,10 @@
             label: {
                 type: String,
                 default: ''
+            },
+            borderless: {
+            	type: Boolean,
+            	default: false
             },
             required: {
             	type: Boolean,

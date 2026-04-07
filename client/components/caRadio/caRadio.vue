@@ -3,7 +3,7 @@
         <template #note>
             <view class="ca-radio-group">
                 <t-radio-group :custom-style="boxCustomStyle" v-model="innerValue" variant="primary-filled"
-                    @change="change" :default-value="defaultValue" borderless>
+                    @change="change" :default-value="groupDefaultValue" borderless>
                     <t-radio v-for="(item,index) in options" :key="item.value"
                         :value="item.value">{{ item.label }}</t-radio>
                 </t-radio-group>
@@ -22,7 +22,7 @@
                 default: ''
             },
             defaultValue: {
-                type: String,
+                type: [String, Number],
                 default: ''
             },
             required: {
@@ -30,13 +30,13 @@
                 default: false
             },
             value: {
-                type: String,
+                type: [String, Number],
                 default: ''
             },
             options: {
                 require: true,
                 type: Array,
-                default: []
+                default: () => []
             },
         },
         data() {
@@ -45,7 +45,7 @@
         computed: {
             innerValue: {
                 get() {
-                    // console.log('----> this.value', this.value)
+                    console.log('----> this.value', this.value)
                     return this.value
                 },
                 set(value) {
@@ -62,6 +62,11 @@
                     // backgroundColor: 'var(--td-bg-color-container, #fff)',
                 };
             },
+            groupDefaultValue() {
+                // t-radio-group 的 default-value 可能会影响回显。
+                // 优先使用外部传入的 defaultValue；没传时使用当前 v-model 值作为默认值。
+                return this.defaultValue !== '' ? this.defaultValue : this.value
+            }
         },
         methods: {
             change(e) {

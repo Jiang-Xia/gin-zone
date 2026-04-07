@@ -3,68 +3,60 @@
 		<view class="container">
 			<uni-section title="个人信息" type="line">
 				<view class="form-wrap">
-					<t-form ref="baseForm" :data="baseFormData">
-						<t-form-item name="avatar">
-							<!-- #ifdef MP-WEIXIN -->
-							<button class="btn-wrap" open-type="chooseAvatar" @chooseavatar="onChooseavatar">
-								<image class="avatar" :src="avatar" mode="scaleToFill"></image>
-							</button>
-							<!-- #endif -->
+					<t-cell-group>
+						<t-cell title="头像">
+							<template #note>
+								<!-- #ifdef MP-WEIXIN -->
+								<button class="btn-wrap" open-type="chooseAvatar" @chooseavatar="onChooseavatar">
+									<image class="avatar" :src="avatar" mode="scaleToFill"></image>
+								</button>
+								<!-- #endif -->
 
-							<!-- #ifdef H5||APP-PLUS -->
-							<view class="avatar-upload">
-								<t-upload
-									v-model:files="uploadFiles"
-									:max="1"
-									:media-type="['image']"
-									:remove-btn="false"
-									:preview="false"
-									:grid-config="{ column: 1, width: 128, height: 128 }"
-									:image-props="{ mode: 'aspectFill', shape: 'round' }"
-									:request-method="uploadRequestMethod"
-									@success="onUploadSuccess"
-								/>
-							</view>
-							<!-- #endif -->
-						</t-form-item>
+								<!-- #ifdef H5||APP-PLUS -->
+								<view class="avatar-upload">
+									<t-upload
+										v-model:files="uploadFiles"
+										:max="1"
+										:media-type="['image']"
+										:remove-btn="false"
+										:preview="false"
+										:grid-config="{ column: 1, width: 128, height: 128 }"
+										:image-props="{ mode: 'aspectFill', shape: 'round' }"
+										:request-method="uploadRequestMethod"
+										@success="onUploadSuccess"
+									/>
+								</view>
+								<!-- #endif -->
+							</template>
+						</t-cell>
 
-						<t-form-item label="昵称" name="nickName" required-mark>
-							<t-input
-								v-model:value="baseFormData.nickName"
-								type="nickname"
-								placeholder="请输入昵称"
-							/>
-						</t-form-item>
+						<caInput v-model:value="baseFormData.nickName" label="昵称" required type="nickname" placeholder="请输入昵称" />
 
-						<t-form-item label="邮箱" name="email">
-							<t-input
-								v-model:value="baseFormData.email"
-								type="text"
-								placeholder="请输入邮箱"
-								clearable
-							/>
-						</t-form-item>
+						<caInput v-model:value="baseFormData.email" label="邮箱" type="text" placeholder="请输入邮箱" />
 
-						<t-form-item label="性别" name="gender">
-							<t-radio-group
-								v-model:value="baseFormData.gender"
-								:options="sexs"
-								:keys="{ label: 'text', value: 'value' }"
-							/>
-						</t-form-item>
+						<caRadio v-model:value="baseFormData.gender" label="性别" :options="sexs" />
 
-						<t-form-item label="自我介绍" name="intro" label-width="75">
-							<t-textarea
-								v-model:value="baseFormData.intro"
-								placeholder="请输入自我介绍"
-								autosize
-							/>
-						</t-form-item>
-					</t-form>
+						<t-cell title="自我介绍" :bordered="false" class="intro-cell">
+							<template #note>
+								<view style="width: 70%; margin-left: auto;">
+									<t-textarea
+										v-model:value="baseFormData.intro"
+										placeholder="请输入自我介绍"
+										autosize
+										indicator
+										:maxlength="50"
+										style="width: 100%;"
+									/>
+								</view>
+							</template>
+						</t-cell>
+					</t-cell-group>
 
-					<t-button theme="primary" variant="base" block class="submit-btn" @click="submit">
-						提交
-					</t-button>
+					<view class="submit-btn">
+						<t-button theme="primary" variant="base" block @click="submit">
+							提交
+						</t-button>
+					</view>
 				</view>
 			</uni-section>
 		</view>
@@ -85,11 +77,11 @@
 				},
 				// 单选数据源（男/女）
 				sexs: [{
-					text: '男',
-					value: 0
+					label: '男',
+					value: 1,
 				}, {
-					text: '女',
-					value: 1
+					label: '女',
+					value: 0,
 				}],
 				// t-upload 受控文件列表（单张头像）
 				uploadFiles: []
@@ -181,15 +173,17 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	.container {
-		padding: 24rpx;
+		padding-top: 24rpx;
 		.uni-section{
 			border-radius: 8rpx;
 		}
+		.uni-section__content{
+			padding: 32rpx;
+		}
 	}
 	.form-wrap {
-		padding: 15px;
 		background-color: $uni-white;
 	}
 
@@ -216,7 +210,23 @@
 		justify-content: center;
 	}
 
+	/* 覆盖 t-cell 内部布局：label 30%，note 70%（仅自我介绍这一行） */
+	:deep(.intro-cell .t-cell__title) {
+		flex: 0 0 30%;
+		max-width: 30%;
+	}
+
+	:deep(.intro-cell .t-cell__note) {
+		flex: 0 0 70%;
+		max-width: 70%;
+	}
+
+	:deep(.intro-cell .t-cell__note) > view {
+		width: 100% !important;
+		margin-left: 0 !important;
+	}
+
 	.submit-btn {
-		margin-top: 20rpx;
+		padding: 32rpx;
 	}
 </style>

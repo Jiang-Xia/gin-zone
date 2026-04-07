@@ -127,8 +127,8 @@
 				fabPattern: {
 					color: '#7A7E83',
 					backgroundColor: '#fff',
-					selectedColor: '#007AFF',
-					buttonColor: '#007AFF',
+					selectedColor: '#f00057',
+					buttonColor: '#f00057',
 					iconColor: '#fff',
 				},
 				fabContent: [{

@@ -1,4 +1,5 @@
 @import '@/uni_modules/uni-scss/variables.scss';
+
 /* 无需手动导入自动导入 */
 // 间距基础倍数
 $uni-space-root: 2;
@@ -6,7 +7,7 @@ $uni-space-root: 2;
 $uni-radius-root:5px;
 
 // 主色
-$uni-primary: #2979ff;
+$uni-primary: #f00057;
 $uni-primary-disable:mix(#fff,$uni-primary,50%);
 $uni-primary-light: mix(#fff,$uni-primary,80%);
 
@@ -69,19 +70,20 @@ $uni-text-color-light: #aaa;
 $uni-border-color-light: #f5f5f5;
 $uni-bg-color-page: #f1f1f1;
 $uni-bg-color-page-alt: #f7f7f7;
-$uni-color-accent: #f6585d;
+$uni-color-accent: #f00057;
 $uni-color-emphasis: rgb(147, 18, 30);
 $uni-bg-color-secondary: rgba(150, 158, 184, 1);
 
 
 
 
-/* 项目自定义全局变量（参考 shopkeeper 的 $sr-* 命名） */
-$sr-border-radius: 10px;
-$sr-main-bgc: #f1f1f1;
-$sr-main-bgc2: #f5f5f5;
-$sr-main-color: #262626;
-$sr-desc-color: #595959;
-$sr-desc-color2: #8c8c8c;
-$sr-remark-color: #bfbfbf;
-$sr-price-color1: #eb6120;
+/* 项目自定义全局变量（参考 shopkeeper 的 $g-* 命名） */
+$g-border-radius: 10px;
+$g-primary: #f00057;
+$g-main-bgc: #f1f1f1;
+$g-main-bgc2: #f5f5f5;
+$g-main-color: #262626;
+$g-desc-color: #595959;
+$g-desc-color2: #8c8c8c;
+$g-remark-color: #bfbfbf;
+$g-price-color1: #f00057;

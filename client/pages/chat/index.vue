@@ -45,7 +45,7 @@
                 </uni-swipe-action>
             </uni-list>
             <!-- #ifndef APP -->
-            <uni-fab @fabClick="clickLeft()" :pop-menu="false" horizontal="right" vertical="bottom"></uni-fab>
+            <uni-fab :pattern="{buttonColor: '#f00057'}" @fabClick="clickLeft()" :pop-menu="false" horizontal="right" vertical="bottom"></uni-fab>
             <!-- #endif -->
         </view>
         <!-- <tabbar :tabBarShow="2"/> -->
@@ -84,7 +84,7 @@
                 options2: [{
                         text: '取消',
                         style: {
-                            backgroundColor: '#007aff'
+                            backgroundColor: '#f00057'
                         }
                     },
                     {

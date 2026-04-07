@@ -1,7 +1,7 @@
 /* 编写整个项目的公共样式（参考 shopkeeper） */
 
 page {
-	background-color: $sr-main-bgc;
+	background-color: $g-main-bgc;
 
 	.sr-custom-navbar {
 		--td-navbar-background: transparent;
@@ -49,7 +49,7 @@ page {
 
 	.navbar-wrap,
 	.navbar-scroll-wrap {
-		background-color: $sr-main-bgc;
+		background-color: $g-main-bgc;
 
 		.Bg {
 			position: absolute;
