@@ -1,77 +1,121 @@
 <template>
-<pageConfig :navbar="false">
-	<view class="container">
-		<view class="bg bg-color-base margin-b20"></view>
+	<pageConfig :navbar="false">
+		<view class="container">
+			<view class="bg bg-color-base margin-b20"></view>
 
-		<view class="tab z-flex z-flex z-row z-align-center">
-			<image class="tab-bg" src="/static/login/banner-icon.png" mode=""></image>
+			<view class="tab z-flex z-flex z-row z-align-center">
+				<image class="tab-bg" src="/static/login/banner-icon.png" mode=""></image>
 
-			<view class="z-flex z-flex z-row z-align-center">
-				<view class="z-flex z-column z-align-center margin-r40" @click="cur = 0">
-					<text class="font-50 margin-b20" :class="[cur ? 'color-black-3': 'color-base']">登录</text>
-					<view class="line bg-color-base" v-if="!cur"></view>
+				<view class="z-flex z-flex z-row z-align-center">
+					<view class="z-flex z-column z-align-center margin-r40" @click="cur = 0">
+						<text class="font-50 margin-b20" :class="[cur ? 'color-black-3': 'color-base']">登录</text>
+						<view class="line bg-color-base" v-if="!cur"></view>
+					</view>
+					<view class="z-flex z-column z-align-center" @click="cur = 1">
+						<text class="font-46 margin-b20" :class="[cur ? 'color-base': 'color-black-3']">注册</text>
+						<view class="line bg-color-base" v-if="cur"></view>
+					</view>
 				</view>
-				<view class="z-flex z-column z-align-center" @click="cur = 1">
-					<text class="font-46 margin-b20" :class="[cur ? 'color-base': 'color-black-3']">注册</text>
-					<view class="line bg-color-base" v-if="cur"></view>
+			</view>
+
+			<view class="login margin-b80" v-if="!cur">
+				<view class="input z-flex z-row z-align-center margin-b40">
+					<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
+					<t-input
+						v-model:value="form.userName"
+						class="z-flex-item color-base font-30"
+						type="text"
+						:maxlength="11"
+						placeholder="请输入您的用户名"
+						placeholder-class="input-placeholder"
+						:borderless="true"
+					/>
+				</view>
+				<view class="input z-flex z-row z-align-center margin-b40">
+					<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
+					<t-input
+						v-model:value="form.password"
+						class="z-flex-item color-base font-30"
+						:type="showPwd ? 'text' : 'password'"
+						placeholder="请输入您的登录密码"
+						placeholder-class="input-placeholder"
+						:borderless="true"
+						@enter="confirm"
+					/>
+					<t-icon
+						class="pwd-toggle"
+						:name="showPwd ? 'eye-slash' : 'eye'"
+						size="22"
+						color="#999"
+						@click="showPwd = !showPwd"
+					/>
+				</view>
+			</view>
+
+			<view class="register margin-b80" v-if="cur">
+				<view class="input z-flex z-row z-align-center margin-b40">
+					<image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
+					<t-input
+						v-model:value="form.userName"
+						class="z-flex-item color-base font-30"
+						type="text"
+						:maxlength="11"
+						placeholder="请输入您的用户名"
+						placeholder-class="input-placeholder"
+						:borderless="true"
+					/>
+				</view>
+				<view class="input z-flex z-row z-align-center margin-b40">
+					<image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
+					<t-input
+						v-model:value="form.password"
+						class="z-flex-item color-base font-30"
+						:type="showPwd ? 'text' : 'password'"
+						placeholder="请输入您的登录密码"
+						placeholder-class="input-placeholder"
+						:borderless="true"
+						@enter="confirm"
+					/>
+					<t-icon
+						class="pwd-toggle"
+						:name="showPwd ? 'eye-slash' : 'eye'"
+						size="22"
+						color="#999"
+						@click="showPwd = !showPwd"
+					/>
+				</view>
+			</view>
+
+			<view class="button-wrap">
+				<t-button
+					class="button bg-color-base z-flex z-row z-align-center z-space-center margin-b20"
+					:disabled="!isValid"
+					@click="confirm"
+				>
+					<text class="color-white font-34">立即{{ cur ? '注册': '登录' }}</text>
+				</t-button>
+			</view>
+
+			<view class="z-flex z-row z-align-center z-space-center margin-b100">
+				<text class="color-base font-28" @tap="forgotPwd">忘记密码？</text>
+			</view>
+
+			<view class="other">
+				<view class="z-flex z-row z-align-center margin-b40">
+					<view class="separator z-flex-item"></view>
+					<!-- <text class="color-black-3 font-28">更多登录方式</text> -->
+					<text class="color-black-9 font-20">{{nowTime}}</text>
+					<view class="separator z-flex-item"></view>
+				</view>
+
+				<view class="other-items z-flex z-row z-align-center z-space-around">
+					<!-- <image class="other-icon" src="/static/login/wechat.png" mode=""></image> -->
+					<!-- <image class="other-icon" src="/static/login/qq.png" mode=""></image> -->
+					<!-- <image class="other-icon" src="/static/login/apple.png" mode=""></image> -->
 				</view>
 			</view>
 		</view>
-
-        <view class="login margin-b80" v-if="!cur">
-            <view class="input z-flex z-row z-align-center margin-b40">
-                <image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
-                <input v-model="form.userName" class="z-flex-item color-base font-30" type="text" :maxlength="11"
-                    placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
-            </view>
-            <view class="input z-flex z-row z-align-center margin-b40">
-                <image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
-                <input v-model="form.password" class="z-flex-item color-base font-30" type="text" :password="!showPwd"
-                    placeholder="请输入您的登录密码" placeholder-class="input-placeholder" @confirm="confirm" />
-                <uni-icons class="pwd-toggle" :type="showPwd ? 'eye-slash' : 'eye'" size="22" color="#999" @tap="showPwd = !showPwd"></uni-icons>
-            </view>
-        </view>
-
-        <view class="register margin-b80" v-if="cur">
-            <view class="input z-flex z-row z-align-center margin-b40">
-                <image class="input-icon margin-r20" src="/static/login/account.png" mode=""></image>
-                <input v-model="form.userName" class="z-flex-item color-base font-30" type="text" :maxlength="11"
-                    placeholder="请输入您的用户名" placeholder-class="input-placeholder" />
-            </view>
-            <view class="input z-flex z-row z-align-center margin-b40">
-                <image class="input-icon margin-r20" src="/static/login/password.png" mode=""></image>
-                <input v-model="form.password" class="z-flex-item color-base font-30" type="text" :password="!showPwd"
-                    placeholder="请输入您的登录密码" placeholder-class="input-placeholder" @confirm="confirm" />
-                <uni-icons class="pwd-toggle" :type="showPwd ? 'eye-slash' : 'eye'" size="22" color="#999" @tap="showPwd = !showPwd"></uni-icons>
-            </view>
-        </view>
-
-        <view class="button-wrap">
-            <view class="button bg-color-base z-flex z-row z-align-center z-space-center margin-b20" :class="[isValid ? '':'btn-disabled']" @tap="confirm">
-                <text class="color-white font-34">立即{{ cur ? '注册': '登录' }}</text>
-            </view>
-        </view>
-
-        <view class="z-flex z-row z-align-center z-space-center margin-b100">
-            <text class="color-base font-28" @tap="forgotPwd">忘记密码？</text>
-        </view>
-
-		<view class="other">
-			<view class="z-flex z-row z-align-center margin-b40">
-				<view class="separator z-flex-item"></view>
-				<!-- <text class="color-black-3 font-28">更多登录方式</text> -->
-				<text class="color-black-9 font-20">{{nowTime}}</text>
-				<view class="separator z-flex-item"></view>
-			</view>
-
-			<view class="other-items z-flex z-row z-align-center z-space-around">
-				<!-- <image class="other-icon" src="/static/login/wechat.png" mode=""></image> -->
-				<!-- <image class="other-icon" src="/static/login/qq.png" mode=""></image> -->
-				<!-- <image class="other-icon" src="/static/login/apple.png" mode=""></image> -->
-			</view>
-		</view>
-	</view>
-</pageConfig>
+	</pageConfig>
 </template>
 
 <script>

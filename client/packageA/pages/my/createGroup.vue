@@ -1,33 +1,58 @@
 <template>
- <pageConfig title="创建群聊">
-	<view class="container">
-		<uni-section title="群聊信息" type="line">
-			<view class="form-wrap">
-				<!-- 基础用法，不包含校验规则 -->
-				<uni-forms ref="valiForm" :rules="rules" :modelValue="baseFormData">
-					<uni-forms-item required name="avatar">
-						<uni-file-picker limit="1" :del-icon="false" disable-preview :imageStyles="imageStyles"
-							file-mediatype="image" @select="selectAvatar">
-							<image class="avatar" v-if="baseFormData.avatar" :src="baseFormData.avatar"
-								mode="scaleToFill"></image>
-							<text v-show="!baseFormData.avatar">选择</text>
-						</uni-file-picker>
-					</uni-forms-item>
-					<uni-forms-item label="群名称" required  name="groupName">
-						<uni-easyinput type="groupName" v-model="baseFormData.groupName" placeholder="请输入群名称" />
-					</uni-forms-item>
-					<uni-forms-item label="群介绍">
-						<uni-easyinput v-model="baseFormData.intro" placeholder="请输入群介绍" />
-					</uni-forms-item>
-					<uni-forms-item label="群公告">
-						<uni-easyinput type="textarea" v-model="baseFormData.notice" placeholder="请输入群公告" />
-					</uni-forms-item>
-				</uni-forms>
-				<button type="primary" size="default" @click="submit('valiForm')">提交</button>
-			</view>
-		</uni-section>
-	</view>
-</pageConfig>
+	<pageConfig title="创建群聊">
+		<view class="container">
+			<uni-section title="群聊信息" type="line">
+				<view class="form-wrap">
+					<t-form ref="valiForm" :data="baseFormData" :rules="rules">
+						<t-form-item name="avatar">
+							<!-- 头像上传 -->
+							<t-upload
+								v-model:files="uploadFiles"
+								:max="1"
+								:media-type="['image']"
+								:remove-btn="false"
+								:preview="false"
+								:grid-config="{ column: 1, width: 128, height: 128 }"
+								:image-props="{ mode: 'aspectFill', shape: 'round' }"
+								:request-method="uploadRequestMethod"
+								@success="onUploadSuccess"
+							/>
+						</t-form-item>
+
+						<t-form-item label="群名称" name="groupName">
+							<t-input
+								v-model:value="baseFormData.groupName"
+								type="text"
+								placeholder="请输入群名称"
+								clearable
+							/>
+						</t-form-item>
+
+						<t-form-item label="群介绍" name="intro">
+							<t-input
+								v-model:value="baseFormData.intro"
+								type="text"
+								placeholder="请输入群介绍"
+								clearable
+							/>
+						</t-form-item>
+
+						<t-form-item label="群公告" name="notice">
+							<t-textarea
+								v-model:value="baseFormData.notice"
+								placeholder="请输入群公告"
+								autosize
+							/>
+						</t-form-item>
+					</t-form>
+
+					<t-button theme="primary" variant="base" block class="submit-btn" @click="submit">
+						提交
+					</t-button>
+				</view>
+			</uni-section>
+		</view>
+	</pageConfig>
 </template>
 
 <script>
@@ -41,70 +66,61 @@
 					intro: '',
 					notice: ""
 				},
+				// t-form 规则：字段名 -> 校验规则数组
 				rules: {
-					avatar: {
-						rules: [{
-							required: true,
-							errorMessage: '群头像不能为空'
-						}]
-					},
-					groupName: {
-						rules: [{
-							required: true,
-							errorMessage: '群名称不能为空'
-						}]
-					}
+					avatar: [{
+						required: true,
+						message: '群头像不能为空'
+					}],
+					groupName: [{
+						required: true,
+						message: '群名称不能为空'
+					}]
 				},
-				imageStyles: {
-					width: 64,
-					height: 64,
-					border: {
-						radius: '50%'
-					}
-				},
+				// t-upload 受控文件列表（单张头像）
+				uploadFiles: []
 			}
 		},
-		computed: {
-			userInfo() {
-				return getApp().globalData.userInfo
-			},
-			avatar() {
-				const url = this.baseFormData.avatar || ''
-				if (url.indexOf('http') === -1) {
-					return this.$fileUrl + url
-				} else {
-					return url
-				}
-			}
-		},
-		created() {},
 		methods: {
-			// 选择头像
-			selectAvatar(imageRes) {
-				imageRes.tempFilePaths.forEach((path, index) => {
-					this.uploadFile(path)
-				})
+			/**
+			 * t-upload 的自定义上传方法。
+			 * @param {Array} files 选中的文件列表，包含本地临时路径（url）
+			 */
+			async uploadRequestMethod(files) {
+				await Promise.all((files || []).map(async (file) => {
+					if (!file?.url) return
+					const res = await this.$api.upload(file.url)
+					const finalUrl = this.$fileUrl + res.data.url
+					file.url = finalUrl
+					file.thumb = finalUrl
+					file.status = 'done'
+					file.percent = 100
+				}))
 			},
-			async uploadFile(file) {
-				const res = await this.$api.upload(file)
-				this.baseFormData.avatar = this.$fileUrl + res.data.url
+			onUploadSuccess(e) {
+				const files = e?.detail?.files || e?.files || []
+				this.uploadFiles = files
+				this.baseFormData.avatar = files?.[0]?.url || ''
 			},
-			async submit(ref) {
-				const params = {
-					...this.baseFormData
-				}
-				this.$refs[ref].validate().then(async (res2) => {
+			async submit() {
+				try {
+					const validateResult = await this.$refs.valiForm.validate({
+						showErrorMessage: true
+					})
+					if (validateResult !== true) return
+
 					// 创建群聊：接口层负责拼装与请求入口
-					const res = await this.$apis.chat.createGroup(params)
+					await this.$apis.chat.createGroup({ ...this.baseFormData })
+
 					uni.showToast({
 						title: "新增成功",
 					});
 					uni.switchTab({
 						url: "/pages/chat/index"
 					})
-				}).catch(err => {
-					console.log('err', err);
-				})
+				} catch (err) {
+					console.log('submit err', err);
+				}
 			}
 		}
 	}
@@ -114,53 +130,9 @@
 	.form-wrap {
 		padding: 15px;
 		background-color: $uni-white;
-
-		.btn-wrap {
-			&::after {
-				display: none;
-			}
-
-			background: none;
-			border: none;
-			width: auto;
-			margin: 0;
-		}
-
-		.avatar {
-			height: 128rpx;
-			width: 128rpx;
-			border-radius: 50%;
-		}
-
-		.uni-file-picker {
-			width: 128rpx;
-			margin: auto;
-		}
 	}
 
-	.segmented-control {
-		margin-bottom: 15px;
-	}
-
-	.button-group {
-		margin-top: 15px;
-		display: flex;
-		justify-content: space-around;
-
-		button {
-			width: 200rpx;
-		}
-	}
-
-	.form-item {
-		display: flex;
-		align-items: center;
-	}
-
-	.button {
-		display: flex;
-		align-items: center;
-		height: 35px;
-		margin-left: 10px;
+	.submit-btn {
+		margin-top: 20rpx;
 	}
 </style>

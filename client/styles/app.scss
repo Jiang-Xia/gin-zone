@@ -1,0 +1,109 @@
+/* 编写整个项目的公共样式（参考 shopkeeper） */
+
+page {
+	background-color: $sr-main-bgc;
+
+	.sr-custom-navbar {
+		--td-navbar-background: transparent;
+
+		.t-navbar__center-title {
+			font-family: PingFangSC-Regular;
+			font-weight: normal;
+			font-size: 34rpx;
+		}
+	}
+
+	/* 通用：表单必填标识（加在 label/title 的节点上即可） */
+	/* 用法：
+	 * - <view class="sr-required">姓名</view>
+	 * - <t-cell title="姓名" class="sr-required" />
+	 */
+	.sr-required {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+
+		&::after {
+			content: '*';
+			color: #D9001B;
+			margin-left: 8rpx;
+			line-height: 1;
+			font-size: inherit;
+		}
+	}
+
+	/* 兼容：当 sr-required 加在 t-cell 上时，让星号出现在左侧标题前 */
+	.sr-required {
+		::v-deep .t-cell__title {
+			display: inline-flex;
+			align-items: center;
+
+			&::after {
+				content: '*';
+				color: #D9001B;
+				margin-left: 8rpx;
+				line-height: 1;
+			}
+		}
+	}
+
+	.navbar-wrap,
+	.navbar-scroll-wrap {
+		background-color: $sr-main-bgc;
+
+		.Bg {
+			position: absolute;
+			top: 0;
+			width: 100%;
+			height: 60%;
+			background: linear-gradient(180deg, #F96227 0%, rgba(246, 125, 76, 0) 93%);
+			z-index: -1;
+		}
+
+		.Bg2 {
+			position: absolute;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background: #f7f8fa;
+			z-index: -2;
+		}
+
+		.t-navbar__center-title {
+			font-family: PingFangSC-Regular;
+			font-weight: normal;
+			font-size: 34rpx;
+		}
+	}
+
+	.navbar-wrap {
+		height: calc(100vh);
+		padding-top: 40px;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+
+		.userNavContent {
+			flex: 1;
+			height: 100%;
+		}
+	}
+
+	.navbar-scroll-wrap {
+		height: 100vh;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* 全局样式覆盖组件隔离问题（参考 shopkeeper） */
+	.ca-radio-group {
+		.t-radio-group {
+			.t-radio.t-radio--block {
+				padding: 0;
+				margin-left: 32rpx;
+			}
+		}
+	}
+}
+

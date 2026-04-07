@@ -275,6 +275,8 @@
 	@import "@/static/iconfont.css";
 	@import "common/css/base.scss";
 	@import "common/css/animate.min.css";
+	@import "@/styles/theme.css";
+	@import "@/styles/app.scss";
 	/*每个页面公共css 引入辅助样式(类型)*/
     // 文档 https://uniapp.dcloud.net.cn/component/uniui/uni-sass.html
 	@import '@/uni_modules/uni-scss/index.scss';
