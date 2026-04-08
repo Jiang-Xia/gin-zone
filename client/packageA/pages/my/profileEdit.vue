@@ -1,6 +1,6 @@
 <template>
 	<pageConfig title="个人资料">
-		<view class="container">
+		<view class="container profile-edit-page">
 			<uni-section title="个人信息" type="line">
 				<view class="form-wrap">
 					<t-cell-group>
@@ -36,9 +36,14 @@
 
 						<caRadio v-model:value="baseFormData.gender" label="性别" :options="sexs" />
 
-						<t-cell title="自我介绍" :bordered="false" class="intro-cell">
+						<t-cell
+							title="自我介绍"
+							:bordered="false"
+							t-class-center="profile-edit-intro__title-col"
+							t-class-note="profile-edit-intro__note-col"
+						>
 							<template #note>
-								<view style="width: 70%; margin-left: auto;">
+								<view class="profile-edit-intro__note-inner">
 									<t-textarea
 										v-model:value="baseFormData.intro"
 										placeholder="请输入自我介绍"
@@ -210,20 +215,23 @@
 		justify-content: center;
 	}
 
-	/* 覆盖 t-cell 内部布局：label 30%，note 70%（仅自我介绍这一行） */
-	:deep(.intro-cell .t-cell__title) {
-		flex: 0 0 30%;
-		max-width: 30%;
+	/* note 插槽内节点仍在当前页编译，可用 scoped */
+	.profile-edit-intro__note-inner {
+		width: 100%;
+		margin-left: 0;
 	}
 
-	:deep(.intro-cell .t-cell__note) {
-		flex: 0 0 70%;
-		max-width: 70%;
-	}
+	/* t-cell 的 t-class-center / t-class-note：用 :deep 选自定义类名，单文件 scoped 即可穿透到组件内部 */
+	.profile-edit-page {
+		:deep(.profile-edit-intro__title-col) {
+			flex: 0 0 30%;
+			max-width: 30%;
+		}
 
-	:deep(.intro-cell .t-cell__note) > view {
-		width: 100% !important;
-		margin-left: 0 !important;
+		:deep(.profile-edit-intro__note-col) {
+			flex: 0 0 70%;
+			max-width: 70%;
+		}
 	}
 
 	.submit-btn {

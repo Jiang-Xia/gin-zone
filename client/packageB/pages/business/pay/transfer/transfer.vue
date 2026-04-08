@@ -16,6 +16,15 @@
             };
         },
         onLoad(options) {
+            // #ifdef MP-WEIXIN
+            uni.hideLoading()
+            uni.showToast({
+                title: '功能正在开发中',
+                icon: 'none',
+            })
+            return
+            // #endif
+
             this.wx_appid = uni.getStorageSync('wx_appid')||options.wx_appid
             this.ali_appid = uni.getStorageSync('ali_appid')||options.ali_appid
             // console.log('options', options)

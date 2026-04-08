@@ -23,7 +23,7 @@
                     <uni-icons type="right" color="#999"></uni-icons>
                 </div>
                 <view class="btn-submit">
-                    <button size="default" type="primary" style="width: 100%;" @click="addMoment">提交</button>
+                    <t-button theme="primary" variant="base" block @click="addMoment">提交</t-button>
                 </view>
             </section>
         </div>

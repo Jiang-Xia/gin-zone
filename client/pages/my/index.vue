@@ -28,7 +28,7 @@
                         </view>
                         <text class="intro">{{ isLogin ? (userInfo.intro || '难将心事和人说 说与青天明月知') : '点击去登录' }}</text>
                     </view>
-                    <uni-icons custom-prefix="zonefont" color="#bbbbb" type="zone-gerenziliao" size="18"></uni-icons>
+                    <uni-icons custom-prefix="zonefont" color="#666" type="zone-gerenziliao" size="18"></uni-icons>
                 </view>
 
                 <view class="profile-menu">
@@ -247,6 +247,15 @@
             },
             goCashier() {
                 if (!this.ensureLogin()) return
+
+                // #ifdef MP-WEIXIN
+                uni.showToast({
+                    title: "功能正在开发中",
+                    icon: "none",
+                })
+                return
+                // #endif
+
                 uni.navigateTo({
                     url: "/packageB/pages/business/pay/cashier/cashier"
                 })

@@ -170,6 +170,18 @@
 			clickMenuItem(e) {
 				const item = this.menuList[e.detail.index]
 				console.log(item, '------------>')
+
+				// 微信小程序：收银台功能暂未开放
+				// #ifdef MP-WEIXIN
+				if (item?.url === '/packageB/pages/business/pay/cashier/cashier' || item?.text === '收银台') {
+					uni.showToast({
+						title: '功能正在开发中',
+						icon: 'none',
+					})
+					return
+				}
+				// #endif
+
 				if (item.url) {
 					if(item.type === 'tabbar'){
 						uni.switchTab({

@@ -55,7 +55,7 @@
                             <image style="width: 40rpx; height: auto" :src="$getImg(item.iconImg)" mode="widthFix"></image>
                             <view class="flex-between cell-right">
                                 <view class="pay-title">{{ item.title }}</view>
-                                <radio class="check-radio" :value="item.value"
+                                <radio activeBackgroundColor="#f00057" class="check-radio" :value="item.value"
                                     :checked="currentPayMethod === item.value" />
                             </view>
                         </view>
