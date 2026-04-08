@@ -5,7 +5,7 @@
 				<view class="header-bg"></view>
 				<image
 					class="header-ornament"
-					:src="$getImg('/static/login/banner-icon.png')"
+					:src="$getImg('/packageA/static/login/banner-icon.png')"
 					mode="aspectFit"
 				/>
 				<view class="header-text">

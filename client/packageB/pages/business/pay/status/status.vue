@@ -2,7 +2,7 @@
     <view class="pay-status-page">
         <view class="content">
             <view class="logo-box">
-                <image :src="$getImg('/static/business/images/pay/bank-logo.png')"></image>
+                <image :src="$getImg('/packageB/static/business/images/pay/bank-logo.png')"></image>
             </view>
             <view class="status-box">
                 <image class="status-img" :src="statusImage" mode="widthFix"></image>
@@ -77,8 +77,8 @@
                 return '支付处理中'
             },
             statusImage() {
-                if (this.status === 'SUCCESS') return this.$getImg('/static/business/images/pay/pay-success.png')
-                return this.$getImg('/static/business/images/pay/pay-process.png')
+                if (this.status === 'SUCCESS') return this.$getImg('/packageB/static/business/images/pay/pay-success.png')
+                return this.$getImg('/packageB/static/business/images/pay/pay-process.png')
             }
         },
         methods: {

@@ -3,7 +3,7 @@
         <view class="content-page">
             <view class="flex-direction">
                 <view class="logo-box">
-                    <image :src="$getImg('/static/business/images/pay/bank-logo.png')"></image>
+                    <image :src="$getImg('/packageB/static/business/images/pay/bank-logo.png')"></image>
                 </view>
                 <view class="" style="font-size: 36rpx;font-weight: bold;margin-bottom: 6px">
                     {{ qrCodeInfo.storeBrief }}
@@ -161,37 +161,37 @@
             },
             payTypeList() {
                 let list = [{
-                        iconImg: '/static/business/images/pay/alipay.png',
+                        iconImg: '/packageB/static/business/images/pay/alipay.png',
                         title: '支付宝支付',
                         value: 'zfb',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/pay/huabeifenqi.png',
+                        iconImg: '/packageB/static/business/images/pay/huabeifenqi.png',
                         title: '花呗分期',
                         value: 'hb',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/pay/xinyongkafenqi.png',
+                        iconImg: '/packageB/static/business/images/pay/xinyongkafenqi.png',
                         title: '信用卡分期',
                         value: 'xyk',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/pay/jindong.png',
+                        iconImg: '/packageB/static/business/images/pay/jindong.png',
                         title: '京东白条',
                         value: 'jdbt',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/pay/weixin.png',
+                        iconImg: '/packageB/static/business/images/pay/weixin.png',
                         title: '微信支付',
                         value: 'wx',
                         desc: ''
                     },
                     {
-                        iconImg: '/static/business/images/pay/js-pay.png',
+                        iconImg: '/packageB/static/business/images/pay/js-pay.png',
                         title: '江氏银行卡支付',
                         value: 'hostpay',
                         desc: ''
