@@ -11,7 +11,7 @@
                         </view>
                     </swiper-item>
                 </swiper>
-                <image v-else class="header-bg" :src="$getImg('/static/images/logined.png')" mode="aspectFill"></image>
+                <image v-else class="header-bg" :src="$getImg('/static/images/my.png')" mode="aspectFill"></image>
             </view>
             <view class="main-content">
                 <view class="my-info" @click="onClickProfile">

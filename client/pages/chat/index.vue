@@ -53,13 +53,11 @@
 </template>
 
 <script>
-    import groupIcon from "../../static/images/group.png"
-    import userIcon from "../../static/images/user.png"
     export default {
         data() {
             return {
-                groupIcon,
-                userIcon,
+                groupIcon: this.$getImg('/static/images/group.png'),
+                userIcon: this.$getImg('/static/images/user.png'),
                 defaultList: [
                     // {
                     // 	id: "001",

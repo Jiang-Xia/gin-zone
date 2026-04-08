@@ -1,117 +1,91 @@
 <template>
 	<pageConfig :navbar="false">
-		<view class="container">
-			<view class="bg bg-color-base margin-b20"></view>
+		<view class="auth-page">
+			<view class="header-bg-wrap">
+				<view class="header-bg"></view>
+				<image
+					class="header-ornament"
+					:src="$getImg('/static/login/banner-icon.png')"
+					mode="aspectFit"
+				/>
+				<view class="header-text">
+					<text class="title">Gin Zone</text>
+					<text class="subtitle">{{ cur ? '创建你的账号，开始聊天' : '欢迎回来，继续你的会话' }}</text>
+				</view>
+			</view>
 
-			<view class="tab z-flex z-flex z-row z-align-center">
-				<image class="tab-bg" :src="$getImg('/static/login/banner-icon.png')" mode=""></image>
-
-				<view class="z-flex z-flex z-row z-align-center">
-					<view class="z-flex z-column z-align-center margin-r40" @click="cur = 0">
-						<text class="font-50 margin-b20" :class="[cur ? 'color-black-3': 'color-base']">登录</text>
-						<view class="line bg-color-base" v-if="!cur"></view>
+			<view class="main-content">
+				<view class="auth-card">
+					<view class="segmented">
+						<view
+							class="segmented-item"
+							:class="{ active: cur === 0 }"
+							@click="cur = 0"
+						>
+							登录
+						</view>
+						<view
+							class="segmented-item"
+							:class="{ active: cur === 1 }"
+							@click="cur = 1"
+						>
+							注册
+						</view>
 					</view>
-					<view class="z-flex z-column z-align-center" @click="cur = 1">
-						<text class="font-46 margin-b20" :class="[cur ? 'color-base': 'color-black-3']">注册</text>
-						<view class="line bg-color-base" v-if="cur"></view>
+
+					<view class="form-wrap">
+						<view class="field-row">
+							<t-icon class="field-prefix" name="user" size="22" color="#f00057" />
+							<t-input
+								v-model:value="form.userName"
+								class="field-input"
+								type="text"
+								:maxlength="11"
+								clearable
+								placeholder="请输入用户名（至少 3 位）"
+								:borderless="true"
+							/>
+						</view>
+
+						<view class="field-row field-row--gap">
+							<t-icon class="field-prefix" name="lock-on" size="22" color="#f00057" />
+							<t-input
+								v-model:value="form.password"
+								class="field-input"
+								:type="showPwd ? 'text' : 'password'"
+								clearable
+								placeholder="请输入密码（至少 6 位）"
+								:borderless="true"
+								@enter="confirm"
+							/>
+							<t-icon
+								class="field-suffix"
+								:name="showPwd ? 'eye-slash' : 'eye'"
+								size="22"
+								color="#f00057"
+								@click="showPwd = !showPwd"
+							/>
+						</view>
+
+						<t-button
+							class="submit-btn"
+							theme="primary"
+							variant="base"
+							block
+							:disabled="!isValid"
+							@click="confirm"
+						>
+							立即{{ cur ? '注册' : '登录' }}
+						</t-button>
+
+						<view class="helper-area">
+							<view class="helper-row">
+								<view></view>
+								<text class="helper-link" @tap="forgotPwd">忘记密码？</text>
+							</view>
+							<text class="helper-meta">{{ nowTime }}</text>
+						</view>
 					</view>
-				</view>
-			</view>
-
-			<view class="login margin-b80" v-if="!cur">
-				<view class="input z-flex z-row z-align-center margin-b40">
-					<image class="input-icon margin-r20" :src="$getImg('/static/login/account.png')" mode=""></image>
-					<t-input
-						v-model:value="form.userName"
-						class="z-flex-item color-base font-30"
-						type="text"
-						:maxlength="11"
-						placeholder="请输入您的用户名"
-						placeholder-class="input-placeholder"
-						:borderless="true"
-					/>
-				</view>
-				<view class="input z-flex z-row z-align-center margin-b40">
-					<image class="input-icon margin-r20" :src="$getImg('/static/login/password.png')" mode=""></image>
-					<t-input
-						v-model:value="form.password"
-						class="z-flex-item color-base font-30"
-						:type="showPwd ? 'text' : 'password'"
-						placeholder="请输入您的登录密码"
-						placeholder-class="input-placeholder"
-						:borderless="true"
-						@enter="confirm"
-					/>
-					<t-icon
-						class="pwd-toggle"
-						:name="showPwd ? 'eye-slash' : 'eye'"
-						size="22"
-						color="#999"
-						@click="showPwd = !showPwd"
-					/>
-				</view>
-			</view>
-
-			<view class="register margin-b80" v-if="cur">
-				<view class="input z-flex z-row z-align-center margin-b40">
-					<image class="input-icon margin-r20" :src="$getImg('/static/login/account.png')" mode=""></image>
-					<t-input
-						v-model:value="form.userName"
-						class="z-flex-item color-base font-30"
-						type="text"
-						:maxlength="11"
-						placeholder="请输入您的用户名"
-						placeholder-class="input-placeholder"
-						:borderless="true"
-					/>
-				</view>
-				<view class="input z-flex z-row z-align-center margin-b40">
-					<image class="input-icon margin-r20" :src="$getImg('/static/login/password.png')" mode=""></image>
-					<t-input
-						v-model:value="form.password"
-						class="z-flex-item color-base font-30"
-						:type="showPwd ? 'text' : 'password'"
-						placeholder="请输入您的登录密码"
-						placeholder-class="input-placeholder"
-						:borderless="true"
-						@enter="confirm"
-					/>
-					<t-icon
-						class="pwd-toggle"
-						:name="showPwd ? 'eye-slash' : 'eye'"
-						size="22"
-						color="#999"
-						@click="showPwd = !showPwd"
-					/>
-				</view>
-			</view>
-
-			<view class="button-wrap">
-				<t-button
-					class="button bg-color-base z-flex z-row z-align-center z-space-center margin-b20"
-					:disabled="!isValid"
-					@click="confirm"
-				>
-					<text class="color-white font-34">立即{{ cur ? '注册': '登录' }}</text>
-				</t-button>
-			</view>
-
-			<view class="z-flex z-row z-align-center z-space-center margin-b100">
-				<text class="color-base font-28" @tap="forgotPwd">忘记密码？</text>
-			</view>
-
-			<view class="other">
-				<view class="z-flex z-row z-align-center margin-b40">
-					<view class="separator z-flex-item"></view>
-					<!-- <text class="color-black-3 font-28">更多登录方式</text> -->
-					<text class="color-black-9 font-20">{{nowTime}}</text>
-					<view class="separator z-flex-item"></view>
-				</view>
-
-				<view class="other-items z-flex z-row z-align-center z-space-around">
-					<!-- <image class="other-icon" :src="$getImg('/static/login/wechat.png')" mode=""></image> -->
-					<!-- <image class="other-icon" :src="$getImg('/static/login/qq.png')" mode=""></image> -->
-					<!-- <image class="other-icon" :src="$getImg('/static/login/apple.png')" mode=""></image> -->
 				</view>
 			</view>
 		</view>
@@ -257,98 +231,157 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	.container {
-		position: relative;
-        background-color: $uni-white;
+	.auth-page {
+		min-height: 100vh;
+		background: #fff;
 	}
 
-	.bg {
+	.header-bg-wrap {
 		position: relative;
-		width: 100%;
-		height: 400rpx;
+		height: 520rpx;
+		overflow: hidden;
 	}
 
-	.tab {
+	.header-bg {
 		position: absolute;
-		top: 250rpx;
-		left: 20rpx;
-		right: 20rpx;
-		height: 150rpx;
-		padding: 0 50rpx;
-		background-color: $uni-white;
-		border-top-left-radius: 20rpx;
-		border-top-right-radius: 20rpx;
-
-		&-bg {
-			position: absolute;
-			top: -200rpx;
-			right: -50rpx;
-			width: 440rpx;
-			height: 285rpx;
-		}
+		inset: 0;
+		background: linear-gradient(180deg, #ffe4cf 0%, #ffffff 82%);
 	}
 
-	.line {
-		width: 25rpx;
-		height: 7rpx;
+	.header-ornament {
+		position: absolute;
+		right: -40rpx;
+		top: 110rpx;
+		width: 460rpx;
+		height: 300rpx;
+		opacity: 0.95;
 	}
 
-	.login,
-	.register {
-		padding: 0 60rpx;
-        .z-flex-item{
-            background-color: transparent;
-        }
+	.header-text {
+		position: absolute;
+		left: 32rpx;
+		right: 32rpx;
+		top: 120rpx;
+		display: flex;
+		flex-direction: column;
+		row-gap: 12rpx;
 	}
 
-    .input {
-        width: 100%;
-        height: 90rpx;
-        padding: 0 30rpx;
-        background-color: rgba($uni-primary, 0.1);
-        border-radius: 45rpx;
-        box-sizing: border-box;
-
-        &-icon {
-            width: 30rpx;
-            height: 38rpx;
-        }
-
-        &-placeholder {
-            color: $uni-primary;
-        }
-    }
-
-	.button-wrap {
-		padding: 0 60rpx;
+	.title {
+		font-size: 52rpx;
+		font-weight: 700;
+		color: #333;
+		letter-spacing: 1rpx;
 	}
 
-    .button {
-        width: 100%;
-        height: 90rpx;
-        border-radius: 45rpx;
-    }
-    .btn-disabled{
-        opacity: 0.5;
-    }
-    .pwd-toggle{
-        margin-left: 20rpx;
-    }
-
-	.separator {
-		height: 2rpx;
-		margin: 0 30rpx;
-		background-color: #f5f5f5;
+	.subtitle {
+		font-size: 26rpx;
+		color: #666;
 	}
 
-	.other {
-		&-items {
-			padding: 0 200rpx;
-		}
+	.main-content {
+		position: relative;
+		margin-top: -220rpx;
+		padding: 0 32rpx 40rpx;
+		box-sizing: border-box;
+	}
 
-		&-icon {
-			width: 50rpx;
-			height: 50rpx;
-		}
+	.auth-card {
+		border-radius: 16rpx;
+		background: rgba(255, 255, 255, 0.72);
+		box-shadow: 0px 1px 7px 5px rgba(186, 190, 197, 0.2);
+		border: 1px solid rgba(255, 255, 255, 0.45);
+		backdrop-filter: blur(15px);
+		padding: 28rpx;
+	}
+
+	.segmented {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12rpx;
+		padding: 10rpx;
+		border-radius: 999rpx;
+		background: rgba(255, 255, 255, 0.65);
+		border: 1px solid rgba(0, 0, 0, 0.04);
+	}
+
+	.segmented-item {
+		height: 68rpx;
+		border-radius: 999rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 28rpx;
+		font-weight: 600;
+		color: #666;
+	}
+
+	.segmented-item.active {
+		color: #f00057;
+		background: rgba(240, 0, 87, 0.10);
+	}
+
+	.form-wrap {
+		margin-top: 22rpx;
+	}
+
+	.field-prefix {
+		flex: none;
+	}
+
+	.field-row {
+		display: flex;
+		align-items: center;
+		gap: 16rpx;
+		width: 100%;
+		border-radius: 999rpx;
+		background: rgba(240, 0, 87, 0.06);
+		padding: 0 24rpx;
+		height: 92rpx;
+		box-sizing: border-box;
+	}
+
+	.field-row--gap {
+		margin-top: 32rpx;
+	}
+
+	.field-input {
+		flex: 1;
+		min-width: 0;
+		background: transparent;
+	}
+
+	.field-suffix {
+		flex: none;
+	}
+
+	.submit-btn {
+		margin-top: 32rpx;
+		border-radius: 999rpx;
+		overflow: hidden;
+	}
+
+	.helper-area {
+		margin-top: 22rpx;
+	}
+
+	.helper-row {
+		margin-top: 24rpx;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.helper-link {
+		color: #f00057;
+		font-size: 26rpx;
+	}
+
+	.helper-meta {
+		margin-top: 32rpx;
+		display: block;
+		text-align: center;
+		color: #999;
+		font-size: 22rpx;
 	}
 </style>
