@@ -40,16 +40,16 @@
                             </template>
                         </t-cell>
                         
-                        <t-cell title="个人资料" arrow @click="goSetting">
+                        <t-cell title="收银台" arrow @click="goCashier">
                             <template #image>
-                                <uni-icons custom-prefix="zonefont" type="zone-shezhi" size="20"
+                                <uni-icons type="wallet" size="20"
                                     color="#f00057"></uni-icons>
                             </template>
                         </t-cell>
 
-                        <t-cell title="收银台" arrow @click="goCashier">
+                        <t-cell title="设置" arrow @click="goSetting">
                             <template #image>
-                                <uni-icons type="wallet" size="20"
+                                <uni-icons custom-prefix="zonefont" type="zone-shezhi" size="20"
                                     color="#f00057"></uni-icons>
                             </template>
                         </t-cell>
@@ -71,16 +71,16 @@
                 </view>
             </view>
             
-            <view v-if="isLogin" class="logout-wrap">
-                    <t-button :custom-style="{background: 'transparent'}" theme="danger" variant="outline" size="large" @click="logout">
-                        退出登录
-                    </t-button>
-                </view>
-                <view v-else class="logout-wrap">
-                    <t-button :custom-style="{background: 'transparent'}" theme="primary" variant="outline" size="large" @click="login">
-                        去登录
-                    </t-button>
-                </view>
+            <view v-if="!isLogin" class="logout-wrap">
+                <t-button :custom-style="{background: 'transparent'}" theme="primary" variant="outline" size="large" @click="login">
+                    去登录
+                </t-button>
+            </view>
+
+            <view v-else class="footer-tips">
+                <view class="footer-tips__title">今日小贴士</view>
+                <view class="footer-tips__text">在设置页可以管理账号、通知与缓存，保持应用最佳状态。</view>
+            </view>
         </view>
     </view>
 </template>
@@ -217,7 +217,7 @@
             goSetting() {
                 if (!this.ensureLogin()) return
                 uni.navigateTo({
-                    url: "/packageA/pages/my/profileEdit"
+                    url: "/packageA/pages/my/setting"
                 })
             },
             goAbout() {
@@ -255,33 +255,6 @@
                 })
             },
 
-            logout() {
-                this.$showModal({
-                    title: "退出登录",
-                    content: "确认退出登录吗？",
-                    confirmText: "退出",
-                    cancelText: "取消",
-                }).then((res) => {
-                    if (!res.confirm) return
-
-                    uni.removeStorageSync("zoneToken")
-                    uni.removeStorageSync("zoneUserInfo")
-
-                    const app = getApp()
-                    if (app?.globalData) {
-                        app.globalData.userInfo = null
-                    }
-                    this.userInfo = {}
-
-                    this.$toast({ title: '已退出', icon: 'success' })
-
-                    setTimeout(() => {
-                        uni.navigateTo({
-                            url: "/packageA/pages/my/login",
-                        })
-                    }, 300)
-                })
-            },
         },
     }
 </script>
@@ -290,7 +263,9 @@
     .profile-page {
         font-size: 14px;
         line-height: 24px;
-        height: 100vh;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow-y: hidden;
     }
 
     /* 顶部 TDesign 导航栏样式 */
@@ -484,5 +459,26 @@
             width: 60%;
             max-width: 520rpx;
         }
+    }
+
+    .footer-tips {
+        margin: 96rpx 32rpx 48rpx;
+        padding: 24rpx 28rpx;
+        border-radius: 16rpx;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(240, 0, 87, 0.1);
+    }
+
+    .footer-tips__title {
+        font-size: 28rpx;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .footer-tips__text {
+        margin-top: 10rpx;
+        color: #666;
+        font-size: 24rpx;
+        line-height: 1.6;
     }
 </style>

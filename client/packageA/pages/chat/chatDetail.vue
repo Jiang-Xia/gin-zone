@@ -39,9 +39,16 @@
                                     @fullscreenchange="fullscreenchange"></video>
                             </view>
                             <view class="text-content audio-content" v-if="message.msgType===4"
-                                @click="playVoice($fileUrl+message.content)">
-                                语音 <uni-icons class="audio-icon" type="sound" size="24"
-                                    :color="message.senderId===userId?'#fff':''"></uni-icons>
+                                :class="{ 'audio-content-playing': audioPlayer.playingIndex === index }"
+                                @click="playVoice($fileUrl+message.content, index, message)">
+                                <text v-if="getVoiceLabel(index, message)" class="audio-text">{{ getVoiceLabel(index, message) }}</text>
+                                <view class="audio-speaker"
+                                    :class="{ playing: audioPlayer.playingIndex === index }"
+                                    @click.stop="playVoice($fileUrl+message.content, index, message)">
+                                    <uni-icons type="sound" size="20"
+                                        :class="{ 'speaker-mirror': message.senderId === userId }"
+                                        :color="message.senderId===userId ? '#FFFFFF' : '#3a3a3a'"></uni-icons>
+                                </view>
                             </view>
                         </view>
                     </view>
@@ -151,6 +158,12 @@
                 audioPlayer: {
                     innerAudioContext: null,
                     playingMessage: null,
+                    playingIndex: null,
+                    playingKey: '',
+                    totalSeconds: 0,
+                    leftSeconds: 0,
+                    timer: null,
+                    durationMap: {}
                 },
                 // 视频播放
                 videoPlayer: {
@@ -209,9 +222,24 @@
         onUnload() {
             clearInterval(this.timer)
             this.timer = null
+            this.resetVoicePlayer()
+            innerAudioContext.stop()
+            innerAudioContext.destroy()
         },
         onReady() {
             this.loadHistoryMessage(true);
+            innerAudioContext.onEnded(() => {
+                this.resetVoicePlayer()
+            })
+            innerAudioContext.onStop(() => {
+                this.resetVoicePlayer()
+            })
+            innerAudioContext.onPause(() => {
+                this.resetVoicePlayer()
+            })
+            innerAudioContext.onError(() => {
+                this.resetVoicePlayer()
+            })
             // #ifndef H5
             const recorderManager = uni.getRecorderManager();
             this.recorderManager = recorderManager
@@ -253,6 +281,9 @@
                     const revObj = JSON.parse(res.data)
                     if (revObj.cmd === "text") {
                         this.history.messages.push(revObj);
+                        if (revObj.msgType === 4) {
+                            this.prefetchVoiceDurations([revObj], this.history.messages.length - 1)
+                        }
                         this.resetBottom()
                     }
                     console.log('服务端消息：', revObj);
@@ -438,12 +469,115 @@
                     console.log(e);
                 }
             },
-            playVoice(voicePath) {
+            playVoice(voicePath, index, message) {
                 console.log('播放录音');
-                if (voicePath) {
-                    innerAudioContext.src = voicePath;
-                    innerAudioContext.play();
+                if (!voicePath) return
+                const key = this.getVoiceKey(message, index)
+                if (this.audioPlayer.playingIndex === index) {
+                    innerAudioContext.stop()
+                    return
                 }
+                this.resetVoicePlayer()
+                this.audioPlayer.playingIndex = index
+                this.audioPlayer.playingKey = key
+                innerAudioContext.src = voicePath
+                innerAudioContext.play()
+                const cachedSeconds = this.getVoiceSeconds(message, index)
+                if (cachedSeconds > 0) {
+                    this.audioPlayer.totalSeconds = cachedSeconds
+                    this.audioPlayer.leftSeconds = cachedSeconds
+                    this.startVoiceCountdown()
+                }
+                this.syncVoiceDuration(message, index)
+            },
+            syncVoiceDuration(message, index, retry = 0) {
+                const duration = Math.ceil(innerAudioContext.duration || 0)
+                if (duration > 0) {
+                    this.audioPlayer.totalSeconds = duration
+                    this.audioPlayer.leftSeconds = duration
+                    const key = this.getVoiceKey(message, index)
+                    this.$set(this.audioPlayer.durationMap, key, duration)
+                    this.startVoiceCountdown()
+                    return
+                }
+                if (retry < 10 && this.audioPlayer.playingIndex !== null) {
+                    setTimeout(() => this.syncVoiceDuration(message, index, retry + 1), 200)
+                }
+            },
+            startVoiceCountdown() {
+                clearInterval(this.audioPlayer.timer)
+                this.audioPlayer.timer = setInterval(() => {
+                    if (this.audioPlayer.leftSeconds <= 1) {
+                        this.audioPlayer.leftSeconds = 0
+                        clearInterval(this.audioPlayer.timer)
+                        this.audioPlayer.timer = null
+                        return
+                    }
+                    this.audioPlayer.leftSeconds -= 1
+                }, 1000)
+            },
+            resetVoicePlayer() {
+                clearInterval(this.audioPlayer.timer)
+                this.audioPlayer.timer = null
+                this.audioPlayer.playingIndex = null
+                this.audioPlayer.playingKey = ''
+                this.audioPlayer.totalSeconds = 0
+                this.audioPlayer.leftSeconds = 0
+            },
+            getVoiceKey(message, index) {
+                if (message?.messageId) return `m_${message.messageId}`
+                return `i_${index}_${message?.createdAt || ''}_${message?.content || ''}`
+            },
+            getVoiceSeconds(message, index) {
+                const key = this.getVoiceKey(message, index)
+                const cached = Number(this.audioPlayer.durationMap[key] || 0)
+                const serverDuration = Number(message?.duration || 0)
+                const seconds = Math.max(cached, serverDuration)
+                return seconds > 0 ? Math.ceil(seconds) : 0
+            },
+            getVoiceLabel(index, message) {
+                if (this.audioPlayer.playingIndex === index) {
+                    return `${Math.max(1, this.audioPlayer.leftSeconds)}秒`
+                }
+                return ''
+            },
+            prefetchVoiceDurations(messages = this.history.messages, startIndex = 0) {
+                messages.forEach((message, offset) => {
+                    if (message.msgType !== 4) return
+                    const index = startIndex + offset
+                    const sec = this.getVoiceSeconds(message, index)
+                    if (sec > 0) return
+                    const src = this.$fileUrl + message.content
+                    this.probeAudioDuration(src).then((duration) => {
+                        if (!duration) return
+                        const key = this.getVoiceKey(message, index)
+                        this.$set(this.audioPlayer.durationMap, key, duration)
+                    })
+                })
+            },
+            probeAudioDuration(src) {
+                return new Promise((resolve) => {
+                    const ctx = uni.createInnerAudioContext()
+                    let done = false
+                    const finish = (duration = 0) => {
+                        if (done) return
+                        done = true
+                        clearTimeout(timeout)
+                        try {
+                            ctx.destroy()
+                        } catch (e) {}
+                        resolve(duration > 0 ? Math.ceil(duration) : 0)
+                    }
+                    const timeout = setTimeout(() => finish(0), 2000)
+                    ctx.autoplay = false
+                    ctx.src = src
+                    ctx.onCanplay(() => {
+                        setTimeout(() => {
+                            finish(ctx.duration || 0)
+                        }, 120)
+                    })
+                    ctx.onError(() => finish(0))
+                })
             },
             // 其他功能
             showOtherTypesMessagePanel() {
@@ -513,6 +647,7 @@
                         cmd: "text",
                         content: res.data.url,
                         filename: res.data.filename,
+                        duration: this.audio.second,
                         msgType: 4
                     }
                     this.sendSocketMessage(sendObj);
@@ -554,6 +689,7 @@
                     // console.log(list.map(v=>v.content))
                     this.history.loading = false;
                     this.history.messages = list.concat(this.history.messages)
+                    this.prefetchVoiceDurations()
                     if (this.history.messages.length >= res.data.total) {
                         this.history.allLoaded = true
                     } else {
@@ -811,8 +947,42 @@
 
         .audio-content {
             border-radius: 12rpx;
+            box-sizing: border-box;
             display: flex;
             align-items: center;
+            flex-direction: row-reverse;
+            gap: 14rpx;
+            justify-content: flex-start;
+            width: 120rpx;
+            min-width: 120rpx;
+            padding-right: 20rpx;
+
+            &.audio-content-playing {
+                width: 152rpx;
+                min-width: 152rpx;
+            }
+
+            .audio-text {
+                min-width: 52rpx;
+                font-size: 26rpx;
+            }
+
+            .audio-speaker {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 42rpx;
+                height: 42rpx;
+                border-radius: 50%;
+            }
+
+            .audio-speaker.playing {
+                animation: speaker-pulse 1s ease-in-out infinite;
+            }
+
+            .speaker-mirror {
+                transform: scaleX(-1);
+            }
         }
     }
 
@@ -849,10 +1019,21 @@
 
         .audio-content {
             border-radius: 12rpx;
+            flex-direction: row;
+            padding-left: 20rpx;
+            padding-right: 16rpx;
+        }
+    }
 
-            uni-icons {
-                color: $uni-white;
-            }
+    @keyframes speaker-pulse {
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 0.72;
+        }
+        50% {
+            transform: scale(1.14);
+            opacity: 1;
         }
     }
 

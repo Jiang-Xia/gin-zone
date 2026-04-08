@@ -175,6 +175,13 @@
 					}
 				},
 				{
+					"path": "pages/my/setting",
+					"style": {
+						"navigationBarTitleText": "设置",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
 					"path": "pages/my/about",
 					"style": {
 						"navigationBarTitleText": "关于",
