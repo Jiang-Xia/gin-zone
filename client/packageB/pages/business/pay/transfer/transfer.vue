@@ -18,10 +18,7 @@
         onLoad(options) {
             // #ifdef MP-WEIXIN
             uni.hideLoading()
-            uni.showToast({
-                title: '功能正在开发中',
-                icon: 'none',
-            })
+            this.$toast('功能正在开发中')
             return
             // #endif
 
@@ -42,7 +39,7 @@
             } else {
                 const timeStamp = options.timeStamp /* || '1751704174159' */
                 if (timeStamp && Date.now() > Number(timeStamp)) {
-                    uni.showModal({
+                    this.$showModal({
                         title: '提示',
                         content: '二维码已过期',
                         showCancel: false,
@@ -73,7 +70,7 @@
                         url
                     );
                 } else {
-                    uni.showModal({
+                    this.$showModal({
                         title: '提示',
                         content: '请使用合作平台客户端扫码',
                         showCancel: false,

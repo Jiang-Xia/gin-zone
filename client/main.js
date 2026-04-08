@@ -11,6 +11,7 @@ import common, {
     mixins
 } from './common/utils/common.js'
 import tool from './common/utils/tool.js'
+import { showModal, toast } from './common/utils/ui.js'
 import { createApis } from './common/request/apis/index.js'
 const mode = import.meta.env.MODE;
 // console.log('mode =========>', mode)
@@ -38,6 +39,8 @@ export function createApp() {
     app.config.globalProperties.$apis = createApis(api)
     app.config.globalProperties.$common = common
     app.config.globalProperties.$tool = tool
+    app.config.globalProperties.$showModal = showModal
+    app.config.globalProperties.$toast = toast
     app.config.globalProperties.$fileUrl = fileUrl
     app.config.globalProperties.$baseUrl = baseUrl
     app.config.globalProperties.$pages = pages,

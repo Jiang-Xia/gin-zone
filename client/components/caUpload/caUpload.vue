@@ -133,11 +133,15 @@
         },
         methods: {
             onDisabledTap() {
+                if (typeof this?.$toast === 'function') {
+                    this.$toast(this.disabledToast || '当前不可上传')
+                    return
+                }
                 if (this.$utils && typeof this.$utils.toast === 'function') {
                     this.$utils.toast(this.disabledToast || '当前不可上传')
-                } else {
-                    uni.showToast({ title: this.disabledToast || '当前不可上传', icon: 'none' })
+                    return
                 }
+                uni.showToast({ title: this.disabledToast || '当前不可上传', icon: 'none' })
             },
             async selectHandle(e){
                 if (this.disabled) {

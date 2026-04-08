@@ -17,13 +17,14 @@ import {
   beginGlobalLoading,
   endGlobalLoading,
 } from './loading.js'
+import { toast as uiToast } from '../utils/ui.js'
 
 function showToastAfterLoading(options) {
   const toastOptions =
     typeof options === 'string' ? { title: options, icon: 'none' } : options || {}
   // 避免 loading mask 关闭前 toast 被遮挡
   setTimeout(() => {
-    uni.showToast(toastOptions)
+    uiToast(toastOptions)
   }, 0)
 }
 

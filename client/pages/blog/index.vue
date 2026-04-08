@@ -153,10 +153,7 @@
 				})
 			},
 			goSetting() {
-				uni.showToast({
-					title: '设置功能开发中',
-					icon: 'none'
-				})
+				this.$toast('设置功能开发中')
 			},
 			goDetail(id) {
 				uni.navigateTo({
@@ -174,10 +171,7 @@
 				// 微信小程序：收银台功能暂未开放
 				// #ifdef MP-WEIXIN
 				if (item?.url === '/packageB/pages/business/pay/cashier/cashier' || item?.text === '收银台') {
-					uni.showToast({
-						title: '功能正在开发中',
-						icon: 'none',
-					})
+					this.$toast('功能正在开发中')
 					return
 				}
 				// #endif
@@ -193,10 +187,7 @@
 						})
 					}
 				} else {
-					uni.showToast({
-						title: '功能开发中',
-						icon: 'none'
-					})
+					this.$toast('功能开发中')
 				}
 			}
 		}

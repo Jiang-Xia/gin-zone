@@ -1,6 +1,7 @@
 /* 全局功能方法挂载 */
 import shareMixin from './mixins/shareMixin.js'
 import { getCurrentAddressByLocation } from './location.js'
+import { showModal } from './ui.js'
 export class Common {
     goTo(url){
       uni.navigateTo({
@@ -21,7 +22,7 @@ export class Common {
 		if (this.getUserId()) {
 			return
 		}
-		uni.showModal({
+		showModal({
 			title: "请先登录！",
 			success: (res) => {
 				if (res.confirm) {

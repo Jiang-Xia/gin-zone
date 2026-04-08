@@ -14,6 +14,7 @@ const shareMixin = {
 
   // 1.发送给朋友
   onShareAppMessage(res) {
+    const that = this
     // 动态获取当前页面栈
     let pages = getCurrentPages()
     let nowPage = pages[pages.length - 1]
@@ -26,21 +27,17 @@ const shareMixin = {
       path: this.share.path,
       imageUrl: this.share.imageUrl,
       success() {
-        uni.showToast({
-          title: '分享成功',
-        })
+        ;(that?.$toast || uni.showToast)({ title: '分享成功', icon: 'none' })
       },
       fail() {
-        uni.showToast({
-          title: '分享失败',
-          icon: 'none',
-        })
+        ;(that?.$toast || uni.showToast)({ title: '分享失败', icon: 'none' })
       },
     }
   },
 
   // 2.分享到朋友圈
   onShareTimeline(res) {
+    const that = this
     // 动态获取当前页面栈
     let pages = getCurrentPages()
     let nowPage = pages[pages.length - 1]
@@ -53,15 +50,10 @@ const shareMixin = {
       query: this.share.query,
       imageUrl: this.share.imageUrl,
       success() {
-        uni.showToast({
-          title: '分享成功',
-        })
+        ;(that?.$toast || uni.showToast)({ title: '分享成功', icon: 'none' })
       },
       fail() {
-        uni.showToast({
-          title: '分享失败',
-          icon: 'none',
-        })
+        ;(that?.$toast || uni.showToast)({ title: '分享失败', icon: 'none' })
       },
     }
   },

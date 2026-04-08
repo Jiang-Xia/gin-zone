@@ -138,7 +138,9 @@
 						})
 						updateManager.onUpdateReady(function(res) {
 							uni.hideLoading()
-							uni.showModal({
+							// App.vue 生命周期回调里用 this.$showModal 不稳定，这里直接用 uni.showModal 也可以；
+							// 但为统一默认按钮颜色，还是走全局挂载的 $showModal（存在则用）
+							;(getApp()?.$vm?.$showModal || uni.showModal)({
 								title: '更新提示',
 								content: '新版本已经准备好，是否重启应用？',
 								success(res) {
@@ -146,7 +148,7 @@
 										// 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
 										updateManager.applyUpdate();
 									} else {
-										uni.showModal({
+										;(getApp()?.$vm?.$showModal || uni.showModal)({
 											content: '本次版本更新涉及到新功能的添加，旧版本将无法正常使用',
 											showCancel: false,
 											confirmText: '确认更新'
@@ -159,9 +161,7 @@
 						})
 						updateManager.onUpdateFailed(function(res) {
 							uni.hideLoading()
-							uni.showToast({
-								title: '新的版本下载失败'
-							})
+							;(getApp()?.$vm?.$toast || uni.showToast)({ title: '新的版本下载失败', icon: 'none' })
 						});
 
 					}

@@ -100,10 +100,7 @@
                         uni.setStorageSync('userAccessToken', res.data.accessToken)
                 	},
                 	fail: (err) => {
-                		uni.showToast({
-                			title: "授权失败",
-                			icon: "error"
-                		})
+                		this.$toast({ title: '授权失败', icon: 'error' })
                 		// 登录授权失败  
                 		// err.code是错误码
                 	}
@@ -155,7 +152,7 @@
             },
             sureTap(e) {
                 if (!amt || parseFloat(amt) <= 0) {
-                    uni.showModal({
+                    this.$showModal({
                         title: '提示',
                         content: '支付金额必须大于0，请核对金额后继续操作',
                         showCancel: false
@@ -178,7 +175,7 @@
                     qrType: 'STATIC'
                 })
                 if (!data?.action?.qrInfo && !data?.action?.qrCodeInfoModel) {
-                    uni.showModal({
+                    this.$showModal({
                         title: '提示',
                         content: '二维码信息有误，请联系商家谨慎操作',
                         showCancel: false

@@ -173,10 +173,7 @@
                         // #endif
                     },
                     fail: (err) => {
-                        uni.showToast({
-                            title: "授权失败",
-                            icon: "error"
-                        })
+                        this.$toast({ title: '授权失败', icon: 'error' })
                     }
                 })
             },
@@ -192,10 +189,7 @@
                         this.getZoneUserInfo()
                     },
                     fail: (err) => {
-                        uni.showToast({
-                            title: "授权失败",
-                            icon: "error"
-                        })
+                        this.$toast({ title: '授权失败', icon: 'error' })
                         console.log("获取授权信息失败", err)
                     }
                 })
@@ -235,10 +229,7 @@
                 if (!this.ensureLogin()) return
                 // 原先的“创建群聊”对管理员有校验，这里保留校验逻辑不丢
                 if (!this.userInfo.isAdmin) {
-                    uni.showToast({
-                        title: "您不是管理员",
-                        icon: "error"
-                    })
+                    this.$toast({ title: '您不是管理员', icon: 'error' })
                     return
                 }
                 uni.navigateTo({
@@ -249,10 +240,7 @@
                 if (!this.ensureLogin()) return
 
                 // #ifdef MP-WEIXIN
-                uni.showToast({
-                    title: "功能正在开发中",
-                    icon: "none",
-                })
+                this.$toast('功能正在开发中')
                 return
                 // #endif
 
@@ -268,34 +256,30 @@
             },
 
             logout() {
-                uni.showModal({
+                this.$showModal({
                     title: "退出登录",
                     content: "确认退出登录吗？",
                     confirmText: "退出",
                     cancelText: "取消",
-                    success: (res) => {
-                        if (!res.confirm) return
+                }).then((res) => {
+                    if (!res.confirm) return
 
-                        uni.removeStorageSync("zoneToken")
-                        uni.removeStorageSync("zoneUserInfo")
+                    uni.removeStorageSync("zoneToken")
+                    uni.removeStorageSync("zoneUserInfo")
 
-                        const app = getApp()
-                        if (app?.globalData) {
-                            app.globalData.userInfo = null
-                        }
-                        this.userInfo = {}
+                    const app = getApp()
+                    if (app?.globalData) {
+                        app.globalData.userInfo = null
+                    }
+                    this.userInfo = {}
 
-                        uni.showToast({
-                            title: "已退出",
-                            icon: "success",
+                    this.$toast({ title: '已退出', icon: 'success' })
+
+                    setTimeout(() => {
+                        uni.navigateTo({
+                            url: "/packageA/pages/my/login",
                         })
-
-                        setTimeout(() => {
-                            uni.navigateTo({
-                                url: "/packageA/pages/my/login",
-                            })
-                        }, 300)
-                    },
+                    }, 300)
                 })
             },
         },

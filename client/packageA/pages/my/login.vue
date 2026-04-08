@@ -133,10 +133,7 @@ export default {
     methods: {
             confirm() {
                 if(!this.isValid){
-                    uni.showToast({
-                        title: this.cur ? '请输入有效的用户名和密码以注册' : '请输入有效的用户名和密码以登录',
-                        icon: 'none'
-                    })
+                    this.$toast(this.cur ? '请输入有效的用户名和密码以注册' : '请输入有效的用户名和密码以登录')
                     return
                 }
                 if (this.cur === 0) {
@@ -170,10 +167,7 @@ export default {
                     if(app.globalData.initChat){
                         app.globalData.initChat()
                     }
-                    uni.showToast({
-                        title: "登录成功",
-                        icon: 'none'
-                    });
+                    this.$toast("登录成功");
                     setTimeout(() => {
                         uni.switchTab({
                             url: "/pages/chat/index"
@@ -181,10 +175,7 @@ export default {
                     }, 800)
                 } catch (e) {
                     uni.hideLoading()
-                    uni.showToast({
-                        title: '登录失败，请稍后重试',
-                        icon: 'none'
-                    })
+                    this.$toast('登录失败，请稍后重试')
                 }
             },
             async register() {
@@ -204,27 +195,18 @@ export default {
                     }
                     // 注册：由接口层统一处理注册请求
                     const res = await this.$apis.auth.register(params)
-                    uni.showToast({
-                        title: "注册成功,快去登录吧!",
-                        icon: 'none'
-                    });
+                    this.$toast("注册成功,快去登录吧!");
                     this.form = {
                         userName:"",
                         password:""
                     }
                     this.cur = 0
                 } catch (e) {
-                    uni.showToast({
-                        title: '注册失败，请稍后重试',
-                        icon: 'none'
-                    })
+                    this.$toast('注册失败，请稍后重试')
                 }
             },
             forgotPwd(){
-                uni.showToast({
-                    title: '请联系管理员重置密码',
-                    icon: 'none'
-                })
+                this.$toast('请联系管理员重置密码')
             }
     }
 }
