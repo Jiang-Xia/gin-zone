@@ -121,9 +121,9 @@
                 }).then(res => {
                     uni.stopPullDownRefresh()
                     this.userList = res.data.map((v, i) => {
-                        v.avatar = v.userInfo.avatar || userIcon
+                        v.avatar = v.userInfo.avatar || this.userIcon
                         if (v.groupId) {
-                            v.avatar = v.chatGroup.avatar || groupIcon
+                            v.avatar = v.chatGroup.avatar || this.groupIcon
                         }
                         v.name = v.userInfo.nickName || v.chatGroup.groupName
                         v.time = this.$dayjs(v.lastInfoTime).format('MM-DD HH:mm')

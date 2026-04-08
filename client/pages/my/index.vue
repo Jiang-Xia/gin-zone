@@ -39,17 +39,17 @@
                                     color="#f00057"></uni-icons>
                             </template>
                         </t-cell>
-
-                        <t-cell title="收银台" arrow @click="goCashier">
+                        
+                        <t-cell title="个人资料" arrow @click="goSetting">
                             <template #image>
-                                <uni-icons type="wallet" size="20"
+                                <uni-icons custom-prefix="zonefont" type="zone-shezhi" size="20"
                                     color="#f00057"></uni-icons>
                             </template>
                         </t-cell>
 
-                        <t-cell title="设置" arrow @click="goSetting">
+                        <t-cell title="收银台" arrow @click="goCashier">
                             <template #image>
-                                <uni-icons custom-prefix="zonefont" type="zone-shezhi" size="20"
+                                <uni-icons type="wallet" size="20"
                                     color="#f00057"></uni-icons>
                             </template>
                         </t-cell>

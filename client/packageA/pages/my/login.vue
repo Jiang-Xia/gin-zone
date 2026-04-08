@@ -9,7 +9,7 @@
 					mode="aspectFit"
 				/>
 				<view class="header-text">
-					<text class="title">Gin Zone</text>
+					<text class="title">Zone</text>
 					<text class="subtitle">{{ cur ? '创建你的账号，开始聊天' : '欢迎回来，继续你的会话' }}</text>
 				</view>
 			</view>

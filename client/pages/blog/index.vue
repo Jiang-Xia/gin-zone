@@ -41,6 +41,18 @@
 		<!-- 功能菜单栏 浮在轮播图上方 -->
 		<view class="floating-menu">
 			<view class="menu-grid">
+				<!-- H5：用纯 CSS Grid，自适应 4/8 列，不需要 JS 监听 resize -->
+				<!-- #ifdef H5 -->
+				<view class="menu-grid-h5">
+					<view class="menu-item" v-for="(item, index) in menuList" :key="index" @click="clickMenuItem({ detail: { index } })">
+						<uni-icons :type="item.icon" :color="item.color" size="24"></uni-icons>
+						<text class="menu-text">{{ item.text }}</text>
+					</view>
+				</view>
+				<!-- #endif -->
+
+				<!-- 非 H5：继续用 uni-grid -->
+				<!-- #ifndef H5 -->
 				<uni-grid :column="4" :show-border="false" :square="false" @change="clickMenuItem">
 					<uni-grid-item v-for="(item, index) in menuList" :index="index" :key="index">
 						<view class="menu-item">
@@ -49,6 +61,7 @@
 						</view>
 					</uni-grid-item>
 				</uni-grid>
+				<!-- #endif -->
 			</view>
 		</view>
 
@@ -256,8 +269,9 @@
 			}
 		}
 		
+		/* .swiper-background 预留容器：避免空规则触发 lint */
 		.swiper-background {
-			
+			display: block;
 		}
 		
 		.swiper {
@@ -296,6 +310,17 @@
 				box-shadow: 0px 1px 7px 5px rgba(186,190,197,0.2);
 				backdrop-filter: blur(15px); /* 毛玻璃效果 */
 				-webkit-backdrop-filter: blur(15px); /* 兼容性 */
+
+				/* H5：自适应网格布局（默认 4 列，宽屏 8 列） */
+				.menu-grid-h5 {
+					display: grid;
+					grid-template-columns: repeat(4, 1fr);
+				}
+				@media (min-width: 768px) {
+					.menu-grid-h5 {
+						grid-template-columns: repeat(8, 1fr);
+					}
+				}
 				
 				:deep(.uni-grid) {
 					flex-direction: row;
