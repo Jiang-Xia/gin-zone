@@ -18,8 +18,8 @@
                     <view class="message-item"
                         :class="[message.senderId===userId?'message-item-me':'',message.groupId?'message-item-group':'']">
                         <view class="avatar">
-                            <uv-image radius="50%" width="100%" height="100%" :src="message.userInfo?.avatar"
-                                bgColor="#fff"></uv-image>
+                            <t-image shape="circle" mode="aspectFill" width="100%" height="100%" :src="message.userInfo?.avatar || defaultAvatar"
+                                :custom-style="{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', backgroundColor: '#fff' }"></t-image>
                         </view>
                         <view class="content">
                             <!-- 群聊时显示用户名称 -->
@@ -29,7 +29,8 @@
                             <view class="text-content emojifont" v-if="message.msgType===1">{{message.content}}</view>
                             <view class="image-content" v-if="message.msgType===2">
                                 <!-- <image :src="$fileUrl+message.content" mode="heightFix"></image> -->
-                                <uv-image class="image-item" width="150" height="90" radius="6"
+                                <t-image t-class="image-item" t-class-image="image-item__inner" width="150px" height="90px"
+                                    :custom-style="{ width: '150px', height: '90px', borderRadius: '12rpx', overflow: 'hidden', display: 'block' }"
                                     :src="$fileUrl+message.content" @click="previewImage(message)" />
                             </view>
                             <view class="video-content" v-if="message.msgType===3">
@@ -114,6 +115,7 @@
             return {
                 title: '',
                 ws: '',
+                defaultAvatar: this.$getImg('/static/images/user.png'),
                 //聊天文本框
                 text: '',
                 friend: null,
@@ -727,7 +729,7 @@
             flex-shrink: 0;
             flex-grow: 0;
 
-            uv-image {
+            t-image {
                 width: 100%;
                 height: 100%;
                 border-radius: 50%;
@@ -787,6 +789,13 @@
                 border-radius: 12rpx;
                 width: 300rpx;
                 height: 180rpx;
+            }
+
+            .image-item__inner {
+                border-radius: 12rpx;
+                width: 100%;
+                height: 100%;
+                display: block;
             }
         }
 

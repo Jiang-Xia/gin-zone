@@ -73,7 +73,13 @@
             <view class="news">
             	<view class="news-item" v-for="item in articleList" :key="item.id" @click="goDetail(item.id)">
             		<!-- <image :src="item.cover" :fade-show="true"></image> -->
-                    <uv-image :src="item.cover" width="100%" height="100%" radius="8"></uv-image>
+                    <t-image
+                        :src="item.cover"
+                        mode="aspectFill"
+                        width="100%"
+                        height="100%"
+                        :custom-style="{ width: '100%', height: '100%', borderRadius: '8px', overflow: 'hidden' }"
+                    ></t-image>
             		<view class="news-item__title">
             			<text class="text  uni-ellipsis">{{item.title}}</text>
             			<uni-icons type="forward" size="18" color="#f9f9f9"></uni-icons>

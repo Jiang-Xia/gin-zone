@@ -21,7 +21,7 @@
                             :time="item.time" :badge-text="item.noReadMsgCount" clickable @click="clickUserItem(item)">
                         </uni-list-chat> -->
                         <view class="chat-item" @click="clickUserItem(item)">
-                            <uv-image class="image-item" width="43" height="43" radius="50%" :src="item.avatar" />
+                            <t-image class="image-item" width="43px" height="43px" shape="circle" :src="item.avatar" />
                             <view class="chat-item-right">
                                 <view class="chat-item-right__top">
                                     <view class="name">

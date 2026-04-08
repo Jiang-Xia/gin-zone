@@ -15,9 +15,10 @@
         			<!-- <image class="image-item" v-for="(item2, index2) in item.images"
         				:style="{ marginRight: (index2 + 1) % 3 === 0 ? '0px' : '4px' }" width="114" height="114" radius="8"
         				:src="$fileUrl+item2" :key="item2+index2" @click="previewImage(item)" /> -->
-                    <uv-image class="image-item" v-for="(item2, index2) in item.images"
-                        :style="{ marginRight: (index2 + 1) % 3 === 0 ? '0px' : '4px' }" width="114" height="114" radius="8"
-                        :src="$fileUrl+item2" :key="item2+index2" @click="previewImage(item)" />
+                    <t-image t-class="image-item" v-for="(item2, index2) in item.images"
+                        :style="{ marginRight: (index2 + 1) % 3 === 0 ? '0px' : '4px' }" mode="aspectFill" width="114px" height="114px"
+                        :custom-style="{ width: '114px', height: '114px', borderRadius: '8px', overflow: 'hidden' }" :src="$fileUrl+item2" :key="item2+index2"
+                        @click="previewImage(item)" />
         		</div>
         		<div class="card-bottom">
         			<div class="adress">

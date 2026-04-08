@@ -14,7 +14,13 @@
 				:to="'/packageA/pages/blog/detail/detail?id='+item.id">
 				<template v-slot:header>
 					<view class="uni-thumb">
-                        <uv-image :src="item.cover" mode="aspectFill" width="100%" height="100%"></uv-image>
+                        <t-image
+                            :src="item.cover"
+                            mode="aspectFill"
+                            width="100%"
+                            height="100%"
+                            :custom-style="{ width: '100%', height: '100%' }"
+                        ></t-image>
 					</view>
 				</template>
 			</uni-list-item>
