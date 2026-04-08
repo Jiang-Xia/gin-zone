@@ -1,28 +1,28 @@
 <template>
   <pageConfig title="图表">
       <view class="charts-box">
-        <qiun-data-charts 
+        <QiunDataCharts 
           type="column"
           :opts="opts"
           :chartData="chartData"
         />
       </view>
       <view class="charts-box">
-        <qiun-data-charts 
+        <QiunDataCharts 
           type="column"
           :opts="opts"
           :chartData="chartData"
         />
       </view>
       <view class="charts-box">
-        <qiun-data-charts 
+        <QiunDataCharts 
           type="column"
           :opts="opts"
           :chartData="chartData"
         />
       </view>
       <view class="charts-box">
-        <qiun-data-charts 
+        <QiunDataCharts 
           type="column"
           :opts="opts"
           :chartData="chartData"
@@ -32,7 +32,12 @@
 </template>
 
 <script>
+import QiunDataCharts from '../../uni_modules/qiun-data-charts/components/qiun-data-charts/qiun-data-charts.vue';
+
 export default {
+  components: {
+    QiunDataCharts
+  },
   data() {
     return {
       chartData: {},

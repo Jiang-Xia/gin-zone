@@ -6,7 +6,7 @@
     "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {
-        "darkmode": false,
+        "darkmode" : false,
         /* 5+App特有相关 */
         "usingComponents" : true,
         "nvueCompiler" : "zone",
@@ -135,7 +135,7 @@
     "quickapp" : {},
     /* 快应用特有相关 */
     "mp-weixin" : {
-        "darkmode": false,
+        "darkmode" : false,
         "appid" : "wx1df79a9834d74211",
         "setting" : {
             "urlCheck" : false,
@@ -162,7 +162,7 @@
     },
     "vueVersion" : "3",
     "h5" : {
-        "darkmode": false,
+        "darkmode" : false,
         "title" : "zone",
         "template" : "index.html",
         "router" : {

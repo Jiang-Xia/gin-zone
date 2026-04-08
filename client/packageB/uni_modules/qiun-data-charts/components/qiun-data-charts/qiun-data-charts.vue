@@ -158,6 +158,8 @@
 <script>
 import uCharts from '../../js_sdk/u-charts/u-charts.js';
 import cfu from '../../js_sdk/u-charts/config-ucharts.js';
+import QiunLoading from '../qiun-loading/qiun-loading.vue';
+import QiunError from '../qiun-error/qiun-error.vue';
 // #ifdef APP-VUE || H5
 import cfe from '../../js_sdk/u-charts/config-echarts.js';
 // #endif
@@ -231,6 +233,10 @@ function debounce(fn, wait) {
 
 export default {
   name: 'qiun-data-charts',
+  components: {
+    QiunLoading,
+    QiunError
+  },
   mixins: [uniCloud.mixinDatacom],
   props: {
     type: {
@@ -1306,12 +1312,12 @@ export default {
       }else{
         const script = document.createElement('script')
         // #ifdef APP-VUE
-        script.src = './uni_modules/qiun-data-charts/static/app-plus/echarts.min.js'
+        script.src = './packageB/uni_modules/qiun-data-charts/static/app-plus/echarts.min.js'
         // #endif
         // #ifdef H5
         const rooturl = window.location.origin
         const directory = instance.getDataset().directory
-        script.src = rooturl + directory + 'uni_modules/qiun-data-charts/static/h5/echarts.min.js'
+        script.src = rooturl + directory + 'packageB/uni_modules/qiun-data-charts/static/h5/echarts.min.js'
         // #endif
         script.onload = this.newEChart
         document.head.appendChild(script)

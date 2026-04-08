@@ -21,9 +21,13 @@
 
 <script>
     import emojiJson from './emoji-en-US.json'
+    import ZPaging from '../../../uni_modules/z-paging/components/z-paging/z-paging.vue'
     let timer = null
     export default {
         name: 'EmojiList',
+        components: {
+            ZPaging
+        },
         props: {
             height: {
                 type: String,
