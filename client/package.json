@@ -53,6 +53,7 @@
     "marked": "^4.3.0",
     "marked-highlight": "^2.2.2",
     "mp-html": "^2.4.1",
+    "pinia-plugin-persistedstate": "^4.7.1",
     "prismjs": "^1.29.0",
     "sm-crypto": "^0.3.13"
   },

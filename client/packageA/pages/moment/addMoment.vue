@@ -32,6 +32,8 @@
 </template>
 
 <script>
+    import { useUserStore } from '@/stores/user.js'
+
     export default {
         data() {
             return {
@@ -113,7 +115,8 @@
             },
             async addMoment() {
                 try {
-                    const userId = getApp().globalData.userInfo.userId
+                    const userStore = useUserStore()
+                    const userId = userStore.userId
                     const params = {
                         content: this.info.content,
                         location: this.info.address,

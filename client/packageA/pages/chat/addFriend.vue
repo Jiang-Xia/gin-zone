@@ -19,6 +19,8 @@
 </template>
 
 <script>
+	import { useUserStore } from '@/stores/user.js'
+
 	export default {
 		data() {
 			return {
@@ -49,7 +51,8 @@
 		},
 		methods: {
 			async onSearch() {
-				const userId = getApp().globalData.userInfo.userId
+				const userStore = useUserStore()
+				const userId = userStore.userId
 				const params = {
 					page: this.page,
 					pageSize: 20,
@@ -68,7 +71,8 @@
 				}
 			},
 			async clickUserItem(item) {
-				const userId = getApp().globalData.userInfo.userId
+				const userStore = useUserStore()
+				const userId = userStore.userId
 				const params = {
 					userId: userId
 				}

@@ -86,6 +86,9 @@
 </template>
 
 <script>
+    import { useUserStore } from '@/stores/user.js'
+    import { useChatStore } from '@/stores/chat.js'
+
     export default {
         data() {
             return {
@@ -109,7 +112,8 @@
                     this.getImage()
                 })
 
-            const token = uni.getStorageSync("zoneToken")
+            const userStore = useUserStore()
+            const token = userStore.token
             if (token) {
                 this.getZoneUserInfo()
             } else {
@@ -197,15 +201,14 @@
             async getZoneUserInfo() {
                 const res = await this.$apis.auth.getUserInfo()
                 this.userInfo = res.data
-                const app = getApp()
-                app.globalData.userInfo = res.data
-                uni.setStorageSync('zoneUserInfo', res.data)
-                if (app.globalData.initChat) {
-                    app.globalData.initChat()
-                }
+                const userStore = useUserStore()
+                userStore.setUserInfo(res.data)
+                const chatStore = useChatStore()
+                chatStore.initChat(res.data.userId)
             },
             setToken(token) {
-                uni.setStorageSync("zoneToken", token)
+                const userStore = useUserStore()
+                userStore.setToken(token)
             },
 
             goProfileEdit() {

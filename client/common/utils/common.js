@@ -2,6 +2,7 @@
 import shareMixin from './mixins/shareMixin.js'
 import { getCurrentAddressByLocation } from './location.js'
 import { showModal } from './ui.js'
+import { useUserStore } from '@/stores/user.js'
 export class Common {
     goTo(url){
       uni.navigateTo({
@@ -12,11 +13,12 @@ export class Common {
       uni.navigateBack({delta:1})  
     }
 	getUserId() {
-		const userInfo = getApp().globalData.userInfo
+		const userStore = useUserStore()
+		const userInfo = userStore.userInfo
 		console.log({
 			用户信息: userInfo
 		})
-		return userInfo.userId
+		return userStore.userId
 	}
 	showLoginModal() {
 		if (this.getUserId()) {

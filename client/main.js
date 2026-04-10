@@ -5,6 +5,7 @@ import {
 } from 'vue'
 import dayjs from 'dayjs'
 import * as Pinia from 'pinia';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
 import api from './common/request/api.commercial.js'
 import common, {
@@ -32,7 +33,9 @@ const subPages = pageJson.subPackages.map(v => v.pages).flat()
 const pages = [...pageJson.pages, ...subPages]
 export function createApp() {
     const app = createSSRApp(App)
-    app.use(Pinia.createPinia());
+    const pinia = Pinia.createPinia()
+    pinia.use(piniaPluginPersistedstate)
+    app.use(pinia);
     app.config.globalProperties.$api = api
     app.config.globalProperties.$getImg = tool.getImg
     // $apis：业务接口语义层（由 common/request/apis/index.js 生成）

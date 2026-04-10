@@ -49,6 +49,7 @@
 	import {
 		beforeTimeNow
 	} from '@/common/utils/util.js';
+	import { useUserStore } from '@/stores/user.js'
 	import parseHtml from "@/common/utils/html-parser.js"
 	import {
 		marked
@@ -189,7 +190,8 @@
 				return 'robot'+this.curOption.id+'_historyMessages'
 			},
 			curUserAvatar() {
-				const userInfo = getApp().globalData.userInfo
+				const userStore = useUserStore()
+				const userInfo = userStore.userInfo
 				return userInfo.avatar ||
 					"https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-10/8ojhda8gzvyx3rdhgyq378-头像.jpg"
 			},

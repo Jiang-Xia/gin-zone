@@ -8,8 +8,6 @@ import {
   enableRequestCryptoDebugLog,
 } from './config.js'
 import {
-  getToken,
-  clearSession,
   getSessionId,
   getWorkKey,
 } from './session.js'
@@ -18,6 +16,7 @@ import {
   endGlobalLoading,
 } from './loading.js'
 import { toast as uiToast } from '../utils/ui.js'
+import { useUserStore } from '@/stores/user.js'
 
 function showToastAfterLoading(options) {
   const toastOptions =
@@ -37,8 +36,8 @@ export class CommercialApi {
 
   // 获取鉴权 token（zoneToken）
   getToken() {
-    // 这里的同名方法会调用同文件导入的 `getToken()`（storage 读取）
-    return getToken()
+    const userStore = useUserStore()
+    return userStore.token || ''
   }
 
   // 转化 rest 风格 api：把 "/path/{id}" 里的 "{id}" 替换成 data[id]
@@ -182,7 +181,8 @@ export class CommercialApi {
     // 鉴权失败清空信息（兼容旧版约定：res.data.data?.reload）
     if (body.data?.reload) {
       // 统一失效处理：清理 token + userInfo + 会话密钥
-      clearSession()
+      const userStore = useUserStore()
+      userStore.logout()
     }
 
     reject(body)

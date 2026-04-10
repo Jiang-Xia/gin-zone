@@ -99,6 +99,7 @@
 		formatTime
 	} from '@/common/utils/util'
 	import { useUserStore } from '@/stores/user.js'
+	import { useChatStore } from '@/stores/chat.js'
 	const avatars = [
 		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/2tp9sykqn11a6b41yodlzz-头像_天秤座.png',
 		'https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-26/sca06wy3ht6mgu839y9xk9-头像_天蝎座.png',
@@ -164,11 +165,8 @@ export default {
                     // 拉取用户信息：成功后驱动聊天初始化
                     const res2 = await this.$apis.auth.getUserInfo()
                     userStore.setUserInfo(res2.data)
-                    const app = getApp()
-                    app.globalData.userInfo = res2.data
-                    if(app.globalData.initChat){
-                        app.globalData.initChat()
-                    }
+                    const chatStore = useChatStore()
+                    chatStore.initChat(res2.data.userId)
                     this.$toast("登录成功");
                     setTimeout(() => {
                         uni.switchTab({

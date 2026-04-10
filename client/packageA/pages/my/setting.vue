@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { useUserStore } from '@/stores/user.js'
+
 export default {
     data() {
         return {
@@ -35,11 +37,13 @@ export default {
     },
     computed: {
         isLogin() {
-            return !!uni.getStorageSync('zoneToken')
+            const userStore = useUserStore()
+            return userStore.isLoggedIn
         },
     },
     onShow() {
-        this.userInfo = uni.getStorageSync('zoneUserInfo') || {}
+        const userStore = useUserStore()
+        this.userInfo = userStore.userInfo || {}
     },
     methods: {
         goProfileEdit() {
@@ -61,14 +65,8 @@ export default {
                 cancelText: '取消',
             }).then((res) => {
                 if (!res.confirm) return
-
-                uni.removeStorageSync('zoneToken')
-                uni.removeStorageSync('zoneUserInfo')
-
-                const app = getApp()
-                if (app?.globalData) {
-                    app.globalData.userInfo = null
-                }
+                const userStore = useUserStore()
+                userStore.logout()
 
                 this.$toast({ title: '已退出', icon: 'success' })
 
@@ -98,12 +96,10 @@ export default {
                 cancelText: '取消',
             }).then((res) => {
                 if (!res.confirm) return
-
-                const token = uni.getStorageSync('zoneToken')
-                const userInfo = uni.getStorageSync('zoneUserInfo')
+                const userStore = useUserStore()
+                const { token, userInfo } = userStore
                 uni.clearStorageSync()
-                if (token) uni.setStorageSync('zoneToken', token)
-                if (userInfo) uni.setStorageSync('zoneUserInfo', userInfo)
+                userStore.setAll({ token, userInfo })
 
                 this.$toast({ title: '缓存已清理', icon: 'success' })
             })

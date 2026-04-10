@@ -69,6 +69,8 @@
 </template>
 
 <script>
+	import { useUserStore } from '@/stores/user.js'
+
 	export default {
 		data() {
 			return {
@@ -94,7 +96,8 @@
 		},
 		computed: {
 			userInfo() {
-				return getApp().globalData.userInfo
+				const userStore = useUserStore()
+				return userStore.userInfo
 			},
 			avatar() {
 				const url = this.baseFormData.avatar || ''

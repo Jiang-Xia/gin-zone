@@ -106,9 +106,8 @@
 
 <script>
     import emojiList from './components/emojifont-list.vue';
-    import {
-        wsUrl,
-    } from '@/common/request/config.js'
+    import { useUserStore } from '@/stores/user.js'
+    import { useChatStore } from '@/stores/chat.js'
     import {
         beforeTimeNow
     } from '@/common/utils/util.js';
@@ -222,9 +221,15 @@
         onUnload() {
             clearInterval(this.timer)
             this.timer = null
+            const chatStore = useChatStore()
+            chatStore.unregisterMessageListener(`chat-detail-${this.userId}-${this.curOption.friendId || this.curOption.groupId || ''}`)
             this.resetVoicePlayer()
             innerAudioContext.stop()
             innerAudioContext.destroy()
+        },
+        onHide() {
+            const chatStore = useChatStore()
+            chatStore.unregisterMessageListener(`chat-detail-${this.userId}-${this.curOption.friendId || this.curOption.groupId || ''}`)
         },
         onReady() {
             this.loadHistoryMessage(true);
@@ -272,11 +277,12 @@
             // 阅读消息
             // 通过接口层更新已读时间（避免页面直接拼 URL）
             this.$apis.chat.updateReadTime(this.getCurOption())
-            const url = wsUrl + '/mobile/chat?userId=' + this.userId
-            const token = uni.getStorageSync("zoneToken")
-            this.socketTask = getApp().globalData.socketTask
+            const chatStore = useChatStore()
+            this.socketTask = chatStore.socketTask
+            if (!this.socketTask) return
             this.socketOpen = true;
-            this.socketTask.onMessage((res) => {
+            const listenerKey = `chat-detail-${this.userId}-${this.curOption.friendId || this.curOption.groupId || ''}`
+            chatStore.registerMessageListener(listenerKey, (res) => {
                 if (res.data) {
                     const revObj = JSON.parse(res.data)
                     if (revObj.cmd === "text") {
@@ -288,11 +294,12 @@
                     }
                     console.log('服务端消息：', revObj);
                 }
-            });
+            })
         },
         computed: {
             userId() {
-                return getApp().globalData.userInfo.userId
+                const userStore = useUserStore()
+                return userStore.userId
             }
         },
         watch: {
@@ -351,7 +358,8 @@
                     content,
                     msgType
                 } = messageData
-                const userInfo = getApp().globalData.userInfo
+                const userStore = useUserStore()
+                const userInfo = userStore.userInfo
                 let sendObj = {
                     cmd: cmd,
                     senderId: this.userId,

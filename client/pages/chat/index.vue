@@ -54,6 +54,8 @@
 
 <script>
     import noData from '@/components/noData/noData.vue'
+    import { useUserStore } from '@/stores/user.js'
+    import { useChatStore } from '@/stores/chat.js'
 
     export default {
         data() {
@@ -105,13 +107,22 @@
         onShow() {
             this.init()
         },
+        onHide() {
+            const chatStore = useChatStore()
+            chatStore.unregisterMessageListener('chat-list')
+        },
+        onUnload() {
+            const chatStore = useChatStore()
+            chatStore.unregisterMessageListener('chat-list')
+        },
         onReady() {},
         onNavigationBarButtonTap() {
             this.clickLeft()
         },
         methods: {
             init() {
-                const userId = getApp().globalData.userInfo.userId
+                const userStore = useUserStore()
+                const userId = userStore.userId
                 console.log({
                     userId
                 })
@@ -207,8 +218,10 @@
                 }
             },
             initFriend() {
-                this.socketTask = getApp().globalData.socketTask
-                this.socketTask.onMessage((res) => {
+                const chatStore = useChatStore()
+                this.socketTask = chatStore.socketTask
+                if (!this.socketTask) return
+                chatStore.registerMessageListener('chat-list', (res) => {
                     if (res.data) {
                         const revObj = JSON.parse(res.data)
                         if (revObj.cmd !== 'text') {
@@ -234,7 +247,7 @@
                             v && cb(v)
                         }
                     }
-                });
+                })
             }
         }
     }

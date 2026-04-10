@@ -1,22 +1,12 @@
 <script>
-	import {
-		wsUrl,
-	} from '@/common/request/config.js'
 	import { useUserStore } from '@/stores/user.js'
+	import { useChatStore } from '@/stores/chat.js'
 	export default {
 		// 全局变量 全端支持
 		globalData: {
-			StatusBar: 0,
-			CustomBar: 0,
-			Custom: 0,
-			userInfo: {},
-			avatar: "https://jiang-xia.top/x-blog/api/v1/static/uploads/2023-01-01/2kf3d768tj33vsgs6exbu8-默认头像.jpeg",
-			socketTask: null,
 		},
 		data() {
-			return {
-				timer: null
-			}
+			return {}
 		},
 		/* 应用生命周期 */
 		onLaunch: function() {
@@ -44,37 +34,14 @@
 			const that = this
 			uni.getSystemInfo({
 				success: function(e) {
-					// #ifndef MP
-					that.globalData.StatusBar = e.statusBarHeight;
-					if (e.platform == 'android') {
-						that.globalData.CustomBar = e.statusBarHeight + 50;
-					} else {
-						that.globalData.CustomBar = e.statusBarHeight + 45;
-					};
-					// #endif
-					// #ifdef MP-WEIXIN
-					that.globalData.StatusBar = e.statusBarHeight;
-					let custom = wx.getMenuButtonBoundingClientRect();
-					that.globalData.Custom = custom;
-					that.globalData.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
-					// #endif		
-					// #ifdef MP-ALIPAY
-					that.globalData.StatusBar = e.statusBarHeight;
-					that.globalData.CustomBar = e.statusBarHeight + e.titleBarHeight;
-					// #endif
-					// that.initOpt();
-					// console.log(that.globalData)
 				}
 			})
-            this.globalData.initChat = this.initChat
 			const userStore = useUserStore()
-			// onLaunch：从 storage 把 user 态 hydrate 到 pinia
-			userStore.hydrateFromStorage()
+			const chatStore = useChatStore()
 
 			const userInfo = userStore.userInfo
 			if (userInfo && userInfo.userId) {
-				this.globalData.userInfo = userInfo
-				this.initChat(userInfo.userId)
+				chatStore.initChat(userInfo.userId)
 			}
 
 			/* 全局用户信息处理 */
@@ -82,8 +49,7 @@
 			if (userStore.token && (!userInfo || !userInfo.userId)) {
 				this.$apis.auth.getUserInfo().then(res => {
 					userStore.setUserInfo(res.data)
-					this.globalData.userInfo = res.data
-					this.initChat(res.data.userId)
+					chatStore.initChat(res.data.userId)
 				}).catch(() => {
 					userStore.logout()
 				})
@@ -166,58 +132,6 @@
 
 					}
 				})
-			},
-			// 初始化聊天
-			initChat(userId) {
-				console.log({
-					userId
-				})
-				const url = wsUrl + '/mobile/chat?userId=' + userId
-				const token = uni.getStorageSync("zoneToken")
-				const socketTask = uni.connectSocket({
-					url,
-					method: 'GET',
-                    multiple: true,
-					success(){
-						console.log('WebSocket连接成功！');
-					},
-                    fail() {
-                        console.log('WebSocket连接失败！');
-                    }
-				});
-                this.globalData.socketTask = socketTask
-                console.log('socketTask',socketTask)
-				// 监听服务端发送消息
-				this.globalData.socketTask.onMessage((res) => {
-					// if (res.data) {
-					// 	const revObj = JSON.parse(res.data)
-					// 	console.log('服务端消息：', revObj);
-					// 	}
-				});
-				this.globalData.socketTask.onOpen((res) => {
-					console.log('WebSocket连接打开成功！', res);
-					this.heartbeat()
-				});
-				this.globalData.socketTask.onError((res) => {
-					console.log('WebSocket连接打开失败，请检查！', res);
-				});
-			},
-			heartbeat(userId) {
-				this.timer = setInterval(() => {
-					this.globalData.socketTask.send({
-						data: JSON.stringify({
-							cmd: "heartbeat",
-							content: "heartbeat",
-							senderId: this.globalData.userInfo.userId,
-						}),
-						success: () => {
-							// console.log('发送成功：');
-						},
-						fail: (error) => {
-							console.log('发送失败:', error);
-						}
-					});
-				}, 10000)
 			},
 			// 初始化推送功能
 			initPush() {
