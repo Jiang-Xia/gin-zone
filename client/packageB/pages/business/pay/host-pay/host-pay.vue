@@ -1,5 +1,5 @@
 <template>
-    <view class="all-pay">
+    <view class="host-pay">
         <view class="content-page">
             <view class="flex-direction">
                 <view class="logo-box">
@@ -81,7 +81,7 @@
             </view>
         </view>
         <view class="operation-btn2">
-            <t-button t-class="btn-box" theme="primary" variant="base" block @click="sureTap">
+            <t-button theme="primary" variant="base" size="large" block @click="sureTap">
                 确认支付（¥{{ $tool.moneyFormatter2(qrCodeInfo.userAmount) }}）
             </t-button>
         </view>
@@ -305,16 +305,10 @@
     };
 </script>
 <style lang="scss" scoped>
-    // page {
-    //     overflow: auto;
-    // }
-
-    .all-pay {
-        background-color: #f1f1f1;
+    .host-pay {
         height: 100vh;
-        --border-color: rgb(241, 241, 241);
-        padding-top: 30rpx;
-        position: relative;
+        padding: 32rpx;
+        box-sizing: border-box;
     }
 
     .logo-img {
@@ -323,11 +317,11 @@
     }
 
     .content-page {
-        margin: 0 30rpx 100px 30rpx;
         background: $uni-white;
         padding: 6px;
         border-radius: 8px;
         min-height: 600rpx;
+        margin-bottom: 120rpx;
     }
 
     .original-amt {
@@ -354,21 +348,6 @@
         background-color: rgba(150, 158, 184, 1);
         margin: 0rpx 30rpx;
         padding-bottom: 30rpx;
-    }
-
-    .sure-btn {
-        /* width: 100%; */
-        /* margin-top: -30rpx; */
-        margin: -30rpx 30rpx 0rpx 30rpx;
-        background-color: $uni-primary;
-        height: 110rpx;
-        line-height: 110rpx;
-        text-align: center;
-        border-radius: 8px;
-        color: white;
-        font-size: 32rpx;
-        font-weight: bold;
-        // box-shadow: 0px 4px 8px #999;
     }
 
     .operation-btn2 {
@@ -461,15 +440,4 @@
         }
     }
 
-    .btn-box {
-        // position: absolute;
-        // bottom: 160rpx;
-        // left: 6%;
-        width: 88%;
-        height: 90rpx;
-        border-radius: 10rpx;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
 </style>

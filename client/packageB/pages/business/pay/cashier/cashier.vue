@@ -20,8 +20,8 @@
                 </view>
             </view>
 
-            <view style="margin: auto;color: #aaa;font-size: 24rpx;text-align: center;font-weight: bold;">向商户付款</view>
-            <view class="flex-center sure-btn" @tap="sureTap">立即支付</view>
+            <view class="title-text">向商户付款</view>
+            <t-button theme="primary" variant="base" size="large" block @click="sureTap">立即支付</t-button>
         </view>
 
         <view class="keyboard" v-show="keyboard">
@@ -200,6 +200,8 @@
         position: relative;
         height: 100%;
         overflow: hidden;
+        padding: 32rpx;
+        box-sizing: border-box;
     }
 
     .logo-img {
@@ -279,6 +281,8 @@
         background-color: #ffffff;
         position: fixed;
         bottom: 0;
+        left: 0;
+        z-index: 9;
         width: 100%;
         box-shadow: 2px 0px 4px #aaa;
     }
@@ -381,12 +385,17 @@
     }
 
     .tapin-container {
-        margin: 15px;
-        margin-top: 15px;
-        margin-bottom: 100px;
         background: $uni-white;
         padding: 32rpx;
-        border-radius: 8px;
+        border-radius: 16rpx;
         min-height: 312px;
+    }
+    .title-text {
+        margin: auto;
+        font-weight: bold;
+        margin-bottom: 8rpx;
+        color: #aaa;
+        text-align: center;
+        font-size: 14px;
     }
 </style>

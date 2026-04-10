@@ -47,16 +47,20 @@
 
 
 
-
-            <radio-group @change="radioChange">
+            <t-radio-group
+                :value="currentPayMethod"
+                :default-value="currentPayMethod"
+                borderless
+                placement="right"
+                @change="radioChange"
+            >
                 <view class="pay-wrap">
                     <view class="pay-method" v-for="(item, index) in payTypeList" :key="item.value">
-                        <view class="flex-between pay-cell">
+                        <view class="flex-between pay-cell" @tap="currentPayMethod = item.value">
                             <image style="width: 40rpx; height: auto" :src="$getImg(item.iconImg)" mode="widthFix"></image>
                             <view class="flex-between cell-right">
                                 <view class="pay-title">{{ item.title }}</view>
-                                <radio activeBackgroundColor="#f00057" class="check-radio" :value="item.value"
-                                    :checked="currentPayMethod === item.value" />
+                                <t-radio class="check-radio" :value="item.value" />
                             </view>
                         </view>
                         <view class="fen-qi"
@@ -65,14 +69,12 @@
                         </view>
                     </view>
                 </view>
-            </radio-group>
+            </t-radio-group>
         </view>
-        <view class="operation-btn2 operation-btn-top">
-            <view style="width: 100%">
-                <view class="flex-center sure-btn" @tap="sureTap">确认支付（¥
-                    {{ moneyFormatter(realAmt ? realAmt : pageInfo.amount) }}）
-                </view>
-            </view>
+        <view class="operation-btn2">
+            <t-button theme="primary" variant="base" size="large" block @click="sureTap">
+                确认支付（¥{{ moneyFormatter(realAmt ? realAmt : pageInfo.amount) }}）
+            </t-button>
         </view>
     </view>
 </template>
@@ -137,7 +139,7 @@
             // this.options = options
             this.pageInfo = {
                 amount: Number(options.amount),
-                remark: options.remark || '备注',
+                remark: options.remark || '',
             }
             const qrcode = uni.getStorageSync('qrcode_no')
             this.getQrcodeInfo(qrcode || 'SE00001602')
@@ -268,7 +270,9 @@
                 }
             },
             radioChange(e) {
-                this.currentPayMethod = e.detail.value
+                this.currentPayMethod = (e && typeof e === 'object')
+                    ? (e.value ?? e?.detail?.value)
+                    : e
                 console.log('this.currentPayMethod ---->', this.currentPayMethod)
             },
             clickFenQi(value) {
@@ -571,22 +575,21 @@
     }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     .installmen-pay {
+        padding: 32rpx;
+        box-sizing: border-box;
         .logo-img {
             width: 160rpx;
             margin-left: 40rpx;
         }
 
         .content-page {
-            margin: 30rpx;
-            margin-top: 30rpx;
-            margin-bottom: 100px;
             background: $uni-white;
-            padding: 6px;
-            border-radius: 8px;
+            padding: 4rpx;
+            border-radius: 16rpx;    
             min-height: 600rpx;
-            // min-height: 720rpx;
+            margin-bottom: 120rpx;
         }
 
         .pay-wrap {
@@ -618,7 +621,6 @@
         }
 
         .sure-btn {
-            margin: -30rpx 30rpx 0rpx 30rpx;
             background-color: $uni-primary;
             height: 110rpx;
             line-height: 110rpx;
@@ -636,11 +638,6 @@
             justify-content: center;
             align-items: center;
         }
-
-        .operation-btn-top {
-            // padding-top: 200rpx;
-        }
-
         .pay-time {
             margin-top: 20rpx;
             font-size: 24rpx;

@@ -90,6 +90,8 @@
 
 <style lang="less">
     .page-config {
-      
+        .page-container{
+            padding-top: 0.5px;
+        }
     }
 </style>
