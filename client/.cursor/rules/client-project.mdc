@@ -1,0 +1,43 @@
+---
+description: client 项目架构与模块划分（uni-app / Vue3 / Pinia / TDesign）
+alwaysApply: true
+---
+
+# 项目架构（client）
+
+## 技术栈
+
+- **uni-app（Vue 3，`createSSRApp`）** + **Pinia**
+- UI：**@tdesign/uniapp**（`pages.json` 中 `easycom.custom` 声明 `t-*`，模板直接用组件标签，通常不需要手写 import）
+- 多端：以 **MP-WEIXIN / H5 / APP-PLUS / MP-ALIPAY** 为主（写代码时默认需要可编译通过，多端差异用 `#ifdef/#ifndef`）
+
+## 目录与模块
+
+| 区域 | 职责 |
+|------|------|
+| `pages/` | 主包页面（与 `tabBar` 强相关，冷启动首屏由 `pages.json.pages[0]` 决定） |
+| `packageA/` / `packageB/` | 分包页面（新增页先在 `pages.json.subPackages` 注册） |
+| `components/` | 全局可复用业务组件；跨分包复用优先放这里 |
+| `common/request/` | 请求与环境配置（`config.js`、`loading.js`、`session.js`） |
+| `common/request/apis/index.js` | **API 语义层**：集中维护 `$apis.xxx.yyy()`，页面不要散落 URL |
+| `common/utils/` | 通用工具与 mixins（`common.js`、`tool.js`、`ui.js`、`location.js` 等） |
+| `stores/` | Pinia stores（例如 `user.js`） |
+| `static/` | 静态资源（注意资源体积与可直接访问性） |
+| `uni_modules/` | 第三方 uni 模块 |
+| `unpackage/` | 编译产物（不要手改） |
+
+## 全局注入（`main.js`）
+
+在页面/组件中通过 `this` 使用：
+
+- `this.$api`：底层请求对象
+- `this.$apis`：语义化接口层（由 `common/request/apis/index.js` 生成）
+- `this.$tool` / `this.$common`：通用工具
+- `this.$toast` / `this.$showModal`：UI 交互
+- `this.$dayjs`、`this.$baseUrl`、`this.$fileUrl`、`this.$pages`
+
+## 协作原则
+
+- 改动紧贴需求；不顺带大重构、不删无关注释
+- 新增接口优先补到 **`common/request/apis/index.js`**，页面只调用 `$apis`（见 `request-layer` 规则）
+- 页面开发优先复用 `common/utils` 现成能力，避免重复封装（见 `common-utils-reuse` 规则）

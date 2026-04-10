@@ -1,0 +1,23 @@
+---
+description: 页面开发与联调时复用 common/utils，避免重复实现同类函数
+globs:
+  - "**/*.vue"
+  - "common/utils/**/*"
+alwaysApply: false
+---
+
+# 工具复用（client）
+
+## 原则
+
+- `common/utils` 里已有能力，页面与联调代码里不要重写一份（格式化、节流防抖、toast/modal、定位、图片地址拼装等）。
+- 页面内优先用全局挂载：`this.$tool`、`this.$common`、`this.$toast`、`this.$showModal`；非组件上下文再 `import` 对应模块。
+
+## 开发前（写页面 / 接字段前）
+
+- 先在 `common/utils/` 里查是否已有：`getImg`、`toast`、`showModal`、`location`、`debounce`、`throttle` 等关键词。
+
+## 确实缺一个新能力时
+
+- 加到 `common/utils` 合适模块里，再在页面统一通过 `$tool/$common` 或 `import` 使用。
+- 不要只在某个页面里新增一段可被复用的“私有工具函数”并到处复制粘贴。

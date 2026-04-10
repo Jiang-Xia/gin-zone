@@ -182,6 +182,13 @@
 					}
 				},
 				{
+					"path": "pages/my/otherFeatures",
+					"style": {
+						"navigationBarTitleText": "其他功能",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
 					"path": "pages/my/about",
 					"style": {
 						"navigationBarTitleText": "关于",

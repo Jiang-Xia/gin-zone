@@ -1,0 +1,26 @@
+---
+description: 请求与 API 语义层：$api / $apis 调用约定（集中维护 endpoint）
+globs: "common/request/**/*"
+alwaysApply: false
+---
+
+# 请求层与 API 语义层（client）
+
+## 单一入口：`$apis`
+
+- 业务页面/组件调用接口时，优先使用 **`this.$apis.xxx.yyy(...)`**。
+- 新增/调整接口路径与参数组织，集中修改 **`common/request/apis/index.js`**（`createApis(api)`），不要在页面里散落 URL 字符串。
+
+## `$api` 的定位
+
+- `this.$api` 是底层请求对象（`common/request/api.commercial.js`），用于封装 `get/post/patch/del` 等。
+- 页面层一般不直接调用 `$api.get('/path')`；若确有例外，需保证同类能力没有 `$apis` 入口且改动范围可控。
+
+## 成功返回体与防御式代码
+
+- 当接口文档/联调已确认返回结构稳定时，页面成功路径不要满屏 `res?.`、`String(...).trim()` 之类的逐字段兜底。
+- 真正“可能为空”的展示字段，用 `|| ''` / 既有 util 处理即可；输入/第三方回调等不稳定来源再做校验。
+
+## 配置与多端
+
+- 环境、域名、ws 地址、加解密开关等在 `common/request/config.js` 维护；改请求行为前先读现有实现与注释（多端差异也在这里体现）。

@@ -1,0 +1,26 @@
+---
+description: pages.json 注册、分包与条件编译约定
+globs: "pages.json"
+alwaysApply: false
+---
+
+# pages.json（client）
+
+## 主包 `pages`
+
+- `pages` 数组第一项为应用启动页；调整顺序会改变冷启动首屏，改动前确认路由设计。
+- `tabBar.list[].pagePath` 对应的页面必须在主包 `pages` 里注册且路径一致。
+
+## 分包 `subPackages`
+
+- 每个分包的 `root`（如 `packageA`、`packageB`）须与磁盘目录一致；其下 `pages[].path` 为相对 `root` 的路径，**不要**重复写 `packageA/` 前缀。
+- 新增页面：先在对应 `root` 的 `pages` 数组里追加，`path` 与 `.vue` 文件路径一致，否则运行时报错或白屏。
+
+## 条件编译
+
+- `pages.json` 内有 `#ifdef/#ifndef` 块：增删页面时注意目标端是否会被编译进去，避免某端缺页。
+- 修改 `#ifdef` 边界后，至少对 MP-WEIXIN 与 H5 做一次冒烟编译/运行。
+
+## easycom
+
+- `easycom.custom` 已配置 `^t-(.*)` → `@tdesign/uniapp/$1/$1.vue`；业务组件与 `uni_modules` 组件通常不必在这里逐条配置。

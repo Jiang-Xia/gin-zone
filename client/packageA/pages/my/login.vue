@@ -309,10 +309,6 @@ export default {
 		margin-top: 22rpx;
 	}
 
-	::v-deep .field-prefix {
-		flex: none;
-	}
-
 	.field-row {
 		display: flex;
 		align-items: center;
@@ -329,27 +325,6 @@ export default {
 		margin-top: 32rpx;
 	}
 
-	.field-input-wrap {
-		flex: 1;
-		min-width: 0;
-		background: transparent;
-	}
-
-	.field-input {
-		flex: 1;
-		min-width: 0;
-		background: transparent;
-	}
-
-	.field-suffix {
-		flex: none;
-	}
-
-	.submit-btn {
-		margin-top: 32rpx;
-		border-radius: 999rpx;
-		overflow: hidden;
-	}
 
 	.helper-area {
 		margin-top: 22rpx;
@@ -374,4 +349,36 @@ export default {
 		color: #999;
 		font-size: 22rpx;
 	}
+	.auth-page {
+		/* t-class* 挂到 TDesign 内部节点时，在 scoped 中需要 deep 才能命中 */
+		:deep(.t-icon.field-prefix) {
+			flex: none;
+		}
+
+		:deep(.t-input.field-input-wrap) {
+			flex: 1;
+			min-width: 0;
+			background: transparent;
+		}
+
+		:deep(.t-input__input.field-input) {
+			flex: 1;
+			min-width: 0;
+			background: transparent;
+		}
+
+		:deep(.t-icon.field-suffix) {
+			flex: none;
+		}
+
+		:deep(.t-button.submit-btn) {
+			margin-top: 32rpx;
+			border-radius: 999rpx !important;
+			overflow: hidden !important;
+		}
+	}
+</style>
+
+<style lang="scss">
+
 </style>

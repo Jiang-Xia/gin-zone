@@ -5,7 +5,7 @@
                 <t-cell title="个人资料" arrow @click="goProfileEdit" />
                 <t-cell title="账号安全" arrow @click="goSecurity" />
                 <t-cell title="通知设置" arrow @click="goNoticeSetting" />
-                <t-cell title="图表页面" arrow @click="goChart" />
+                <t-cell title="其他功能" arrow @click="goOtherFeatures" />
                 <t-cell title="清理缓存" arrow @click="clearCache" />
                 <t-cell title="关于" arrow @click="goAbout" />
                 <t-cell title="检查更新" arrow @click="checkUpdate" />
@@ -85,9 +85,9 @@ export default {
         goNoticeSetting() {
             this.$toast({ title: '功能开发中', icon: 'none' })
         },
-        goChart() {
+        goOtherFeatures() {
             uni.navigateTo({
-                url: '/packageB/pages/chart/chart',
+                url: '/packageA/pages/my/otherFeatures',
             })
         },
         clearCache() {

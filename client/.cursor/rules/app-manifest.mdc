@@ -1,0 +1,18 @@
+---
+description: App.vue 应用级逻辑与 manifest 多端配置（权限/端能力/全局样式）
+globs:
+  - "App.vue"
+  - "manifest.json"
+alwaysApply: false
+---
+
+# App.vue（client）
+
+- `onLaunch/onShow/onHide` 仅放**应用级**一次性逻辑（初始化、端能力同步、版本更新、推送/长连接等），避免在这里堆具体业务页流程。
+- 端能力差异必须用 `#ifdef` 包裹（例如 H5/APP 的 tabbar 中间按钮、小程序能力等），避免另一端执行失败。
+- 全局样式优先放在 `App.vue` 的 `<style>` 引入/定义；`uni.scss` 更偏向变量与少量全局配置（避免写大量公共类导致每页注入膨胀）。
+
+# manifest.json（client）
+
+- 小程序端 `appid`、`permission/requiredPrivateInfos`、`urlCheck` 等与审核/合规/线上行为强相关，修改需谨慎并与业务目标一致。
+- `mp-weixin`、`mp-alipay`、`h5`、`app-plus` 配置改动会影响打包与运行能力，尽量避免复制粘贴无关配置造成误导。

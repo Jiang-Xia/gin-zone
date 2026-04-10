@@ -1,0 +1,22 @@
+---
+description: Pinia stores（user 等）与登录态/会话管理约定
+globs: "stores/**/*"
+alwaysApply: false
+---
+
+# Pinia Store 约定（client）
+
+## 结构
+
+- 使用 `defineStore`；store 名称与文件职责一致（如 `stores/user.js`）
+- 会话/落盘相关能力统一走 `common/request/session.js`（避免页面到处散落 `uni.setStorageSync` key）
+
+## 在页面中使用
+
+- `import { useUserStore } from '@/stores/user.js'`
+- 登录态入口校验优先用 `userStore.isLoggedIn` / `userStore.userId` 等 getters
+- 退出登录统一调用 `userStore.logout()`（内部负责清会话与 store 状态）
+
+## 读取数据（避免过度防御）
+
+- 在“已登录页/已完成 hydrate”的业务路径中，从 store 取数时不要对每个字段都写 `?.`、`trim`、空值兜底；把“是否允许进入页面”的判断放到入口（`onLoad`/路由守卫/统一校验）而不是散落在每行业务代码里。

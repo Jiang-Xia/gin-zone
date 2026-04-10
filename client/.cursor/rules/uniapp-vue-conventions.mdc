@@ -1,0 +1,31 @@
+---
+description: uni-app Vue 页面与组件约定（多端、导航、TDesign、easycom）
+globs: "**/*.vue"
+alwaysApply: false
+---
+
+# Vue / 页面约定（client）
+
+## 路由与分包
+
+- 跳转到分包页面使用**完整路径**，例如：`/packageA/pages/.../...`
+- 主包与分包对应以 `pages.json` 为准；**新增页面先注册再开发**
+
+## 导航与多端
+
+- 全局 `globalStyle` 里多数端启用 `navigationStyle: custom`：页面标题/返回等遵循现有页面实现，不要混用系统导航与自绘导航
+- 端能力差异用 `#ifdef MP-WEIXIN` / `#ifdef H5` / `#ifdef APP-PLUS` 等包裹，避免另一端编译失败
+
+## 写法风格
+
+- Options API / Composition API 以“同目录保持一致”为优先
+- 路径别名统一用 `@/` 指向项目根
+
+## UI 组件（easycom）
+
+- **TDesign**：`pages.json.easycom.custom` 已声明 `t-*`，模板里直接写 `t-button`、`t-cell` 等，通常**无需 import**
+- 业务组件与 `uni_modules`：遵循 uni-app 组件解析规则，能 easycom 直用的组件不要在 `<script>` 里重复 `import`（与同目录文件保持一致）
+
+## API 使用约定
+
+- 在 uni-app 源码中：优先 `uni.*`，不要直接调用 `wx.*`（确需平台 API 时也必须加条件编译，并优先寻找 `uni.*` 等价实现）
