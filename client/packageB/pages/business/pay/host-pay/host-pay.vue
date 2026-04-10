@@ -81,7 +81,7 @@
             </view>
         </view>
         <view class="operation-btn2">
-            <t-button class="btn-box" theme="primary" variant="base" block @click="sureTap">
+            <t-button t-class="btn-box" theme="primary" variant="base" block @click="sureTap">
                 确认支付（¥{{ $tool.moneyFormatter2(qrCodeInfo.userAmount) }}）
             </t-button>
         </view>

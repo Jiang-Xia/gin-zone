@@ -3,7 +3,7 @@
 		<view class="container">
 			<uni-section title="群聊信息" type="line">
 				<view class="form-wrap">
-					<t-form ref="valiForm" :data="baseFormData" :rules="rules">
+					<t-form ref="valiForm" :data="baseFormData" :rules="rules" label-align="left">
 						<t-form-item name="avatar">
 							<!-- 头像上传 -->
 							<t-upload
@@ -25,6 +25,7 @@
 								type="text"
 								placeholder="请输入群名称"
 								clearable
+								borderless
 							/>
 						</t-form-item>
 
@@ -34,6 +35,7 @@
 								type="text"
 								placeholder="请输入群介绍"
 								clearable
+								borderless
 							/>
 						</t-form-item>
 
@@ -42,13 +44,19 @@
 								v-model:value="baseFormData.notice"
 								placeholder="请输入群公告"
 								autosize
+								borderless
+								indicator
+								:maxlength="500"
+								style="width: 100%;"
 							/>
 						</t-form-item>
 					</t-form>
 
-					<t-button theme="primary" variant="base" block class="submit-btn" @click="submit">
-						提交
-					</t-button>
+					<view class="submit-btn">
+						<t-button theme="primary" variant="base" block @click="submit">
+							提交
+						</t-button>
+					</view>
 				</view>
 			</uni-section>
 		</view>
@@ -126,13 +134,16 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+	.container {
+		margin-top: 16rpx;
+	}
 	.form-wrap {
-		padding: 15px;
+		// padding-top: 24rpx;
 		background-color: $uni-white;
 	}
 
 	.submit-btn {
-		margin-top: 20rpx;
+		padding: 32rpx;
 	}
 </style>

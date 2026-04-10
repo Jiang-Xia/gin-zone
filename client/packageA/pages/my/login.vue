@@ -35,10 +35,11 @@
 
 					<view class="form-wrap">
 						<view class="field-row">
-							<t-icon class="field-prefix" name="user" size="22" color="#f00057" />
+							<t-icon t-class="field-prefix" name="user" size="22" color="#f00057" />
 							<t-input
 								v-model:value="form.userName"
-								class="field-input"
+								t-class="field-input-wrap"
+								t-class-input="field-input"
 								type="text"
 								:maxlength="11"
 								clearable
@@ -48,10 +49,11 @@
 						</view>
 
 						<view class="field-row field-row--gap">
-							<t-icon class="field-prefix" name="lock-on" size="22" color="#f00057" />
+							<t-icon t-class="field-prefix" name="lock-on" size="22" color="#f00057" />
 							<t-input
 								v-model:value="form.password"
-								class="field-input"
+								t-class="field-input-wrap"
+								t-class-input="field-input"
 								:type="showPwd ? 'text' : 'password'"
 								clearable
 								placeholder="请输入密码（至少 6 位）"
@@ -59,7 +61,7 @@
 								@enter="confirm"
 							/>
 							<t-icon
-								class="field-suffix"
+								t-class="field-suffix"
 								:name="showPwd ? 'eye-slash' : 'eye'"
 								size="22"
 								color="#f00057"
@@ -68,7 +70,7 @@
 						</view>
 
 						<t-button
-							class="submit-btn"
+							t-class="submit-btn"
 							theme="primary"
 							variant="base"
 							block
@@ -307,7 +309,7 @@ export default {
 		margin-top: 22rpx;
 	}
 
-	.field-prefix {
+	::v-deep .field-prefix {
 		flex: none;
 	}
 
@@ -325,6 +327,12 @@ export default {
 
 	.field-row--gap {
 		margin-top: 32rpx;
+	}
+
+	.field-input-wrap {
+		flex: 1;
+		min-width: 0;
+		background: transparent;
 	}
 
 	.field-input {

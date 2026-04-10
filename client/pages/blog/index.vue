@@ -29,7 +29,7 @@
 		
 		<!-- 轮播图作为背景 -->
 		<view class="swiper-background">
-			<swiper class="swiper" @change="swiperChange" circular :autoplay="true" :interval="6000" :duration="500">
+			<swiper class="swiper" @change="swiperChange" circular :autoplay="false" :interval="6000" :duration="500">
 				<swiper-item v-for="(item ,index) in swiperList" :key="index">
 					<view class="swiper-item">
 						<image :src="'https://cn.bing.com/'+item.url" class="swiper-image"></image>

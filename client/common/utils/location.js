@@ -27,7 +27,7 @@ export function getCurrentAddressByLocation() {
           complete: (res) => {
             try {
               const regeocode = res.data.regeocode
-              const formattedAddress = regeocode.formatted_address
+              const formattedAddress = regeocode?.formatted_address
               resolve({
                 locationInfo,
                 formattedAddress,

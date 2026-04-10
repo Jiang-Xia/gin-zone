@@ -177,15 +177,15 @@
 <style lang="scss">
 	.moment-card-wrap {
         padding-bottom: 50px;
-        padding-right: 24rpx;
-        padding-left: 24rpx;
-        padding-top: 24rpx;
+        // padding-right: 24rpx;
+        // padding-left: 24rpx;
+        padding-top: 16rpx;
 		.moment-card {
-			padding: 16rpx 12rpx;
-			margin-bottom: 12px;
-			border-bottom: 1rpx solid $uni-border-1;
+			padding: 24rpx 32rpx;
+			margin-bottom: 16rpx;
+			// border-bottom: 1rpx solid $uni-border-1;
             background-color: $uni-white;
-            border-radius: 16rpx;
+            // border-radius: 16rpx;
 		}
 
 		.card-top {

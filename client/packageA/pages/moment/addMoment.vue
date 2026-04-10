@@ -148,8 +148,9 @@
 <style lang="scss">
     .container {
         .main-content {
+            margin-top: 16rpx;
             background-color: $uni-white;
-            padding: 18px;
+            padding: 28rpx 32rpx;
 
             .van-field {
                 padding: 18px 0;

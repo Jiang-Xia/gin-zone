@@ -122,7 +122,7 @@ export default {
 
 <style lang="scss" scoped>
 .setting-page {
-    padding-top: 24rpx;
+    margin-top: 20rpx;
 
     :deep(.t-cell-group) {
         margin: 0;

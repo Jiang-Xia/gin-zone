@@ -2,7 +2,7 @@
     <view class="profile-page">
         <view class="profile-content">
             <view class="header-bg-wrap">
-                <swiper v-if="swiperList.length" class="swiper" @change="swiperChange" circular :autoplay="true"
+                <swiper v-if="swiperList.length" class="swiper" @change="swiperChange" circular :autoplay="false"
                     :interval="6000" :duration="500">
                     <swiper-item v-for="(item ,index) in swiperList" :key="index">
                         <view class="swiper-item">
@@ -71,13 +71,13 @@
                 </view>
             </view>
             
-            <view v-if="!isLogin" class="logout-wrap">
+           <!-- <view v-if="!isLogin" class="logout-wrap">
                 <t-button :custom-style="{background: 'transparent'}" theme="primary" variant="outline" size="large" @click="login">
                     去登录
                 </t-button>
-            </view>
+            </view> -->
 
-            <view v-else class="footer-tips">
+            <view class="footer-tips">
                 <view class="footer-tips__title">今日小贴士</view>
                 <view class="footer-tips__text">在设置页可以管理账号、通知与缓存，保持应用最佳状态。</view>
             </view>
@@ -442,8 +442,8 @@
     }
 
     .profile-menu {
-        padding-bottom: 92rpx;
-
+        padding-bottom: 16rpx;
+        background-color: $uni-white;
         ::v-deep .t-cell-group {
             margin: 0;
             border-radius: 0;

@@ -2,7 +2,7 @@
     <pageConfig title="聊天" :left="false">
         <view class="container">
             <view class="tip" v-if="!defaultList.length&&!userList.length">
-                没有好友快去添加吧~
+                <noData title="没有好友快去添加吧~" :loading="false" />
             </view>
             <uni-list :border="true" v-else>
                 <!-- 默认列表 -->
@@ -21,7 +21,7 @@
                             :time="item.time" :badge-text="item.noReadMsgCount" clickable @click="clickUserItem(item)">
                         </uni-list-chat> -->
                         <view class="chat-item" @click="clickUserItem(item)">
-                            <t-image class="image-item" width="43px" height="43px" shape="circle" :src="item.avatar" />
+                            <t-image t-class="image-item" width="43px" height="43px" shape="circle" :src="item.avatar" />
                             <view class="chat-item-right">
                                 <view class="chat-item-right__top">
                                     <view class="name">
@@ -53,6 +53,8 @@
 </template>
 
 <script>
+    import noData from '@/components/noData/noData.vue'
+
     export default {
         data() {
             return {
@@ -94,7 +96,9 @@
                 ],
             }
         },
-        components: {},
+        components: {
+            noData,
+        },
         onPullDownRefresh() {
             this.init()
         },
@@ -246,6 +250,7 @@
     /* #endif */
 
     .container {
+        margin-top: 16rpx;
         font-size: 14px;
         min-height: 35vh;
 

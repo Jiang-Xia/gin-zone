@@ -1,5 +1,5 @@
 <template>
-    <t-input class="ca-input" align="right" :type="type" :placeholder="!readonly?placeholder:''" :readonly="readonly"
+    <t-input t-class="ca-input" align="right" :type="type" :placeholder="!readonly?placeholder:''" :readonly="readonly"
         :disabled="disabled" :maxlength="maxlength" :borderless="borderless" :value="innerValue" @change="change" @blur="blur">
         <template #label>
             <view :class="required?'sr-required':''">

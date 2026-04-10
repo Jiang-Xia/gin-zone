@@ -180,7 +180,7 @@
 
 <style lang="scss" scoped>
 	.container {
-		padding-top: 24rpx;
+		margin-top: 16rpx;
 		.uni-section{
 			border-radius: 8rpx;
 		}

@@ -81,7 +81,7 @@
 
 <style lang="scss">
 	.about-page {
-		margin-top: 24rpx;
+		margin-top: 16rpx;
 		height: 100%;
 		box-sizing: border-box;
 		background: #fff;
