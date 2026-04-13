@@ -1,6 +1,7 @@
 ---
 description: client 项目架构与模块划分（uni-app / Vue3 / Pinia / TDesign）
-alwaysApply: true
+globs: client/**/*
+alwaysApply: false
 ---
 
 # 项目架构（client）

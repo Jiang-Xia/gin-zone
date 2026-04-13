@@ -1,0 +1,36 @@
+---
+description: 前后端接口协作契约（client 请求层 + server 接口层）
+globs: "{client/common/request/**/*.js,server/router/**/*.go,server/app/controller/**/*.go,server/pkg/response/**/*.go,server/docs/**/*.go}"
+alwaysApply: false
+---
+
+# 前后端接口协作规则
+
+## 变更联动
+
+- 后端新增或修改接口（路径、method、参数、返回结构）时，必须同步检查并更新前端 `common/request` 的对应 API 方法。
+- 前端新增请求时，优先复用 `$apis` 语义层，不在页面中散落硬编码 URL。
+- 接口变更后，Swagger 注释/文档与前端调用保持一致。
+
+## 鉴权与加密协同
+
+- 鉴权接口统一使用 `Authorization: Bearer <token>`。
+- 涉及国密链路时，前端按约定传 `Jx-Security` 与 `Jx-SessionId`。
+- 后端返回 `cryptoSessionExpired=true` 时，前端必须触发重新签到或会话重建流程。
+
+## 响应结构约定
+
+- 后端统一通过 `response.Success/Fail` 返回结构，保持 `code/msg/data/encrypt` 一致。
+- 前端请求层统一解析响应，不在页面中重复写分散的错误码判断逻辑。
+- 非兼容字段变更必须先在前端适配后再合并，避免线上页面崩溃。
+
+## 安全与越权
+
+- 后端不信任前端传入的身份字段（如 `userId`），以 JWT 上下文用户为准。
+- 前端不依赖可伪造字段做权限判断，权限以服务端响应为准。
+
+## 提交前检查
+
+- 改了 server 接口：检查 client API 映射与页面调用。
+- 改了 client 请求参数：检查 server 绑定结构体与校验规则。
+- 改了认证或加密逻辑：至少回归登录、鉴权接口、聊天/敏感接口调用链路。

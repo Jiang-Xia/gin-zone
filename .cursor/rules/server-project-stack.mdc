@@ -1,0 +1,29 @@
+---
+description: server 项目技术栈与分层约束（Gin/Gorm/Redis/JWT/Swagger）
+globs: server/**/*.go
+alwaysApply: false
+---
+
+# Server 技术栈与分层规范
+
+## 技术栈基线
+
+- Web 框架使用 Gin，路由在 `server/router` 统一注册。
+- 数据访问使用 Gorm，数据库入口统一通过 `server/app/database`。
+- 缓存使用 Redis（go-redis），不要在业务层重复初始化客户端。
+- 鉴权使用 JWT 中间件，用户身份从 Gin Context 获取。
+- 对外接口文档使用 Swagger 注释，新增接口需同步注释。
+
+## 分层职责
+
+- `controller`：只做参数校验、鉴权结果读取、调用 service、返回 response。
+- `service`：承载业务逻辑和数据组合，不直接处理 HTTP 细节。
+- `model`：定义数据结构与 ORM 映射，避免业务逻辑堆积。
+- `middleware`：处理横切能力（鉴权、日志、加密、跨域、代理）。
+- `pkg/response`：统一响应格式，controller 不直接拼装裸 JSON 结构。
+
+## 开发约束
+
+- 新功能优先复用现有 `pkg` 能力，避免重复造轮子。
+- 不在 controller 中写复杂 SQL 或多表聚合逻辑，放入 service。
+- 变更尽量局部、可回滚，不顺带重构无关模块。

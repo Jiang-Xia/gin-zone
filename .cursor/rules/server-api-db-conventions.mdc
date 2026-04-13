@@ -1,0 +1,26 @@
+---
+description: server 接口与数据库编码约定（参数校验、响应、Gorm）
+globs: server/**/*.go
+alwaysApply: false
+---
+
+# Server 接口与数据库约定
+
+## 接口层约定
+
+- controller 入参统一使用 `ShouldBindJSON`/`ShouldBind` 并处理校验错误。
+- 成功/失败响应使用 `response.Success`/`response.Fail`，保持结构一致。
+- 避免在 controller 中做复杂数据拼装，交给 service 层处理。
+- 新接口需补充 Swagger 注释（Summary/Param/Success/Router/Security）。
+
+## 数据库约定
+
+- Gorm 查询必须使用参数化条件，禁止拼接 SQL 字符串。
+- 写操作（创建、更新、删除）后必须检查 `Error` 并返回可观测错误。
+- 涉及多步写操作时优先考虑事务，避免部分成功导致脏数据。
+- 分页查询应统一 page/pageSize 处理，避免在多个模块重复散写。
+
+## 可维护性
+
+- 新增能力时，先搜索是否已有同类 service/util 可复用。
+- 代码注释聚焦“为什么”，避免解释显而易见的语句行为。

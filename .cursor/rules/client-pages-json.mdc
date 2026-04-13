@@ -1,6 +1,6 @@
 ---
 description: pages.json 注册、分包与条件编译约定
-globs: "pages.json"
+globs: client/pages.json
 alwaysApply: false
 ---
 

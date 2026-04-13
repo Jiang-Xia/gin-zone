@@ -1,8 +1,8 @@
 ---
 description: App.vue 应用级逻辑与 manifest 多端配置（权限/端能力/全局样式）
 globs:
-  - "App.vue"
-  - "manifest.json"
+  - client/App.vue
+  - client/manifest.json
 alwaysApply: false
 ---
 

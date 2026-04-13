@@ -1,6 +1,6 @@
 ---
 description: 请求与 API 语义层：$api / $apis 调用约定（集中维护 endpoint）
-globs: "common/request/**/*"
+globs: client/common/request/**/*
 alwaysApply: false
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: JS 写法偏好（数值、判空），与现有页面脚本一致
-globs: "**/*.js"
+globs: client/**/*.js
 alwaysApply: false
 ---
 

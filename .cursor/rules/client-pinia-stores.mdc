@@ -1,6 +1,6 @@
 ---
 description: Pinia stores（user 等）与登录态/会话管理约定
-globs: "stores/**/*"
+globs: client/stores/**/*
 alwaysApply: false
 ---
 

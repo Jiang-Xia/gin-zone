@@ -1,8 +1,8 @@
 ---
 description: 页面开发与联调时复用 common/utils，避免重复实现同类函数
 globs:
-  - "**/*.vue"
-  - "common/utils/**/*"
+  - client/**/*.vue
+  - client/common/utils/**/*
 alwaysApply: false
 ---
 
