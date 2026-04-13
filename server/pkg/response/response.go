@@ -53,8 +53,12 @@ func Success(c *gin.Context, data interface{}, msg string) bool {
 	}
 	err := crypto(c, &res)
 	if err != nil {
+		res.Code = tip.AuthCryptoSessionExpire
 		res.Msg = "报文加密失败"
-		res.Data = ""
+		res.Data = gin.H{
+			"cryptoSessionExpired": true,
+		}
+		res.Encrypt = ""
 	}
 
 	if config.App.Env == "dev" {
@@ -74,8 +78,12 @@ func Fail(c *gin.Context, msg string, data interface{}) bool {
 
 	err := crypto(c, &res)
 	if err != nil {
+		res.Code = tip.AuthCryptoSessionExpire
 		res.Msg = "报文加密失败"
-		res.Data = ""
+		res.Data = gin.H{
+			"cryptoSessionExpired": true,
+		}
+		res.Encrypt = ""
 	}
 	log.Infof("失败响应数据: %+v", res)
 	c.JSON(http.StatusOK, res)

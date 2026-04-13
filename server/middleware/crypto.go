@@ -11,6 +11,7 @@ import (
 
 	"gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"github.com/gin-gonic/gin"
 	"github.com/tjfoc/gmsm/sm4"
 )
@@ -19,6 +20,15 @@ var ctx = context.Background()
 
 type encryptBody struct {
 	Content string `json:"content"`
+}
+
+func writeBizError(c *gin.Context, code int, msg string, data interface{}) {
+	c.JSON(http.StatusOK, gin.H{
+		"code":    code,
+		"msg":     msg,
+		"data":    data,
+		"encrypt": "",
+	})
 }
 
 // GMSMMiddleware 国密中间件
@@ -37,7 +47,7 @@ func GMSMMiddleware() gin.HandlerFunc {
 			originBody, err := io.ReadAll(c.Request.Body)
 			if err != nil {
 				log.Error("body读取失败: ", err)
-				c.JSON(http.StatusBadRequest, gin.H{"error": "body读取失败"})
+				writeBizError(c, tip.InvalidParams, "body读取失败", nil)
 				c.Abort()
 				return
 			}
@@ -46,7 +56,7 @@ func GMSMMiddleware() gin.HandlerFunc {
 			body := &encryptBody{}
 			if err := json.Unmarshal(originBody, &body); err != nil {
 				log.Error("解析加密请求体失败: ", err)
-				c.JSON(http.StatusBadRequest, gin.H{"error": "解析加密请求体失败"})
+				writeBizError(c, tip.InvalidParams, "解析加密请求体失败", nil)
 				c.Abort()
 				return
 			}
@@ -56,23 +66,26 @@ func GMSMMiddleware() gin.HandlerFunc {
 			sm4Key, err := database.Redis().Get(ctx, "sessionId:"+sessionId).Result()
 			if err != nil {
 				log.Error("获取SM4密钥失败: ", err)
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "获取SM4密钥失败"})
+				writeBizError(c, tip.AuthCryptoSessionExpire, "加密会话失效，请重新签到", gin.H{
+					"cryptoSessionExpired": true,
+				})
 				c.Abort()
 				return
 			}
-			log.Infof("sm4Key: %s", sm4Key)
 
 			sm4KeyBytes, err := hex.DecodeString(sm4Key)
 			if err != nil {
 				log.Error("密钥格式错误: ", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "sm4Key 转化失败"})
+				writeBizError(c, tip.AuthCryptoSessionExpire, "加密会话失效，请重新签到", gin.H{
+					"cryptoSessionExpired": true,
+				})
 				c.Abort()
 				return
 			}
 			contentBytes, err := hex.DecodeString(body.Content)
 			if err != nil {
 				log.Error("密文转化失败: ", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "密文转化失败"})
+				writeBizError(c, tip.InvalidParams, "密文转化失败", nil)
 				c.Abort()
 				return
 			}
@@ -80,7 +93,9 @@ func GMSMMiddleware() gin.HandlerFunc {
 			decryptedData, err := sm4.Sm4Ecb(sm4KeyBytes, contentBytes, false)
 			if err != nil {
 				log.Error("解密失败: ", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "解密失败"})
+				writeBizError(c, tip.AuthCryptoSessionExpire, "加密会话失效，请重新签到", gin.H{
+					"cryptoSessionExpired": true,
+				})
 				c.Abort()
 				return
 			}
@@ -103,6 +118,7 @@ func GMSMMiddleware() gin.HandlerFunc {
 			c.Request.Header.Set("Content-Type", "application/json")
 			latency := time.Since(start)
 			log.Infof("解密报文耗时: %s", latency)
+			c.Next()
 
 		} else {
 			c.Next()

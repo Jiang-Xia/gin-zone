@@ -18,12 +18,18 @@
         <view class="page-container">
             <slot></slot>
         </view>
+        <global-modal ref="globalModalRef" />
     </view>
 </template>
 
 <script>
+    import GlobalModal from '@/components/global/GlobalModal.vue'
+    import { registerCustomModalOpener } from '@/common/utils/ui.js'
     export default {
         name: "pageConfig",
+        components: {
+            GlobalModal,
+        },
         props: {
             right: {
                 type: Boolean,
@@ -71,6 +77,24 @@
               frontColor:'#000000'
             });
             // #endif
+        },
+        mounted() {
+            registerCustomModalOpener((options) => {
+                const modalRef = this.$refs.globalModalRef
+                if (!modalRef || typeof modalRef.open !== 'function') {
+                    return new Promise((resolve, reject) => {
+                        uni.showModal({
+                            ...(options || {}),
+                            success: resolve,
+                            fail: reject,
+                        })
+                    })
+                }
+                return modalRef.open(options)
+            })
+        },
+        beforeUnmount() {
+            registerCustomModalOpener(null)
         },
         methods:{
             clickLeft(){

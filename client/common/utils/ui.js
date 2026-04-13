@@ -7,6 +7,8 @@ const DEFAULT_MODAL_OPTIONS = {
   cancelColor: '#999999',
 }
 
+let customModalOpener = null
+
 const DEFAULT_TOAST_OPTIONS = {
   icon: 'none',
   duration: 2000,
@@ -25,10 +27,24 @@ function normalizeModalArgs(arg1, arg2) {
 
 export function showModal(arg1, arg2) {
   const options = normalizeModalArgs(arg1, arg2)
+  const mergedOptions = {
+    ...DEFAULT_MODAL_OPTIONS,
+    ...options,
+  }
+  if (customModalOpener) {
+    return customModalOpener(mergedOptions)
+      .then((res) => {
+        options?.success?.(res)
+        return res
+      })
+      .catch((err) => {
+        options?.fail?.(err)
+        throw err
+      })
+  }
   return new Promise((resolve, reject) => {
     uni.showModal({
-      ...DEFAULT_MODAL_OPTIONS,
-      ...options,
+      ...mergedOptions,
       success: (res) => {
         options?.success?.(res)
         resolve(res)
@@ -39,6 +55,10 @@ export function showModal(arg1, arg2) {
       },
     })
   })
+}
+
+export function registerCustomModalOpener(opener) {
+  customModalOpener = typeof opener === 'function' ? opener : null
 }
 
 function normalizeToastArgs(arg1, arg2) {

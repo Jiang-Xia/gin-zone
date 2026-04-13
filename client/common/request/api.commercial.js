@@ -28,6 +28,17 @@ function showToastAfterLoading(options) {
   }, 0)
 }
 
+// 会话失效专用错误名：用于触发自动重签并重试
+const ERR_CRYPTO_SESSION_EXPIRED = 'ERR_CRYPTO_SESSION_EXPIRED'
+// 配置上的一次重试标记，避免死循环
+const CRYPTO_RETRIED_FLAG = '__cryptoRetried'
+// 仅这些方法会对请求体做加密
+const CRYPTO_BODY_METHODS = ['POST', 'PUT', 'PATCH']
+// 后端约定成功码
+const SUCCESS_CODES = [0, 200]
+// 后端约定：加密会话失效（server/pkg/tip/code.go）
+const CRYPTO_SESSION_EXPIRE_CODE = 20108
+
 // 日志打印时对 Authorization 做脱敏，避免把完整 token 打到控制台
 export class CommercialApi {
   /** @type {Promise<void> | null} 并发 signIn 复用同一请求 */
@@ -44,15 +55,26 @@ export class CommercialApi {
     return userStore.token || ''
   }
 
+  // ---------------------------
+  // URL & crypto strategy
+  // ---------------------------
+  isSignInUrl(url) {
+    return typeof url === 'string' && url.includes('/common/signIn')
+  }
+
+  isAbsoluteUrl(url) {
+    return typeof url === 'string' && url.indexOf('http') === 0
+  }
+
   /**
    * 与 restful 一致：仅相对路径走 baseUrl + 加密时，才需要先 signIn。
    * 自定义 config.baseUrl、绝对 URL、以及 /common/signIn 本身不经过此处。
    */
   needsCryptoSession(url, config = {}) {
     if (!this.shouldOpenCrypto()) return false
-    if (typeof url === 'string' && url.includes('/common/signIn')) return false
+    if (this.isSignInUrl(url)) return false
     if (config.baseUrl) return false
-    if (typeof url === 'string' && url.indexOf('http') === 0) return false
+    if (this.isAbsoluteUrl(url)) return false
     return true
   }
 
@@ -65,85 +87,161 @@ export class CommercialApi {
     return this.signIn()
   }
 
-  // 转化 rest 风格 api：把 "/path/{id}" 里的 "{id}" 替换成 data[id]
-  restful(url, data = {}, config = {}) {
+  // 结构化判定：后端返回明确 code/data 标识会话失效
+  isCryptoSessionExpiredBody(body) {
+    if (!body) return false
+    const code = Number(body?.code)
+    const flag = body?.data?.cryptoSessionExpired === true
+    return code === CRYPTO_SESSION_EXPIRE_CODE || flag
+  }
+
+  // 创建“会话失效”错误对象，统一错误结构
+  buildSessionExpiredError(extra = {}) {
+    return {
+      name: ERR_CRYPTO_SESSION_EXPIRED,
+      ...extra,
+    }
+  }
+
+  // 判定某个错误是否为“会话失效”
+  isSessionExpiredError(err) {
+    return err?.name === ERR_CRYPTO_SESSION_EXPIRED
+  }
+
+  // 默认仅对幂等请求自动重放；写请求需显式允许以避免重复副作用
+  shouldAutoReplayOnSessionExpired(config = {}) {
+    if (config?.allowReplayOnSessionExpired === true) return true
+    const method = String(config?.method || 'GET').toUpperCase()
+    return ['GET', 'HEAD', 'OPTIONS'].includes(method)
+  }
+
+  // 执行 task；若会话失效则 clear + signIn 后仅重试一次
+  async withOneRetryOnSessionExpired(task, { url, config, retry } = {}) {
+    try {
+      return await task()
+    } catch (err) {
+      if (enableRequestCryptoDebugLog) {
+        console.log('[crypto-retry] task failed:', {
+          url,
+          errorName: err?.name,
+          alreadyRetried: !!config?.[CRYPTO_RETRIED_FLAG],
+        })
+      }
+      const canRetry =
+        this.needsCryptoSession(url, config) &&
+        !config?.[CRYPTO_RETRIED_FLAG] &&
+        this.shouldAutoReplayOnSessionExpired(config) &&
+        this.isSessionExpiredError(err)
+      if (!canRetry) throw err
+      if (enableRequestCryptoDebugLog) {
+        console.log('[crypto-retry] session expired, re-signing...', { url })
+      }
+      clearCryptoSession()
+      await this.signIn()
+      if (enableRequestCryptoDebugLog) {
+        console.log('[crypto-retry] re-sign success, retrying request once', { url })
+      }
+      return retry({
+        ...config,
+        [CRYPTO_RETRIED_FLAG]: true,
+      })
+    }
+  }
+
+  // 统一归一化 payload：空对象或非法对象转 undefined
+  normalizePayload(data) {
+    // GET/DELETE 空对象统一转 undefined，避免后端把 {} 识别为有参请求
+    if (!data || typeof data !== 'object') return undefined
+    return Object.keys(data).length ? data : undefined
+  }
+
+  // 统一 URL 解析：优先 custom baseUrl，其次绝对地址，最后拼接默认 baseUrl
+  resolveUrl(url, config = {}) {
+    if (config.baseUrl) return config.baseUrl + url
+    if (this.isAbsoluteUrl(url)) return url
+    return baseUrl + url
+  }
+
+  // 给请求头并入 Authorization 默认值
+  mergeDefaultHeader(config = {}) {
     const defaultHeaderConfig = {
       // 后端通用鉴权头
       Authorization: this.getToken(),
     }
-
-    // payload：请求 body（GET/DELETE 会通过空对象策略变成 undefined；避免后端异常）
-    let payload = data
-    if (!payload || typeof payload !== 'object') payload = {}
-
-    for (let key in payload) {
-      if (url.indexOf(`{${key}}`) !== -1) {
-        url = url.replace(`{${key}}`, `${payload[key]}`)
-      }
-    }
-
-    if (Object.keys(payload).length === 0) {
-      payload = undefined // 置 undefined 不传空对象
-    }
-
-    const method = config.method
-    const shouldLogCryptoRequest =
-      enableRequestCryptoDebugLog &&
-      this.shouldOpenCrypto() &&
-      !url.includes('/common/signIn') &&
-      ['POST', 'PUT', 'PATCH'].includes(method)
-    // 自定义 baseUrl
-    if (config.baseUrl) {
-      url = config.baseUrl + url
-    } else if (url.indexOf('http') !== -1) {
-      url = url
-    } else {
-      if (this.shouldOpenCrypto() && !url.includes('/common/signIn')) {
-        // crypto 模式下：除 signIn 外，把请求发往 baseUrl，并加会话头/请求体加密
-        // 只有非 signIn 才走请求体加密 + 会话头（zoneSessionId）
-        url = baseUrl + url
-
-        const id = getSessionId()
-        if (id) {
-          config.header = {
-            ...config.header,
-            'Jx-Security': 'Jx-Security',
-            'Jx-SessionId': id,
-          }
-        }
-
-        // 只有 POST/PUT/PATCH 且 payload 存在时才加密
-        if (['POST', 'PUT', 'PATCH'].includes(method) && payload !== undefined) {
-          // 加密前打印：帮助你确认“实际上传了哪些主要字段”（明文请求体）
-          if (shouldLogCryptoRequest) {
-            console.log('[crypto] request(encrypted):', url, payload)
-          }
-          let content = ''
-          try {
-            content = JSON.stringify(payload)
-          } catch (e) {
-            content = String(payload)
-          }
-          // workKey 来自 signIn 初始化的 zoneWorkKey；为空则回退 sm4Key（联调兜底）
-          const workKey = getWorkKey() || sm4Key
-          content = sm4.encrypt(content, workKey)
-          payload = { content }
-        }
-      } else {
-        // 不走 crypto 时：只做 baseUrl 拼接
-        url = baseUrl + url
-      }
-    }
-
-    // 自定义请求头
-    if (config.header) {
-      config.header = {
-        ...config.header,
+    return {
+      ...config,
+      header: {
+        ...(config.header || {}),
         ...defaultHeaderConfig,
-      }
-    } else {
-      config.header = defaultHeaderConfig
+      },
     }
+  }
+
+  // 在可加密场景下把业务 payload 转成 { content }
+  encryptPayloadIfNeeded(url, payload, config = {}) {
+    const method = config.method
+    const canEncryptBody =
+      CRYPTO_BODY_METHODS.includes(method) &&
+      payload !== undefined &&
+      this.shouldOpenCrypto() &&
+      !this.isSignInUrl(url)
+    if (!canEncryptBody) return payload
+
+    const shouldLogCryptoRequest = enableRequestCryptoDebugLog
+    if (shouldLogCryptoRequest) {
+      console.log('[crypto] request(encrypted):', url, payload)
+    }
+
+    let content = ''
+    try {
+      content = JSON.stringify(payload)
+    } catch (e) {
+      content = String(payload)
+    }
+    // workKey 来自 signIn 初始化的 zoneWorkKey；为空则回退 sm4Key（联调兜底）
+    const workKey = getWorkKey() || sm4Key
+    content = sm4.encrypt(content, workKey)
+    return { content }
+  }
+
+  // 在可加密场景下附加会话头（Jx-Security/Jx-SessionId）
+  attachCryptoHeadersIfNeeded(url, config = {}) {
+    const shouldAttach =
+      this.shouldOpenCrypto() && !this.isSignInUrl(url)
+    if (!shouldAttach) return config
+
+    const sessionId = getSessionId()
+    if (!sessionId) return config
+
+    return {
+      ...config,
+      header: {
+        ...(config.header || {}),
+        'Jx-Security': 'Jx-Security',
+        'Jx-SessionId': sessionId,
+      },
+    }
+  }
+
+  // 构建请求配置：含 REST 参数替换、URL/header 处理、可选加密
+  buildRequestConfig(url, data = {}, config = {}) {
+    // payload：请求 body（GET/DELETE 空对象转 undefined；避免后端异常）
+    let payload = this.normalizePayload(data)
+
+    const routeParams = payload || {}
+    for (let key in routeParams) {
+      if (url.indexOf(`{${key}}`) !== -1) {
+        url = url.replace(`{${key}}`, `${routeParams[key]}`)
+      }
+    }
+
+    // 统一拼接 URL（baseUrl/customBaseUrl/absoluteUrl）
+    url = this.resolveUrl(url, config)
+    // crypto 模式下：非 signIn 自动补会话头 + 请求体加密
+    config = this.attachCryptoHeadersIfNeeded(url, config)
+    payload = this.encryptPayloadIfNeeded(url, payload, config)
+    // 最后统一并入默认鉴权头
+    config = this.mergeDefaultHeader(config)
 
     return {
       data: payload,
@@ -152,45 +250,59 @@ export class CommercialApi {
     }
   }
 
+  // 兼容旧调用命名，逐步迁移到 buildRequestConfig
+  restful(url, data = {}, config = {}) {
+    return this.buildRequestConfig(url, data, config)
+  }
+
+  // ---------------------------
+  // Response handling
+  // ---------------------------
+  shouldDebugCryptoResponse(url, body) {
+    return (
+      enableRequestCryptoDebugLog &&
+      this.shouldOpenCrypto() &&
+      body &&
+      !this.isSignInUrl(url)
+    )
+  }
+
+  // 尝试解密响应体（仅 crypto 且返回 encrypt 时）
+  tryDecryptResponse(body, url) {
+    if (!(this.shouldOpenCrypto() && body && !this.isSignInUrl(url))) return
+    if (!body.encrypt) return
+    const workKey = getWorkKey() || sm4Key
+    const decrypted = sm4.decrypt(body.encrypt, workKey)
+    body.data = JSON.parse(decrypted)
+  }
+
+  // 判断后端返回码是否成功
+  isSuccessCode(code) {
+    return SUCCESS_CODES.includes(code)
+  }
+
   // 请求响应完成：处理响应 code / 解密 / 错误提示
-  complete(res, resolve, reject, url) {
+  handleResponse(res, resolve, reject, url) {
     // res.data 即后端响应体；旧版返回成功/失败字段约定为 code/msg/encrypt/data
     const body = res?.data
     const code = body && body.code
     // 仅在：加密开启 + 有响应体 + 非 signIn 时，才打印调试日志
-    const shouldDebugCrypto =
-      enableRequestCryptoDebugLog &&
-      this.shouldOpenCrypto() &&
-      body &&
-      !url.includes('/common/signIn')
+    const shouldDebugCrypto = this.shouldDebugCryptoResponse(url, body)
 
-    if (this.shouldOpenCrypto() && body && !url.includes('/common/signIn')) {
-      // crypto 模式：若响应体包含 encrypt，则解密后把解析结果写回 body.data
-      if (body.encrypt) {
-        try {
-          // 响应解密：同样依赖 zoneWorkKey
-          const workKey = getWorkKey() || sm4Key
-          const decrypted = sm4.decrypt(body.encrypt, workKey)
-          body.data = JSON.parse(decrypted)
-          if (shouldDebugCrypto) {
-            // 解密后的业务数据（data）
-            console.log('[crypto] response(decrypted):', url, body.data)
-          }
-        } catch (error) {
-          console.error('解密报文失败', error)
-          // 多半是 workKey/session 与后端不一致或已过期，清掉后下次请求会重新 signIn
-          clearCryptoSession()
-          reject(error)
-          showToastAfterLoading({
-            title: '解密报文失败，请稍后重试',
-            icon: 'none',
-          })
-          return
-        }
+    try {
+      this.tryDecryptResponse(body, url)
+      if (shouldDebugCrypto && body?.encrypt) {
+        // 解密后的业务数据（data）
+        console.log('[crypto] response(decrypted):', url, body.data)
       }
+    } catch (error) {
+      console.error('解密报文失败', error)
+      // 多半是 workKey/session 与后端不一致或已过期；交由请求层自动 signIn 后重试一次
+      reject(this.buildSessionExpiredError({ error }))
+      return
     }
 
-    if (code === 0 || code === 200) {
+    if (this.isSuccessCode(code)) {
       // code 命中成功：resolve body（与旧版行为保持一致）
       resolve(body)
       return
@@ -212,6 +324,11 @@ export class CommercialApi {
       userStore.logout()
     }
 
+    if (this.shouldOpenCrypto() && this.isCryptoSessionExpiredBody(body) && !body.data?.reload) {
+      reject(this.buildSessionExpiredError({ body }))
+      return
+    }
+
     reject(body)
     const msg = body && body.msg ? String(body.msg) : '系统繁忙，请稍后重试'
     showToastAfterLoading({
@@ -220,11 +337,22 @@ export class CommercialApi {
     })
   }
 
-  async request(url, method = 'GET', data, config = {}) {
-    await this.ensureCryptoSessionIfNeeded(url, config)
+  // 兼容旧命名：complete -> handleResponse
+  complete(res, resolve, reject, url) {
+    return this.handleResponse(res, resolve, reject, url)
+  }
+
+  // 纯请求核心：只负责组包 + 发请求 + 回调 handleResponse（不关心重试策略）
+  requestCore(url, method = 'GET', data, config = {}) {
     const loadingOpt = config.loading
     beginGlobalLoading(loadingOpt)
-    const rest = this.restful(url, data, { ...config, method })
+    let rest
+    try {
+      rest = this.buildRequestConfig(url, data, { ...config, method })
+    } catch (e) {
+      endGlobalLoading(loadingOpt)
+      return Promise.reject(e)
+    }
     return new Promise((resolve, reject) => {
       uni.request({
         url: rest.url,
@@ -233,7 +361,7 @@ export class CommercialApi {
         header: rest.config.header,
         complete: (res) => {
           try {
-            this.complete(res, resolve, reject, url)
+            this.handleResponse(res, resolve, reject, url)
           } finally {
             endGlobalLoading(loadingOpt)
           }
@@ -242,193 +370,89 @@ export class CommercialApi {
     })
   }
 
+  // 请求统一入口：先确保会话，再发请求；会话失效时自动重签并重试一次
+  async request(url, method = 'GET', data, config = {}) {
+    return this.withOneRetryOnSessionExpired(
+      async () => {
+        await this.ensureCryptoSessionIfNeeded(url, config)
+        return this.requestCore(url, method, data, config)
+      },
+      {
+        url,
+        config,
+        retry: (nextConfig) => this.request(url, method, data, nextConfig),
+      },
+    )
+  }
+
+  // 语义化别名：统一走 request
   post(url, data, config = {}) {
-    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
-      return new Promise((resolve, reject) => {
-        const loadingOpt = config.loading
-        beginGlobalLoading(loadingOpt)
-
-        let rest
-        try {
-          rest = this.restful(url, data, { ...config, method: 'POST' })
-        } catch (e) {
-          endGlobalLoading(loadingOpt)
-          reject(e)
-          return
-        }
-
-        uni.request({
-          url: rest.url,
-          data: rest.data,
-          method: 'POST',
-          header: rest.config.header,
-          complete: (res) => {
-            try {
-              this.complete(res, resolve, reject, url)
-            } finally {
-              endGlobalLoading(loadingOpt)
-            }
-          },
-        })
-      })
-    })
+    return this.request(url, 'POST', data, config)
   }
 
+  // 语义化别名：统一走 request
   get(url, data, config = {}) {
-    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
-      return new Promise((resolve, reject) => {
-        const loadingOpt = config.loading
-        beginGlobalLoading(loadingOpt)
-
-        let rest
-        try {
-          rest = this.restful(url, data, { ...config, method: 'GET' })
-        } catch (e) {
-          endGlobalLoading(loadingOpt)
-          reject(e)
-          return
-        }
-
-        uni.request({
-          url: rest.url,
-          data: rest.data,
-          method: 'GET',
-          header: rest.config.header,
-          complete: (res) => {
-            try {
-              this.complete(res, resolve, reject, url)
-            } finally {
-              endGlobalLoading(loadingOpt)
-            }
-          },
-        })
-      })
-    })
+    return this.request(url, 'GET', data, config)
   }
 
+  // 语义化别名：统一走 request
   patch(url, data, config = {}) {
-    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
-      return new Promise((resolve, reject) => {
-        const loadingOpt = config.loading
-        beginGlobalLoading(loadingOpt)
-
-        let rest
-        try {
-          rest = this.restful(url, data, { ...config, method: 'PATCH' })
-        } catch (e) {
-          endGlobalLoading(loadingOpt)
-          reject(e)
-          return
-        }
-
-        uni.request({
-          url: rest.url,
-          data: rest.data,
-          method: 'PATCH',
-          header: rest.config.header,
-          complete: (res) => {
-            try {
-              this.complete(res, resolve, reject, url)
-            } finally {
-              endGlobalLoading(loadingOpt)
-            }
-          },
-        })
-      })
-    })
+    return this.request(url, 'PATCH', data, config)
   }
 
+  // 语义化别名：统一走 request
   put(url, data, config = {}) {
-    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
-      return new Promise((resolve, reject) => {
-        const loadingOpt = config.loading
-        beginGlobalLoading(loadingOpt)
-
-        let rest
-        try {
-          rest = this.restful(url, data, { ...config, method: 'PUT' })
-        } catch (e) {
-          endGlobalLoading(loadingOpt)
-          reject(e)
-          return
-        }
-
-        uni.request({
-          url: rest.url,
-          data: rest.data,
-          method: 'PUT',
-          header: rest.config.header,
-          complete: (res) => {
-            try {
-              this.complete(res, resolve, reject, url)
-            } finally {
-              endGlobalLoading(loadingOpt)
-            }
-          },
-        })
-      })
-    })
+    return this.request(url, 'PUT', data, config)
   }
 
+  // 语义化别名：统一走 request
   del(url, data, config = {}) {
-    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
-      return new Promise((resolve, reject) => {
-        const loadingOpt = config.loading
-        beginGlobalLoading(loadingOpt)
+    return this.request(url, 'DELETE', data, config)
+  }
 
-        let rest
-        try {
-          rest = this.restful(url, data, { ...config, method: 'DELETE' })
-        } catch (e) {
-          endGlobalLoading(loadingOpt)
-          reject(e)
-          return
-        }
-
-        uni.request({
-          url: rest.url,
-          data: rest.data,
-          method: 'DELETE',
-          header: rest.config.header,
-          complete: (res) => {
-            try {
-              this.complete(res, resolve, reject, url)
-            } finally {
-              endGlobalLoading(loadingOpt)
+  // 上传核心逻辑：与 requestCore 一样只负责实际发网，不处理重试策略
+  // 上传核心：只负责上传并交给 handleResponse 处理结果
+  uploadCore(filePath, config = {}) {
+    const loadingOpt = config.loading
+    beginGlobalLoading(loadingOpt)
+    return new Promise((resolve, reject) => {
+      uni.uploadFile({
+        url: baseUrl + '/base/upload',
+        filePath,
+        name: 'file',
+        header: {
+          Authorization: this.getToken(),
+        },
+        complete: (res) => {
+          try {
+            if (res.data) {
+              res.data = JSON.parse(res.data)
             }
-          },
-        })
+            this.handleResponse(res, resolve, reject, '/base/upload')
+          } catch (e) {
+            reject(e)
+          } finally {
+            endGlobalLoading(loadingOpt)
+          }
+        },
       })
     })
   }
 
-  upload(filePath) {
-    const loadingOpt = undefined
-    beginGlobalLoading(loadingOpt)
-    return this.ensureCryptoSessionIfNeeded('/base/upload', {}).then(() => {
-      return new Promise((resolve, reject) => {
-        uni.uploadFile({
-          url: baseUrl + '/base/upload',
-          filePath,
-          name: 'file',
-          header: {
-            Authorization: this.getToken(),
-          },
-          complete: (res) => {
-            try {
-              if (res.data) {
-                res.data = JSON.parse(res.data)
-              }
-              this.complete(res, resolve, reject, '/base/upload')
-            } catch (e) {
-              reject(e)
-            } finally {
-              endGlobalLoading(loadingOpt)
-            }
-          },
-        })
-      })
-    })
+  // 上传入口：先确保会话；会话失效时自动重签并重试一次
+  upload(filePath, config = {}) {
+    const url = '/base/upload'
+    return this.withOneRetryOnSessionExpired(
+      async () => {
+        await this.ensureCryptoSessionIfNeeded(url, config)
+        return this.uploadCore(filePath, config)
+      },
+      {
+        url,
+        config,
+        retry: (nextConfig) => this.upload(filePath, nextConfig),
+      },
+    )
   }
 
   // 统一签到（加密会话密钥初始化）
@@ -436,9 +460,17 @@ export class CommercialApi {
     // signIn：初始化 zoneSessionId + zoneWorkKey
     // 旧版约定：响应 data 为“加密字符串”，需要 sm2 解密后 JSON.parse
     if (!this.shouldOpenCrypto()) return Promise.resolve()
-    if (getSessionId() && getWorkKey()) return Promise.resolve()
+    if (getSessionId() && getWorkKey()) {
+      if (enableRequestCryptoDebugLog) {
+        // console.log('[crypto-signIn] skipped, session already exists')
+      }
+      return Promise.resolve()
+    }
     if (this._signInInFlight) return this._signInInFlight
 
+    if (enableRequestCryptoDebugLog) {
+      console.log('[crypto-signIn] requesting /common/signIn')
+    }
     this._signInInFlight = this.post('/common/signIn', { sence: 'blog' })
       .then((res) => {
         if (res?.data) {
@@ -453,11 +485,19 @@ export class CommercialApi {
         if (data?.sessionId && data?.workKey) {
           uni.setStorageSync('zoneSessionId', data.sessionId)
           uni.setStorageSync('zoneWorkKey', data.workKey)
+          if (enableRequestCryptoDebugLog) {
+            console.log('[crypto-signIn] success', {
+              sessionId: data.sessionId,
+            })
+          }
           return
         }
         throw new Error('signIn: missing sessionId or workKey')
       })
       .catch((err) => {
+        if (enableRequestCryptoDebugLog) {
+          console.log('[crypto-signIn] failed', err)
+        }
         clearCryptoSession()
         throw err
       })

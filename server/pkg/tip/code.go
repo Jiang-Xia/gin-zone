@@ -29,6 +29,7 @@ const (
 	AuthTokenNoEmpty        = 20105
 	AuthFail                = 20106
 	AuthUserNotFound        = 20107
+	AuthCryptoSessionExpire = 20108
 )
 
 // MsgFlags key为声明常量的值
@@ -57,6 +58,7 @@ var MsgFlags = map[int]string{
 	AuthCheckTokenFail:      "Token鉴权失败",
 	AuthCheckTokenTimeout:   "Token已超时",
 	AuthFail:                "演示模式，权限不足",
+	AuthCryptoSessionExpire: "加密会话失效，请重新签到",
 }
 
 func Msg(code int) string {
