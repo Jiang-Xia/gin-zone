@@ -40,7 +40,8 @@ func (t *Third) GetGuShiCi(c *gin.Context) {
 	data := make(map[string]interface{})
 	val, err := database.Redis().Get(ctx, "z_gu_shi_ci").Result()
 	if err != nil {
-		panic(err)
+		response.Fail(c, "获取古诗词失败", nil)
+		return
 	}
 	err = json.Unmarshal([]byte(val), &data)
 	fmt.Println("z_gu_shi_ci", data)
@@ -80,32 +81,28 @@ func (t *Third) ChatGPT(c *gin.Context) {
 	}
 	data := make(map[string]interface{})
 	openaiAppKey := config.App.OpenaiAppKey
-	if req.KeyCode == "j123456" {
-		response.Success(c, openaiAppKey+"bb", "请求成功")
-	} else {
-		client := openai.NewClient(openaiAppKey)
-		resp, err := client.CreateChatCompletion(
-			context.Background(),
-			openai.ChatCompletionRequest{
-				Model: openai.GPT3Dot5Turbo,
-				Messages: []openai.ChatCompletionMessage{
-					{
-						Role:    openai.ChatMessageRoleUser,
-						Content: req.Prompt,
-					},
+	client := openai.NewClient(openaiAppKey)
+	resp, err := client.CreateChatCompletion(
+		context.Background(),
+		openai.ChatCompletionRequest{
+			Model: openai.GPT3Dot5Turbo,
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Role:    openai.ChatMessageRoleUser,
+					Content: req.Prompt,
 				},
 			},
-		)
-		if err != nil {
-			data["text"] = "警告！警告！分析错误！系统故障..."
-			log.Info(err.Error())
-			response.Success(c, data, "请求成功")
-			return
-		}
-		data["text"] = resp.Choices[0].Message.Content
-		//fmt.Println(resp.Choices[0].Text)
+		},
+	)
+	if err != nil {
+		data["text"] = "警告！警告！分析错误！系统故障..."
+		log.Info(err.Error())
 		response.Success(c, data, "请求成功")
+		return
 	}
+	data["text"] = resp.Choices[0].Message.Content
+	//fmt.Println(resp.Choices[0].Text)
+	response.Success(c, data, "请求成功")
 }
 
 type ChatGptApiData struct {
@@ -139,15 +136,21 @@ func (t *Third) ChatGPTApi(c *gin.Context) {
 	if req.Key == "" {
 		req.Key = openaiAppKey
 	}
-	fmt.Printf("请求参数%+v", req)
 	// 构造POST请求的数据
 	postData, _ := json.Marshal(req)
 	resp, err := http.Post("https://chat.xingyijun.cn/chat/textModel", "application/json", bytes.NewBuffer(postData))
+	if err != nil {
+		response.Fail(c, "请求失败", nil)
+		return
+	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		response.Fail(c, "请求失败", nil)
+		return
+	}
 	chatGPTApi := ChatGPTApi{}
 	err = json.Unmarshal(body, &chatGPTApi)
-	fmt.Println("AI接口响应参数:", string(body))
 	if err != nil {
 		response.Fail(c, "请求失败", nil)
 		return

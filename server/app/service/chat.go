@@ -193,7 +193,7 @@ func (ch *chat) CreateChatGroupMember(model *model.ChatGroupMember) (err error) 
 }
 
 // DeleteChatGroupMember 删除
-func (ch *chat) DeleteChatGroupMember(id string) bool {
-	db.Mysql.Where("user_id = ?", id).Delete(&model.ChatGroupMember{})
+func (ch *chat) DeleteChatGroupMember(userId string, groupId int) bool {
+	db.Mysql.Where("user_id = ? AND group_id = ?", userId, groupId).Delete(&model.ChatGroupMember{})
 	return true
 }

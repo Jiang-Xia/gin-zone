@@ -60,7 +60,6 @@ func GMSMMiddleware() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			log.Infof("body.Content: %s", body.Content)
 
 			// 3. 根据sessionId获取SM4密钥
 			sm4Key, err := database.Redis().Get(ctx, "sessionId:"+sessionId).Result()
@@ -99,7 +98,6 @@ func GMSMMiddleware() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-			log.Info("解密后的数据: ", decryptedData)
 			// 统一响应拦截时，报文加密用到
 			c.Set("sm4Key", sm4Key)
 			//data := make(map[string]interface{})

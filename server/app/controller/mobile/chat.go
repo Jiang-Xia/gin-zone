@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
+	"sync"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
@@ -23,7 +25,11 @@ type Chat struct {
 var upGrader = websocket.Upgrader{
 	// 解决跨域问题
 	CheckOrigin: func(r *http.Request) bool {
-		return true
+		origin := r.Header.Get("Origin")
+		if origin == "" {
+			return true
+		}
+		return origin == "http://"+r.Host || origin == "https://"+r.Host
 	},
 }
 
@@ -45,6 +51,7 @@ type ClientManager struct {
 	BroadcastChan  chan []byte        //触发消息广播 (当前广播的消息)
 	RegisterChan   chan *Client       // 触发新用户登陆 (当前登录的客户端)
 	UnRegisterChan chan *Client       // 触发用户退出(当前退出的客户端)
+	mu             sync.RWMutex
 }
 
 // WsMessage 消息模板结构体
@@ -112,7 +119,7 @@ func (c *Client) Read() {
 		case "text":
 			// 发送文本消息
 			chatLog := &model.ChatLog{
-				SenderId:   msg.SenderId,
+				SenderId:   c.UserId,
 				ReceiverId: msg.ReceiverId,
 				GroupId:    msg.GroupId,
 				Content:    msg.Content,
@@ -122,6 +129,7 @@ func (c *Client) Read() {
 			service.Chat.CreateChatLog(chatLog)
 			//查询用户信息
 			UserInfo, _ := service.User.GetByUserId(chatLog.SenderId)
+			msg.SenderId = c.UserId
 			msg.UserInfo = UserInfo
 			UserInfo.Password = ""
 			resp, _ := json.Marshal(msg)
@@ -168,7 +176,10 @@ func (c *Client) Write() {
 
 // Check 实时监测过期
 func (c *Client) Check() {
+	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
 	for {
+		<-ticker.C
 		now := time.Now()
 		var duration = now.Sub(c.Start)
 		if duration >= c.ExpireTime {
@@ -184,9 +195,11 @@ func (manager *ClientManager) Start() {
 	for {
 		select {
 		case conn := <-Manager.RegisterChan:
+			Manager.mu.Lock()
 			Manager.Clients[conn.ID] = conn
-			// 如果有新用户连接则发送最近聊天记录和在线人数给他
 			count := len(Manager.Clients)
+			Manager.mu.Unlock()
+			// 如果有新用户连接则发送最近聊天记录和在线人数给他
 			Manager.InitSend(conn, count)
 		}
 	}
@@ -219,11 +232,17 @@ func (manager *ClientManager) BroadcastSend() {
 			if wsMsg.GroupId != 0 {
 				list := service.Chat.ChatGroupMember(wsMsg.GroupId)
 				// fmt.Println("群组成员列表：", len(list))
+				Manager.mu.RLock()
+				connections := make([]*Client, 0, len(Manager.Clients))
+				for _, conn := range Manager.Clients {
+					connections = append(connections, conn)
+				}
+				Manager.mu.RUnlock()
 
 				//遍历所有群成员
 				for _, member := range list {
 					//找到所有在线的群成员用户(在线实例用户id和群成员用户id一致)
-					for _, conn := range Manager.Clients {
+					for _, conn := range connections {
 						//自己发消息时，不用广播给自己
 						if wsMsg.SenderId == conn.UserId {
 							continue
@@ -237,7 +256,13 @@ func (manager *ClientManager) BroadcastSend() {
 				}
 			} else if wsMsg.ReceiverId != "" {
 				//	私聊时找到对应结接收方用户广播消息
+				Manager.mu.RLock()
+				connections := make([]*Client, 0, len(Manager.Clients))
 				for _, conn := range Manager.Clients {
+					connections = append(connections, conn)
+				}
+				Manager.mu.RUnlock()
+				for _, conn := range connections {
 					//掉线了可能就找不到对应的在线实例
 					fmt.Println("找到对应接受者用户", wsMsg.ReceiverId, conn.UserId)
 					//接受者is和当前连接实例相等时
@@ -262,9 +287,12 @@ func (manager *ClientManager) Quit() {
 		select {
 		case conn := <-Manager.UnRegisterChan:
 			//删除对应在线客户端
+			manager.mu.Lock()
 			delete(Manager.Clients, conn.ID)
+			count := len(Manager.Clients)
+			manager.mu.Unlock()
 			// 给客户端刷新在线人数
-			resp, _ := json.Marshal(&WsMessage{Cmd: "online", Count: len(Manager.Clients)})
+			resp, _ := json.Marshal(&WsMessage{Cmd: "online", Count: count})
 			//有人退出时 广播刷新在线人数
 			manager.BroadcastChan <- resp
 		}
@@ -280,23 +308,18 @@ func init() {
 
 // WebSocketHandle webSocket升级协议，并且初始化上线用户数据
 func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
-	conn, err := (&websocket.Upgrader{
-		// 决解跨域问题
-		CheckOrigin: func(r *http.Request) bool { return true },
-	}).Upgrade(ctx.Writer, ctx.Request, nil)
+	userId := model.GetUserUid(ctx)
+	if userId == "" {
+		response.Fail(ctx, "token无效", nil)
+		return
+	}
+	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
 		http.NotFound(ctx.Writer, ctx.Request)
 		log.Error(err.Error())
 		return
 	}
-	userId := ctx.Query("userId")
 	ip := ctx.ClientIP()
-	//addr, err := common.GetIpAddressAndSource(ip)
-	if err != nil {
-		http.NotFound(ctx.Writer, ctx.Request)
-		log.Error(err.Error())
-		return
-	}
 	ua := ctx.GetHeader("User-Agent")
 	id := ip + ua
 	idMd5 := fmt.Sprintf("%x", md5.Sum([]byte(id)))
@@ -337,7 +360,7 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 // @Success     200  {object} response.ResType
 // @Router      /mobile/chat/friends [get]
 func (ch *Chat) FriendList(c *gin.Context) {
-	userId := c.Query("userId")
+	userId := model.GetUserUid(c)
 	if userId == "" {
 		response.Fail(c, "用户id不能为空", []string{})
 		return
@@ -362,6 +385,16 @@ func (ch *Chat) AddFriend(c *gin.Context) {
 	if err := c.ShouldBindJSON(&addFriend); err != nil {
 		// 字段参数校验
 		response.Fail(c, "参数错误", err.Error())
+		return
+	}
+	currentUserId := model.GetUserUid(c)
+	if currentUserId == "" {
+		response.Fail(c, "用户id不能为空", nil)
+		return
+	}
+	addFriend.UserId = currentUserId
+	if addFriend.FriendId == currentUserId {
+		response.Fail(c, "不能添加自己为好友", nil)
 		return
 	}
 	err := service.Chat.CreateChatFriends(&model.ChatFriends{
@@ -429,6 +462,16 @@ func (ch *Chat) UpdateReadTime(c *gin.Context) {
 		response.Fail(c, "参数错误", err.Error())
 		return
 	}
+	currentUserId := model.GetUserUid(c)
+	if currentUserId == "" {
+		response.Fail(c, "用户id不能为空", nil)
+		return
+	}
+	query.SenderId = currentUserId
+	if query.GroupId == 0 && strings.TrimSpace(query.ReceiverId) == "" {
+		response.Fail(c, "参数错误", "receiverId不能为空")
+		return
+	}
 	err := service.Chat.UpdateLastReadTime(&query)
 	if err != nil {
 		response.Fail(c, err.Error(), nil)
@@ -454,6 +497,12 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 		response.Fail(c, "参数错误", err.Error())
 		return
 	}
+	currentUserId := model.GetUserUid(c)
+	if currentUserId == "" {
+		response.Fail(c, "用户id不能为空", nil)
+		return
+	}
+	query.SenderId = currentUserId
 	// fmt.Printf("ChatLogList查询参数: %+v", query)
 	list, total := service.Chat.ChatLogList(query.Page, query.PageSize, query)
 	data := model.ListRes{List: list, Total: total}
@@ -473,7 +522,7 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 // @Success     200  {object} response.ResType
 // @Router      /mobile/chat/groups [get]
 func (ch *Chat) GroupList(c *gin.Context) {
-	userId := c.Query("userId")
+	userId := model.GetUserUid(c)
 	groupName := c.Query("groupName")
 	list := service.Chat.ChatGroup(userId, groupName)
 	response.Success(c, list, "")
@@ -491,18 +540,24 @@ func (ch *Chat) GroupList(c *gin.Context) {
 // @Success     200  {object} model.ChatGroup
 // @Router      /mobile/chat/groups [post]
 func (ch *Chat) AddGroup(c *gin.Context) {
-	model := &model.ChatGroup{}
-	if err := c.ShouldBindJSON(&model); err != nil {
+	group := &model.ChatGroup{}
+	if err := c.ShouldBindJSON(&group); err != nil {
 		// 字段参数校验
 		response.Fail(c, "参数错误", err.Error())
 		return
 	}
-	err := service.Chat.CreateGroup(model)
+	currentUserId := model.GetUserUid(c)
+	if currentUserId == "" {
+		response.Fail(c, "用户id不能为空", nil)
+		return
+	}
+	group.UserId = currentUserId
+	err := service.Chat.CreateGroup(group)
 	if err != nil {
 		response.Fail(c, "创建失败", err.Error())
 		return
 	}
-	response.Success(c, model.ID, "添加成功")
+	response.Success(c, group.ID, "添加成功")
 }
 
 // DelGroup godoc
@@ -556,18 +611,24 @@ func (ch *Chat) GroupMemberList(c *gin.Context) {
 // @Success     200  {object} model.ChatGroupMember
 // @Router      /mobile/chat/groupMembers [post]
 func (ch *Chat) AddGroupMember(c *gin.Context) {
-	model := &model.ChatGroupMember{}
-	if err := c.ShouldBindJSON(&model); err != nil {
+	member := &model.ChatGroupMember{}
+	if err := c.ShouldBindJSON(&member); err != nil {
 		// 字段参数校验
 		response.Fail(c, "参数错误", err)
 		return
 	}
-	err := service.Chat.CreateChatGroupMember(model)
+	currentUserId := model.GetUserUid(c)
+	if currentUserId == "" {
+		response.Fail(c, "用户id不能为空", nil)
+		return
+	}
+	member.UserId = currentUserId
+	err := service.Chat.CreateChatGroupMember(member)
 	if err != nil {
 		response.Fail(c, err.Error(), nil)
 		return
 	}
-	response.Success(c, model.ID, "添加成功")
+	response.Success(c, member.ID, "添加成功")
 }
 
 // ExitGroupMember godoc
@@ -584,7 +645,7 @@ func (ch *Chat) AddGroupMember(c *gin.Context) {
 func (ch *Chat) ExitGroupMember(c *gin.Context) {
 	userId := model.GetUserUid(c)
 	groupId := cast.ToInt(c.Param("groupId"))
-	bool := service.Chat.DeleteChatGroupMember(userId)
+	bool := service.Chat.DeleteChatGroupMember(userId, groupId)
 	bool = service.Chat.DeleteGroupFriends(userId, groupId)
 	//删除群关系
 	if !bool {

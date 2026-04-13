@@ -98,8 +98,20 @@ func crypto(c *gin.Context, res *ResType) error {
 	sessionId := c.Request.Header.Get("Jx-SessionId")
 	if security == "Jx-Security" {
 		sm4Key, err := database.Redis().Get(ctx, "sessionId:"+sessionId).Result()
+		if err != nil {
+			log.Error(err)
+			return err
+		}
 		sm4KeyBytes, err := hex.DecodeString(sm4Key)
+		if err != nil {
+			log.Error(err)
+			return err
+		}
 		strContent, err := json.Marshal(res.Data)
+		if err != nil {
+			log.Error(err)
+			return err
+		}
 		encryptedData, err := sm4.Sm4Ecb(sm4KeyBytes, strContent, true)
 		if err != nil {
 			log.Error(err)

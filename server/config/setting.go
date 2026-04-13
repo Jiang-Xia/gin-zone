@@ -78,30 +78,32 @@ func loadInI() {
 	var err error
 	AllConfig, err = ini.Load(filePath)
 	if err != nil {
-		fmt.Printf("Fail to parse 'conf/env.ini': %v", err)
+		panic(fmt.Sprintf("Fail to parse 'conf/env.ini': %v", err))
 	}
 	setApp()
 }
 
 func setApp() {
-	var err error
 	App = new(appModel)
 	Database = new(databaseModel)
 	Docs = new(docsModel)
 	Redis = new(redisModel)
 	Log = new(logModel)
 
-	err = AllConfig.Section("app").MapTo(App)
-	err = AllConfig.Section("database").MapTo(Database)
-	err = AllConfig.Section("docs").MapTo(Docs)
-	err = AllConfig.Section("redis").MapTo(Redis)
-	err = AllConfig.Section("log").MapTo(Log)
-	fmt.Printf("初始化项目app配置: %+v\n", App)
-	fmt.Printf("初始化项目database配置: %+v\n", Database)
-	fmt.Printf("初始化项目Docs配置: %+v\n", Docs)
-	fmt.Printf("初始化项目Redis配置: %+v\n", Redis)
-	fmt.Printf("初始化项目Log配置: %+v\n", Log)
-	if err != nil {
-		fmt.Println("初始化配置失败", err.Error())
+	if err := AllConfig.Section("app").MapTo(App); err != nil {
+		fmt.Println("初始化配置失败 app", err.Error())
 	}
+	if err := AllConfig.Section("database").MapTo(Database); err != nil {
+		fmt.Println("初始化配置失败 database", err.Error())
+	}
+	if err := AllConfig.Section("docs").MapTo(Docs); err != nil {
+		fmt.Println("初始化配置失败 docs", err.Error())
+	}
+	if err := AllConfig.Section("redis").MapTo(Redis); err != nil {
+		fmt.Println("初始化配置失败 redis", err.Error())
+	}
+	if err := AllConfig.Section("log").MapTo(Log); err != nil {
+		fmt.Println("初始化配置失败 log", err.Error())
+	}
+	fmt.Printf("初始化项目配置完成: env=%s, dbHost=%s, redisHost=%s\n", App.Env, Database.Host, Redis.Host)
 }

@@ -81,6 +81,7 @@ func (u *user) Create(model *model.User) (err error) {
 	res := db.Mysql.Create(model)
 	if res.Error != nil { //判断是否插入数据出错
 		fmt.Println(res.Error)
+		return res.Error
 	}
 	return
 }

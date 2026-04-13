@@ -28,6 +28,10 @@ type FileInfo struct {
 // @Router      /base/upload [POST]
 func (t *Base) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
+	if err != nil {
+		response.Fail(c, "文件上传失败", nil)
+		return
+	}
 	//fmt.Printf("fileInfo%+v", file)
 	date := time.Now().Format("2006-01")
 	//当前文件路径加文件名
@@ -39,7 +43,6 @@ func (t *Base) Upload(c *gin.Context) {
 	err = os.MkdirAll(dirName, 0755)
 	if err != nil {
 		response.Fail(c, "服务器错误", nil)
-		panic(err)
 		return
 	}
 	//统一响应返回的url资源路径
@@ -52,7 +55,10 @@ func (t *Base) Upload(c *gin.Context) {
 	}
 
 	// 根据路劲保存文件
-	c.SaveUploadedFile(file, savePathName)
+	if err = c.SaveUploadedFile(file, savePathName); err != nil {
+		response.Fail(c, "文件保存失败", nil)
+		return
+	}
 	// fmt.Printf("fileInfo%+v", fileInfo)
 	response.Success(c, fileInfo, "")
 }

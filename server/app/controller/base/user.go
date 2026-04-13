@@ -22,6 +22,7 @@ import (
 	"github.com/gin-gonic/gin"
 	jwtgo "github.com/golang-jwt/jwt/v4"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // User 类，go类的写法
@@ -83,6 +84,15 @@ func (u *User) Register(c *gin.Context) {
 func (u *User) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	aid, err := strconv.Atoi(id)
+	if err != nil {
+		response.Fail(c, "参数错误", nil)
+		return
+	}
+	currentID := model.GetUserID(c)
+	if currentID != aid {
+		response.Fail(c, "无权限操作该用户", nil)
+		return
+	}
 	user := &model.UpdateUser{}
 
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -146,12 +156,18 @@ func (u *User) ChangePassword(c *gin.Context) {
 		return
 	}
 	id := model.GetUserID(c)
-	_, err = service.User.Get(id)
+	user, err := service.User.Get(id)
 	if err != nil {
 		response.Fail(c, tip.Msg(tip.AuthUserNotFound), err)
+		return
+	}
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(changeForm.Password)) != nil {
+		response.Fail(c, "旧密码错误", nil)
+		return
 	}
 	if changeForm.Password == changeForm.NewPassword {
 		response.Fail(c, "新密码不能和旧密码一样", nil)
+		return
 	}
 	err = service.User.UpdatePassword(id, changeForm.NewPassword)
 	if err != nil {
@@ -212,7 +228,16 @@ func (u *User) UserList(c *gin.Context) {
 // @Router      /base/users/{id} [delete]
 func (u *User) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
-	aid, _ := strconv.Atoi(id)
+	aid, err := strconv.Atoi(id)
+	if err != nil {
+		response.Fail(c, "参数错误", nil)
+		return
+	}
+	currentID := model.GetUserID(c)
+	if currentID != aid {
+		response.Fail(c, "无权限操作该用户", nil)
+		return
+	}
 	response.Success(c, service.User.Delete(aid), "")
 }
 
@@ -241,12 +266,20 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 	secret = config.App.WechatAppSecret
 	url := "https://api.weixin.qq.com/sns/jscode2session?appid=" + appid + "&secret=" + secret + "&js_code=" + code + "&grant_type=authorization_code"
 	resp, err := http.Get(url)
+	if err != nil || resp == nil {
+		response.Fail(c, "系统错误", nil)
+		return
+	}
+	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		response.Fail(c, "系统错误", nil)
 		return
 	}
-	json.Unmarshal(body, &authData)
+	if err = json.Unmarshal(body, &authData); err != nil {
+		response.Fail(c, "系统错误", nil)
+		return
+	}
 	openid := cast.ToString(authData["openid"])
 	var user = &model.User{}
 	fmt.Println("authData=========================", authData)
@@ -277,12 +310,11 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 		WxOpenId: openid,
 	}
 	fmt.Printf("新增微信用户信息%v\n", user)
-	generateToken(c, user)
-	if err != nil {
+	if err = service.User.Create(user); err != nil {
+		response.Fail(c, "创建用户失败", nil)
 		return
-	} else {
-		err = service.User.Create(user)
 	}
+	generateToken(c, user)
 }
 
 // RefreshAuthUserInfo 刷新授权信息
