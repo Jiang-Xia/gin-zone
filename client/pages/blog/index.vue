@@ -125,10 +125,8 @@
         onReady() {
         },
 		onShow() {
-            // 进入博客页前：先完成 signIn（初始化加密会话密钥）再拉取首页数据
-            this.$apis.auth.signIn().then(()=>{
-                this.init()
-            })
+            // 加密会话由 $api 在首条加密请求前自动完成
+            this.init()
             // setTimeout(()=>{
             //     uni.navigateTo({
             //         url: '/packageB/pages/business/pay/cashier/cashier'

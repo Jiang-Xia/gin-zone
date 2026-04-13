@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
+	"strings"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/app/database"
@@ -42,17 +43,30 @@ func (m *Common) SignIn(c *gin.Context) {
 	err = database.Redis().Set(ctx, key, workKey, 180*time.Minute).Err()
 	data["sessionId"] = sessionId
 	data["workKey"] = workKey
-	pub, err := x509.ReadPublicKeyFromHex(config.App.PublicKey)
-	res, err := json.Marshal(data)
-	// 0 C1C3C2  1 C1C2C3
-	enByte, err := sm2.Encrypt(pub, res, rand.Reader, 0)
-	// log.Info("enByte================>", enByte)
-	hexStr := hex.EncodeToString(enByte)
-	//log.Info("hexStr================>", hexStr)
-	if err != nil {
-		response.Fail(c, err.Error(), nil)
+
+	pubHex := strings.TrimSpace(config.App.PublicKey)
+	if pubHex == "" {
+		response.Fail(c, "服务端未配置国密公钥 app.public_key，请检查 env.ini（Linux 为 /home/server/config/env.ini）", nil)
 		return
 	}
+	pub, err := x509.ReadPublicKeyFromHex(pubHex)
+	if err != nil || pub == nil {
+		response.Fail(c, "国密公钥解析失败，请确认 public_key 为合法 SM2 公钥十六进制字符串", err)
+		return
+	}
+
+	res, err := json.Marshal(data)
+	if err != nil {
+		response.Fail(c, "会话数据序列化失败", err.Error())
+		return
+	}
+	// 0 C1C3C2  1 C1C2C3
+	enByte, err := sm2.Encrypt(pub, res, rand.Reader, 0)
+	if err != nil {
+		response.Fail(c, "国密加密失败", err.Error())
+		return
+	}
+	hexStr := hex.EncodeToString(enByte)
 	response.Success(c, hexStr, "签到成功")
 }
 

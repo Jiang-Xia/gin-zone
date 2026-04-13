@@ -8,6 +8,7 @@ import {
   enableRequestCryptoDebugLog,
 } from './config.js'
 import {
+  clearCryptoSession,
   getSessionId,
   getWorkKey,
 } from './session.js'
@@ -29,7 +30,10 @@ function showToastAfterLoading(options) {
 
 // 日志打印时对 Authorization 做脱敏，避免把完整 token 打到控制台
 export class CommercialApi {
-  // 是否开启加解密：由本地存储 `zoneOpenCrypto` 控制（兼容旧版 openCrypto）
+  /** @type {Promise<void> | null} 并发 signIn 复用同一请求 */
+  _signInInFlight = null
+
+  // 是否开启加解密：默认开启；本地存储 zoneOpenCrypto='0' 关闭（兼容旧版 openCrypto）
   shouldOpenCrypto() {
     return isCryptoEnabled()
   }
@@ -38,6 +42,27 @@ export class CommercialApi {
   getToken() {
     const userStore = useUserStore()
     return userStore.token || ''
+  }
+
+  /**
+   * 与 restful 一致：仅相对路径走 baseUrl + 加密时，才需要先 signIn。
+   * 自定义 config.baseUrl、绝对 URL、以及 /common/signIn 本身不经过此处。
+   */
+  needsCryptoSession(url, config = {}) {
+    if (!this.shouldOpenCrypto()) return false
+    if (typeof url === 'string' && url.includes('/common/signIn')) return false
+    if (config.baseUrl) return false
+    if (typeof url === 'string' && url.indexOf('http') === 0) return false
+    return true
+  }
+
+  /**
+   * 加密链路：本类所有对外发网方法（get/post/…/request/upload）均先 await 此处，
+   * 再组包发请求。例外：`/common/signIn` 自身、`needsCryptoSession` 为 false 的路径不触发签到。
+   */
+  ensureCryptoSessionIfNeeded(url, config = {}) {
+    if (!this.needsCryptoSession(url, config)) return Promise.resolve()
+    return this.signIn()
   }
 
   // 转化 rest 风格 api：把 "/path/{id}" 里的 "{id}" 替换成 data[id]
@@ -153,6 +178,8 @@ export class CommercialApi {
           }
         } catch (error) {
           console.error('解密报文失败', error)
+          // 多半是 workKey/session 与后端不一致或已过期，清掉后下次请求会重新 signIn
+          clearCryptoSession()
           reject(error)
           showToastAfterLoading({
             title: '解密报文失败，请稍后重试',
@@ -194,6 +221,7 @@ export class CommercialApi {
   }
 
   async request(url, method = 'GET', data, config = {}) {
+    await this.ensureCryptoSessionIfNeeded(url, config)
     const loadingOpt = config.loading
     beginGlobalLoading(loadingOpt)
     const rest = this.restful(url, data, { ...config, method })
@@ -215,151 +243,161 @@ export class CommercialApi {
   }
 
   post(url, data, config = {}) {
-    return new Promise((resolve, reject) => {
-      const loadingOpt = config.loading
-      beginGlobalLoading(loadingOpt)
+    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
+      return new Promise((resolve, reject) => {
+        const loadingOpt = config.loading
+        beginGlobalLoading(loadingOpt)
 
-      let rest
-      try {
-        rest = this.restful(url, data, { ...config, method: 'POST' })
-      } catch (e) {
-        endGlobalLoading(loadingOpt)
-        reject(e)
-        return
-      }
+        let rest
+        try {
+          rest = this.restful(url, data, { ...config, method: 'POST' })
+        } catch (e) {
+          endGlobalLoading(loadingOpt)
+          reject(e)
+          return
+        }
 
-      uni.request({
-        url: rest.url,
-        data: rest.data,
-        method: 'POST',
-        header: rest.config.header,
-        complete: (res) => {
-          try {
-            this.complete(res, resolve, reject, url)
-          } finally {
-            endGlobalLoading(loadingOpt)
-          }
-        },
+        uni.request({
+          url: rest.url,
+          data: rest.data,
+          method: 'POST',
+          header: rest.config.header,
+          complete: (res) => {
+            try {
+              this.complete(res, resolve, reject, url)
+            } finally {
+              endGlobalLoading(loadingOpt)
+            }
+          },
+        })
       })
     })
   }
 
   get(url, data, config = {}) {
-    return new Promise((resolve, reject) => {
-      const loadingOpt = config.loading
-      beginGlobalLoading(loadingOpt)
+    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
+      return new Promise((resolve, reject) => {
+        const loadingOpt = config.loading
+        beginGlobalLoading(loadingOpt)
 
-      let rest
-      try {
-        rest = this.restful(url, data, { ...config, method: 'GET' })
-      } catch (e) {
-        endGlobalLoading(loadingOpt)
-        reject(e)
-        return
-      }
+        let rest
+        try {
+          rest = this.restful(url, data, { ...config, method: 'GET' })
+        } catch (e) {
+          endGlobalLoading(loadingOpt)
+          reject(e)
+          return
+        }
 
-      uni.request({
-        url: rest.url,
-        data: rest.data,
-        method: 'GET',
-        header: rest.config.header,
-        complete: (res) => {
-          try {
-            this.complete(res, resolve, reject, url)
-          } finally {
-            endGlobalLoading(loadingOpt)
-          }
-        },
+        uni.request({
+          url: rest.url,
+          data: rest.data,
+          method: 'GET',
+          header: rest.config.header,
+          complete: (res) => {
+            try {
+              this.complete(res, resolve, reject, url)
+            } finally {
+              endGlobalLoading(loadingOpt)
+            }
+          },
+        })
       })
     })
   }
 
   patch(url, data, config = {}) {
-    return new Promise((resolve, reject) => {
-      const loadingOpt = config.loading
-      beginGlobalLoading(loadingOpt)
+    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
+      return new Promise((resolve, reject) => {
+        const loadingOpt = config.loading
+        beginGlobalLoading(loadingOpt)
 
-      let rest
-      try {
-        rest = this.restful(url, data, { ...config, method: 'PATCH' })
-      } catch (e) {
-        endGlobalLoading(loadingOpt)
-        reject(e)
-        return
-      }
+        let rest
+        try {
+          rest = this.restful(url, data, { ...config, method: 'PATCH' })
+        } catch (e) {
+          endGlobalLoading(loadingOpt)
+          reject(e)
+          return
+        }
 
-      uni.request({
-        url: rest.url,
-        data: rest.data,
-        method: 'PATCH',
-        header: rest.config.header,
-        complete: (res) => {
-          try {
-            this.complete(res, resolve, reject, url)
-          } finally {
-            endGlobalLoading(loadingOpt)
-          }
-        },
+        uni.request({
+          url: rest.url,
+          data: rest.data,
+          method: 'PATCH',
+          header: rest.config.header,
+          complete: (res) => {
+            try {
+              this.complete(res, resolve, reject, url)
+            } finally {
+              endGlobalLoading(loadingOpt)
+            }
+          },
+        })
       })
     })
   }
 
   put(url, data, config = {}) {
-    return new Promise((resolve, reject) => {
-      const loadingOpt = config.loading
-      beginGlobalLoading(loadingOpt)
+    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
+      return new Promise((resolve, reject) => {
+        const loadingOpt = config.loading
+        beginGlobalLoading(loadingOpt)
 
-      let rest
-      try {
-        rest = this.restful(url, data, { ...config, method: 'PUT' })
-      } catch (e) {
-        endGlobalLoading(loadingOpt)
-        reject(e)
-        return
-      }
+        let rest
+        try {
+          rest = this.restful(url, data, { ...config, method: 'PUT' })
+        } catch (e) {
+          endGlobalLoading(loadingOpt)
+          reject(e)
+          return
+        }
 
-      uni.request({
-        url: rest.url,
-        data: rest.data,
-        method: 'PUT',
-        header: rest.config.header,
-        complete: (res) => {
-          try {
-            this.complete(res, resolve, reject, url)
-          } finally {
-            endGlobalLoading(loadingOpt)
-          }
-        },
+        uni.request({
+          url: rest.url,
+          data: rest.data,
+          method: 'PUT',
+          header: rest.config.header,
+          complete: (res) => {
+            try {
+              this.complete(res, resolve, reject, url)
+            } finally {
+              endGlobalLoading(loadingOpt)
+            }
+          },
+        })
       })
     })
   }
 
   del(url, data, config = {}) {
-    return new Promise((resolve, reject) => {
-      const loadingOpt = config.loading
-      beginGlobalLoading(loadingOpt)
+    return this.ensureCryptoSessionIfNeeded(url, config).then(() => {
+      return new Promise((resolve, reject) => {
+        const loadingOpt = config.loading
+        beginGlobalLoading(loadingOpt)
 
-      let rest
-      try {
-        rest = this.restful(url, data, { ...config, method: 'DELETE' })
-      } catch (e) {
-        endGlobalLoading(loadingOpt)
-        reject(e)
-        return
-      }
+        let rest
+        try {
+          rest = this.restful(url, data, { ...config, method: 'DELETE' })
+        } catch (e) {
+          endGlobalLoading(loadingOpt)
+          reject(e)
+          return
+        }
 
-      uni.request({
-        url: rest.url,
-        data: rest.data,
-        method: 'DELETE',
-        header: rest.config.header,
-        complete: (res) => {
-          try {
-            this.complete(res, resolve, reject, url)
-          } finally {
-            endGlobalLoading(loadingOpt)
-          }
-        },
+        uni.request({
+          url: rest.url,
+          data: rest.data,
+          method: 'DELETE',
+          header: rest.config.header,
+          complete: (res) => {
+            try {
+              this.complete(res, resolve, reject, url)
+            } finally {
+              endGlobalLoading(loadingOpt)
+            }
+          },
+        })
       })
     })
   }
@@ -367,26 +405,28 @@ export class CommercialApi {
   upload(filePath) {
     const loadingOpt = undefined
     beginGlobalLoading(loadingOpt)
-    return new Promise((resolve, reject) => {
-      uni.uploadFile({
-        url: baseUrl + '/base/upload',
-        filePath,
-        name: 'file',
-        header: {
-          Authorization: this.getToken(),
-        },
-        complete: (res) => {
-          try {
-            if (res.data) {
-              res.data = JSON.parse(res.data)
+    return this.ensureCryptoSessionIfNeeded('/base/upload', {}).then(() => {
+      return new Promise((resolve, reject) => {
+        uni.uploadFile({
+          url: baseUrl + '/base/upload',
+          filePath,
+          name: 'file',
+          header: {
+            Authorization: this.getToken(),
+          },
+          complete: (res) => {
+            try {
+              if (res.data) {
+                res.data = JSON.parse(res.data)
+              }
+              this.complete(res, resolve, reject, '/base/upload')
+            } catch (e) {
+              reject(e)
+            } finally {
+              endGlobalLoading(loadingOpt)
             }
-            this.complete(res, resolve, reject, '/base/upload')
-          } catch (e) {
-            reject(e)
-          } finally {
-            endGlobalLoading(loadingOpt)
-          }
-        },
+          },
+        })
       })
     })
   }
@@ -396,8 +436,10 @@ export class CommercialApi {
     // signIn：初始化 zoneSessionId + zoneWorkKey
     // 旧版约定：响应 data 为“加密字符串”，需要 sm2 解密后 JSON.parse
     if (!this.shouldOpenCrypto()) return Promise.resolve()
+    if (getSessionId() && getWorkKey()) return Promise.resolve()
+    if (this._signInInFlight) return this._signInInFlight
 
-    return this.post('/common/signIn', { sence: 'blog' })
+    this._signInInFlight = this.post('/common/signIn', { sence: 'blog' })
       .then((res) => {
         if (res?.data) {
           // 旧版约定：signIn 返回的数据是加密字符串，需要 sm2 解密后 parse
@@ -405,18 +447,25 @@ export class CommercialApi {
           const decrypted = sm2.doDecrypt(encrypted.slice(2), privateKey, 1)
           return JSON.parse(decrypted)
         }
+        throw new Error('signIn: empty response data')
       })
       .then((data) => {
-        if (data) {
+        if (data?.sessionId && data?.workKey) {
           uni.setStorageSync('zoneSessionId', data.sessionId)
           uni.setStorageSync('zoneWorkKey', data.workKey)
+          return
         }
+        throw new Error('signIn: missing sessionId or workKey')
       })
-      .catch(() => {
-        // 初始化失败回滚
-        uni.setStorageSync('zoneSessionId', '')
-        uni.setStorageSync('zoneWorkKey', '')
+      .catch((err) => {
+        clearCryptoSession()
+        throw err
       })
+      .finally(() => {
+        this._signInInFlight = null
+      })
+
+    return this._signInInFlight
   }
 }
 

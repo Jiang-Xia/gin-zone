@@ -4,7 +4,7 @@
 export function createApis(api) {
   return {
     auth: {
-      // 登录鉴权/会话密钥初始化
+      // 一般无需调用：CommercialApi 在加密链路的首个 get/post 前会自动 signIn；联调可手动调试用
       signIn: () => api.signIn(),
       login: (params) => api.post('/base/users/login', params),
       register: (params) => api.post('/base/users', params),

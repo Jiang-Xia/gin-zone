@@ -297,6 +297,13 @@ cd client
 npm run build
 ```
 
+**Pitfall (Linux server)**: After copying or building the binary on Linux, it may not have the execute bit. Running `./main`, `./zone-server`, etc. can fail with `bash: Permission denied`. From the binary’s directory run:
+
+```bash
+chmod +x ./main          # or match your -o name, e.g. zone-server
+./main
+```
+
 ## 🤝 Contributing
 
 Welcome to submit Issues and Pull Requests!

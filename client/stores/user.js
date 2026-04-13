@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { clearCryptoSession } from '@/common/request/session.js'
 
 // 用户态中心化：减少散落的 uni.setStorageSync/getStorageSync key
 export const useUserStore = defineStore('user', {
@@ -52,8 +53,7 @@ export const useUserStore = defineStore('user', {
     logout() {
       this.token = ''
       this.userInfo = {}
-      uni.setStorageSync('zoneSessionId', '')
-      uni.setStorageSync('zoneWorkKey', '')
+      clearCryptoSession()
     },
   },
   persist: {

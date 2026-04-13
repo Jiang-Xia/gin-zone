@@ -150,8 +150,6 @@ export default {
 			},
             async login() {
                 try {
-                    // 登录前：初始化加密会话密钥（common/signIn -> redis sessionId:sm4Key）
-                    await this.$apis.auth.signIn()
                     uni.showLoading({
                         title: ''
                     })
@@ -180,8 +178,6 @@ export default {
             },
             async register() {
                 try {
-                    // 注册前：初始化加密会话密钥（避免加密请求缺少 sm4Key）
-                    await this.$apis.auth.signIn()
                     const {
                         userName,
                         password

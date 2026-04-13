@@ -104,13 +104,8 @@
             },
         },
         onShow() {
-            // 轮播背景：复用博客首页逻辑（bing 每日图）
-            Promise.resolve()
-                .then(() => this.$apis?.auth?.signIn?.())
-                .catch(() => {})
-                .finally(() => {
-                    this.getImage()
-                })
+            // 轮播背景：复用博客首页逻辑（bing 每日图）；加密会话由请求层自动 signIn
+            this.getImage()
 
             const userStore = useUserStore()
             const token = userStore.token

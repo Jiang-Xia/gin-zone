@@ -254,6 +254,8 @@ CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o zone-server main.go
 go build -o zone-server.exe main.go
 ```
 
+**注意（Linux）**：二进制放到服务器上后若没有执行权限，运行 `./zone-server` 或 `./main` 会出现 `Permission denied`，需先执行 `chmod +x ./zone-server`（或与 `-o` 输出名一致），再启动。
+
 **2. 配置文件**
 - 修改 `config/env.prod.ini` 生产环境配置
 - 确保数据库、Redis连接信息正确

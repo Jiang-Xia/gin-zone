@@ -303,6 +303,13 @@ cd client
 npm run build
 ```
 
+**坑点（Linux 服务器）**：可执行文件拷贝或编译到 Linux 后，默认可能没有执行权限，直接运行 `./main`、`./zone-server` 等会报 `bash: Permission denied`。在二进制所在目录执行：
+
+```bash
+chmod +x ./main          # 或与 go build -o 指定的文件名一致，如 zone-server
+./main
+```
+
 ## 🤝 贡献指南
 
 欢迎提交 Issue 和 Pull Request！

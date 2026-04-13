@@ -18,3 +18,9 @@ export function setWorkKey(workKey) {
   uni.setStorageSync(WORK_KEY_KEY, workKey)
 }
 
+/** 清除加密会话（登出、签到失败、解密失败等） */
+export function clearCryptoSession() {
+  uni.setStorageSync(SESSION_ID_KEY, '')
+  uni.setStorageSync(WORK_KEY_KEY, '')
+}
+

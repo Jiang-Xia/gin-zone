@@ -25,9 +25,9 @@ if (env === 'production') {
   wsUrl = 'wss://jiang-xia.top/x-zone/api/v1'
   imageUrl = ''
   // 本地
-  // fileUrl = "http://127.0.0.1:9600"
-  // baseUrl = "http://127.0.0.1:9600/api/v1"
-  // wsUrl = "ws://127.0.0.1:9600/api/v1"
+  fileUrl = "http://127.0.0.1:9600"
+  baseUrl = "http://127.0.0.1:9600/api/v1"
+  wsUrl = "ws://127.0.0.1:9600/api/v1"
  
 }
 
@@ -42,13 +42,13 @@ const privateKey =
 // sm4 固定 key（兼容旧版逻辑；后续建议与 workKey 解耦）
 const sm4Key = '0123456789abcdeffedcba9876543210'
 
-// 控制加解密是否开启
-// 联调/灰度时可通过本地存储 zoneOpenCrypto=1 来开启
+// 控制加解密是否开启（默认开启）
+// 本地调试若要关闭：uni.setStorageSync('zoneOpenCrypto', '0')
 function isCryptoEnabled() {
   try {
-    return uni.getStorageSync('zoneOpenCrypto') === '1'
+    return uni.getStorageSync('zoneOpenCrypto') !== '0'
   } catch (e) {
-    return false
+    return true
   }
 }
 
