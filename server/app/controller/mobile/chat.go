@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gitee.com/jiang-xia/gin-zone/server/app/service"
+	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
 	"github.com/gin-gonic/gin"
@@ -23,14 +25,37 @@ type Chat struct {
 
 // 升级协议
 var upGrader = websocket.Upgrader{
-	// 解决跨域问题
-	CheckOrigin: func(r *http.Request) bool {
-		origin := r.Header.Get("Origin")
-		if origin == "" {
+	// 浏览器 Origin 是页面站点，常与 API 的 Host:端口 不一致（如 5173 -> 9600），不能只做 r.Host 相等判断
+	CheckOrigin: checkWebSocketOrigin,
+}
+
+func checkWebSocketOrigin(r *http.Request) bool {
+	origin := r.Header.Get("Origin")
+	if origin == "" {
+		return true
+	}
+	if origin == "http://"+r.Host || origin == "https://"+r.Host {
+		return true
+	}
+	if config.App != nil && strings.TrimSpace(config.App.AllowedOrigins) != "" {
+		for _, a := range strings.Split(config.App.AllowedOrigins, ",") {
+			a = strings.TrimSpace(a)
+			if a != "" && origin == a {
+				return true
+			}
+		}
+	}
+	ou, err := url.Parse(origin)
+	if err != nil {
+		return false
+	}
+	h := strings.ToLower(ou.Hostname())
+	if config.App != nil && strings.EqualFold(config.App.Env, "dev") {
+		if h == "localhost" || h == "127.0.0.1" || h == "::1" {
 			return true
 		}
-		return origin == "http://"+r.Host || origin == "https://"+r.Host
-	},
+	}
+	return false
 }
 
 // Client 客户端结构体

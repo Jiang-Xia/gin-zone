@@ -60,8 +60,14 @@ export const useChatStore = defineStore('chat', {
     },
     // 初始化聊天连接（可传 userId，不传则读取 userStore）
     initChat(userId) {
-      const currentUserId = userId || useUserStore().userId
+      const userStore = useUserStore()
+      const currentUserId = userId || userStore.userId
       if (!currentUserId) return null
+      const auth = userStore.token || ''
+      if (!auth) {
+        console.warn('WebSocket 未连接：缺少 token')
+        return null
+      }
       this.stopHeartbeat()
       // 已有连接先关闭，避免重复连接导致回调叠加
       if (this.socketTask) {
@@ -70,11 +76,20 @@ export const useChatStore = defineStore('chat', {
         } catch (e) {}
         this.socketTask = null
       }
-      const url = wsUrl + '/mobile/chat?userId=' + currentUserId
+      const bearer = auth.startsWith('Bearer ') ? auth : `Bearer ${auth}`
+      const url =
+        wsUrl +
+        '/mobile/chat?userId=' +
+        encodeURIComponent(currentUserId) +
+        '&token=' +
+        encodeURIComponent(bearer)
       const socketTask = uni.connectSocket({
         url,
         method: 'GET',
         multiple: true,
+        header: {
+          Authorization: bearer,
+        },
         success() {
           console.log('WebSocket连接成功！')
         },

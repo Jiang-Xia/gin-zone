@@ -41,7 +41,6 @@ func GMSMMiddleware() gin.HandlerFunc {
 		if security == "Jx-Security" && (method == "POST" || method == "PUT" || method == "PATCH") {
 			// 开始时间（可用于计算耗时）
 			start := time.Now()
-			log.Infof("处理加密计时开始: %s", start)
 			var err error
 
 			originBody, err := io.ReadAll(c.Request.Body)

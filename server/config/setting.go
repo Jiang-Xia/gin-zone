@@ -25,6 +25,8 @@ type appModel struct {
 	PublicPath      string `ini:"public_path"`
 	PublicKey       string `ini:"public_key"`
 	PrivateKey      string `ini:"private_key"`
+	// AllowedOrigins 逗号分隔，生产环境 WebSocket Origin 白名单（dev 下本机多端口见 chat 内逻辑）
+	AllowedOrigins string `ini:"allowed_origins"`
 }
 
 // 数据库配置

@@ -314,7 +314,13 @@ func (u *User) WeiXinLogin(c *gin.Context) {
 		response.Fail(c, "创建用户失败", nil)
 		return
 	}
-	generateToken(c, user)
+	// AfterCreate 会写库 user_name，内存 user 未刷新，需重读再签发 JWT
+	fresh, err := service.User.Get(user.ID)
+	if err != nil {
+		response.Fail(c, "创建用户失败", nil)
+		return
+	}
+	generateToken(c, fresh)
 }
 
 // RefreshAuthUserInfo 刷新授权信息

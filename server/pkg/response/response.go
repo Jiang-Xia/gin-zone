@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/config"
@@ -35,7 +37,7 @@ func Response(c *gin.Context, code int, data interface{}) bool {
 		Data: data,
 	}
 	if config.App.Env == "dev" {
-		log.Infof("响应数据: %+v", res)
+		logRes(res, false)
 	}
 	c.JSON(http.StatusOK, res)
 	return true
@@ -62,7 +64,7 @@ func Success(c *gin.Context, data interface{}, msg string) bool {
 	}
 
 	if config.App.Env == "dev" {
-		log.Infof("响应数据: %+v", res)
+		logRes(res, false)
 	}
 	c.JSON(http.StatusOK, res)
 	return true
@@ -85,12 +87,34 @@ func Fail(c *gin.Context, msg string, data interface{}) bool {
 		}
 		res.Encrypt = ""
 	}
-	log.Infof("失败响应数据: %+v", res)
+	if config.App.Env == "dev" {
+		logRes(res, true)
+	}
 	c.JSON(http.StatusOK, res)
 	return true
 }
 
 var ctx = context.Background()
+
+func logRes(res ResType, isFail bool) {
+	encryptLen := 0
+	if res.Encrypt != "" {
+		encryptLen = len(res.Encrypt)
+	}
+	dataType := "<nil>"
+	if res.Data != nil {
+		dataType = fmt.Sprintf("%T", res.Data)
+	}
+	msg := strings.TrimSpace(res.Msg)
+	if len(msg) > 120 {
+		msg = msg[:120] + "..."
+	}
+	prefix := "响应"
+	if isFail {
+		prefix = "失败响应"
+	}
+	log.Infof("%s: code=%d msg=%q dataType=%s encryptLen=%d", prefix, res.Code, msg, dataType, encryptLen)
+}
 
 // 加解密统一处理
 func crypto(c *gin.Context, res *ResType) error {

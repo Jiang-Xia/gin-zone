@@ -49,6 +49,9 @@ var (
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
+		if len(token) == 0 {
+			token = c.Query("token")
+		}
 		//去除 Bearer
 		token = strings.Replace(token, "Bearer ", "", 1)
 		// 没有token 直接中断
@@ -68,8 +71,8 @@ func JWTAuth() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		//需判断解析后的token是否真是存在用户
-		if claims.UserName == "" {
+		// 以 userId 为准：微信用户 JWT 里可能暂无 user_name，但 userId 在 BeforeCreate 已生成
+		if claims.UserId == "" {
 			response.Fail(c, "token无效", gin.H{"reload": true})
 			c.Abort()
 			return
