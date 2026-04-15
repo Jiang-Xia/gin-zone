@@ -41,7 +41,7 @@ export default function SideNav({ collapsed, theme, activePath, items, onSelect 
           </Menu.MenuItem>
         ))}
       </Menu>
-      {!collapsed && <div className="sider-footer">TDesign Starter 0.3.1</div>}
+      {!collapsed && <div className="sider-footer">Zone Admin 1.0.0</div>}
     </div>
   );
 }

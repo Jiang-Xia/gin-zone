@@ -1,5 +1,5 @@
 {
-  "name": "admin2",
+  "name": "admin",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -20,6 +20,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.14.1",
+    "sm-crypto": "^0.4.0",
     "tdesign-icons-react": "latest",
     "tdesign-react": "latest",
     "tvision-color": "^1.6.0"
