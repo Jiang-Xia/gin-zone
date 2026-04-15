@@ -1,0 +1,26 @@
+---
+description: admin 页面开发复用优先（Hook、容器组件、工具栏）
+globs: admin/src/pages/**/*.tsx
+alwaysApply: false
+---
+
+# 页面复用优先（admin）
+
+## 首选复用能力
+
+- 列表页优先复用 `useListPage` 管理 query/loading/list/total/reload。
+- 弹窗表单优先复用 `useDialogForm` 管理 visible/form/reset。
+- 提示文案优先复用 `useApiMessage`，统一 success/warning/error 行为。
+- 页面外壳优先复用 `PageContainer`，工具栏优先复用 `ListToolbar`。
+
+## 新页面开发顺序
+
+1. 先确认是否存在可复用 API 模块与 Hook。
+2. 再组合容器组件搭好页面骨架。
+3. 最后补充该页面特有交互逻辑，避免从零堆模板代码。
+
+## 禁止项（默认）
+
+- 不在页面里重复封装已有的列表请求状态机。
+- 不在多个页面复制同结构工具栏 JSX。
+- 不把可复用函数只写在单个页面里并重复粘贴。

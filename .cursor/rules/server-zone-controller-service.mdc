@@ -1,0 +1,33 @@
+---
+description: server 控制器与服务层落地规范（参数绑定、越权校验、事务、分页）
+globs:
+  - server/app/controller/**/*.go
+  - server/app/service/**/*.go
+  - server/app/model/**/*.go
+alwaysApply: false
+---
+
+# Controller / Service 规范（server）
+
+## Controller 只做四件事
+
+1. 参数绑定与校验（`ShouldBindJSON` / `ShouldBind` + translate）。
+2. 基础权限判断（如资源归属、当前用户身份校验）。
+3. 调用 service 处理业务。
+4. 统一通过 `response.Success/Fail` 返回。
+
+## Service 约束
+
+- Service 负责业务编排，不依赖 Gin Context。
+- 多步写操作（例如先查再改、多表写入）优先使用事务，避免部分成功。
+- 查询逻辑优先复用 `pkg/utils/pagination.go` 等公共分页能力，避免散写。
+- 所有 DB 写操作必须检查 `Error`，禁止忽略失败分支。
+
+## 越权与身份
+
+- 用户敏感操作以 JWT 上下文身份为准（`current_user_id/current_user_uid`），不信任前端传入身份字段。
+- 删除/更新等操作必须做“当前用户是否可操作该资源”的显式校验。
+
+## Swagger 约定
+
+- 新增或变更控制器接口时，同步更新 Swagger 注释（Summary/Param/Success/Router/Security）。

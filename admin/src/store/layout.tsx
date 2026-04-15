@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { PropsWithChildren } from 'react';
+import { Color } from 'tvision-color';
 
 type ThemeMode = 'light' | 'dark' | 'auto';
 type NavLayout = 'side' | 'top' | 'mix';
@@ -29,6 +30,7 @@ interface LayoutSettingsContextValue {
 }
 
 const STORAGE_KEY = 'layout_settings_v1';
+// 产品要求的默认主题色
 const DEFAULT_THEME_COLOR = '#f00057';
 
 const defaultSettings: LayoutSettingsState = {
@@ -54,6 +56,11 @@ const presetThemeColors = [
 
 const LayoutSettingsContext = createContext<LayoutSettingsContextValue | null>(null);
 
+/**
+ * 解析十六进制颜色字符串：
+ * - 支持 `#RGB` / `#RRGGBB` / `RGB` / `RRGGBB`
+ * - 非法输入返回 null
+ */
 function parseHexColor(input: string): [number, number, number] | null {
   const value = input.trim().replace('#', '');
   const normalized = value.length === 3 ? value.split('').map((c) => `${c}${c}`).join('') : value;
@@ -67,42 +74,60 @@ function parseHexColor(input: string): [number, number, number] | null {
   ];
 }
 
-function toHexChannel(value: number): string {
-  return Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, '0');
-}
-
-function rgbToHex(rgb: [number, number, number]): string {
-  return `#${toHexChannel(rgb[0])}${toHexChannel(rgb[1])}${toHexChannel(rgb[2])}`;
-}
-
-function mixColor(base: [number, number, number], target: [number, number, number], ratio: number): [number, number, number] {
-  return [
-    base[0] * (1 - ratio) + target[0] * ratio,
-    base[1] * (1 - ratio) + target[1] * ratio,
-    base[2] * (1 - ratio) + target[2] * ratio,
-  ];
-}
-
+/**
+ * 将单个品牌色映射到一组 TDesign 常用 CSS 变量。
+ * 这里不是完整调色板实现，只提供 hover/active/浅色背景等基础能力，保证交互态一致。
+ */
 function applyThemeColor(color: string, mode: 'light' | 'dark') {
-  const rgb = parseHexColor(color) ?? parseHexColor(DEFAULT_THEME_COLOR);
-  if (!rgb) {
+  // 使用 tvision-color 生成 10 阶色板（与 demo-admin 一致），确保 hover/active/focus 等变量完整覆盖
+  const hex = parseHexColor(color) ? color : DEFAULT_THEME_COLOR;
+  const root = document.documentElement;
+
+  const gradations = Color.getColorGradations({
+    colors: [hex],
+    step: 10,
+    remainInput: false,
+  })?.[0];
+  if (!gradations?.colors?.length) {
     return;
   }
-  const root = document.documentElement;
-  const white: [number, number, number] = [255, 255, 255];
-  const black: [number, number, number] = [0, 0, 0];
-  const light1 = rgbToHex(mixColor(rgb, white, mode === 'light' ? 0.9 : 0.35));
-  const light2 = rgbToHex(mixColor(rgb, white, mode === 'light' ? 0.8 : 0.25));
-  const hover = rgbToHex(mixColor(rgb, white, mode === 'light' ? 0.1 : 0.2));
-  const active = rgbToHex(mixColor(rgb, black, mode === 'light' ? 0.1 : 0.18));
-  root.style.setProperty('--td-brand-color', rgbToHex(rgb));
-  root.style.setProperty('--td-brand-color-1', light1);
-  root.style.setProperty('--td-brand-color-2', light2);
-  root.style.setProperty('--td-brand-color-7', hover);
-  root.style.setProperty('--td-brand-color-8', rgbToHex(rgb));
-  root.style.setProperty('--td-brand-color-9', active);
+
+  let palette = [...gradations.colors];
+  let brandIndex = gradations.primary;
+
+  // 暗色模式下将色板反转，并轻微调整饱和度，让层级更自然（参考 demo-admin）
+  if (mode === 'dark') {
+    palette = palette
+      .reverse()
+      .map((c) => {
+        const [h, s, l] = Color.colorTransform(c, 'hex', 'hsl');
+        return Color.colorTransform([h, Number(s) - 4, l], 'hsl', 'hex') as string;
+      });
+    brandIndex = 10 - brandIndex;
+    palette[0] = `${palette[brandIndex]}20`;
+  }
+
+  // 写入完整 brand 色阶变量（1~10），避免组件 hover 仍使用默认蓝色
+  root.style.setProperty('--td-brand-color', palette[brandIndex]);
+  root.style.setProperty('--td-brand-color-1', palette[0]);
+  root.style.setProperty('--td-brand-color-2', palette[1]);
+  root.style.setProperty('--td-brand-color-3', palette[2]);
+  root.style.setProperty('--td-brand-color-4', palette[3]);
+  root.style.setProperty('--td-brand-color-5', palette[4]);
+  root.style.setProperty('--td-brand-color-6', palette[5]);
+  root.style.setProperty('--td-brand-color-7', brandIndex > 0 ? palette[brandIndex - 1] : palette[brandIndex]);
+  root.style.setProperty('--td-brand-color-8', palette[brandIndex]);
+  root.style.setProperty('--td-brand-color-9', brandIndex > 8 ? palette[brandIndex] : palette[brandIndex + 1]);
+  root.style.setProperty('--td-brand-color-10', palette[9]);
+
+  // 兼容 demo-admin 的属性（方便以后复用其插入样式的策略）
+  root.setAttribute('theme-color', hex || '');
 }
 
+/**
+ * 从 localStorage 恢复页面配置，并做严格校验+默认值兜底。
+ * 目的：避免本地缓存被手工改坏/字段变更后导致页面白屏。
+ */
 function getInitialSettings(): LayoutSettingsState {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
@@ -131,8 +156,10 @@ function getInitialSettings(): LayoutSettingsState {
 
 export function LayoutSettingsProvider({ children }: PropsWithChildren) {
   const [settings, setSettings] = useState<LayoutSettingsState>(getInitialSettings);
+  // 仅 themeMode === 'auto' 时使用：跟随系统深色模式
   const [systemDark, setSystemDark] = useState<boolean>(() => window.matchMedia('(prefers-color-scheme: dark)').matches);
 
+  // 实际应用到页面的主题：当 themeMode=auto 时由系统主题决定
   const resolvedTheme: 'light' | 'dark' = settings.themeMode === 'auto' ? (systemDark ? 'dark' : 'light') : settings.themeMode;
 
   useEffect(() => {
@@ -143,10 +170,13 @@ export function LayoutSettingsProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
+    // 持久化页面配置：刷新后保持用户偏好
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings]);
 
   useEffect(() => {
+    // 1) CSS 用 [theme-mode] 选择器做亮/暗变量切换
+    // 2) 同时注入品牌色相关变量，保持组件高亮色一致
     document.documentElement.setAttribute('theme-mode', resolvedTheme);
     applyThemeColor(settings.themeColor, resolvedTheme);
   }, [resolvedTheme, settings.themeColor]);

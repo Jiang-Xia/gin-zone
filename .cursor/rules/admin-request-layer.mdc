@@ -1,0 +1,29 @@
+---
+description: admin 请求层与 API 语义层约定（http 封装、模块 API、CRUD 工厂）
+globs:
+  - admin/src/api/**/*
+  - admin/src/pages/**/*.tsx
+alwaysApply: false
+---
+
+# 请求层与 API 语义层（admin）
+
+## 单一入口：模块 API
+
+- 页面层优先调用 `src/api/modules/*` 暴露的方法，不在页面里拼 URL。
+- 新增接口优先补到对应 `modules` 文件，再被页面引用。
+
+## `http.ts` 的定位
+
+- `src/api/http.ts` 作为请求底座，集中处理 token 注入、响应解包、统一报错。
+- 页面与业务模块不要重复写拦截器、`response.data.data` 解包逻辑。
+
+## CRUD 工厂优先
+
+- 标准资源接口优先复用 `createCrudApi` 生成 `list/detail/create/update/remove`。
+- 若某个资源有特殊接口（如动作类接口），在模块中按语义单独补充，不破坏统一风格。
+
+## 错误处理
+
+- 页面提示优先复用 `useApiMessage`，不要在各页面重复 `MessagePlugin.error(...)` 模板代码。
+- API 模块返回尽量是“可直接消费的业务数据”，减少页面层兜底复杂度。

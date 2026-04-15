@@ -1,0 +1,239 @@
+.td-layout-shell {
+  height: 100%;
+  background: var(--app-page-bg);
+  overflow: hidden;
+}
+
+.td-layout-main {
+  height: 100%;
+  display: flex;
+  flex-direction: row !important;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.td-layout-sider-wrap {
+  flex: 0 0 232px;
+  width: 232px;
+  height: 100%;
+  background: var(--app-sider-bg);
+  border-right: 1px solid var(--app-border);
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.2s ease, flex-basis 0.2s ease;
+}
+
+.td-layout-sider-wrap.collapsed {
+  flex-basis: 64px;
+  width: 64px;
+}
+
+.app-logo-wrap {
+  margin-bottom: 8px;
+  padding: 12px 16px 14px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.app-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo-img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.app-logo {
+  margin: 0;
+  font-size: 18px;
+  color: var(--app-text-primary);
+}
+
+.app-logo-subtitle {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--app-text-secondary);
+}
+
+.app-menu {
+  border-right: 0 !important;
+  padding: 8px 10px;
+  flex: 1;
+  overflow: auto;
+}
+
+.app-menu .t-menu__item {
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.app-menu .t-menu__item:hover:not(.t-is-active) {
+  background-color: var(--td-bg-color-container-hover);
+  color: var(--td-text-color-primary);
+}
+
+.app-menu .t-menu__item.t-is-active:not(.t-is-opened) {
+  background-color: var(--td-brand-color-1);
+  color: var(--td-brand-color);
+}
+
+.app-menu .t-menu__item.t-is-active:not(.t-is-opened) .t-icon {
+  color: var(--td-brand-color);
+}
+
+.sider-footer {
+  height: 44px;
+  border-top: 1px solid var(--app-border);
+  color: var(--app-text-secondary);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-header {
+  min-height: 56px;
+  background: var(--app-header-bg);
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--app-border);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(8px);
+}
+
+.header-search {
+  width: 280px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-title h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.header-title p {
+  margin: 4px 0 0;
+  color: var(--app-text-secondary);
+  font-size: 12px;
+}
+
+.user-block {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.user-block.clickable {
+  cursor: pointer;
+}
+
+.user-block.clickable:hover {
+  background: var(--td-bg-color-container-hover);
+}
+
+.app-content {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+}
+
+.app-content.compact {
+  padding: 12px;
+}
+
+.page-header {
+  margin-bottom: 8px;
+  padding: 0 2px;
+}
+
+.page-header .t-breadcrumb {
+  font-size: 12px;
+  color: var(--app-text-secondary);
+}
+
+.page-body {
+  min-height: calc(100vh - 136px);
+  background: var(--app-card-bg);
+  border-radius: 3px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
+  padding: 30px 32px;
+}
+
+.app-footer {
+  height: 44px;
+  border-top: 1px solid var(--app-border);
+  color: var(--app-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  background: var(--app-header-bg);
+}
+
+.page-subsection {
+  border-top: 1px solid var(--app-border);
+  padding-top: 20px;
+}
+
+.subsection-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-form-centered {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.inline-form {
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+}
+
+.upload-input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.top-nav-wrap {
+  background: var(--app-header-bg);
+  border-bottom: 1px solid var(--app-border);
+  padding: 0 12px;
+}
+
+.top-nav-menu {
+  border-bottom: 0 !important;
+}

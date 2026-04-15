@@ -10,8 +10,10 @@ export interface SideMenuItem {
 
 interface SideNavProps {
   collapsed: boolean;
+  // 控制菜单亮/暗主题，与当前 theme-mode 保持一致
   theme: 'light' | 'dark';
   activePath: string;
+  // 菜单项（已在 MainLayout 中按角色过滤成扁平结构）
   items: SideMenuItem[];
   onSelect: (path: string) => void;
 }

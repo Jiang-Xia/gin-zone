@@ -1,0 +1,42 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --app-sider-bg: #ffffff;
+  --app-page-bg: #f5f7fb;
+  --app-header-bg: #ffffff;
+  --app-card-bg: #ffffff;
+  --app-text-primary: #111827;
+  --app-text-secondary: #6b7280;
+  --app-border: #e7ebf3;
+  --app-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+:root[theme-mode='dark'] {
+  --app-sider-bg: #1f2937;
+  --app-page-bg: #111827;
+  --app-header-bg: #1f2937;
+  --app-card-bg: #1f2937;
+  --app-text-primary: #f3f4f6;
+  --app-text-secondary: #9ca3af;
+  --app-border: #374151;
+  --app-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--app-page-bg);
+  color: var(--app-text-primary);
+  overflow: hidden;
+}
+
+#root {
+  min-height: 100%;
+}

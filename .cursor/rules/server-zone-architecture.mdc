@@ -1,0 +1,31 @@
+---
+description: gin-zone 后端架构总览（server 同时服务 admin 与 client）
+globs: server/**/*
+alwaysApply: false
+---
+
+# Server 架构规则（gin-zone）
+
+## 定位
+
+- `server` 是 `admin` 与 `client` 的统一后端服务，接口分组必须清晰，避免“端侧耦合”。
+- 新功能先确认服务对象：
+  - 后台能力优先挂到 `api/v1/admin` 或 `api/v1/base`
+  - 移动端能力优先挂到 `api/v1/mobile`
+  - 公共能力放 `api/v1/common` 或 `api/v1/third`
+
+## 分层与目录
+
+- `router/`：只做路由分组与中间件装配，不写业务逻辑。
+- `app/controller/`：参数绑定、权限判断、调用 service、统一 response 返回。
+- `app/service/`：业务编排与数据处理，避免 HTTP 细节侵入。
+- `app/model/`：模型定义与 ORM 映射，承载校验标签与基础字段。
+- `app/database/`：MySQL/Redis 初始化与连接入口。
+- `middleware/`：JWT、日志、跨域、加密、代理等横切能力。
+- `pkg/`：通用能力（`response`、`tip`、`utils`、`hash`、`translate`）。
+
+## 变更原则
+
+- 新增接口优先按现有分层落位，不跨层直接调用。
+- 非必要不改全局中间件顺序，避免影响所有端侧请求链路。
+- 兼容性变更优先“增量扩展”，避免破坏 `admin/client` 既有调用。

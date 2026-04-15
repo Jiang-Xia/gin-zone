@@ -11,7 +11,9 @@ interface AppTopBarProps {
   collapsed: boolean;
   userName: string;
   avatar?: string;
+  // 切换侧边导航折叠状态
   onToggleCollapsed: () => void;
+  // 打开“页面配置”抽屉
   onOpenSetting: () => void;
   onProfile: () => void;
   onLogout: () => void;

@@ -1,0 +1,37 @@
+---
+description: admin 强制守护规则（请求层与复用红线，始终应用）
+globs:
+  - admin/src/**/*.ts
+  - admin/src/**/*.tsx
+alwaysApply: true
+---
+
+# Admin 强制守护（Hard Guards）
+
+## 红线 1：页面不直写 URL
+
+- 页面层禁止直接拼接请求 URL。
+- 接口调用必须走 `src/api/modules/*` 或公共 API 工具层。
+
+## 红线 2：请求封装不重复
+
+- 禁止在页面中重复写 `response.data.data` 解包。
+- token 注入、错误归一化统一由 `api/http.ts` 处理。
+
+## 红线 3：提示逻辑不散写
+
+- 页面提示优先复用 `useApiMessage`，避免重复模板代码。
+
+## 红线 4：列表状态不重复造轮子
+
+- 标准列表页优先复用 `useListPage`。
+- 弹窗表单优先复用 `useDialogForm`。
+
+## 红线 5：路由权限单点
+
+- 菜单过滤与路由守卫必须复用统一权限函数（如 `canAccessRoute`）。
+- 禁止在多个位置复制不同版本的角色判断逻辑。
+
+## 红线 6：非兼容接口改动先适配
+
+- 后端接口字段或语义变更时，先完成 admin 侧 API 与页面适配，再合并。

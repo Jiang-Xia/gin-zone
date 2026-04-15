@@ -5,6 +5,7 @@ import RequireAuth from './RequireAuth';
 import { AuthProvider } from '../store/auth';
 import { TOKEN_KEY, USER_KEY } from '../constants/auth';
 
+// 测试辅助：给 RequireAuth 包一层 MemoryRouter，便于断言重定向结果
 function renderWithRouter(initialPath: string) {
   return render(
     <AuthProvider>
@@ -23,6 +24,7 @@ function renderWithRouter(initialPath: string) {
 
 describe('RequireAuth', () => {
   it('redirects to login when token missing', () => {
+    // 未登录：应重定向到登录页
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     renderWithRouter('/user/list');
@@ -30,6 +32,7 @@ describe('RequireAuth', () => {
   });
 
   it('redirects to 403 when role missing', () => {
+    // 已登录但缺少 admin 角色：应重定向到 403
     localStorage.setItem(TOKEN_KEY, 'Bearer token');
     localStorage.setItem(
       USER_KEY,

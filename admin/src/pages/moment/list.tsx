@@ -1,77 +1,95 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Avatar, Button, Dialog, Input, MessagePlugin, Table, Tag } from 'tdesign-react';
+import { useMemo, useState } from 'react';
+import { Avatar, Button, Dialog, Input, Table, Tag } from 'tdesign-react';
 import { SearchIcon } from 'tdesign-icons-react';
 import { addMoment, getMomentList, MomentItem, updateMoment } from '../../api/modules/moment';
 import { useAuth } from '../../store/auth';
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../constants/pagination';
+import styles from './list.module.less';
+import { useListPage } from '../../hooks/useListPage';
+import { useDialogForm } from '../../hooks/useDialogForm';
+import { useApiMessage } from '../../hooks/useApiMessage';
+import PageContainer from '../../components/PageContainer';
+import ListToolbar from '../../components/ListToolbar';
 
+// 静态资源前缀（用于拼接图片完整访问地址）
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 export default function MomentListPage() {
   const { userInfo } = useAuth();
-  const [list, setList] = useState<MomentItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const message = useApiMessage();
+  // 关键字搜索
   const [keyword, setKeyword] = useState('');
-  const [page, setPage] = useState(DEFAULT_PAGE);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
-  const [total, setTotal] = useState(0);
+  // 表格多选：记录选中行 id
   const [selectedRowKeys, setSelectedRowKeys] = useState<Array<string | number>>([]);
-  const [showPublish, setShowPublish] = useState(false);
+  // 图片预览弹窗：保存当前预览图片地址
   const [previewImage, setPreviewImage] = useState('');
-  const [publishForm, setPublishForm] = useState({
-    content: '',
-    urls: '',
-    location: '',
-    userId: String(userInfo?.userId ?? ''),
+  // 发布动态弹窗表单：复用弹窗状态与表单重置逻辑
+  const {
+    visible: showPublish,
+    form: publishForm,
+    setForm: setPublishForm,
+    openDialog: openPublishDialog,
+    closeDialog: closePublishDialog,
+    resetForm: resetPublishForm,
+  } = useDialogForm({
+    initialValues: {
+      content: '',
+      urls: '',
+      location: '',
+      userId: String(userInfo?.userId ?? ''),
+    },
   });
-
-  const fetchList = async () => {
-    setLoading(true);
-    try {
-      const res = await getMomentList({ page, pageSize, content: keyword });
-      const serverList = res?.list ?? [];
-      setList(serverList);
-      setTotal(res?.total ?? serverList.length);
-    } catch (error) {
-      MessagePlugin.error(error instanceof Error ? error.message : '获取动态列表失败');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, pageSize]);
+  // 列表页公共状态：集中管理分页查询、loading 与请求刷新
+  const { query, list, total, loading, reload } = useListPage<
+    MomentItem,
+    { page: number; pageSize: number; content: string }
+  >({
+    initialQuery: {
+      page: DEFAULT_PAGE,
+      pageSize: DEFAULT_PAGE_SIZE,
+      content: '',
+    },
+    request: async (nextQuery) => {
+      try {
+        return await getMomentList(nextQuery);
+      } catch (error) {
+        message.error(error, '获取动态列表失败');
+        return { list: [], total: 0 };
+      }
+    },
+  });
 
   const rows = useMemo(
     () =>
       list.map(item => ({
         ...item,
+        // 后端 urls 为逗号分隔字符串，这里转成数组供表格渲染
         imageList: item.urls ? item.urls.split(',').filter(Boolean) : [],
       })),
     [list],
   );
 
+  // 操作：点赞/浏览量（示例接口）
   const onOperate = async (id: number, type: 'like' | 'view') => {
     try {
       await updateMoment(id, type);
-      MessagePlugin.success(type === 'like' ? '点赞成功' : '浏览量更新成功');
-      fetchList();
+      message.success(type === 'like' ? '点赞成功' : '浏览量更新成功');
+      await reload();
     } catch (error) {
-      MessagePlugin.error(error instanceof Error ? error.message : '操作失败');
+      message.error(error, '操作失败');
     }
   };
 
+  // 发布动态：成功后关闭弹窗并清空表单
   const onPublish = async () => {
     try {
       await addMoment(publishForm);
-      MessagePlugin.success('发布动态成功');
-      setShowPublish(false);
-      setPublishForm((prev) => ({ ...prev, content: '', urls: '', location: '' }));
-      fetchList();
+      message.success('发布动态成功');
+      resetPublishForm();
+      closePublishDialog(false);
+      await reload();
     } catch (error) {
-      MessagePlugin.error(error instanceof Error ? error.message : '发布失败');
+      message.error(error, '发布失败');
     }
   };
 
@@ -81,7 +99,7 @@ export default function MomentListPage() {
       title: '用户',
       width: 200,
       cell: ({ row }: { row: MomentItem }) => (
-        <div className="user-cell">
+        <div className={styles.userCell}>
           <Avatar image={row.userInfo?.avatar} />
           <span>{row.userInfo?.nickName || '-'}</span>
         </div>
@@ -93,13 +111,13 @@ export default function MomentListPage() {
       title: '动态图片',
       width: 220,
       cell: ({ row }: { row: MomentItem & { imageList?: string[] } }) => (
-        <div className="img-cell">
+        <div className={styles.imgCell}>
           {(row.imageList ?? []).slice(0, 3).map(url => (
             <img
               key={url}
               src={`${baseUrl}${url}`}
               alt="moment"
-              className="moment-clickable-image"
+              className={styles.clickableImage}
               onClick={() => setPreviewImage(`${baseUrl}${url}`)}
             />
           ))}
@@ -136,35 +154,51 @@ export default function MomentListPage() {
   ];
 
   return (
-    <div className="list-page">
-      <div className="list-toolbar">
-        <div className="list-toolbar-left">
-          <Button theme="primary" onClick={() => setShowPublish(true)}>
-            发布动态
-          </Button>
-          <Button theme="default" variant="outline">
-            导出列表
-          </Button>
-          <span className="selected-info">已选 {selectedRowKeys.length} 项</span>
-        </div>
+    <PageContainer>
+      <ListToolbar
+        className={styles.toolbar}
+        leftClassName={styles.toolbarLeft}
+        left={
+          <>
+            <Button
+              theme="primary"
+              onClick={() =>
+                openPublishDialog({
+                  userId: String(userInfo?.userId ?? ''),
+                })
+              }
+            >
+              发布动态
+            </Button>
+            <Button theme="default" variant="outline">
+              导出列表
+            </Button>
+            <span className={styles.selectedInfo}>已选 {selectedRowKeys.length} 项</span>
+          </>
+        }
+        right={
         <Input
-          className="list-search"
+          className={styles.search}
           value={keyword}
           onChange={setKeyword}
-          placeholder="请输入你需要搜索的型号"
+          placeholder="请输入你需要搜索的动态"
           suffixIcon={<SearchIcon />}
           clearable
           onEnter={() => {
-            if (page === 1) {
-              fetchList();
+            if (query.page === 1) {
+              reload({ content: keyword });
               return;
             }
-            setPage(1);
+            reload({
+              page: 1,
+              content: keyword,
+            });
           }}
         />
-      </div>
+        }
+      />
 
-      <div className="list-table-wrap">
+      <div className={styles.tableWrap}>
         <Table
           rowKey="id"
           data={rows}
@@ -180,18 +214,22 @@ export default function MomentListPage() {
           selectedRowKeys={selectedRowKeys}
           onSelectChange={value => setSelectedRowKeys(value)}
           pagination={{
-            current: page,
-            pageSize,
+            current: query.page,
+            pageSize: query.pageSize,
             total,
             showJumper: true,
             showPageSize: true,
             pageSizeOptions: PAGE_SIZE_OPTIONS,
             onCurrentChange: currentValue => {
-              setPage(currentValue);
+              reload({
+                page: currentValue,
+              });
             },
             onPageSizeChange: size => {
-              setPageSize(size);
-              setPage(1);
+              reload({
+                page: 1,
+                pageSize: size,
+              });
             },
           }}
         />
@@ -200,7 +238,7 @@ export default function MomentListPage() {
       <Dialog
         header="发布动态"
         visible={showPublish}
-        onClose={() => setShowPublish(false)}
+        onClose={() => closePublishDialog()}
         onConfirm={onPublish}
       >
         <div className="form-grid">
@@ -233,8 +271,8 @@ export default function MomentListPage() {
         onClose={() => setPreviewImage('')}
         footer={false}
       >
-        {previewImage ? <img className="moment-preview-image" src={previewImage} alt="preview" /> : null}
+        {previewImage ? <img className={styles.previewImage} src={previewImage} alt="preview" /> : null}
       </Dialog>
-    </div>
+    </PageContainer>
   );
 }

@@ -1,41 +1,52 @@
-import { useEffect, useState } from 'react';
-import { Button, Dialog, Input, MessagePlugin, Popconfirm, Table } from 'tdesign-react';
+import { useState } from 'react';
+import { Button, Dialog, Input, Popconfirm, Table } from 'tdesign-react';
 import { SearchIcon } from 'tdesign-icons-react';
 import { deleteUser, getUserList, registerUser } from '../../api/modules/user';
 import type { UserInfo } from '../../store/auth';
+import commonStyles from '../../styles/common.module.less';
+import { useListPage } from '../../hooks/useListPage';
+import { useDialogForm } from '../../hooks/useDialogForm';
+import { useApiMessage } from '../../hooks/useApiMessage';
+import PageContainer from '../../components/PageContainer';
+import ListToolbar from '../../components/ListToolbar';
 
 export default function UserManagePage() {
+  const message = useApiMessage();
+  // 搜索关键字（后端接口使用 q 进行模糊查询）
   const [q, setQ] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<UserInfo[]>([]);
-  const [registerForm, setRegisterForm] = useState({
-    userName: '',
-    password: '',
-    nickName: '',
-    email: '',
+  // 列表页公共状态：统一管理 loading/list/total 和刷新逻辑
+  const { list: users, loading, total, reload } = useListPage<UserInfo, { q: string }>({
+    initialQuery: { q: '' },
+    request: async (query) => {
+      try {
+        return await getUserList(query.q);
+      } catch (error) {
+        message.error(error, '获取用户列表失败');
+        return { list: [], total: 0 };
+      }
+    },
   });
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  // 新增用户弹窗表单：统一管理弹窗显隐与表单重置
+  const {
+    visible: showCreateDialog,
+    form: registerForm,
+    setForm: setRegisterForm,
+    openDialog: openCreateDialog,
+    closeDialog: closeCreateDialog,
+    resetForm: resetCreateForm,
+  } = useDialogForm({
+    initialValues: {
+      userName: '',
+      password: '',
+      nickName: '',
+      email: '',
+    },
+  });
 
-  const fetchUsers = async (keyword = q) => {
-    setLoading(true);
-    try {
-      const res = await getUserList(keyword);
-      setUsers(res?.list ?? []);
-    } catch (error) {
-      MessagePlugin.error(error instanceof Error ? error.message : '获取用户列表失败');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers('');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  // 新增用户：校验必填项后调用注册接口
   const onRegister = async () => {
     if (!registerForm.userName || !registerForm.password) {
-      MessagePlugin.warning('用户名和密码必填');
+      message.warning('用户名和密码必填');
       return;
     }
     try {
@@ -43,22 +54,23 @@ export default function UserManagePage() {
         ...registerForm,
         gender: 1,
       });
-      MessagePlugin.success('新增用户成功');
-      setRegisterForm({ userName: '', password: '', nickName: '', email: '' });
-      setShowCreateDialog(false);
-      fetchUsers();
+      message.success('新增用户成功');
+      resetCreateForm();
+      closeCreateDialog(false);
+      await reload();
     } catch (error) {
-      MessagePlugin.error(error instanceof Error ? error.message : '新增用户失败');
+      message.error(error, '新增用户失败');
     }
   };
 
+  // 删除用户：走 Popconfirm 二次确认
   const onDelete = async (id: number) => {
     try {
       await deleteUser(id);
-      MessagePlugin.success('删除成功');
-      fetchUsers();
+      message.success('删除成功');
+      await reload();
     } catch (error) {
-      MessagePlugin.error(error instanceof Error ? error.message : '删除失败');
+      message.error(error, '删除失败');
     }
   };
 
@@ -72,6 +84,7 @@ export default function UserManagePage() {
       title: '操作',
       width: 120,
       cell: ({ row }: { row: UserInfo }) => (
+        // 删除操作单独使用确认弹窗，避免误删
         <Popconfirm content="确认删除该用户吗？" onConfirm={() => onDelete(Number(row.id))}>
           <Button size="small" theme="danger" variant="text">
             删除
@@ -82,33 +95,37 @@ export default function UserManagePage() {
   ];
 
   return (
-    <div className="list-page">
-      <div className="list-toolbar">
-        <div className="list-toolbar-left">
-          <Button theme="primary" onClick={() => setShowCreateDialog(true)}>
+    <PageContainer>
+      <ListToolbar
+        left={
+        <>
+          <Button theme="primary" onClick={() => openCreateDialog()}>
             新增用户
           </Button>
-          <Button theme="primary" onClick={() => fetchUsers()}>
+          <Button theme="default" variant="outline" onClick={() => reload({ q })}>
             刷新列表
           </Button>
-          <span className="selected-info">共 {users.length} 项</span>
-        </div>
+          <span className={commonStyles.selectedInfo}>共 {total} 项</span>
+        </>
+        }
+        right={
         <Input
-          className="list-search"
+          className={commonStyles.search}
           value={q}
           onChange={setQ}
           placeholder="请输入你需要搜索的用户名"
           suffixIcon={<SearchIcon />}
           clearable
-          onEnter={() => fetchUsers(q)}
+          onEnter={() => reload({ q })}
         />
-      </div>
+        }
+      />
       <Table rowKey="id" data={users} columns={columns} loading={loading} hover bordered stripe />
 
       <Dialog
         header="新增用户"
         visible={showCreateDialog}
-        onClose={() => setShowCreateDialog(false)}
+        onClose={() => closeCreateDialog()}
         onConfirm={onRegister}
       >
         <div className="form-grid inline-form">
@@ -135,6 +152,6 @@ export default function UserManagePage() {
           />
         </div>
       </Dialog>
-    </div>
+    </PageContainer>
   );
 }

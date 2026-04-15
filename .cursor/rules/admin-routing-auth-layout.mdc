@@ -1,0 +1,29 @@
+---
+description: admin 路由、权限与布局联动约定（路由模块化 + meta 驱动）
+globs:
+  - admin/src/router/**/*
+  - admin/src/layouts/**/*
+alwaysApply: false
+---
+
+# 路由 / 权限 / 布局约定（admin）
+
+## 路由模块化
+
+- 路由按业务模块拆分到 `router/modules/*`，通过 `modules/index.ts` 聚合。
+- 业务新增页面时优先新增模块路由，而不是把配置全塞进单文件。
+
+## meta 驱动
+
+- 菜单标题、图标、角色、面包屑统一放在 `route.meta`。
+- 布局层（菜单/面包屑）与守卫层（鉴权/鉴权失败跳转）都读取同一份 meta。
+
+## 权限判断单点
+
+- 角色判断统一复用 `canAccessRoute`，避免菜单与路由守卫出现双份逻辑。
+- 新增权限规则时优先改 `permissions.ts`，再联动调用方，而不是到处复制判断代码。
+
+## 布局复用
+
+- 页面布局能力（header、footer、breadcrumb、theme）统一从布局与设置层管理。
+- 页面代码聚焦业务内容，不重复实现导航或全局外壳逻辑。

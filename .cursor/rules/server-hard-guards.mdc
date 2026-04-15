@@ -1,0 +1,48 @@
+---
+description: server 强制守护规则（高风险红线，始终应用）
+globs:
+  - server/**/*.go
+  - admin/src/api/**/*.ts
+  - client/common/request/**/*.js
+alwaysApply: true
+---
+
+# Server 强制守护（Hard Guards）
+
+以下规则默认必须满足，除非有明确例外说明。
+
+## 红线 1：分层不越界
+
+- `controller` 禁止写复杂业务编排、复杂 SQL、多表聚合。
+- `service` 禁止依赖 Gin Context 或直接拼 HTTP 响应。
+
+## 红线 2：鉴权不缺失
+
+- 需要登录的接口必须挂 `JWTAuth()` 或等效鉴权。
+- 涉及资源操作必须校验“当前用户是否有权限操作该资源”。
+
+## 红线 3：身份不信任前端
+
+- 业务身份以 token 解析出的 context 用户为准。
+- 禁止用前端传入 `userId` 直接作为权限依据。
+
+## 红线 4：响应结构不漂移
+
+- 统一走 `response.Success/Fail`（`code/msg/data/encrypt`）。
+- controller 禁止随意返回不兼容结构。
+
+## 红线 5：契约变更必联动
+
+- 改 server 接口（路径/method/参数/返回）时，必须同步检查：
+  - `admin/src/api/modules/*`
+  - `client/common/request/apis/*`
+- 非兼容改动未完成双端适配前，不应合并。
+
+## 红线 6：错误不可吞
+
+- DB/Redis/外部 HTTP/JSON 解析等关键操作不得忽略错误。
+- 返回失败响应后必须 `return`，防止逻辑穿透。
+
+## 红线 7：敏感信息不可落日志
+
+- 禁止打印 token、密钥、密码、完整连接串等敏感数据。

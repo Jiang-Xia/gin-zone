@@ -1,0 +1,35 @@
+---
+description: server 作为 admin/client 统一后端时的接口契约联动规则
+globs:
+  - server/router/**/*.go
+  - server/app/controller/**/*.go
+  - server/docs/**/*.go
+  - admin/src/api/**/*.ts
+  - client/common/request/**/*.js
+alwaysApply: false
+---
+
+# admin / client / server 契约联动
+
+## 变更联动清单
+
+- 改了 server 路径、method、参数或返回结构：必须同步检查并更新 `admin/src/api/modules/*` 与 `client/common/request/apis/*` 调用层。
+- 改了鉴权逻辑：同步检查 `admin` 的 token 读写与 `client` 的登录态处理。
+- 改了加密链路：同步检查 `Jx-Security`、`Jx-SessionId` 传递与解密流程。
+
+## 路由分组原则
+
+- `admin` 侧管理接口优先复用 `admin` 或 `base` 分组，不与 `mobile` 混放。
+- `client` 侧移动业务优先放 `mobile` 分组。
+- 两端共用能力放公共分组，避免复制同功能接口。
+
+## 兼容性要求
+
+- 非兼容改动必须先完成双端适配再合并，避免某一端出现运行时崩溃。
+- 保持响应结构稳定：`code/msg/data` 含义不变，字段调整优先增量兼容。
+
+## 提交前自检
+
+1. 本次改动是否影响 admin/client 任一端的参数或字段解析？
+2. Swagger 与实现是否一致？
+3. 管理端与移动端权限边界是否清晰、无越权漏洞？

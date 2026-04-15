@@ -1,0 +1,33 @@
+---
+description: admin 项目架构与模块划分（React18 / TypeScript / Vite / React Router / TDesign）
+globs: admin/**/*
+alwaysApply: false
+---
+
+# 项目架构（admin）
+
+## 技术栈
+
+- **React 18 + TypeScript + Vite**
+- 路由：**react-router-dom**
+- UI：**tdesign-react / tdesign-icons-react**
+- 请求：**axios**（`src/api/http.ts` 统一封装）
+
+## 目录与职责
+
+| 区域 | 职责 |
+|------|------|
+| `src/router/` | 路由模块、鉴权守卫、权限判断与路由元信息 |
+| `src/layouts/` | 主布局、顶栏、侧边栏、页面配置抽屉 |
+| `src/pages/` | 页面级业务实现 |
+| `src/api/` | 请求底座、类型、模块 API、CRUD 工厂 |
+| `src/hooks/` | 页面复用 Hook（列表、弹窗表单、提示等） |
+| `src/components/` | 可复用组件（如页面容器、工具栏） |
+| `src/store/` | 登录态、布局配置等全局状态 |
+| `src/styles/` | 全局样式与分层样式文件 |
+
+## 协作原则
+
+- 改动紧贴需求，不做无关大重构。
+- 新增业务优先复用现有公共层（`api/hooks/components`），避免页面里重复造轮子。
+- 路由、权限、菜单、面包屑均优先通过路由 meta 驱动，避免硬编码散落页面。

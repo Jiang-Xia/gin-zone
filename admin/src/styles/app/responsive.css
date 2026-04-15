@@ -1,0 +1,22 @@
+@media (max-width: 1080px) {
+  .td-layout-sider-wrap {
+    flex-basis: 200px;
+    width: 200px;
+  }
+
+  .header-search {
+    width: 180px;
+  }
+
+  .header-right {
+    gap: 8px;
+  }
+
+  .page-body {
+    padding: 16px;
+  }
+
+  .inline-form {
+    grid-template-columns: 1fr;
+  }
+}

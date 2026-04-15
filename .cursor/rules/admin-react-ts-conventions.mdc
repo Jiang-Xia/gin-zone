@@ -1,0 +1,31 @@
+---
+description: admin React + TypeScript 编码约定（类型优先、语义命名、轻注释）
+globs:
+  - admin/src/**/*.ts
+  - admin/src/**/*.tsx
+alwaysApply: false
+---
+
+# React + TypeScript 约定（admin）
+
+## 类型优先
+
+- 页面与 API 交互时优先使用明确类型，避免滥用 `any` 与宽泛 `Record<string, unknown>`。
+- 公共列表接口统一优先复用 `PageQuery`、`PageResult<T>`。
+- 参数与返回类型能声明就声明，减少隐式推断带来的联调风险。
+
+## 命名与语义
+
+- 变量命名要表达业务意图：如 `query`、`selectedRowKeys`、`publishForm`、`reload`。
+- 事件函数使用 `onXxx`，请求函数使用 `get/create/update/remove` 语义。
+- 避免缩写过度（`q` 这类后端字段可保留，但页面变量尽量语义化）。
+
+## 组件与 Hook 使用
+
+- 页面状态复杂时优先下沉到 Hook（例如 `useListPage`、`useDialogForm`）。
+- 组件结构优先组合复用（如 `PageContainer + ListToolbar`），减少页面模板重复。
+
+## 注释风格
+
+- 关键变量、关键方法写简短中文注释，解释“为什么/做什么”。
+- 避免“赋值给变量”这类无信息注释。

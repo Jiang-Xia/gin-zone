@@ -1,0 +1,33 @@
+---
+description: server 鉴权与响应规范（JWT、统一 code/msg/data、加密链路）
+globs:
+  - server/middleware/**/*.go
+  - server/pkg/response/**/*.go
+  - server/pkg/tip/**/*.go
+  - server/app/controller/**/*.go
+alwaysApply: false
+---
+
+# 鉴权与响应规范（server）
+
+## JWT 约定
+
+- 需要登录的接口必须挂 `JWTAuth()`（含 WebSocket 路由）。
+- Token 来源兼容 `Authorization` 与 `query token`，但优先请求头。
+- 进入业务前必须将身份写入 context（`current_user`、`current_user_id`、`current_user_uid`）。
+
+## 统一响应结构
+
+- 统一使用 `response.Success` / `response.Fail`，保持 `{ code, msg, data, encrypt }` 契约。
+- 业务成功优先返回 `tip.Success(0)` 语义码；失败返回可定位的问题信息。
+- 禁止在 controller 中直接 `c.JSON` 拼装不一致结构（特殊流式场景除外）。
+
+## 国密加密协同
+
+- 走加密链路时遵循 `Jx-Security` 与 `Jx-SessionId` 协议，不在单个接口私自变更。
+- 加密失败时遵循现有 `cryptoSessionExpired` 返回约定，前端按该字段触发重建会话。
+
+## 错误处理
+
+- 返回失败后必须立即 `return`，防止后续逻辑继续执行。
+- 错误日志要可定位，但不得打印密码、token、密钥等敏感信息。
