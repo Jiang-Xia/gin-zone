@@ -5,7 +5,10 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
+  // 构建基础路径：用于子目录部署（如 /admin/zone-admin/）
+  const appBase = env.VITE_APP_BASE || '/';
   return {
+    base: appBase,
     plugins: [react()],
     resolve: {
       alias: {

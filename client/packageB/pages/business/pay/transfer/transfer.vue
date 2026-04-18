@@ -8,10 +8,10 @@
     export default {
         data() {
             return {
-                wx_appid: '', //测试环境公众号
+                wx_appid: '2021006145653958', //测试环境公众号
                 ali_appid: '', //测试环境公众号
-                pageUrl: '/packageB/pages/business/pay/transfer/transfer',
-                baseUrl: 'https://jiang-xia.top/zone/',
+                pageUrl: '/#/packageB/pages/business/pay/transfer/transfer',
+                baseUrl: 'https://jiang-xia.top/zone',
                 // 前端
             };
         },
@@ -52,6 +52,8 @@
         },
         methods: {
             initPage() {
+                // https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=2021006145653958&scope=auth_base&redirect_uri=https://jiang-xia.top/zone/#/packageB/pages/business/pay/transfer/transfer
+
                 const url = this.baseUrl + this.pageUrl
                 const payType = this.$tool.isWxOrAli()
                 if (payType == 'WXPAY') {

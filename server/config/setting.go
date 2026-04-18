@@ -71,7 +71,7 @@ func loadInI() {
 	//服务器和本地配置分开，不然取git的配置有些密钥容易过期
 	filePath := "config/env.ini"
 	if runtime.GOOS == "linux" {
-		filePath = "/home/server/config/env.ini"
+		filePath = "/opt/jxapp/config/zone_env.ini"
 	} else if runtime.GOOS == "windows" {
 		// 切换电脑需要根据配置文件修改和增加public和logs目录
 		filePath = "D:/study/config/env.ini"

@@ -46,7 +46,7 @@ func (m *Common) SignIn(c *gin.Context) {
 
 	pubHex := strings.TrimSpace(config.App.PublicKey)
 	if pubHex == "" {
-		response.Fail(c, "服务端未配置国密公钥 app.public_key，请检查 env.ini（Linux 为 /home/server/config/env.ini）", nil)
+		response.Fail(c, "服务端未配置国密公钥 app.public_key，请检查 env.ini（Linux 为 /opt/jxapp/config/zone_env.ini）", nil)
 		return
 	}
 	pub, err := x509.ReadPublicKeyFromHex(pubHex)

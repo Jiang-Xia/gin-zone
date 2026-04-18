@@ -332,7 +332,7 @@ lsof -ti:9600 | xargs kill -9
 ##### 5.2 配置文件路径
 请根据实际环境修改 `config/setting.go` 中的配置文件路径：
 - Windows：`D:/study/config/env.ini`
-- Linux：`/home/server/config/env.ini`
+- Linux：`/opt/jxapp/config/zone_env.ini`
 - 开发环境：`config/env.ini`
 
 ##### 5.3 文件权限

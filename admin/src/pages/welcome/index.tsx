@@ -46,7 +46,7 @@ export default function WelcomePage() {
         <div className="subsection-title">系统说明</div>
         {/* 简单介绍：首页信息可按需替换为数据概览/统计卡片 */}
         <p>基于 React + TypeScript + Vite + TDesign 的后台管理系统。</p>
-        <p>页面样式统一按 demo-admin 列表页规范进行对齐。</p>
+        <p>页面样式统一按admin 列表页规范进行对齐。</p>
         <p>当前已接入用户、动态、资料维护等核心接口能力。</p>
       </div>
     </PageContainer>

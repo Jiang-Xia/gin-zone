@@ -79,7 +79,7 @@ function parseHexColor(input: string): [number, number, number] | null {
  * 这里不是完整调色板实现，只提供 hover/active/浅色背景等基础能力，保证交互态一致。
  */
 function applyThemeColor(color: string, mode: 'light' | 'dark') {
-  // 使用 tvision-color 生成 10 阶色板（与 demo-admin 一致），确保 hover/active/focus 等变量完整覆盖
+  // 使用 tvision-color 生成 10 阶色板（与admin 一致），确保 hover/active/focus 等变量完整覆盖
   const hex = parseHexColor(color) ? color : DEFAULT_THEME_COLOR;
   const root = document.documentElement;
 
@@ -95,7 +95,7 @@ function applyThemeColor(color: string, mode: 'light' | 'dark') {
   let palette = [...gradations.colors];
   let brandIndex = gradations.primary;
 
-  // 暗色模式下将色板反转，并轻微调整饱和度，让层级更自然（参考 demo-admin）
+  // 暗色模式下将色板反转，并轻微调整饱和度，让层级更自然（参考admin）
   if (mode === 'dark') {
     palette = palette
       .reverse()
@@ -120,7 +120,7 @@ function applyThemeColor(color: string, mode: 'light' | 'dark') {
   root.style.setProperty('--td-brand-color-9', brandIndex > 8 ? palette[brandIndex] : palette[brandIndex + 1]);
   root.style.setProperty('--td-brand-color-10', palette[9]);
 
-  // 兼容 demo-admin 的属性（方便以后复用其插入样式的策略）
+  // 兼容admin 的属性（方便以后复用其插入样式的策略）
   root.setAttribute('theme-color', hex || '');
 }
 
