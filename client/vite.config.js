@@ -9,7 +9,7 @@ import uni from "@dcloudio/vite-plugin-uni";
 // //  #endif 
 export default defineConfig({
     server: {
-        port: 5173,
+        port: 9100,
         http: false,
         proxy: {
             "/prod-api": {

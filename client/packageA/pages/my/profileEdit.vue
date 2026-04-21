@@ -14,17 +14,8 @@
 
 								<!-- #ifdef H5||APP-PLUS -->
 								<view class="avatar-upload">
-									<t-upload
-										v-model:files="uploadFiles"
-										:max="1"
-										:media-type="['image']"
-										:remove-btn="false"
-										:preview="false"
-										:grid-config="{ column: 1, width: 128, height: 128 }"
-										:image-props="{ mode: 'aspectFill', shape: 'round' }"
-										:request-method="uploadRequestMethod"
-										@success="onUploadSuccess"
-									/>
+									<!-- 复用统一上传组件：H5/APP 输出上传后 URL -->
+									<caUpload v-model:value="baseFormData.avatar" type="photo" output="url" scene="avatar" />
 								</view>
 								<!-- #endif -->
 							</template>
@@ -55,8 +46,18 @@
 								</view>
 							</template>
 						</t-cell>
+						<!-- <t-cell
+							title="身份证"
+							:bordered="false"
+							t-class-center="profile-edit-intro__title-col"
+							t-class-note="profile-edit-intro__note-col"
+						>
+							<template #note>
+								<caUpload v-model:value="baseFormData.avatar" type="nation" output="url" />
+							</template>
+						</t-cell> -->
 					</t-cell-group>
-
+					
 					<view class="submit-btn">
 						<t-button theme="primary" variant="base" block @click="submit">
 							提交
@@ -90,7 +91,7 @@
 					label: '女',
 					value: 0,
 				}],
-				// t-upload 受控文件列表（单张头像）
+				// 兼容：历史字段保留，不再使用（头像上传已统一走 caUpload）
 				uploadFiles: []
 			}
 		},
@@ -111,16 +112,6 @@
 			for (let key in this.baseFormData) {
 				this.baseFormData[key] = this.userInfo[key]
 			}
-			// H5/APP：初始化 t-upload 展示
-			if (this.avatar) {
-				this.uploadFiles = [{
-					url: this.avatar,
-					thumb: this.avatar,
-					type: 'image',
-					percent: 100,
-					status: 'done'
-				}]
-			}
 		},
 		methods: {
 			// 选择头像（小程序：chooseAvatar）
@@ -134,42 +125,17 @@
 				const res = await this.$api.upload(file)
 				const finalUrl = this.$fileUrl + res.data.url
 				this.baseFormData.avatar = finalUrl
-				// 同步 t-upload 展示（H5/APP）
-				this.uploadFiles = [{
-					url: finalUrl,
-					thumb: finalUrl,
-					type: 'image',
-					percent: 100,
-					status: 'done'
-				}]
-			},
-			/**
-			 * t-upload 的自定义上传方法。
-			 * @param {Array} files 选中的文件列表，包含本地临时路径（url）
-			 */
-			async uploadRequestMethod(files) {
-				await Promise.all((files || []).map(async (file) => {
-					if (!file?.url) return
-					const res = await this.$api.upload(file.url)
-					const finalUrl = this.$fileUrl + res.data.url
-					file.url = finalUrl
-					file.thumb = finalUrl
-					file.status = 'done'
-					file.percent = 100
-				}))
-			},
-			onUploadSuccess(e) {
-				const files = e?.detail?.files || e?.files || []
-				this.uploadFiles = files
-				this.baseFormData.avatar = files?.[0]?.url || ''
 			},
 			async submit() {
+				const userStore = useUserStore()
 				const params = {
 					id: this.userInfo.id,
 					...this.baseFormData
 				}
 				// 更新个人资料：走接口层避免散落 URL
 				await this.$apis.auth.updateUser(this.userInfo.id, params)
+				// 更新本地 userInfo，避免返回“我的”页仍展示旧资料
+				userStore.setData({ ...this.baseFormData })
 				uni.showToast({
 					title: "修改成功",
 				});

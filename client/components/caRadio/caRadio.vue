@@ -45,7 +45,6 @@
         computed: {
             innerValue: {
                 get() {
-                    console.log('----> this.value', this.value)
                     return this.value
                 },
                 set(value) {
@@ -70,7 +69,9 @@
         },
         methods: {
             change(e) {
-                this.innerValue = e.value
+                // 兼容 t-radio-group 在不同端/版本的回调结构（e.value / e.detail.value）
+                const nextValue = e?.detail?.value ?? e?.value
+                this.innerValue = nextValue
                 this.$emit('change', this.innerValue)
                 // console.log('change',this.innerValue)
             },

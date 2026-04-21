@@ -6,17 +6,8 @@
 					<t-form ref="valiForm" :data="baseFormData" :rules="rules" label-align="left">
 						<t-form-item name="avatar">
 							<!-- 头像上传 -->
-							<t-upload
-								v-model:files="uploadFiles"
-								:max="1"
-								:media-type="['image']"
-								:remove-btn="false"
-								:preview="false"
-								:grid-config="{ column: 1, width: 128, height: 128 }"
-								:image-props="{ mode: 'aspectFill', shape: 'round' }"
-								:request-method="uploadRequestMethod"
-								@success="onUploadSuccess"
-							/>
+							<!-- 复用统一上传组件：输出上传后 URL -->
+							<caUpload v-model:value="baseFormData.avatar" type="photo" output="url" scene="avatar" />
 						</t-form-item>
 
 						<t-form-item label="群名称" name="groupName">
@@ -85,31 +76,11 @@
 						message: '群名称不能为空'
 					}]
 				},
-				// t-upload 受控文件列表（单张头像）
+				// 兼容：历史字段保留，不再使用（头像上传已统一走 caUpload）
 				uploadFiles: []
 			}
 		},
 		methods: {
-			/**
-			 * t-upload 的自定义上传方法。
-			 * @param {Array} files 选中的文件列表，包含本地临时路径（url）
-			 */
-			async uploadRequestMethod(files) {
-				await Promise.all((files || []).map(async (file) => {
-					if (!file?.url) return
-					const res = await this.$api.upload(file.url)
-					const finalUrl = this.$fileUrl + res.data.url
-					file.url = finalUrl
-					file.thumb = finalUrl
-					file.status = 'done'
-					file.percent = 100
-				}))
-			},
-			onUploadSuccess(e) {
-				const files = e?.detail?.files || e?.files || []
-				this.uploadFiles = files
-				this.baseFormData.avatar = files?.[0]?.url || ''
-			},
 			async submit() {
 				try {
 					const validateResult = await this.$refs.valiForm.validate({

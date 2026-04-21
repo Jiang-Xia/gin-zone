@@ -117,7 +117,12 @@ func (u *user) List(Page int, PageSize int, q string) ([]model.User, int64) {
 
 // Update 修改
 func (u *user) Update(id int, model *model.UpdateUser) (err error) {
-	err = db.Mysql.Table("z_user").Where("id = ? ", id).Updates(model).Error
+	// 中文注释：gorm 用 struct Updates 默认不会更新零值（例如 gender=0），这里显式 Select 以保证女(0)也能写入
+	err = db.Mysql.
+		Table("z_user").
+		Where("id = ? ", id).
+		Select("avatar", "nick_name", "intro", "email", "gender").
+		Updates(model).Error
 	return err
 }
 
