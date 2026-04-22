@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
@@ -69,6 +70,10 @@ func (u *user) SignIn(username string, password string) (userModel *model.User, 
 
 	if PasswordErr != nil {
 		return userModel, 100
+	}
+	// 中文注释：被封禁用户禁止登录（MVP 先以 is_lock 控制登录）
+	if userModel.IsLock {
+		return userModel, 1003
 	}
 	return userModel, 0
 }
@@ -153,4 +158,47 @@ func (u *user) IsAdminByUserId(userId string) (bool, error) {
 		return false, err
 	}
 	return out.IsAdmin, nil
+}
+
+// AdminList 管理端用户列表（支持关键字、状态、分页）
+func (u *user) AdminList(page int, pageSize int, query *model.AdminUserListQuery) ([]model.User, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+	sql := db.Mysql.Model(&model.User{})
+	if query != nil {
+		if strings.TrimSpace(query.Keyword) != "" {
+			keyword := "%" + strings.TrimSpace(query.Keyword) + "%"
+			sql = sql.Where("user_name LIKE ? OR nick_name LIKE ? OR user_id LIKE ?", keyword, keyword, keyword)
+		}
+		if query.Status == 0 || query.Status == 1 {
+			sql = sql.Where("is_lock = ?", query.Status == 1)
+		}
+	}
+	var total int64
+	if err := sql.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var list []model.User
+	if err := sql.Order("id desc").Offset((page - 1) * pageSize).Limit(pageSize).Find(&list).Error; err != nil {
+		return nil, 0, err
+	}
+	return list, total, nil
+}
+
+// GetByUID 根据 userId 查询用户
+func (u *user) GetByUID(userId string) (*model.User, error) {
+	user := &model.User{}
+	if err := db.Mysql.Where("user_id = ?", strings.TrimSpace(userId)).First(user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// SetUserLockByUID 按 userId 设置用户封禁状态
+func (u *user) SetUserLockByUID(userId string, isLock bool) error {
+	return db.Mysql.Model(&model.User{}).Where("user_id = ?", strings.TrimSpace(userId)).Update("is_lock", isLock).Error
 }

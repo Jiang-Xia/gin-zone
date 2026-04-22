@@ -14,8 +14,10 @@ export interface AppRouteMeta {
 // 路由配置项：驱动 react-router 渲染与菜单生成
 export interface AppRouteItem {
   path: string;
-  element: ReactNode;
+  element?: ReactNode;
   // 是否需要登录才能访问
   requiresAuth?: boolean;
   meta?: AppRouteMeta;
+  // 子路由：用于构建树形菜单与层级路由
+  children?: AppRouteItem[];
 }

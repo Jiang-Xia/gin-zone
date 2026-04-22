@@ -5,15 +5,24 @@ import type { AppRouteItem } from '../types';
 // 用户管理路由
 const userRoutes: AppRouteItem[] = [
   {
-    path: '/user/list',
-    element: <UserManagePage />,
+    path: '/chat',
     requiresAuth: true,
     meta: {
-      title: '用户管理',
-      icon: <UserListIcon />,
+      title: '聊天管理',
       roles: ['admin'],
-      breadcrumbs: ['系统管理', '用户管理'],
     },
+    children: [
+      {
+        path: '/user/list',
+        element: <UserManagePage />,
+        requiresAuth: true,
+        meta: {
+          title: '用户管理',
+          icon: <UserListIcon />,
+          roles: ['admin'],
+        },
+      },
+    ],
   },
 ];
 

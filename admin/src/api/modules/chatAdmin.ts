@@ -1,4 +1,4 @@
-import { del, get, patch } from '../http';
+import { del, get, patch, post } from '../http';
 
 export interface AdminListResult<T> {
   list: T[];
@@ -51,6 +51,39 @@ export interface UpdateGroupPayload {
   notice?: string;
 }
 
+export interface AdminChatGroupDetail extends AdminChatGroupRow {
+  ownerInfo?: {
+    userId?: string;
+    userName?: string;
+    nickName?: string;
+    avatar?: string;
+  };
+}
+
+export interface AdminChatMessageQuery {
+  page?: number;
+  pageSize?: number;
+  senderId?: string;
+  groupId?: number;
+  keyword?: string;
+  msgType?: number;
+  startAt?: string;
+  endAt?: string;
+}
+
+export interface AdminChatMessageRow {
+  id: number;
+  senderId: string;
+  receiverId: string;
+  groupId: number;
+  content: string;
+  logType: number;
+  msgType: number;
+  isRevoked: boolean;
+  isDeleted: boolean;
+  createdAt?: string;
+}
+
 export function getAdminChatFriends(query: AdminChatFriendsQuery) {
   return get<AdminListResult<AdminChatFriendRow>>('/admin/chat/friends', { params: query });
 }
@@ -67,7 +100,33 @@ export function updateAdminChatGroup(groupId: number, payload: UpdateGroupPayloa
   return patch<boolean, UpdateGroupPayload>(`/admin/chat/groups/${groupId}`, payload);
 }
 
+export function getAdminChatGroupDetail(groupId: number) {
+  return get<AdminChatGroupDetail>(`/admin/chat/groups/${groupId}`);
+}
+
+export function dissolveAdminChatGroup(groupId: number) {
+  return del<boolean>(`/admin/chat/groups/${groupId}`);
+}
+
+export function transferAdminChatGroupOwner(groupId: number, targetUserId: string) {
+  return post<boolean, { targetUserId: string }>(`/admin/chat/groups/${groupId}/transferOwner`, {
+    targetUserId,
+  });
+}
+
 export function removeAdminChatGroupMember(groupId: number, userId: string) {
   return del<boolean>(`/admin/chat/groupMembers/${groupId}/${encodeURIComponent(userId)}`);
+}
+
+export function getAdminChatMessages(query: AdminChatMessageQuery) {
+  return get<AdminListResult<AdminChatMessageRow>>('/admin/chat/messages', { params: query });
+}
+
+export function revokeAdminChatMessage(id: number) {
+  return post<boolean, { id: number }>('/admin/chat/messages/revoke', { id });
+}
+
+export function deleteAdminChatMessage(id: number) {
+  return post<boolean, { id: number }>('/admin/chat/messages/delete', { id });
 }
 

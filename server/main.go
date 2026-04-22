@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gitee.com/jiang-xia/gin-zone/server/app/cron"
 	"gitee.com/jiang-xia/gin-zone/server/app/database"
+	"gitee.com/jiang-xia/gin-zone/server/app/service"
 	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/translate"
@@ -39,6 +40,8 @@ func main() {
 	database.Setup()
 	//初始化redis
 	database.RedisInit()
+	// 中文注释：启动阶段预热敏感词词库与 matcher，降低首条消息检测延迟
+	service.WarmupSensitiveMatcher()
 	//初始化定时任务
 	cron.TaskInit()
 	if err := translate.InitTrans("zh"); err != nil {

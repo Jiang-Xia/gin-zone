@@ -15,6 +15,75 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/auditLogs": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-审计日志查询",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-系统模块"
+                ],
+                "summary": "管理端-审计日志",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "action",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "中文注释：结束时间（yyyy-MM-dd HH:mm:ss）",
+                        "name": "endAt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "operatorUserId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 20,
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "中文注释：起始时间（yyyy-MM-dd HH:mm:ss）",
+                        "name": "startAt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "targetType",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/chat/friends": {
             "get": {
                 "security": [
@@ -233,6 +302,787 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.UpdateChatGroup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/chat/groups/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-查询群组详情（含群主信息）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-群组详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "群组id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-解散群组（群主或管理员）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-解散群组",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "群组id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/chat/groups/{id}/transferOwner": {
+            "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-转移群主（群主或管理员）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-转移群主",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "群组id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "转移参数",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AdminTransferGroupOwnerReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/chat/messages": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-按发送人/群组/关键词/时间范围/类型检索消息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-消息检索",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "中文注释：结束时间（yyyy-MM-dd HH:mm:ss）",
+                        "name": "endAt",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "groupId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "msgType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 20,
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "senderId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "中文注释：起始时间（yyyy-MM-dd HH:mm:ss）",
+                        "name": "startAt",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/chat/messages/delete": {
+            "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-软删除消息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-删除消息",
+                "parameters": [
+                    {
+                        "description": "处置参数",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AdminMessageOperateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/chat/messages/revoke": {
+            "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-软撤回消息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-撤回消息",
+                "parameters": [
+                    {
+                        "description": "处置参数",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AdminMessageOperateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/sensitiveWords": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-敏感词"
+                ],
+                "summary": "管理端-敏感词列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "-1全部 1低 2中 3高",
+                        "name": "level",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 20,
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "-1全部 0禁用 1启用",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "word",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-敏感词"
+                ],
+                "summary": "管理端-新增敏感词",
+                "parameters": [
+                    {
+                        "description": "参数",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SensitiveWordCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/sensitiveWords/hits": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-敏感词"
+                ],
+                "summary": "管理端-敏感词命中记录",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "groupId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 20,
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "senderId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "word",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/sensitiveWords/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-敏感词"
+                ],
+                "summary": "管理端-删除敏感词",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "敏感词id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-敏感词"
+                ],
+                "summary": "管理端-编辑敏感词",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "敏感词id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "参数",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SensitiveWordUpdateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/sysConfig": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-系统配置查询",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-系统模块"
+                ],
+                "summary": "管理端-系统配置查询",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-系统配置新增",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-系统模块"
+                ],
+                "summary": "管理端-系统配置新增",
+                "parameters": [
+                    {
+                        "description": "配置参数",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SysConfigCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/sysConfig/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-系统配置删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-系统模块"
+                ],
+                "summary": "管理端-系统配置删除",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "配置id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-系统配置编辑",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-系统模块"
+                ],
+                "summary": "管理端-系统配置编辑",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "配置id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "配置参数",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SysConfigEditReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-用户列表（支持关键词、状态、分页）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-系统模块"
+                ],
+                "summary": "管理端-用户列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 20,
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "中文注释：-1全部 0正常 1封禁",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users/{uid}": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-按uid查询用户详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-系统模块"
+                ],
+                "summary": "管理端-用户详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户uid",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users/{uid}/restrict": {
+            "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-按uid设置用户封禁状态（限制登录）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-系统模块"
+                ],
+                "summary": "管理端-封禁/解封用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户uid",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "封禁参数",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AdminUserRestrictReq"
                         }
                     }
                 ],
@@ -1507,6 +2357,43 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AdminMessageOperateReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "中文注释：消息主键id",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.AdminTransferGroupOwnerReq": {
+            "type": "object",
+            "required": [
+                "targetUserId"
+            ],
+            "properties": {
+                "targetUserId": {
+                    "description": "中文注释：目标新群主 userId",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AdminUserRestrictReq": {
+            "type": "object",
+            "properties": {
+                "isLock": {
+                    "description": "中文注释：true=封禁 false=解封",
+                    "type": "boolean"
+                },
+                "reason": {
+                    "description": "中文注释：封禁原因（可选）",
+                    "type": "string"
+                }
+            }
+        },
         "model.ChangePassword": {
             "type": "object",
             "required": [
@@ -1610,11 +2497,21 @@ const docTemplate = `{
                     "description": "自增id",
                     "type": "integer"
                 },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "isRevoked": {
+                    "type": "boolean"
+                },
                 "logType": {
                     "type": "integer"
                 },
                 "msgType": {
                     "type": "integer"
+                },
+                "operateBy": {
+                    "description": "中文注释：记录管理端处置操作者，便于后续审计追溯",
+                    "type": "string"
                 },
                 "receiverId": {
                     "type": "string"
@@ -1720,6 +2617,71 @@ const docTemplate = `{
                     "maxLength": 12,
                     "minLength": 4,
                     "example": "test"
+                }
+            }
+        },
+        "model.SensitiveWordCreateReq": {
+            "type": "object",
+            "required": [
+                "word"
+            ],
+            "properties": {
+                "level": {
+                    "type": "integer"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "word": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SensitiveWordUpdateReq": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "integer"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "word": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SysConfigCreateReq": {
+            "type": "object",
+            "required": [
+                "configKey"
+            ],
+            "properties": {
+                "configKey": {
+                    "type": "string"
+                },
+                "configValue": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SysConfigEditReq": {
+            "type": "object",
+            "properties": {
+                "configValue": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
                 }
             }
         },

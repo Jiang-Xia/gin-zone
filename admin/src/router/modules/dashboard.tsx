@@ -11,7 +11,6 @@ const dashboardRoutes: AppRouteItem[] = [
     meta: {
       title: '欢迎',
       icon: <DashboardIcon />,
-      breadcrumbs: ['控制台', '欢迎'],
     },
   },
 ];

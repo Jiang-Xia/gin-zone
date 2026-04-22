@@ -21,6 +21,10 @@ func InitTable() {
 	err = db.AutoMigrate(&model.ChatGroup{})
 	err = db.AutoMigrate(&model.ChatGroupMember{})
 	err = db.AutoMigrate(&model.ChatLog{})
+	err = db.AutoMigrate(&model.AdminAuditLog{})
+	err = db.AutoMigrate(&model.SysConfig{})
+	err = db.AutoMigrate(&model.SensitiveWord{})
+	err = db.AutoMigrate(&model.SensitiveHitLog{})
 	err = db.AutoMigrate(&model.Moment{})
 	if err != nil {
 		log.Info("建表失败==================>", err.Error())

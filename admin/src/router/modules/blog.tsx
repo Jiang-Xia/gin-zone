@@ -1,4 +1,4 @@
-import { ChartIcon, DashboardIcon } from 'tdesign-icons-react';
+import { ChartIcon, DashboardIcon,DocumentLocationIcon,ChatMessageIcon,ViewGanttIcon } from 'tdesign-icons-react';
 import BlogOpsPage from '../../pages/blog/ops';
 import BlogArticleManagePage from '../../pages/blog/articles';
 import BlogCommentManagePage from '../../pages/blog/comments';
@@ -7,37 +7,45 @@ import type { AppRouteItem } from '../types';
 
 const blogRoutes: AppRouteItem[] = [
   {
-    path: '/blog/dashboard',
-    element: <BlogDashboardPage />,
+    path: '/content',
     requiresAuth: true,
     meta: {
-      title: '内容统计',
-      icon: <DashboardIcon />,
+      title: '内容管理',
+      icon: <DocumentLocationIcon />,
       roles: ['admin'],
-      breadcrumbs: ['内容管理', '内容统计'],
     },
-  },
-  {
-    path: '/blog/articles',
-    element: <BlogArticleManagePage />,
-    requiresAuth: true,
-    meta: {
-      title: '文章管理',
-      icon: <ChartIcon />,
-      roles: ['admin'],
-      breadcrumbs: ['内容管理', '文章管理'],
-    },
-  },
-  {
-    path: '/blog/comments',
-    element: <BlogCommentManagePage />,
-    requiresAuth: true,
-    meta: {
-      title: '评论管理',
-      icon: <ChartIcon />,
-      roles: ['admin'],
-      breadcrumbs: ['内容管理', '评论管理'],
-    },
+    children: [
+      {
+        path: '/blog/dashboard',
+        element: <BlogDashboardPage />,
+        requiresAuth: true,
+        meta: {
+          title: '内容统计',
+          icon: <DashboardIcon />,
+          roles: ['admin'],
+        },
+      },
+      {
+        path: '/blog/articles',
+        element: <BlogArticleManagePage />,
+        requiresAuth: true,
+        meta: {
+          title: '文章管理',
+          icon: <ViewGanttIcon />,
+          roles: ['admin'],
+        },
+      },
+      {
+        path: '/blog/comments',
+        element: <BlogCommentManagePage />,
+        requiresAuth: true,
+        meta: {
+          title: '评论管理',
+          icon: <ChatMessageIcon />,
+          roles: ['admin'],
+        },
+      },
+    ],
   },
   {
     path: '/blog/ops',
@@ -48,7 +56,6 @@ const blogRoutes: AppRouteItem[] = [
       icon: <ChartIcon />,
       hideInMenu: true,
       roles: ['admin'],
-      breadcrumbs: ['系统工具', '博客运营联调'],
     },
   },
 ];

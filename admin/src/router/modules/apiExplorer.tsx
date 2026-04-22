@@ -12,7 +12,6 @@ const apiExplorerRoutes: AppRouteItem[] = [
       icon: <ApiIcon />,
       hideInMenu: true,
       roles: ['admin'],
-      breadcrumbs: ['系统工具', '接口控制台'],
     },
   },
 ];

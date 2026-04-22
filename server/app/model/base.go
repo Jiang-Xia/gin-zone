@@ -93,6 +93,6 @@ type ListRes struct {
 }
 
 type ListQuery struct {
-	Page     int `json:"page" example:"1"`
-	PageSize int `json:"pageSize" example:"20"`
+	Page     int `json:"page" form:"page" example:"1"`
+	PageSize int `json:"pageSize" form:"pageSize" example:"20"`
 }

@@ -132,6 +132,8 @@ func (u *User) Login(c *gin.Context) {
 		generateToken(c, user)
 	} else if errCode == tip.AuthUserNotFound {
 		response.Fail(c, tip.Msg(tip.AuthUserNotFound), "")
+	} else if errCode == 1003 {
+		response.Fail(c, "用户已被封禁", "")
 	} else {
 		response.Fail(c, tip.Msg(tip.AuthUserPasswordError), "")
 	}

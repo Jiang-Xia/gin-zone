@@ -13,6 +13,18 @@ export interface UserListQuery extends Record<string, unknown> {
   q?: string;
 }
 
+export interface AdminUserListQuery {
+  page?: number;
+  pageSize?: number;
+  keyword?: string;
+  status?: number;
+}
+
+export interface AdminUserRestrictPayload {
+  isLock: boolean;
+  reason?: string;
+}
+
 // 注册用户参数（可选字段根据后端实际支持）
 export interface RegisterPayload {
   userName: string;
@@ -61,6 +73,18 @@ export function registerUser(params: RegisterPayload) {
 // 用户列表（支持关键字查询 q）
 export function getUserList(q = '') {
   return userCrudApi.list<UserListQuery>({ q }) as Promise<PageResult<UserInfo>>;
+}
+
+export function getAdminUserList(query: AdminUserListQuery) {
+  return get<PageResult<UserInfo>>('/admin/users', { params: query });
+}
+
+export function getAdminUserDetail(uid: string) {
+  return get<UserInfo>(`/admin/users/${encodeURIComponent(uid)}`);
+}
+
+export function restrictAdminUser(uid: string, payload: AdminUserRestrictPayload) {
+  return post<boolean, AdminUserRestrictPayload>(`/admin/users/${encodeURIComponent(uid)}/restrict`, payload);
 }
 
 // 更新用户资料

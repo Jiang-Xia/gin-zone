@@ -6,6 +6,7 @@ export interface SideMenuItem {
   label: string;
   value: string;
   icon?: ReactElement;
+  children?: SideMenuItem[];
 }
 
 interface SideNavProps {
@@ -19,6 +20,20 @@ interface SideNavProps {
 }
 
 export default function SideNav({ collapsed, theme, activePath, items, onSelect }: SideNavProps) {
+  // 递归渲染菜单节点，支持任意层级路由结构
+  const renderMenuItems = (menus: SideMenuItem[]) =>
+    menus.map((item) =>
+      item.children?.length ? (
+        <Menu.SubMenu key={item.value} value={item.value} icon={item.icon} title={item.label}>
+          {renderMenuItems(item.children)}
+        </Menu.SubMenu>
+      ) : (
+        <Menu.MenuItem key={item.value} value={item.value} icon={item.icon}>
+          {item.label}
+        </Menu.MenuItem>
+      ),
+    );
+
   return (
     <div className={`td-layout-sider-wrap ${collapsed ? 'collapsed' : ''}`}>
       <div className="app-logo-wrap">
@@ -35,11 +50,7 @@ export default function SideNav({ collapsed, theme, activePath, items, onSelect 
         value={activePath}
         onChange={(value) => onSelect(String(value))}
       >
-        {items.map((item) => (
-          <Menu.MenuItem key={item.value} value={item.value} icon={item.icon}>
-            {item.label}
-          </Menu.MenuItem>
-        ))}
+        {renderMenuItems(items)}
       </Menu>
       {!collapsed && <div className="sider-footer">Zone Admin 1.0.0</div>}
     </div>

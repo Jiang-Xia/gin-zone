@@ -131,6 +131,31 @@ definitions:
       userId:
         type: string
     type: object
+  model.AdminMessageOperateReq:
+    properties:
+      id:
+        description: 中文注释：消息主键id
+        type: integer
+    required:
+    - id
+    type: object
+  model.AdminTransferGroupOwnerReq:
+    properties:
+      targetUserId:
+        description: 中文注释：目标新群主 userId
+        type: string
+    required:
+    - targetUserId
+    type: object
+  model.AdminUserRestrictReq:
+    properties:
+      isLock:
+        description: 中文注释：true=封禁 false=解封
+        type: boolean
+      reason:
+        description: 中文注释：封禁原因（可选）
+        type: string
+    type: object
   model.ChangePassword:
     properties:
       newPassword:
@@ -205,10 +230,17 @@ definitions:
       id:
         description: 自增id
         type: integer
+      isDeleted:
+        type: boolean
+      isRevoked:
+        type: boolean
       logType:
         type: integer
       msgType:
         type: integer
+      operateBy:
+        description: 中文注释：记录管理端处置操作者，便于后续审计追溯
+        type: string
       receiverId:
         type: string
       senderId:
@@ -287,6 +319,48 @@ definitions:
     required:
     - password
     - userName
+    type: object
+  model.SensitiveWordCreateReq:
+    properties:
+      level:
+        type: integer
+      remark:
+        type: string
+      status:
+        type: integer
+      word:
+        type: string
+    required:
+    - word
+    type: object
+  model.SensitiveWordUpdateReq:
+    properties:
+      level:
+        type: integer
+      remark:
+        type: string
+      status:
+        type: integer
+      word:
+        type: string
+    type: object
+  model.SysConfigCreateReq:
+    properties:
+      configKey:
+        type: string
+      configValue:
+        type: string
+      remark:
+        type: string
+    required:
+    - configKey
+    type: object
+  model.SysConfigEditReq:
+    properties:
+      configValue:
+        type: string
+      remark:
+        type: string
     type: object
   model.UpdateChatGroup:
     properties:
@@ -403,6 +477,49 @@ info:
   title: Gin-Zone-Api
   version: "1.0"
 paths:
+  /admin/auditLogs:
+    get:
+      consumes:
+      - application/json
+      description: 管理端-审计日志查询
+      parameters:
+      - in: query
+        name: action
+        type: string
+      - description: 中文注释：结束时间（yyyy-MM-dd HH:mm:ss）
+        in: query
+        name: endAt
+        type: string
+      - in: query
+        name: operatorUserId
+        type: string
+      - example: 1
+        in: query
+        name: page
+        type: integer
+      - example: 20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 中文注释：起始时间（yyyy-MM-dd HH:mm:ss）
+        in: query
+        name: startAt
+        type: string
+      - in: query
+        name: targetType
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-审计日志
+      tags:
+      - 管理端-系统模块
   /admin/chat/friends:
     get:
       consumes:
@@ -547,6 +664,491 @@ paths:
       summary: 管理端-修改群聊信息
       tags:
       - 管理端-聊天模块
+  /admin/chat/groups/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 管理端-解散群组（群主或管理员）
+      parameters:
+      - description: 群组id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-解散群组
+      tags:
+      - 管理端-聊天模块
+    get:
+      consumes:
+      - application/json
+      description: 管理端-查询群组详情（含群主信息）
+      parameters:
+      - description: 群组id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-群组详情
+      tags:
+      - 管理端-聊天模块
+  /admin/chat/groups/{id}/transferOwner:
+    post:
+      consumes:
+      - application/json
+      description: 管理端-转移群主（群主或管理员）
+      parameters:
+      - description: 群组id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 转移参数
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.AdminTransferGroupOwnerReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-转移群主
+      tags:
+      - 管理端-聊天模块
+  /admin/chat/messages:
+    get:
+      consumes:
+      - application/json
+      description: 管理端-按发送人/群组/关键词/时间范围/类型检索消息
+      parameters:
+      - description: 中文注释：结束时间（yyyy-MM-dd HH:mm:ss）
+        in: query
+        name: endAt
+        type: string
+      - in: query
+        name: groupId
+        type: integer
+      - in: query
+        name: keyword
+        type: string
+      - in: query
+        name: msgType
+        type: integer
+      - example: 1
+        in: query
+        name: page
+        type: integer
+      - example: 20
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: senderId
+        type: string
+      - description: 中文注释：起始时间（yyyy-MM-dd HH:mm:ss）
+        in: query
+        name: startAt
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-消息检索
+      tags:
+      - 管理端-聊天模块
+  /admin/chat/messages/delete:
+    post:
+      consumes:
+      - application/json
+      description: 管理端-软删除消息
+      parameters:
+      - description: 处置参数
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.AdminMessageOperateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-删除消息
+      tags:
+      - 管理端-聊天模块
+  /admin/chat/messages/revoke:
+    post:
+      consumes:
+      - application/json
+      description: 管理端-软撤回消息
+      parameters:
+      - description: 处置参数
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.AdminMessageOperateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-撤回消息
+      tags:
+      - 管理端-聊天模块
+  /admin/sensitiveWords:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: -1全部 1低 2中 3高
+        in: query
+        name: level
+        type: integer
+      - example: 1
+        in: query
+        name: page
+        type: integer
+      - example: 20
+        in: query
+        name: pageSize
+        type: integer
+      - description: -1全部 0禁用 1启用
+        in: query
+        name: status
+        type: integer
+      - in: query
+        name: word
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-敏感词列表
+      tags:
+      - 管理端-敏感词
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 参数
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.SensitiveWordCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-新增敏感词
+      tags:
+      - 管理端-敏感词
+  /admin/sensitiveWords/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 敏感词id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-删除敏感词
+      tags:
+      - 管理端-敏感词
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: 敏感词id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 参数
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.SensitiveWordUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-编辑敏感词
+      tags:
+      - 管理端-敏感词
+  /admin/sensitiveWords/hits:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - in: query
+        name: groupId
+        type: integer
+      - example: 1
+        in: query
+        name: page
+        type: integer
+      - example: 20
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: senderId
+        type: string
+      - in: query
+        name: word
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-敏感词命中记录
+      tags:
+      - 管理端-敏感词
+  /admin/sysConfig:
+    get:
+      consumes:
+      - application/json
+      description: 管理端-系统配置查询
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-系统配置查询
+      tags:
+      - 管理端-系统模块
+    post:
+      consumes:
+      - application/json
+      description: 管理端-系统配置新增
+      parameters:
+      - description: 配置参数
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.SysConfigCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-系统配置新增
+      tags:
+      - 管理端-系统模块
+  /admin/sysConfig/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 管理端-系统配置删除
+      parameters:
+      - description: 配置id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-系统配置删除
+      tags:
+      - 管理端-系统模块
+    patch:
+      consumes:
+      - application/json
+      description: 管理端-系统配置编辑
+      parameters:
+      - description: 配置id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 配置参数
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.SysConfigEditReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-系统配置编辑
+      tags:
+      - 管理端-系统模块
+  /admin/users:
+    get:
+      consumes:
+      - application/json
+      description: 管理端-用户列表（支持关键词、状态、分页）
+      parameters:
+      - in: query
+        name: keyword
+        type: string
+      - example: 1
+        in: query
+        name: page
+        type: integer
+      - example: 20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 中文注释：-1全部 0正常 1封禁
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-用户列表
+      tags:
+      - 管理端-系统模块
+  /admin/users/{uid}:
+    get:
+      consumes:
+      - application/json
+      description: 管理端-按uid查询用户详情
+      parameters:
+      - description: 用户uid
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-用户详情
+      tags:
+      - 管理端-系统模块
+  /admin/users/{uid}/restrict:
+    post:
+      consumes:
+      - application/json
+      description: 管理端-按uid设置用户封禁状态（限制登录）
+      parameters:
+      - description: 用户uid
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: 封禁参数
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.AdminUserRestrictReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-封禁/解封用户
+      tags:
+      - 管理端-系统模块
   /base/auth/wxlogin:
     get:
       consumes:

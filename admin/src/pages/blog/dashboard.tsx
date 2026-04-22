@@ -5,6 +5,7 @@ import ListToolbar from '../../components/ListToolbar';
 import { useApiMessage } from '../../hooks/useApiMessage';
 import { getBlogArticleViews, getBlogCategory, getBlogDailyImage, getBlogTag } from '../../api/modules/blog';
 
+// 兼容外部服务返回 list/rows/records/data 的多种列表结构
 function toArray(data: unknown) {
   if (Array.isArray(data)) {
     return data as Array<Record<string, unknown>>;
@@ -17,6 +18,25 @@ function toArray(data: unknown) {
     }
   }
   return [];
+}
+
+// 统计页数据字段归一，避免列名和后端字段耦合
+function normalizeViewRow(row: Record<string, unknown>) {
+  return {
+    ...row,
+    id: row.id ?? row.articleId ?? '-',
+    title: row.title ?? row.articleTitle ?? '-',
+    views: row.views ?? row.viewCount ?? 0,
+  };
+}
+
+function normalizeMetaRow(row: Record<string, unknown>) {
+  return {
+    ...row,
+    id: row.id ?? row.value ?? '-',
+    name: row.name ?? row.title ?? '-',
+    count: row.count ?? row.total ?? row.articleCount ?? 0,
+  };
 }
 
 export default function BlogDashboardPage() {
@@ -36,9 +56,9 @@ export default function BlogDashboardPage() {
         getBlogCategory(),
         getBlogDailyImage(),
       ]);
-      setViews(toArray(viewsRes));
-      setTags(toArray(tagsRes));
-      setCategories(toArray(categoriesRes));
+      setViews(toArray(viewsRes).map(normalizeViewRow));
+      setTags(toArray(tagsRes).map(normalizeMetaRow));
+      setCategories(toArray(categoriesRes).map(normalizeMetaRow));
       setDailyImage(JSON.stringify(imageRes, null, 2));
     } catch (error) {
       message.error(error, '加载内容统计失败');

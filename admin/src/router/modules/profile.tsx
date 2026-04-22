@@ -11,7 +11,6 @@ const profileRoutes: AppRouteItem[] = [
     meta: {
       title: '个人中心',
       icon: <UserCircleIcon />,
-      breadcrumbs: ['账户中心', '个人中心'],
     },
   },
 ];

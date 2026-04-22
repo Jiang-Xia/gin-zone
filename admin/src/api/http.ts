@@ -10,6 +10,7 @@ import { TOKEN_KEY } from '../constants/auth';
 // 统一接口返回结构：后端约定 code=0 为成功，data 为实际业务数据
 export interface ApiEnvelope<T> {
   code: number;
+  bizCode?: number;
   msg?: string;
   message?: string;
   data: T;
@@ -195,6 +196,18 @@ http.interceptors.request.use(async (rawConfig) => {
 // 兼容不同后端字段命名（msg/message）
 const resolveMessage = (payload: ApiEnvelope<unknown>) => payload.msg || payload.message || '请求失败';
 
+// 多服务统一成功码白名单：本服务常用 0，外部服务常用 200
+const SUCCESS_CODES = [0, 200];
+
+// 统一成功判定：兼容 code/bizCode（bizCode 存在时一起校验）
+const isSuccessPayload = (payload: ApiEnvelope<unknown>) => {
+  if (!SUCCESS_CODES.includes(payload.code)) return false;
+  if (typeof payload.bizCode === 'number' && !SUCCESS_CODES.includes(payload.bizCode)) {
+    return false;
+  }
+  return true;
+};
+
 // 将 AxiosError 统一归一化为可展示的 Error（便于页面直接弹 toast）
 const normalizeError = (error: AxiosError<ApiEnvelope<unknown>>) => {
   const payload = error.response?.data;
@@ -247,7 +260,7 @@ http.interceptors.response.use(
       };
       return http.request(retryConfig);
     }
-    if (payload.code !== 0) {
+    if (!isSuccessPayload(payload)) {
       throw new Error(resolveMessage(payload));
     }
     return response;

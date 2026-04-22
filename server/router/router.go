@@ -71,16 +71,38 @@ func App() (r *gin.Engine) {
 		{
 			momentController := new(admin.Moment)
 			back.GET("moments", momentController.GetList)
+			back.Use(middleware.JWTAuth())
+
+			systemController := new(admin.System)
+			sensitiveController := new(admin.Sensitive)
+			back.GET("users", systemController.UsersList)
+			back.GET("users/:uid", systemController.UserDetail)
+			back.POST("users/:uid/restrict", systemController.RestrictUser)
+			back.GET("auditLogs", systemController.AuditLogs)
+			back.GET("sysConfig", systemController.GetSysConfig)
+			back.POST("sysConfig", systemController.CreateSysConfig)
+			back.PATCH("sysConfig/:id", systemController.UpdateSysConfig)
+			back.DELETE("sysConfig/:id", systemController.DeleteSysConfig)
+			back.GET("sensitiveWords", sensitiveController.List)
+			back.POST("sensitiveWords", sensitiveController.Create)
+			back.PATCH("sensitiveWords/:id", sensitiveController.Update)
+			back.DELETE("sensitiveWords/:id", sensitiveController.Delete)
+			back.GET("sensitiveWords/hits", sensitiveController.Hits)
 
 			// 管理端-聊天模块
 			adminChatController := new(admin.Chat)
 			chatAdmin := back.Group("chat")
-			chatAdmin.Use(middleware.JWTAuth())
 			chatAdmin.GET("friends", adminChatController.FriendsList)
 			chatAdmin.DELETE("friends/:id", adminChatController.DeleteFriendRelation)
 			chatAdmin.GET("groups", adminChatController.GroupsList)
+			chatAdmin.GET("groups/:id", adminChatController.GroupDetail)
 			chatAdmin.PATCH("groups/:groupId", adminChatController.UpdateGroup)
+			chatAdmin.DELETE("groups/:id", adminChatController.DissolveGroup)
+			chatAdmin.POST("groups/:id/transferOwner", adminChatController.TransferGroupOwner)
 			chatAdmin.DELETE("groupMembers/:groupId/:userId", adminChatController.RemoveGroupMember)
+			chatAdmin.GET("messages", adminChatController.MessagesList)
+			chatAdmin.POST("messages/revoke", adminChatController.RevokeMessage)
+			chatAdmin.POST("messages/delete", adminChatController.DeleteMessage)
 		}
 
 		// mobile端路由

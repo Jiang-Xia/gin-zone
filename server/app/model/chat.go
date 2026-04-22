@@ -71,6 +71,10 @@ type ChatLog struct {
 	Content    string `gorm:"comment:聊天内容;" json:"content"`
 	LogType    int8   `gorm:"comment:记录类型 1-私聊记录 2-群聊记录;" json:"logType"`
 	MsgType    int8   `gorm:"comment:消息类型 1-文本 2-图片 3-视频 4-音频; 5-其他" json:"msgType"`
+	IsRevoked  bool   `gorm:"comment:是否已撤回;default:0" json:"isRevoked"`
+	IsDeleted  bool   `gorm:"comment:是否已删除(软删除);default:0" json:"isDeleted"`
+	// 中文注释：记录管理端处置操作者，便于后续审计追溯
+	OperateBy string `gorm:"type:varchar(20);comment:最近一次处置操作者userId;" json:"operateBy,omitempty"`
 	User       User   `gorm:"foreignKey:UserId;references:SenderId;comment:用户数据;" json:"userInfo"`
 }
 
@@ -136,4 +140,39 @@ type AdminChatGroupRow struct {
 	UserId        string `gorm:"column:user_id" json:"userId,omitempty"`
 	OwnerNickName string `gorm:"column:owner_nick_name" json:"ownerNickName,omitempty"`
 	CreatedAt     Time   `gorm:"column:created_at" json:"createdAt,omitempty"`
+}
+
+// AdminTransferGroupOwnerReq 管理端-转移群主请求
+type AdminTransferGroupOwnerReq struct {
+	TargetUserId string `json:"targetUserId" binding:"required"` // 中文注释：目标新群主 userId
+}
+
+// AdminChatMessageQuery 管理端-消息检索查询
+type AdminChatMessageQuery struct {
+	ListQuery `gorm:"embedded"`
+	SenderId  string `json:"senderId"`
+	GroupId   int    `json:"groupId"`
+	Keyword   string `json:"keyword"`
+	MsgType   int    `json:"msgType"`
+	StartAt   string `json:"startAt"` // 中文注释：起始时间（yyyy-MM-dd HH:mm:ss）
+	EndAt     string `json:"endAt"`   // 中文注释：结束时间（yyyy-MM-dd HH:mm:ss）
+}
+
+// AdminChatMessageRow 管理端-消息检索结果
+type AdminChatMessageRow struct {
+	ID         int    `gorm:"column:id" json:"id"`
+	SenderId   string `gorm:"column:sender_id" json:"senderId"`
+	ReceiverId string `gorm:"column:receiver_id" json:"receiverId"`
+	GroupId    int    `gorm:"column:group_id" json:"groupId"`
+	Content    string `gorm:"column:content" json:"content"`
+	LogType    int8   `gorm:"column:log_type" json:"logType"`
+	MsgType    int8   `gorm:"column:msg_type" json:"msgType"`
+	IsRevoked  bool   `gorm:"column:is_revoked" json:"isRevoked"`
+	IsDeleted  bool   `gorm:"column:is_deleted" json:"isDeleted"`
+	CreatedAt  Time   `gorm:"column:created_at" json:"createdAt,omitempty"`
+}
+
+// AdminMessageOperateReq 管理端-消息处置请求
+type AdminMessageOperateReq struct {
+	ID int `json:"id" binding:"required"` // 中文注释：消息主键id
 }

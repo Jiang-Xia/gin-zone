@@ -151,7 +151,19 @@ func (c *Client) Read() {
 				LogType:    msg.LogType,
 				MsgType:    msg.MsgType,
 			}
-			service.Chat.CreateChatLog(chatLog)
+			if err = service.Chat.CreateChatLog(chatLog); err != nil {
+				log.Error("写入聊天记录失败: " + err.Error())
+				continue
+			}
+			// 中文注释：消息落库后再做敏感词检测，命中后自动撤回并替换广播内容
+			processRes, pErr := service.ProcessSensitiveMessage(chatLog)
+			if pErr != nil {
+				log.Error("写入敏感词命中日志失败: " + pErr.Error())
+			}
+			if processRes != nil && processRes.AutoRevoked {
+				msg.Content = "[消息包含敏感内容，已被系统拦截]"
+				msg.IsRevoked = true
+			}
 			//查询用户信息
 			UserInfo, _ := service.User.GetByUserId(chatLog.SenderId)
 			msg.SenderId = c.UserId

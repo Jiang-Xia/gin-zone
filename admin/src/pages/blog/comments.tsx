@@ -1,37 +1,138 @@
-import { useState } from 'react';
-import { Button, Dialog, Input, Table } from 'tdesign-react';
+import { useEffect, useState } from 'react';
+import { Button, Input, Table } from 'tdesign-react';
 import { SearchIcon } from 'tdesign-icons-react';
+import dayjs from 'dayjs';
 import PageContainer from '../../components/PageContainer';
 import ListToolbar from '../../components/ListToolbar';
 import { useApiMessage } from '../../hooks/useApiMessage';
-import { getBlogArticleInfo, getBlogCommentAll } from '../../api/modules/blog';
+import { getBlogCommentAll } from '../../api/modules/blog';
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../constants/pagination';
 
-function extractList(data: unknown) {
-  if (Array.isArray(data)) {
-    return data as Array<Record<string, unknown>>;
-  }
-  const payload = data as Record<string, unknown> | undefined;
-  const candidates = [payload?.list, payload?.rows, payload?.records, payload?.data];
-  for (const item of candidates) {
-    if (Array.isArray(item)) {
-      return item as Array<Record<string, unknown>>;
+type BlogUserInfo = {
+  nickname: string;
+  id: number;
+  avatar: string;
+};
+
+type BlogReply = {
+  id: string;
+  createTime: string;
+  updateTime: string;
+  parentId: string;
+  replyUid: string;
+  content: string;
+  uid: number;
+  userInfo: BlogUserInfo;
+  tUserInfo: BlogUserInfo;
+  replys?: BlogReply[];
+};
+
+type BlogCommentRow = {
+  id: string;
+  createTime: string;
+  updateTime: string;
+  content: string;
+  uid: number;
+  userInfo: BlogUserInfo;
+  replys: BlogReply[];
+  allReplyCount: number;
+  articleId: number;
+};
+
+type BlogCommentDisplayRow = {
+  id: string;
+  createTime: string;
+  content: string;
+  allReplyCount: number;
+  userInfo: BlogUserInfo;
+  tUserInfo?: BlogUserInfo;
+  uid: number;
+  level: number;
+  children?: BlogCommentDisplayRow[];
+};
+
+type BlogPagination = {
+  total: number;
+  page: number;
+  pageSize: number;
+  pages: number;
+};
+
+type BlogCommentListResponse = {
+  list: BlogCommentRow[];
+  pagination: BlogPagination;
+};
+
+const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
+// 评论时间统一用 dayjs 格式化，保持和文章列表一致
+const formatTime = (value: string) => (value ? dayjs(value).format(TIME_FORMAT) : '-');
+
+// 昵称为空时回退展示用户ID，避免表格出现大量 "-"
+function getDisplayNickname(nickname?: string, uid?: number) {
+  const name = (nickname || '').trim();
+  if (name) return name;
+  if (typeof uid === 'number') return `用户${uid}`;
+  return '-';
+}
+
+// 递归构建评论树节点，支持 replys 的多层级结构
+function buildReplyNode(reply: BlogReply, level: number): BlogCommentDisplayRow {
+  return {
+    id: reply.id,
+    createTime: reply.createTime,
+    content: reply.content,
+    allReplyCount: Array.isArray(reply.replys) ? reply.replys.length : 0,
+    userInfo: reply.userInfo,
+    tUserInfo: reply.tUserInfo,
+    uid: reply.uid,
+    level,
+    children: (reply.replys || []).map((item) => buildReplyNode(item, level + 1)),
+  };
+}
+
+// 将后端树形评论结构映射为表格树结构
+function buildCommentTree(rows: BlogCommentRow[]) {
+  return rows.map((comment) => ({
+    id: comment.id,
+    createTime: comment.createTime,
+    content: comment.content,
+    allReplyCount: comment.allReplyCount,
+    userInfo: comment.userInfo,
+    uid: comment.uid,
+    level: 0,
+    children: comment.replys.map((reply) => buildReplyNode(reply, 1)),
+  }));
+}
+
+// 树形筛选：命中当前节点或任一子节点时保留整条链路
+function filterCommentTree(
+  rows: BlogCommentDisplayRow[],
+  predicate: (row: BlogCommentDisplayRow) => boolean,
+): BlogCommentDisplayRow[] {
+  // 避免返回 null，直接构建符合类型约束的过滤结果
+  const filteredRows: BlogCommentDisplayRow[] = [];
+  rows.forEach((row) => {
+    const children = row.children ? filterCommentTree(row.children, predicate) : [];
+    if (predicate(row) || children.length > 0) {
+      filteredRows.push({ ...row, children });
     }
-  }
-  return [];
+  });
+  return filteredRows;
 }
 
 export default function BlogCommentManagePage() {
   const message = useApiMessage();
   const [articleId, setArticleId] = useState('');
   const [keyword, setKeyword] = useState('');
+  const [page, setPage] = useState(DEFAULT_PAGE);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [total, setTotal] = useState(0);
   const [riskOnly, setRiskOnly] = useState(false);
   const [pendingOnly, setPendingOnly] = useState(false);
   const [riskKeywords, setRiskKeywords] = useState('违规,广告,引流,辱骂,spam');
   const [loading, setLoading] = useState(false);
-  const [rows, setRows] = useState<Array<Record<string, unknown>>>([]);
-  const [detailVisible, setDetailVisible] = useState(false);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [detailJson, setDetailJson] = useState('');
+  const [rows, setRows] = useState<BlogCommentDisplayRow[]>([]);
 
   const load = async (override?: Record<string, unknown>) => {
     setLoading(true);
@@ -39,10 +140,17 @@ export default function BlogCommentManagePage() {
       const params = {
         articleId: articleId.trim() || undefined,
         keyword: keyword.trim() || undefined,
+        page,
+        pageSize,
         ...override,
       };
       const res = await getBlogCommentAll(params);
-      setRows(extractList(res));
+      const payload = res as BlogCommentListResponse;
+      // 评论列表严格按外部服务返回结构解析：data.list + data.pagination
+      setRows(buildCommentTree(payload.list));
+      setTotal(payload.pagination.total);
+      setPage(payload.pagination.page);
+      setPageSize(payload.pagination.pageSize);
     } catch (error) {
       message.error(error, '获取评论列表失败');
     } finally {
@@ -50,34 +158,19 @@ export default function BlogCommentManagePage() {
     }
   };
 
-  const openDetail = async (row: Record<string, unknown>) => {
-    setDetailVisible(true);
-    setDetailLoading(true);
-    try {
-      const article = row.articleId ? await getBlogArticleInfo({ id: row.articleId }) : null;
-      const payload = {
-        comment: row,
-        article,
-      };
-      setDetailJson(JSON.stringify(payload, null, 2));
-    } catch (error) {
-      message.error(error, '加载评论上下文失败');
-      setDetailJson(JSON.stringify({ comment: row }, null, 2));
-    } finally {
-      setDetailLoading(false);
-    }
-  };
+  useEffect(() => {
+    load().catch(() => undefined);
+  }, []);
 
   const riskWordList = riskKeywords
     .split(',')
     .map((item) => item.trim().toLowerCase())
     .filter(Boolean);
 
-  const displayRows = rows.filter((row) => {
+  const displayRows = filterCommentTree(rows, (row) => {
     const content = String(row.content ?? '').toLowerCase();
-    const status = String(row.status ?? '').toLowerCase();
     const hasRisk = riskWordList.length > 0 && riskWordList.some((word) => content.includes(word));
-    const isPending = status === 'pending' || status === '0' || status === '';
+    const isPending = row.level === 0;
     if (riskOnly && !hasRisk) {
       return false;
     }
@@ -100,7 +193,8 @@ export default function BlogCommentManagePage() {
               onClick={() => {
                 setArticleId('');
                 setKeyword('');
-                load({ articleId: undefined, keyword: undefined }).catch(() => undefined);
+                setPage(1);
+                load({ articleId: undefined, keyword: undefined, page: 1 }).catch(() => undefined);
               }}
             >
               重置
@@ -123,7 +217,7 @@ export default function BlogCommentManagePage() {
               {pendingOnly ? '已启用待处理筛选' : '仅看待处理'}
             </Button>
             <span>
-              显示 {displayRows.length} / 总 {rows.length} 项
+              显示 {displayRows.length} / 总 {total} 项
             </span>
           </>
         }
@@ -151,36 +245,81 @@ export default function BlogCommentManagePage() {
           stripe
           hover
           columns={[
-            { colKey: 'id', title: '评论ID', width: 100 },
-            { colKey: 'articleId', title: '文章ID', width: 100 },
-            { colKey: 'nickName', title: '用户昵称', width: 160 },
-            { colKey: 'content', title: '评论内容', ellipsis: true },
-            { colKey: 'replyId', title: '回复对象ID', width: 120 },
-            { colKey: 'createTime', title: '创建时间', width: 180 },
             {
-              colKey: 'operation',
-              title: '操作',
-              width: 120,
-              fixed: 'right' as const,
-              cell: ({ row }: { row: Record<string, unknown> }) => (
-                <Button theme="primary" variant="text" onClick={() => openDetail(row)}>
-                  查看上下文
-                </Button>
-              ),
+              colKey: 'userInfo.avatar',
+              title: '评论人头像',
+              width: 100,
+              cell: ({ row }: { row: BlogCommentDisplayRow }) =>
+                row.userInfo.avatar ? (
+                  <img
+                    src={row.userInfo.avatar}
+                    alt={row.userInfo.nickname || 'avatar'}
+                    style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  '-'
+                ),
+            },
+            {
+              colKey: 'userInfo.nickname',
+              title: <span style={{ whiteSpace: 'nowrap' }}>评论人昵称</span>,
+              width: 180,
+              cell: ({ row }: { row: BlogCommentDisplayRow }) =>
+                getDisplayNickname(row.userInfo.nickname, row.userInfo.id ?? row.uid),
+            },
+            {
+              colKey: 'replys.tUserInfo.nickname',
+              title: <span style={{ whiteSpace: 'nowrap' }}>被回复人昵称</span>,
+              width: 180,
+              cell: ({ row }: { row: BlogCommentDisplayRow }) => getDisplayNickname(row.tUserInfo?.nickname, row.tUserInfo?.id),
+            },
+            {
+              colKey: 'replys.tUserInfo.avatar',
+              title: '被回复人头像',
+              width: 100,
+              cell: ({ row }: { row: BlogCommentDisplayRow }) => {
+                const avatar = row.tUserInfo?.avatar;
+                const nickname = row.tUserInfo?.nickname || 'avatar';
+                return avatar ? (
+                  <img src={avatar} alt={nickname} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  '-'
+                );
+              },
+            },
+            {
+              colKey: 'content',
+              title: '评论内容',
+              ellipsis: true,
+              cell: ({ row }: { row: BlogCommentDisplayRow }) => (row.level > 0 ? `↳ ${row.content}` : row.content),
+            },
+            { colKey: 'allReplyCount', title: '回复数', width: 100 },
+            {
+              colKey: 'createTime',
+              title: '评论时间',
+              width: 180,
+              cell: ({ row }: { row: BlogCommentDisplayRow }) => formatTime(row.createTime),
             },
           ]}
+          pagination={{
+            current: page,
+            pageSize,
+            total,
+            showJumper: true,
+            showPageSize: true,
+            pageSizeOptions: PAGE_SIZE_OPTIONS,
+            onCurrentChange: (value) => {
+              setPage(value);
+              load({ page: value }).catch(() => undefined);
+            },
+            onPageSizeChange: (value) => {
+              setPage(1);
+              setPageSize(value);
+              load({ page: 1, pageSize: value }).catch(() => undefined);
+            },
+          }}
         />
       </div>
-
-      <Dialog
-        header="评论上下文"
-        visible={detailVisible}
-        onClose={() => setDetailVisible(false)}
-        confirmBtn={null}
-        cancelBtn="关闭"
-      >
-        {detailLoading ? '加载中...' : <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{detailJson || '暂无数据'}</pre>}
-      </Dialog>
     </PageContainer>
   );
 }

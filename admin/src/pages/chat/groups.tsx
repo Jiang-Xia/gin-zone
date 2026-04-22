@@ -9,8 +9,10 @@ import { useDialogForm } from '../../hooks/useDialogForm';
 import { useListPage } from '../../hooks/useListPage';
 import { getGroupMemberList } from '../../api/modules/chat';
 import {
+  dissolveAdminChatGroup,
   getAdminChatGroups,
   removeAdminChatGroupMember,
+  transferAdminChatGroupOwner,
   updateAdminChatGroup,
   type AdminChatGroupRow,
 } from '../../api/modules/chatAdmin';
@@ -77,6 +79,9 @@ export default function ChatGroupsManagePage() {
   const [membersLoading, setMembersLoading] = useState(false);
   const [members, setMembers] = useState<GroupMemberRow[]>([]);
   const [membersGroupId, setMembersGroupId] = useState(0);
+  const [transferDialogVisible, setTransferDialogVisible] = useState(false);
+  const [transferGroupId, setTransferGroupId] = useState(0);
+  const [targetOwnerId, setTargetOwnerId] = useState('');
   // 中文注释：群成员是“列表型弹窗”，默认给更大宽度，避免内容挤压
   const membersDialogWidth = useMemo(() => '60%', []);
 
@@ -137,6 +142,38 @@ export default function ChatGroupsManagePage() {
     }
   };
 
+  const openTransferOwnerDialog = (gid: number) => {
+    setTransferGroupId(gid);
+    setTargetOwnerId('');
+    setTransferDialogVisible(true);
+  };
+
+  const onTransferOwner = async () => {
+    const nextOwner = targetOwnerId.trim();
+    if (!transferGroupId || !nextOwner) {
+      message.warning('请输入目标群主 userId');
+      return;
+    }
+    try {
+      await transferAdminChatGroupOwner(transferGroupId, nextOwner);
+      message.success('转移群主成功');
+      setTransferDialogVisible(false);
+      await reload();
+    } catch (error) {
+      message.error(error, '转移群主失败');
+    }
+  };
+
+  const onDissolveGroup = async (gid: number) => {
+    try {
+      await dissolveAdminChatGroup(gid);
+      message.success('解散群成功');
+      await reload();
+    } catch (error) {
+      message.error(error, '解散群失败');
+    }
+  };
+
   const columns = [
     { colKey: 'id', title: '群ID', width: 90 },
     {
@@ -153,7 +190,7 @@ export default function ChatGroupsManagePage() {
     {
       colKey: 'operation',
       title: '操作',
-      width: 220,
+      width: 320,
       fixed: 'right' as const,
       cell: ({ row }: { row: AdminChatGroupRow }) => (
         <>
@@ -177,6 +214,14 @@ export default function ChatGroupsManagePage() {
           <Button size="small" theme="primary" variant="text" onClick={() => openMembers(Number(row.id))}>
             群成员
           </Button>
+          <Button size="small" theme="primary" variant="text" onClick={() => openTransferOwnerDialog(Number(row.id))}>
+            转移群主
+          </Button>
+          <Popconfirm content="确认解散该群组吗？" onConfirm={() => onDissolveGroup(Number(row.id))}>
+            <Button size="small" theme="danger" variant="text">
+              解散群
+            </Button>
+          </Popconfirm>
         </>
       ),
     },
@@ -249,6 +294,20 @@ export default function ChatGroupsManagePage() {
             <Input placeholder="请输入群公告" />
           </FormItem>
         </Form>
+      </Dialog>
+
+      <Dialog
+        header={`转移群主（群ID：${transferGroupId || '-'}）`}
+        visible={transferDialogVisible}
+        onClose={() => setTransferDialogVisible(false)}
+        onConfirm={onTransferOwner}
+      >
+        <Input
+          value={targetOwnerId}
+          onChange={setTargetOwnerId}
+          placeholder="请输入目标用户 userId（需为群成员）"
+          clearable
+        />
       </Dialog>
 
       <Dialog

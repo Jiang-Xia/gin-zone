@@ -27,6 +27,8 @@ type appModel struct {
 	PrivateKey      string `ini:"private_key"`
 	// AllowedOrigins 逗号分隔，生产环境 WebSocket Origin 白名单（dev 下本机多端口见 chat 内逻辑）
 	AllowedOrigins string `ini:"allowed_origins"`
+	// SensitiveAutoRevoke 敏感词命中后是否自动撤回（默认开启）
+	SensitiveAutoRevoke bool `ini:"sensitive_auto_revoke"`
 }
 
 // 数据库配置
@@ -87,6 +89,8 @@ func loadInI() {
 
 func setApp() {
 	App = new(appModel)
+	// 中文注释：敏感词策略默认“记录命中+自动撤回+广播拦截提示”
+	App.SensitiveAutoRevoke = true
 	Database = new(databaseModel)
 	Docs = new(docsModel)
 	Redis = new(redisModel)

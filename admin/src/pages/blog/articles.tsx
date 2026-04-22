@@ -1,37 +1,67 @@
-import { useMemo, useState } from 'react';
-import { Button, Dialog, Input, Table } from 'tdesign-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Button, Input, Table } from 'tdesign-react';
 import { SearchIcon } from 'tdesign-icons-react';
+import dayjs from 'dayjs';
 import PageContainer from '../../components/PageContainer';
 import ListToolbar from '../../components/ListToolbar';
 import { useApiMessage } from '../../hooks/useApiMessage';
-import { getBlogArticleInfo, postBlogArticleList } from '../../api/modules/blog';
+import { postBlogArticleList } from '../../api/modules/blog';
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../constants/pagination';
 
-function extractList(data: unknown) {
-  if (Array.isArray(data)) {
-    return data as Array<Record<string, unknown>>;
-  }
-  const payload = data as Record<string, unknown> | undefined;
-  const candidates = [payload?.list, payload?.rows, payload?.records, payload?.data];
-  for (const item of candidates) {
-    if (Array.isArray(item)) {
-      return item as Array<Record<string, unknown>>;
-    }
-  }
-  return [];
-}
+type BlogTag = {
+  id: string;
+  label: string;
+  value: string;
+};
 
-function extractTotal(data: unknown, listLength: number) {
-  const payload = data as Record<string, unknown> | undefined;
-  const candidates = [payload?.total, payload?.count];
-  for (const item of candidates) {
-    const n = Number(item);
-    if (!Number.isNaN(n) && n >= 0) {
-      return n;
-    }
-  }
-  return listLength;
-}
+type BlogCategory = {
+  id: string;
+  label: string;
+  value: string;
+};
+
+type BlogUserInfo = {
+  id: number;
+  nickname: string;
+  avatar: string;
+};
+
+type BlogArticleRow = {
+  id: number;
+  title: string;
+  uid: number;
+  createTime: string;
+  updateTime: string;
+  views: number;
+  likes: number;
+  status: string;
+  topping: boolean;
+  isDelete: boolean;
+  cover: string;
+  commentCount: number;
+  description: string;
+  category: BlogCategory;
+  tags: BlogTag[];
+  userInfo: BlogUserInfo;
+};
+
+type BlogPagination = {
+  total: number;
+  page: number;
+  pageSize: number;
+  pages: number;
+};
+
+type BlogArticleListResponse = {
+  list: BlogArticleRow[];
+  pagination: BlogPagination;
+};
+
+const BLOG_DETAIL_URL_PREFIX = 'https://jiang-xia.top/detail/';
+const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
+// 统一时间展示格式，避免列表显示 ISO 原始串
+const formatTime = (value: string) => (value ? dayjs(value).format(TIME_FORMAT) : '-');
 
 export default function BlogArticleManagePage() {
   const message = useApiMessage();
@@ -41,15 +71,13 @@ export default function BlogArticleManagePage() {
   const [page, setPage] = useState(DEFAULT_PAGE);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [loading, setLoading] = useState(false);
-  const [rows, setRows] = useState<Array<Record<string, unknown>>>([]);
+  const [rows, setRows] = useState<BlogArticleRow[]>([]);
   const [total, setTotal] = useState(0);
-  const [detailVisible, setDetailVisible] = useState(false);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [detailJson, setDetailJson] = useState('');
 
   const queryPayload = useMemo(
     () => ({
       pageNum: page,
+      page,
       pageSize,
       keyword: keyword.trim() || undefined,
       tag: tag.trim() || undefined,
@@ -62,10 +90,13 @@ export default function BlogArticleManagePage() {
     const finalPayload = { ...queryPayload, ...override };
     setLoading(true);
     try {
-      const res = await postBlogArticleList(finalPayload);
-      const list = extractList(res);
-      setRows(list);
-      setTotal(extractTotal(res, list.length));
+      const res = await postBlogArticleList(finalPayload as Record<string, unknown>);
+      const payload = res as BlogArticleListResponse;
+      // 文章列表严格按外部服务返回结构解析：data.list + data.pagination
+      setRows(payload.list);
+      setTotal(payload.pagination.total);
+      setPage(payload.pagination.page);
+      setPageSize(payload.pagination.pageSize);
     } catch (error) {
       message.error(error, '获取文章列表失败');
     } finally {
@@ -73,24 +104,13 @@ export default function BlogArticleManagePage() {
     }
   };
 
-  const openDetail = async (row: Record<string, unknown>) => {
-    const id = row.id ?? row.articleId;
-    if (!id) {
-      message.warning('当前行缺少文章ID');
-      return;
-    }
-    setDetailVisible(true);
-    setDetailLoading(true);
-    try {
-      const res = await getBlogArticleInfo({ id });
-      setDetailJson(JSON.stringify(res, null, 2));
-    } catch (error) {
-      message.error(error, '获取文章详情失败');
-      setDetailJson('');
-    } finally {
-      setDetailLoading(false);
-    }
+  const jumpToDetail = (row: BlogArticleRow) => {
+    window.open(`${BLOG_DETAIL_URL_PREFIX}${row.id}`, '_blank', 'noopener,noreferrer');
   };
+
+  useEffect(() => {
+    load().catch(() => undefined);
+  }, []);
 
   return (
     <PageContainer>
@@ -101,7 +121,7 @@ export default function BlogArticleManagePage() {
               theme="primary"
               onClick={() => {
                 setPage(1);
-                load({ pageNum: 1 }).catch(() => undefined);
+                load({ pageNum: 1, page: 1 }).catch(() => undefined);
               }}
             >
               查询
@@ -115,6 +135,7 @@ export default function BlogArticleManagePage() {
                 setPage(1);
                 load({
                   pageNum: 1,
+                  page: 1,
                   keyword: undefined,
                   tag: undefined,
                   category: undefined,
@@ -145,20 +166,47 @@ export default function BlogArticleManagePage() {
           stripe
           hover
           columns={[
-            { colKey: 'id', title: 'ID', width: 90 },
             { colKey: 'title', title: '标题', ellipsis: true },
-            { colKey: 'author', title: '作者', width: 140 },
-            { colKey: 'categoryName', title: '分类', width: 140 },
-            { colKey: 'tags', title: '标签', width: 180, ellipsis: true },
-            { colKey: 'viewCount', title: '浏览量', width: 110 },
-            { colKey: 'createdAt', title: '创建时间', width: 180 },
+            { colKey: 'description', title: '描述', ellipsis: true },
+            {
+              colKey: 'cover',
+              title: '封面',
+              width: 100,
+              cell: ({ row }: { row: BlogArticleRow }) =>
+                row.cover ? (
+                  <img
+                    src={row.cover}
+                    alt={row.title || 'cover'}
+                    style={{ width: 40, height: 40, borderRadius: 4, objectFit: 'cover' }}
+                  />
+                ) : (
+                  '-'
+                ),
+            },
+            { colKey: 'category.label', title: '分类', width: 140 },
+            {
+              colKey: 'tags',
+              title: '标签',
+              width: 180,
+              ellipsis: true,
+              cell: ({ row }: { row: BlogArticleRow }) => row.tags.map((item) => item.label).join(', ') || '-',
+            },
+            { colKey: 'views', title: '查看', width: 100 },
+            { colKey: 'likes', title: '点赞', width: 100 },
+            { colKey: 'commentCount', title: '评论数', width: 100 },
+            {
+              colKey: 'updateTime',
+              title: '更新时间',
+              width: 180,
+              cell: ({ row }: { row: BlogArticleRow }) => formatTime(row.updateTime),
+            },
             {
               colKey: 'operation',
               title: '操作',
               width: 120,
               fixed: 'right' as const,
-              cell: ({ row }: { row: Record<string, unknown> }) => (
-                <Button theme="primary" variant="text" onClick={() => openDetail(row)}>
+              cell: ({ row }: { row: BlogArticleRow }) => (
+                <Button theme="primary" variant="text" onClick={() => jumpToDetail(row)}>
                   查看详情
                 </Button>
               ),
@@ -173,26 +221,16 @@ export default function BlogArticleManagePage() {
             pageSizeOptions: PAGE_SIZE_OPTIONS,
             onCurrentChange: (value) => {
               setPage(value);
-              load({ pageNum: value }).catch(() => undefined);
+              load({ pageNum: value, page: value }).catch(() => undefined);
             },
             onPageSizeChange: (value) => {
               setPage(1);
               setPageSize(value);
-              load({ pageNum: 1, pageSize: value }).catch(() => undefined);
+              load({ pageNum: 1, page: 1, pageSize: value }).catch(() => undefined);
             },
           }}
         />
       </div>
-
-      <Dialog
-        header="文章详情"
-        visible={detailVisible}
-        onClose={() => setDetailVisible(false)}
-        confirmBtn={null}
-        cancelBtn="关闭"
-      >
-        {detailLoading ? '加载中...' : <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{detailJson || '暂无数据'}</pre>}
-      </Dialog>
     </PageContainer>
   );
 }

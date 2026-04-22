@@ -6,6 +6,7 @@ import (
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gorm.io/gorm"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -26,7 +27,7 @@ func (ch *chat) ChatFriends(userId string) []model.ChatFriends {
 		var chatLogs []model.ChatLog
 		hasMsg := true // 用于判断是否有未读消息
 		if friend.GroupId != 0 {
-			groupSql := db.Mysql.Where("group_id = ?", friend.GroupId).Session(&gorm.Session{})
+			groupSql := db.Mysql.Where("group_id = ? AND is_deleted = ? AND is_revoked = ?", friend.GroupId, false, false).Session(&gorm.Session{})
 			//查询群组未读消息
 			groupSql.Where("updated_at > ?", friend.LastReadTime).Order("updated_at desc").Find(&chatLogs)
 			if len(chatLogs) == 0 {
@@ -38,9 +39,9 @@ func (ch *chat) ChatFriends(userId string) []model.ChatFriends {
 			// 新建一个会话 ，条件不会一直累加
 			// https://gorm.io/zh_CN/docs/method_chaining.html
 			friendSql := db.Mysql.Where("(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
-				userId, friend.FriendId, friend.FriendId, userId).Session(&gorm.Session{})
+				userId, friend.FriendId, friend.FriendId, userId).Where("is_deleted = ? AND is_revoked = ?", false, false).Session(&gorm.Session{})
 			//查询私聊未读消息 发消息为对方，接受者为自己时
-			db.Mysql.Where("updated_at > ? AND sender_id = ? AND receiver_id = ?", friend.LastReadTime, friend.FriendId, friend.UserId).Order("updated_at desc").Find(&chatLogs)
+			db.Mysql.Where("updated_at > ? AND sender_id = ? AND receiver_id = ? AND is_deleted = ? AND is_revoked = ?", friend.LastReadTime, friend.FriendId, friend.UserId, false, false).Order("updated_at desc").Find(&chatLogs)
 			fmt.Println("未读消息===============================>:", len(chatLogs))
 			if len(chatLogs) == 0 {
 				hasMsg = false
@@ -120,13 +121,15 @@ func (ch *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) (
 	var list []model.ChatLog
 	var total int64
 	if query.GroupId != 0 {
-		gSql := db.Mysql.Where("group_id", query.GroupId).Session(&gorm.Session{})
+		// 中文注释：移动端聊天记录默认屏蔽已撤回/已删除消息
+		gSql := db.Mysql.Where("group_id = ? AND is_deleted = ? AND is_revoked = ?", query.GroupId, false, false).Session(&gorm.Session{})
 		gSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Joins("User").Find(&list)
 		gSql.Model(&list).Count(&total)
 	} else {
 		//我发给他或者它发给我的都查询
 		fSql := db.Mysql.Where("sender_id = ? AND receiver_id = ?", query.SenderId, query.ReceiverId).
-			Or("sender_id = ? AND receiver_id = ?", query.ReceiverId, query.SenderId).Session(&gorm.Session{})
+			Or("sender_id = ? AND receiver_id = ?", query.ReceiverId, query.SenderId).
+			Where("is_deleted = ? AND is_revoked = ?", false, false).Session(&gorm.Session{})
 		fSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Joins("User").Find(&list)
 		fSql.Model(&list).Count(&total)
 	}
@@ -140,7 +143,7 @@ func (ch *chat) CreateChatLog(model *model.ChatLog) (err error) {
 	// fmt.Printf("创建消息记录:%+v", model)
 	res := db.Mysql.Create(model)
 	if res.Error != nil { //判断是否插入数据出错
-		fmt.Println(res.Error)
+		return res.Error
 	}
 	return
 }
@@ -233,7 +236,7 @@ func (ch *chat) ChatGroupResList(userId string, groupName string) ([]model.ChatG
 	res := make([]model.ChatGroupRes, 0, len(list))
 	for _, g := range list {
 		res = append(res, model.ChatGroupRes{
-			ChatGroup:  g,
+			ChatGroup: g,
 			OwnerInfo: ownerMap[g.UserId],
 		})
 	}
@@ -358,7 +361,7 @@ func (ch *chat) GetChatGroupInfoRes(currentUserId string, groupId int) (*model.C
 		return nil, err
 	}
 	return &model.ChatGroupRes{
-		ChatGroup:  *group,
+		ChatGroup: *group,
 		OwnerInfo: ownerMap[group.UserId],
 	}, nil
 }
@@ -501,6 +504,189 @@ func (ch *chat) AdminChatGroupsList(page int, pageSize int, groupName string) ([
 		return nil, 0, err
 	}
 	return list, total, nil
+}
+
+// AdminGetChatGroupDetail 管理端：群组详情（含群主信息）
+func (ch *chat) AdminGetChatGroupDetail(currentUserId string, groupId int) (*model.ChatGroupRes, error) {
+	return ch.GetChatGroupInfoRes(currentUserId, groupId)
+}
+
+// AdminDissolveChatGroup 管理端：解散群组（群主或管理员）
+func (ch *chat) AdminDissolveChatGroup(currentUserId string, groupId int) error {
+	if strings.TrimSpace(currentUserId) == "" {
+		return errors.New("用户id不能为空")
+	}
+	group, err := ch.GetChatGroupByID(groupId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("群组不存在")
+		}
+		return err
+	}
+	if group.UserId != currentUserId {
+		isAdmin, aErr := User.IsAdminByUserId(currentUserId)
+		if aErr != nil {
+			return aErr
+		}
+		if !isAdmin {
+			return errors.New("无权限操作该群组")
+		}
+	}
+	return db.Mysql.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("group_id = ?", groupId).Delete(&model.ChatGroupMember{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("group_id = ?", groupId).Delete(&model.ChatFriends{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id = ?", groupId).Delete(&model.ChatGroup{}).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+// AdminTransferChatGroupOwner 管理端：转移群主（群主或管理员）
+func (ch *chat) AdminTransferChatGroupOwner(currentUserId string, groupId int, targetUserId string) error {
+	targetUserId = strings.TrimSpace(targetUserId)
+	if targetUserId == "" {
+		return errors.New("目标用户不能为空")
+	}
+	group, err := ch.GetChatGroupByID(groupId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("群组不存在")
+		}
+		return err
+	}
+	if group.UserId != currentUserId {
+		isAdmin, aErr := User.IsAdminByUserId(currentUserId)
+		if aErr != nil {
+			return aErr
+		}
+		if !isAdmin {
+			return errors.New("无权限操作该群组")
+		}
+	}
+	var memberCount int64
+	if err = db.Mysql.Model(&model.ChatGroupMember{}).
+		Where("group_id = ? AND user_id = ?", groupId, targetUserId).
+		Count(&memberCount).Error; err != nil {
+		return err
+	}
+	if memberCount == 0 {
+		return errors.New("目标用户不是群成员")
+	}
+	return db.Mysql.Model(&model.ChatGroup{}).Where("id = ?", groupId).Update("user_id", targetUserId).Error
+}
+
+func parseAdminQueryTime(value string) (time.Time, error) {
+	return time.ParseInLocation("2006-01-02 15:04:05", strings.TrimSpace(value), time.Local)
+}
+
+// AdminSearchChatMessages 管理端：消息检索
+func (ch *chat) AdminSearchChatMessages(page int, pageSize int, query *model.AdminChatMessageQuery) ([]model.AdminChatMessageRow, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+	sql := db.Mysql.Table("z_chat_log").
+		Select("id,sender_id,receiver_id,group_id,content,log_type,msg_type,is_revoked,is_deleted,created_at")
+	if query != nil {
+		if strings.TrimSpace(query.SenderId) != "" {
+			sql = sql.Where("sender_id = ?", strings.TrimSpace(query.SenderId))
+		}
+		if query.GroupId > 0 {
+			sql = sql.Where("group_id = ?", query.GroupId)
+		}
+		if strings.TrimSpace(query.Keyword) != "" {
+			sql = sql.Where("content LIKE ?", "%"+strings.TrimSpace(query.Keyword)+"%")
+		}
+		if query.MsgType > 0 {
+			sql = sql.Where("msg_type = ?", query.MsgType)
+		}
+		if strings.TrimSpace(query.StartAt) != "" {
+			startAt, err := parseAdminQueryTime(query.StartAt)
+			if err != nil {
+				return nil, 0, errors.New("startAt格式错误，应为yyyy-MM-dd HH:mm:ss")
+			}
+			sql = sql.Where("created_at >= ?", startAt)
+		}
+		if strings.TrimSpace(query.EndAt) != "" {
+			endAt, err := parseAdminQueryTime(query.EndAt)
+			if err != nil {
+				return nil, 0, errors.New("endAt格式错误，应为yyyy-MM-dd HH:mm:ss")
+			}
+			sql = sql.Where("created_at <= ?", endAt)
+		}
+	}
+	var total int64
+	if err := sql.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var list []model.AdminChatMessageRow
+	if err := sql.Order("id desc").Offset((page - 1) * pageSize).Limit(pageSize).Scan(&list).Error; err != nil {
+		return nil, 0, err
+	}
+	return list, total, nil
+}
+
+// AdminRevokeChatMessage 管理端：软撤回消息
+func (ch *chat) AdminRevokeChatMessage(operatorUserId string, id int) error {
+	if strings.TrimSpace(operatorUserId) == "" || id <= 0 {
+		return errors.New("参数错误")
+	}
+	return db.Mysql.Model(&model.ChatLog{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"is_revoked": true,
+		"operate_by": operatorUserId,
+	}).Error
+}
+
+// AdminSoftDeleteChatMessage 管理端：软删除消息
+func (ch *chat) AdminSoftDeleteChatMessage(operatorUserId string, id int) error {
+	if strings.TrimSpace(operatorUserId) == "" || id <= 0 {
+		return errors.New("参数错误")
+	}
+	return db.Mysql.Model(&model.ChatLog{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"is_deleted": true,
+		"operate_by": operatorUserId,
+	}).Error
+}
+
+// GetChatMessageByID 根据主键查询消息（用于审计前后值）
+func (ch *chat) GetChatMessageByID(id int) (*model.ChatLog, error) {
+	out := &model.ChatLog{}
+	if err := db.Mysql.Where("id = ?", id).First(out).Error; err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// GetChatGroupMembersByGroupID 查询群成员（用于群详情展示）
+func (ch *chat) GetChatGroupMembersByGroupID(groupId int, page int, pageSize int) ([]model.ChatGroupMember, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+	var total int64
+	sql := db.Mysql.Model(&model.ChatGroupMember{}).Where("group_id = ?", groupId)
+	if err := sql.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var list []model.ChatGroupMember
+	if err := sql.Preload("UserInfo").Order("id desc").Offset((page - 1) * pageSize).Limit(pageSize).Find(&list).Error; err != nil {
+		return nil, 0, err
+	}
+	return list, total, nil
+}
+
+// BuildChatAuditTargetID 组装审计对象标识（避免 controller 重复拼接）
+func BuildChatAuditTargetID(prefix string, id int) string {
+	return prefix + ":" + strconv.Itoa(id)
 }
 
 // CreateGroup 新增

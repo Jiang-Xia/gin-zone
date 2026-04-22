@@ -5,7 +5,7 @@ import NotFoundPage from '../pages/error/NotFound';
 import MainLayout from '../layouts/MainLayout';
 import RequireAuth from './RequireAuth';
 import { useAuth } from '../store/auth';
-import { appRoutes } from './routes';
+import { flatRoutes } from './routes';
 
 export default function AppRouter() {
   // token 为空视为未登录，用于决定默认跳转与兜底路由
@@ -20,20 +20,22 @@ export default function AppRouter() {
 
       {/* 主布局容器：承载侧边栏/顶部栏/页面配置等 */}
       <Route element={<MainLayout />}>
-        {appRoutes.map((route) => (
-          <Route
-            key={route.path}
-            path={route.path}
-            element={
-              route.requiresAuth ? (
-                // 需要登录的页面：统一在这里做鉴权和角色校验
-                <RequireAuth roles={route.meta?.roles}>{route.element}</RequireAuth>
-              ) : (
-                route.element
-              )
-            }
-          />
-        ))}
+        {flatRoutes
+          .filter((route) => route.element)
+          .map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={
+                route.requiresAuth ? (
+                  // 需要登录的页面：统一在这里做鉴权和角色校验
+                  <RequireAuth roles={route.meta?.roles}>{route.element}</RequireAuth>
+                ) : (
+                  route.element
+                )
+              }
+            />
+          ))}
       </Route>
 
       {/* 未匹配路由：已登录 -> 404；未登录 -> 强制回登录页 */}
