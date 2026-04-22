@@ -1,17 +1,29 @@
-import { ChatIcon } from 'tdesign-icons-react';
-import ChatManagePage from '../../pages/chat/manage';
+import { ChatIcon, UsergroupIcon } from 'tdesign-icons-react';
+import ChatFriendsManagePage from '../../pages/chat/friends';
+import ChatGroupsManagePage from '../../pages/chat/groups';
 import type { AppRouteItem } from '../types';
 
 const chatRoutes: AppRouteItem[] = [
   {
-    path: '/chat/manage',
-    element: <ChatManagePage />,
+    path: '/chat/friends',
+    element: <ChatFriendsManagePage />,
     requiresAuth: true,
     meta: {
-      title: '聊天管理',
+      title: '好友关系管理',
       icon: <ChatIcon />,
       roles: ['admin'],
-      breadcrumbs: ['内容管理', '聊天管理'],
+      breadcrumbs: ['内容管理', '好友关系管理'],
+    },
+  },
+  {
+    path: '/chat/groups',
+    element: <ChatGroupsManagePage />,
+    requiresAuth: true,
+    meta: {
+      title: '群组管理',
+      icon: <UsergroupIcon />,
+      roles: ['admin'],
+      breadcrumbs: ['内容管理', '群组管理'],
     },
   },
 ];

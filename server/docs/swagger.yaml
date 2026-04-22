@@ -190,6 +190,8 @@ definitions:
         type: string
       userId:
         type: string
+      userInfo:
+        $ref: '#/definitions/model.User'
     type: object
   model.ChatLog:
     properties:
@@ -285,6 +287,21 @@ definitions:
     required:
     - password
     - userName
+    type: object
+  model.UpdateChatGroup:
+    properties:
+      avatar:
+        description: 中文注释：群头像（可选）
+        type: string
+      groupName:
+        description: 中文注释：群名称（可选）
+        type: string
+      intro:
+        description: 中文注释：群介绍（可选）
+        type: string
+      notice:
+        description: 中文注释：群公告（可选）
+        type: string
     type: object
   model.UpdateReadTime:
     properties:
@@ -386,6 +403,150 @@ info:
   title: Gin-Zone-Api
   version: "1.0"
 paths:
+  /admin/chat/friends:
+    get:
+      consumes:
+      - application/json
+      description: 管理端-好友/群聊关系列表
+      parameters:
+      - in: query
+        name: friendId
+        type: string
+      - in: query
+        name: groupId
+        type: integer
+      - example: 1
+        in: query
+        name: page
+        type: integer
+      - example: 20
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: userId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-好友/群聊关系列表
+      tags:
+      - 管理端-聊天模块
+  /admin/chat/friends/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 管理端-按关系主键删除（z_chat_friends.id）
+      parameters:
+      - description: 关系id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-删除好友/群聊关系
+      tags:
+      - 管理端-聊天模块
+  /admin/chat/groupMembers/{groupId}/{userId}:
+    delete:
+      consumes:
+      - application/json
+      description: 管理端-删除群成员（管理员）
+      parameters:
+      - description: 群组id
+        in: path
+        name: groupId
+        required: true
+        type: integer
+      - description: 成员用户id
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-删除群成员
+      tags:
+      - 管理端-聊天模块
+  /admin/chat/groups:
+    get:
+      consumes:
+      - application/json
+      description: 管理端-群组列表（支持 groupName 模糊查询）
+      parameters:
+      - in: query
+        name: groupName
+        type: string
+      - example: 1
+        in: query
+        name: page
+        type: integer
+      - example: 20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-群组列表
+      tags:
+      - 管理端-聊天模块
+  /admin/chat/groups/{groupId}:
+    patch:
+      consumes:
+      - application/json
+      description: 管理端-修改群聊信息（管理员）
+      parameters:
+      - description: 群组id
+        in: path
+        name: groupId
+        required: true
+        type: integer
+      - description: 需要上传的json
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateChatGroup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 管理端-修改群聊信息
+      tags:
+      - 管理端-聊天模块
   /base/auth/wxlogin:
     get:
       consumes:
@@ -720,6 +881,34 @@ paths:
       summary: 退出群聊
       tags:
       - 聊天模块
+  /mobile/chat/groupMembers/{groupId}/{userId}:
+    delete:
+      consumes:
+      - application/json
+      description: 群主/管理员删除群成员
+      parameters:
+      - description: 群组id
+        in: path
+        name: groupId
+        required: true
+        type: integer
+      - description: 成员用户id
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 删除群成员
+      tags:
+      - 聊天模块
   /mobile/chat/groups:
     get:
       consumes:
@@ -790,6 +979,56 @@ paths:
       security:
       - Authorization: []
       summary: 删除群聊
+      tags:
+      - 聊天模块
+    get:
+      consumes:
+      - application/json
+      description: 获取群聊信息（群主/管理员/群成员可查看）
+      parameters:
+      - description: 群组id
+        in: path
+        name: groupId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 群聊信息
+      tags:
+      - 聊天模块
+    patch:
+      consumes:
+      - application/json
+      description: 修改群聊信息（仅群主可修改）
+      parameters:
+      - description: 群组id
+        in: path
+        name: groupId
+        required: true
+        type: integer
+      - description: 需要上传的json
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateChatGroup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResType'
+      security:
+      - Authorization: []
+      summary: 修改群聊信息
       tags:
       - 聊天模块
   /mobile/chat/logs:

@@ -24,11 +24,12 @@ export default function ListToolbar({
   // 默认使用 common 样式，允许页面按需覆盖（如 moment 的 module.less）
   const rootClassName = className ?? commonStyles.toolbar;
   const leftRootClassName = leftClassName ?? commonStyles.toolbarLeft;
+  const rightRootClassName = rightClassName ?? commonStyles.toolbarRight;
 
   return (
     <div className={rootClassName}>
       <div className={leftRootClassName}>{left}</div>
-      {rightClassName ? <div className={rightClassName}>{right}</div> : right}
+      {right ? <div className={rightRootClassName}>{right}</div> : null}
     </div>
   );
 }

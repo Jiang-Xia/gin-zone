@@ -42,9 +42,10 @@ const privateKey =
 // sm4 固定 key（兼容旧版逻辑；后续建议与 workKey 解耦）
 const sm4Key = '0123456789abcdeffedcba9876543210'
 
-// 控制加解密是否开启（默认开启）
-// 本地调试若要关闭：uni.setStorageSync('zoneOpenCrypto', '0')
+// 控制加解密是否开启：开发环境默认关闭，生产环境可通过本地开关手动关闭
+// 生产环境手动关闭：uni.setStorageSync('zoneOpenCrypto', '0')
 function isCryptoEnabled() {
+  if (env !== 'production') return false
   try {
     return uni.getStorageSync('zoneOpenCrypto') !== '0'
   } catch (e) {

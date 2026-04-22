@@ -118,7 +118,7 @@ export default function MainLayout() {
               <Outlet />
             </div>
           </Layout.Content>
-          {settings.showFooter && <Layout.Footer className="app-footer">Zone Admin - Powered by TDesign</Layout.Footer>}
+          {settings.showFooter && <Layout.Footer className="app-footer">Zone Admin - Powered by Zone</Layout.Footer>}
         </Layout>
       </Layout>
 

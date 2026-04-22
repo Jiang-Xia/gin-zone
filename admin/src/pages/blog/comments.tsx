@@ -161,6 +161,7 @@ export default function BlogCommentManagePage() {
               colKey: 'operation',
               title: '操作',
               width: 120,
+              fixed: 'right' as const,
               cell: ({ row }: { row: Record<string, unknown> }) => (
                 <Button theme="primary" variant="text" onClick={() => openDetail(row)}>
                   查看上下文

@@ -158,6 +158,16 @@
   background: var(--td-bg-color-container-hover);
 }
 
+/* 中文注释：统一 Avatar 图片填充策略，避免头像出现“显示不满/留白” */
+.t-avatar .t-image__wrapper,
+.t-avatar .t-avatar__image {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  object-fit: cover;
+}
+
 .app-content {
   flex: 1;
   padding: 24px;
@@ -219,7 +229,8 @@
 }
 
 .inline-form {
-  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  /* 中文注释：自适应列数，工具栏/弹窗等容器变宽时优先单行展示更多筛选项 */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .upload-input {
@@ -237,3 +248,22 @@
 .top-nav-menu {
   border-bottom: 0 !important;
 }
+
+/* 中文注释：项目统一的“表单单行”样式（label 左侧固定宽度，控件右侧自适应） */
+/* .ca-form-row .t-form__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ca-form-row .t-form__label {
+  flex: 0 0 var(--ca-form-label-width, 100px);
+  width: var(--ca-form-label-width, 100px);
+  padding-top: 6px;
+  margin: 0;
+}
+
+.ca-form-row .t-form__controls {
+  flex: 1 1 auto;
+  min-width: 0;
+} */

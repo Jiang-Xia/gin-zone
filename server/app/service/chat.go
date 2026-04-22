@@ -6,6 +6,7 @@ import (
 	db "gitee.com/jiang-xia/gin-zone/server/app/database"
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -153,12 +154,353 @@ func (ch *chat) DeleteChatLog(id int) bool {
 // ChatGroup 群组
 func (ch *chat) ChatGroup(userId string, groupName string) []model.ChatGroup {
 	var list []model.ChatGroup
-	if userId != "" {
+	userId = strings.TrimSpace(userId)
+	groupName = strings.TrimSpace(groupName)
+
+	// 中文注释：不传 groupName 时，约定返回“我创建的群聊”（用于群管理页面）
+	if groupName == "" {
+		if userId == "" {
+			return []model.ChatGroup{}
+		}
 		db.Mysql.Where("user_id = ?", userId).Find(&list)
-	} else {
-		db.Mysql.Where("group_name LIKE  ?", "%"+groupName+"%").Find(&list)
+		return list
 	}
+
+	// 中文注释：传 groupName 时，约定返回“可加入的群”（排除自己已加入/自己创建的群）
+	sql := db.Mysql.Model(&model.ChatGroup{}).Where("group_name LIKE ?", "%"+groupName+"%")
+	if userId != "" {
+		// 排除自己创建的群
+		sql = sql.Where("user_id <> ?", userId)
+		// 排除已经加入的群
+		sql = sql.Where("id NOT IN (?)",
+			db.Mysql.Model(&model.ChatGroupMember{}).Select("group_id").Where("user_id = ?", userId),
+		)
+	}
+	sql.Find(&list)
 	return list
+}
+
+// getChatGroupOwnerInfoMap 批量查询群主信息，避免 N+1
+func (ch *chat) getChatGroupOwnerInfoMap(userIds []string) (map[string]*model.ChatGroupOwnerInfo, error) {
+	out := make(map[string]*model.ChatGroupOwnerInfo, len(userIds))
+	uniq := make([]string, 0, len(userIds))
+	seen := make(map[string]struct{}, len(userIds))
+	for _, uid := range userIds {
+		uid = strings.TrimSpace(uid)
+		if uid == "" {
+			continue
+		}
+		if _, ok := seen[uid]; ok {
+			continue
+		}
+		seen[uid] = struct{}{}
+		uniq = append(uniq, uid)
+	}
+	if len(uniq) == 0 {
+		return out, nil
+	}
+	var rows []model.ChatGroupOwnerInfo
+	// 中文注释：仅查询展示必要字段，避免泄漏敏感信息
+	if err := db.Mysql.Table("z_user").
+		Select("user_id, user_name, nick_name, avatar").
+		Where("user_id IN (?)", uniq).
+		Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+	for i := range rows {
+		r := rows[i]
+		// 注意：取地址要用局部变量，避免指针指向同一块内存
+		tmp := r
+		out[tmp.UserId] = &tmp
+	}
+	return out, nil
+}
+
+// ChatGroupResList 群组列表（附带群主信息）
+func (ch *chat) ChatGroupResList(userId string, groupName string) ([]model.ChatGroupRes, error) {
+	list := ch.ChatGroup(userId, groupName)
+	if len(list) == 0 {
+		return []model.ChatGroupRes{}, nil
+	}
+	ownerIds := make([]string, 0, len(list))
+	for _, g := range list {
+		ownerIds = append(ownerIds, g.UserId)
+	}
+	ownerMap, err := ch.getChatGroupOwnerInfoMap(ownerIds)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]model.ChatGroupRes, 0, len(list))
+	for _, g := range list {
+		res = append(res, model.ChatGroupRes{
+			ChatGroup:  g,
+			OwnerInfo: ownerMap[g.UserId],
+		})
+	}
+	return res, nil
+}
+
+// GetChatGroupByID 获取群组详情
+func (ch *chat) GetChatGroupByID(id int) (*model.ChatGroup, error) {
+	group := &model.ChatGroup{}
+	err := db.Mysql.Where("id = ?", id).First(group).Error
+	if err != nil {
+		return nil, err
+	}
+	return group, nil
+}
+
+// UpdateChatGroup 更新群聊信息（仅群主可改）
+func (ch *chat) UpdateChatGroup(currentUserId string, groupId int, payload *model.UpdateChatGroup) error {
+	if strings.TrimSpace(currentUserId) == "" {
+		return errors.New("用户id不能为空")
+	}
+	if groupId <= 0 {
+		return errors.New("群组id不能为空")
+	}
+	if payload == nil {
+		return errors.New("参数错误")
+	}
+
+	// 中文注释：必须校验“当前用户是否有权修改该群”（群主或管理员才允许改）
+	group, err := ch.GetChatGroupByID(groupId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("群组不存在")
+		}
+		return err
+	}
+	isAdmin := false
+	if group.UserId != currentUserId {
+		// 非群主：仅管理员可操作
+		admin, aErr := User.IsAdminByUserId(currentUserId)
+		if aErr != nil {
+			return aErr
+		}
+		if !admin {
+			return errors.New("无权限操作该群组")
+		}
+		isAdmin = true
+	}
+
+	updates := map[string]interface{}{}
+	if payload.GroupName != nil {
+		updates["group_name"] = strings.TrimSpace(*payload.GroupName)
+	}
+	if payload.Avatar != nil {
+		updates["avatar"] = strings.TrimSpace(*payload.Avatar)
+	}
+	if payload.Intro != nil {
+		updates["intro"] = strings.TrimSpace(*payload.Intro)
+	}
+	if payload.Notice != nil {
+		updates["notice"] = strings.TrimSpace(*payload.Notice)
+	}
+	if len(updates) == 0 {
+		return errors.New("没有需要更新的字段")
+	}
+
+	// 中文注释：管理员允许修改任意群；非管理员仍约束 user_id，避免越权
+	sql := db.Mysql.Model(&model.ChatGroup{}).Where("id = ?", groupId)
+	if !isAdmin {
+		sql = sql.Where("user_id = ?", currentUserId)
+	}
+	return sql.Updates(updates).Error
+}
+
+// CanAccessChatGroup 判断用户是否可访问该群（群主/管理员/群成员）
+func (ch *chat) CanAccessChatGroup(userId string, groupId int) (bool, error) {
+	if strings.TrimSpace(userId) == "" {
+		return false, errors.New("用户id不能为空")
+	}
+	if groupId <= 0 {
+		return false, errors.New("群组id不能为空")
+	}
+	group, err := ch.GetChatGroupByID(groupId)
+	if err != nil {
+		return false, err
+	}
+	if group.UserId == userId {
+		return true, nil
+	}
+	admin, err := User.IsAdminByUserId(userId)
+	if err == nil && admin {
+		return true, nil
+	}
+	var count int64
+	err = db.Mysql.Model(&model.ChatGroupMember{}).Where("user_id = ? AND group_id = ?", userId, groupId).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+// GetChatGroupInfo 获取群聊信息（需要是群主/管理员/群成员）
+func (ch *chat) GetChatGroupInfo(currentUserId string, groupId int) (*model.ChatGroup, error) {
+	ok, err := ch.CanAccessChatGroup(currentUserId, groupId)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		return nil, errors.New("无权限查看该群组")
+	}
+	return ch.GetChatGroupByID(groupId)
+}
+
+// GetChatGroupInfoRes 获取群聊信息（附带群主信息）
+func (ch *chat) GetChatGroupInfoRes(currentUserId string, groupId int) (*model.ChatGroupRes, error) {
+	group, err := ch.GetChatGroupInfo(currentUserId, groupId)
+	if err != nil {
+		return nil, err
+	}
+	ownerMap, err := ch.getChatGroupOwnerInfoMap([]string{group.UserId})
+	if err != nil {
+		return nil, err
+	}
+	return &model.ChatGroupRes{
+		ChatGroup:  *group,
+		OwnerInfo: ownerMap[group.UserId],
+	}, nil
+}
+
+// RemoveChatGroupMember 删除群成员（群主或管理员）
+func (ch *chat) RemoveChatGroupMember(currentUserId string, groupId int, memberUserId string) error {
+	if strings.TrimSpace(currentUserId) == "" {
+		return errors.New("用户id不能为空")
+	}
+	if groupId <= 0 {
+		return errors.New("群组id不能为空")
+	}
+	if strings.TrimSpace(memberUserId) == "" {
+		return errors.New("成员用户id不能为空")
+	}
+	group, err := ch.GetChatGroupByID(groupId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("群组不存在")
+		}
+		return err
+	}
+
+	// 中文注释：群主可删成员；管理员也可操作
+	if group.UserId != currentUserId {
+		admin, aErr := User.IsAdminByUserId(currentUserId)
+		if aErr != nil {
+			return aErr
+		}
+		if !admin {
+			return errors.New("无权限操作该群组")
+		}
+	}
+	// 不允许删除群主自身（避免群失去 owner）
+	if memberUserId == group.UserId {
+		return errors.New("不能删除群主")
+	}
+
+	return db.Mysql.Transaction(func(tx *gorm.DB) error {
+		// 删除群成员关系
+		if err := tx.Where("user_id = ? AND group_id = ?", memberUserId, groupId).Delete(&model.ChatGroupMember{}).Error; err != nil {
+			return err
+		}
+		// 删除聊天会话关系（群聊在好友表里也会占一行）
+		if err := tx.Where("user_id = ? AND group_id = ?", memberUserId, groupId).Delete(&model.ChatFriends{}).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+}
+
+// AdminChatFriendsList 管理端：好友/群聊关系列表
+func (ch *chat) AdminChatFriendsList(page int, pageSize int, query *model.AdminChatFriendsQuery) ([]model.AdminChatFriendRow, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+	// 中文注释：管理端需要展示 user/friend/group 的具体信息，这里用 join 一次性查出（避免依赖模型里不稳定的 Preload 关系）
+	sql := db.Mysql.
+		Table("z_chat_friends as f").
+		Select(strings.Join([]string{
+			"f.id",
+			"f.user_id",
+			"u_owner.nick_name as user_nick_name",
+			"u_owner.avatar as user_avatar",
+			"f.friend_id",
+			"u_friend.nick_name as friend_nick_name",
+			"u_friend.avatar as friend_avatar",
+			"f.group_id",
+			"g.group_name as group_name",
+			"g.avatar as group_avatar",
+			"f.created_at",
+		}, ",")).
+		Joins("LEFT JOIN z_user u_owner ON u_owner.user_id = f.user_id").
+		Joins("LEFT JOIN z_user u_friend ON u_friend.user_id = f.friend_id").
+		Joins("LEFT JOIN z_chat_group g ON g.id = f.group_id")
+	if query != nil {
+		if strings.TrimSpace(query.UserId) != "" {
+			sql = sql.Where("f.user_id = ?", strings.TrimSpace(query.UserId))
+		}
+		if strings.TrimSpace(query.FriendId) != "" {
+			sql = sql.Where("f.friend_id = ?", strings.TrimSpace(query.FriendId))
+		}
+		if query.GroupId > 0 {
+			sql = sql.Where("f.group_id = ?", query.GroupId)
+		}
+	}
+	var total int64
+	if err := sql.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var list []model.AdminChatFriendRow
+	if err := sql.Order("f.id desc").Offset((page - 1) * pageSize).Limit(pageSize).Scan(&list).Error; err != nil {
+		return nil, 0, err
+	}
+	return list, total, nil
+}
+
+// AdminDeleteChatFriendsByID 管理端：按主键删除关系
+func (ch *chat) AdminDeleteChatFriendsByID(id int) error {
+	if id <= 0 {
+		return errors.New("id不能为空")
+	}
+	return db.Mysql.Where("id = ?", id).Delete(&model.ChatFriends{}).Error
+}
+
+// AdminChatGroupsList 管理端：群组列表（支持名称查询）
+func (ch *chat) AdminChatGroupsList(page int, pageSize int, groupName string) ([]model.AdminChatGroupRow, int64, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 20
+	}
+	sql := db.Mysql.
+		Table("z_chat_group as g").
+		Select(strings.Join([]string{
+			"g.id",
+			"g.avatar",
+			"g.group_name",
+			"g.intro",
+			"g.notice",
+			"g.user_id",
+			"u.nick_name as owner_nick_name",
+			"g.created_at",
+		}, ",")).
+		Joins("LEFT JOIN z_user u ON u.user_id = g.user_id")
+
+	if strings.TrimSpace(groupName) != "" {
+		sql = sql.Where("g.group_name LIKE ?", "%"+strings.TrimSpace(groupName)+"%")
+	}
+	var total int64
+	if err := sql.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var list []model.AdminChatGroupRow
+	if err := sql.Order("g.id desc").Offset((page - 1) * pageSize).Limit(pageSize).Scan(&list).Error; err != nil {
+		return nil, 0, err
+	}
+	return list, total, nil
 }
 
 // CreateGroup 新增
@@ -179,7 +521,8 @@ func (ch *chat) DeleteGroup(userId string, id int) bool {
 // ChatGroupMember 群成员
 func (ch *chat) ChatGroupMember(groupId int) []model.ChatGroupMember {
 	var list []model.ChatGroupMember
-	db.Mysql.Where("group_id = ?", groupId).Find(&list)
+	// 中文注释：预加载成员信息，便于前端展示昵称/头像等
+	db.Mysql.Preload("UserInfo").Where("group_id = ?", groupId).Find(&list)
 	return list
 }
 

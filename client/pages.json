@@ -201,6 +201,20 @@
 						"navigationBarTitleText": "创建群聊",
 						"enablePullDownRefresh": false
 					}
+				},
+				{
+					"path": "pages/my/groupManage",
+					"style": {
+						"navigationBarTitleText": "群聊管理",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "pages/my/groupMembers",
+					"style": {
+						"navigationBarTitleText": "群成员管理",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		},

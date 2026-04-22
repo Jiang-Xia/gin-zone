@@ -36,8 +36,8 @@ const SIGN_IN_PATH = '/common/signIn';
 // 仅这些 HTTP 方法需要加密请求体
 const CRYPTO_BODY_METHODS = ['POST', 'PUT', 'PATCH'];
 // 本地存储中的加密会话键名
-const SESSION_ID_KEY = 'zoneSessionId';
-const WORK_KEY_KEY = 'zoneWorkKey';
+const SESSION_ID_KEY = 'zoneAdminSessionId';
+const WORK_KEY_KEY = 'zoneAdminWorkKey';
 // 单次自动重试标记，防止重放死循环
 const CRYPTO_RETRIED_FLAG = '__cryptoRetried';
 // 缓存原始请求体，重试时可重复加密
@@ -51,6 +51,10 @@ const PRIVATE_KEY =
   (import.meta.env.VITE_CRYPTO_PRIVATE_KEY as string | undefined) ||
   '6e5779ba88066b86012bc54331caf9ca8b685b00da94b1b660ac8b2508d0614d';
 
+// 仅本地开发可用的加密链路调试开关（避免生产环境打印敏感信息）
+// 开启方式：localStorage.setItem('zoneAdminCryptoDebug', '1')
+const isCryptoDebugEnabled = () => import.meta.env.DEV || localStorage.getItem('zoneAdminCryptoDebug') === '1';
+
 // 扩展 axios 配置：记录重试标记与原始请求数据
 type CryptoRequestConfig = InternalAxiosRequestConfig & {
   allowReplayOnSessionExpired?: boolean;
@@ -61,10 +65,11 @@ type CryptoRequestConfig = InternalAxiosRequestConfig & {
 // 并发 signIn 复用同一 Promise，避免重复签到
 let signInInFlight: Promise<void> | null = null;
 
-// 加密总开关：环境变量 + 本地开关都允许才启用
+// 加密总开关：开发环境强制关闭；生产环境按环境变量 + 本地开关控制
 const isCryptoEnabled = () => {
+  if (import.meta.env.DEV) return false;
   const fromEnv = (import.meta.env.VITE_OPEN_CRYPTO as string | undefined) !== '0';
-  const fromStorage = localStorage.getItem('zoneOpenCrypto') !== '0';
+  const fromStorage = localStorage.getItem('zoneAdminOpenCrypto') !== '0';
   return fromEnv && fromStorage;
 };
 
@@ -179,6 +184,10 @@ http.interceptors.request.use(async (rawConfig) => {
 
   // 将业务请求体加密为统一 content 结构
   const plaintext = typeof rawData === 'string' ? rawData : JSON.stringify(rawData);
+  if (isCryptoDebugEnabled() && method === 'POST') {
+    // 仅打印 POST 的 body 明文，避免日志过多 & 避免输出敏感头
+    console.log('[crypto][request][before-encrypt][post-body]', rawData);
+  }
   config.data = { content: sm4.encrypt(plaintext, getWorkKey() || FALLBACK_SM4_KEY) };
   return config;
 });
@@ -207,6 +216,13 @@ http.interceptors.response.use(
       try {
         const decrypted = sm4.decrypt(payload.encrypt, getWorkKey() || FALLBACK_SM4_KEY);
         payload.data = JSON.parse(decrypted);
+        if (isCryptoDebugEnabled()) {
+          // 仅打印“解密后”的业务数据，便于本地联调对齐字段
+          console.log('[crypto][response][after-decrypt]', {
+            url: resolvePath(config.url),
+            data: payload.data,
+          });
+        }
       } catch {
         clearCryptoSession();
         throw new Error('报文解密失败，请重试');

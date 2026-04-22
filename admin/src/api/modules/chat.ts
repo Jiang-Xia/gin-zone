@@ -1,4 +1,4 @@
-import { del, get, post } from '../http';
+import { del, get, patch, post } from '../http';
 import type { PageResult } from '../types';
 
 export interface AddFriendPayload {
@@ -10,6 +10,13 @@ export interface AddGroupPayload {
   groupName: string;
   avatar?: string;
   intro?: string;
+}
+
+export interface UpdateGroupPayload {
+  avatar?: string;
+  groupName?: string;
+  intro?: string;
+  notice?: string;
 }
 
 export interface ChatLogQueryPayload {
@@ -52,6 +59,10 @@ export function addGroup(payload: AddGroupPayload) {
 
 export function deleteGroup(groupId: number) {
   return del<boolean>(`/mobile/chat/groups/${groupId}`);
+}
+
+export function updateGroup(groupId: number, payload: UpdateGroupPayload) {
+  return patch<boolean, UpdateGroupPayload>(`/mobile/chat/groups/${groupId}`, payload);
 }
 
 export function getGroupMemberList(groupId: number) {

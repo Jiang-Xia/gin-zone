@@ -139,3 +139,18 @@ func (u *user) Delete(id int) bool {
 	db.Mysql.Where("id = ?", id).Delete(&user{})
 	return true
 }
+
+// IsAdminByUserId 判断用户是否管理员
+func (u *user) IsAdminByUserId(userId string) (bool, error) {
+	if userId == "" {
+		return false, errors.New("用户id不能为空")
+	}
+	var out struct {
+		IsAdmin bool
+	}
+	err := db.Mysql.Table("z_user").Select("is_admin").Where("user_id = ?", userId).First(&out).Error
+	if err != nil {
+		return false, err
+	}
+	return out.IsAdmin, nil
+}

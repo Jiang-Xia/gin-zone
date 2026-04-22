@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Dialog, Input, Popconfirm, Table } from 'tdesign-react';
+import { Avatar, Button, Dialog, Input, Popconfirm, Table } from 'tdesign-react';
 import { SearchIcon } from 'tdesign-icons-react';
 import { deleteUser, getUserList, registerUser } from '../../api/modules/user';
 import type { UserInfo } from '../../store/auth';
@@ -76,6 +76,12 @@ export default function UserManagePage() {
 
   const columns = [
     { colKey: 'id', title: 'ID', width: 90 },
+    {
+      colKey: 'avatar',
+      title: '头像',
+      width: 100,
+      cell: ({ row }: { row: UserInfo }) => <Avatar size="small" image={String(row.avatar ?? '')} />,
+    },
     { colKey: 'userName', title: '用户名', width: 180, cell: ({ row }: { row: UserInfo }) => row.userName || '-' },
     { colKey: 'nickName', title: '昵称', width: 180, cell: ({ row }: { row: UserInfo }) => row.nickName || '-' },
     { colKey: 'email', title: '邮箱', cell: ({ row }: { row: UserInfo }) => row.email || '-' },
@@ -83,6 +89,7 @@ export default function UserManagePage() {
       colKey: 'operation',
       title: '操作',
       width: 120,
+      fixed: 'right' as const,
       cell: ({ row }: { row: UserInfo }) => (
         // 删除操作单独使用确认弹窗，避免误删
         <Popconfirm content="确认删除该用户吗？" onConfirm={() => onDelete(Number(row.id))}>

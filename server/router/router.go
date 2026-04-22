@@ -71,6 +71,16 @@ func App() (r *gin.Engine) {
 		{
 			momentController := new(admin.Moment)
 			back.GET("moments", momentController.GetList)
+
+			// 管理端-聊天模块
+			adminChatController := new(admin.Chat)
+			chatAdmin := back.Group("chat")
+			chatAdmin.Use(middleware.JWTAuth())
+			chatAdmin.GET("friends", adminChatController.FriendsList)
+			chatAdmin.DELETE("friends/:id", adminChatController.DeleteFriendRelation)
+			chatAdmin.GET("groups", adminChatController.GroupsList)
+			chatAdmin.PATCH("groups/:groupId", adminChatController.UpdateGroup)
+			chatAdmin.DELETE("groupMembers/:groupId/:userId", adminChatController.RemoveGroupMember)
 		}
 
 		// mobile端路由
@@ -91,13 +101,16 @@ func App() (r *gin.Engine) {
 			chat.GET("friends", chatController.FriendList)
 			chat.POST("updateReadTime", chatController.UpdateReadTime)
 			chat.GET("groups", chatController.GroupList)
+			chat.GET("groups/:groupId", chatController.GroupInfo)
 			chat.GET("groupMembers", chatController.GroupMemberList)
 			chat.POST("logs", chatController.ChatLogList)
 			chat.POST("friends", chatController.AddFriend)
 			chat.DELETE("friends/:friendId", chatController.DelFriend)
 			chat.POST("groups", chatController.AddGroup)
+			chat.PATCH("groups/:groupId", chatController.UpdateGroup)
 			chat.DELETE("groups/:groupId", chatController.DelGroup)
 			chat.POST("groupMembers", chatController.AddGroupMember)
+			chat.DELETE("groupMembers/:groupId/:userId", chatController.RemoveGroupMember)
 			chat.DELETE("groupMembers/:groupId", chatController.ExitGroupMember)
 		}
 

@@ -16,8 +16,8 @@ type ChatFriends struct {
 	FriendId       string    `gorm:"comment:好友id" json:"friendId"`
 	GroupId        int       `gorm:"comment:群组id" json:"groupId"`
 	LastReadTime   Time      `gorm:"comment:上次阅读消息时间" json:"lastReadTime"`
-	User           User      `gorm:"foreignKey:UserId;references:FriendId;comment:用户数据;" json:"userInfo,omitempty"`
-	ChatGroup      ChatGroup `gorm:"foreignKey:ID;references:GroupId;comment:用户数据;" json:"chatGroup,omitempty"`
+	User           User      `gorm:"foreignKey:FriendId;references:UserId;comment:用户数据;" json:"userInfo,omitempty"`
+	ChatGroup      ChatGroup `gorm:"foreignKey:GroupId;references:ID;comment:群组数据;" json:"chatGroup,omitempty"`
 	MsgType        int8      `json:"msgType"`
 	LastMsg        string    `json:"lastMsg"`        // 最新消息
 	NoReadMsgCount int       `json:"noReadMsgCount"` // 未读消息数
@@ -40,11 +40,26 @@ type ChatGroup struct {
 	UserId    string `gorm:"comment:群主用户id;" json:"userId,omitempty"`
 }
 
+// ChatGroupOwnerInfo 群主信息（用于群组信息展示）
+type ChatGroupOwnerInfo struct {
+	UserId   string `json:"userId,omitempty"`   // 中文注释：群主用户id
+	UserName string `json:"userName,omitempty"` // 中文注释：群主用户名
+	NickName string `json:"nickName,omitempty"` // 中文注释：群主昵称
+	Avatar   string `json:"avatar,omitempty"`   // 中文注释：群主头像
+}
+
+// ChatGroupRes 群组信息返回结构（在 ChatGroup 基础上补充群主信息）
+type ChatGroupRes struct {
+	ChatGroup
+	OwnerInfo *ChatGroupOwnerInfo `json:"ownerInfo,omitempty"` // 中文注释：群主信息（展示用）
+}
+
 // ChatGroupMember 群成员表
 type ChatGroupMember struct {
 	BaseModel
-	UserId  string `gorm:"comment:成员用户id;" json:"userId"`
-	GroupId int    `gorm:"comment:群组id" json:"groupId"`
+	UserId   string `gorm:"comment:成员用户id;" json:"userId"`
+	GroupId  int    `gorm:"comment:群组id" json:"groupId"`
+	UserInfo User   `gorm:"foreignKey:UserId;references:UserId;comment:用户数据;" json:"userInfo,omitempty"`
 }
 
 // ChatLog 聊天记录表
@@ -72,4 +87,53 @@ type UpdateReadTime struct {
 	SenderId   string `json:"senderId"`
 	ReceiverId string `json:"receiverId"`
 	GroupId    int    `json:"groupId"`
+}
+
+// UpdateChatGroup 修改群聊信息（PATCH 语义：字段可选）
+type UpdateChatGroup struct {
+	Avatar    *string `json:"avatar,omitempty"`    // 中文注释：群头像（可选）
+	GroupName *string `json:"groupName,omitempty"` // 中文注释：群名称（可选）
+	Intro     *string `json:"intro,omitempty"`     // 中文注释：群介绍（可选）
+	Notice    *string `json:"notice,omitempty"`    // 中文注释：群公告（可选）
+}
+
+// AdminChatFriendsQuery 管理端好友/群聊关系查询
+type AdminChatFriendsQuery struct {
+	ListQuery `gorm:"embedded"`
+	UserId    string `json:"userId"`
+	FriendId  string `json:"friendId"`
+	GroupId   int    `json:"groupId"`
+}
+
+// AdminChatFriendRow 管理端-好友/群聊关系展示结构
+type AdminChatFriendRow struct {
+	ID            int    `gorm:"column:id" json:"id"`
+	UserId        string `gorm:"column:user_id" json:"userId"`
+	UserNickName  string `gorm:"column:user_nick_name" json:"userNickName,omitempty"`
+	UserAvatar    string `gorm:"column:user_avatar" json:"userAvatar,omitempty"`
+	FriendId      string `gorm:"column:friend_id" json:"friendId,omitempty"`
+	FriendNickName string `gorm:"column:friend_nick_name" json:"friendNickName,omitempty"`
+	FriendAvatar  string `gorm:"column:friend_avatar" json:"friendAvatar,omitempty"`
+	GroupId       int    `gorm:"column:group_id" json:"groupId,omitempty"`
+	GroupName     string `gorm:"column:group_name" json:"groupName,omitempty"`
+	GroupAvatar   string `gorm:"column:group_avatar" json:"groupAvatar,omitempty"`
+	CreatedAt     Time   `gorm:"column:created_at" json:"createdAt,omitempty"`
+}
+
+// AdminChatGroupsQuery 管理端群组查询
+type AdminChatGroupsQuery struct {
+	ListQuery  `gorm:"embedded"`
+	GroupName  string `json:"groupName"`
+}
+
+// AdminChatGroupRow 管理端-群组列表行（补充群主昵称，便于直接展示）
+type AdminChatGroupRow struct {
+	ID            int    `gorm:"column:id" json:"id"`
+	Avatar        string `gorm:"column:avatar" json:"avatar,omitempty"`
+	GroupName     string `gorm:"column:group_name" json:"groupName,omitempty"`
+	Intro         string `gorm:"column:intro" json:"intro,omitempty"`
+	Notice        string `gorm:"column:notice" json:"notice,omitempty"`
+	UserId        string `gorm:"column:user_id" json:"userId,omitempty"`
+	OwnerNickName string `gorm:"column:owner_nick_name" json:"ownerNickName,omitempty"`
+	CreatedAt     Time   `gorm:"column:created_at" json:"createdAt,omitempty"`
 }

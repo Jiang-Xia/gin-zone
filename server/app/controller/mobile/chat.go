@@ -549,8 +549,42 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 func (ch *Chat) GroupList(c *gin.Context) {
 	userId := model.GetUserUid(c)
 	groupName := c.Query("groupName")
-	list := service.Chat.ChatGroup(userId, groupName)
+	list, err := service.Chat.ChatGroupResList(userId, groupName)
+	if err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
 	response.Success(c, list, "")
+}
+
+// GroupInfo godoc
+//
+// @Summary     群聊信息
+// @Description 获取群聊信息（群主/管理员/群成员可查看）
+// @Tags        聊天模块
+// @Security	Authorization
+// @Accept      json
+// @Produce     json
+// @Param       groupId path    int true "群组id"
+// @Success     200  {object} response.ResType
+// @Router      /mobile/chat/groups/{groupId} [get]
+func (ch *Chat) GroupInfo(c *gin.Context) {
+	groupId := cast.ToInt(c.Param("groupId"))
+	if groupId <= 0 {
+		response.Fail(c, "参数错误", "groupId不能为空")
+		return
+	}
+	currentUserId := model.GetUserUid(c)
+	if currentUserId == "" {
+		response.Fail(c, "用户id不能为空", nil)
+		return
+	}
+	group, err := service.Chat.GetChatGroupInfoRes(currentUserId, groupId)
+	if err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
+	response.Success(c, group, "")
 }
 
 // AddGroup godoc
@@ -583,6 +617,48 @@ func (ch *Chat) AddGroup(c *gin.Context) {
 		return
 	}
 	response.Success(c, group.ID, "添加成功")
+}
+
+// UpdateGroup godoc
+//
+// @Summary     修改群聊信息
+// @Description 修改群聊信息（仅群主可修改）
+// @Tags        聊天模块
+// @Security	Authorization
+// @Accept      json
+// @Produce     json
+// @Param       groupId path    int true "群组id"
+// @Param       payload body    model.UpdateChatGroup true "需要上传的json"
+// @Success     200  {object} response.ResType
+// @Router      /mobile/chat/groups/{groupId} [patch]
+func (ch *Chat) UpdateGroup(c *gin.Context) {
+	groupId := cast.ToInt(c.Param("groupId"))
+	if groupId <= 0 {
+		response.Fail(c, "参数错误", "groupId不能为空")
+		return
+	}
+	payload := &model.UpdateChatGroup{}
+	if err := c.ShouldBindJSON(payload); err != nil {
+		response.Fail(c, "参数错误", err.Error())
+		return
+	}
+	currentUserId := model.GetUserUid(c)
+	if currentUserId == "" {
+		response.Fail(c, "用户id不能为空", nil)
+		return
+	}
+
+	// 中文注释：群名不允许被更新为空字符串，其他字段允许置空（例如清空公告）
+	if payload.GroupName != nil && strings.TrimSpace(*payload.GroupName) == "" {
+		response.Fail(c, "参数错误", "groupName不能为空")
+		return
+	}
+
+	if err := service.Chat.UpdateChatGroup(currentUserId, groupId, payload); err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
+	response.Success(c, true, "操作成功")
 }
 
 // DelGroup godoc
@@ -654,6 +730,37 @@ func (ch *Chat) AddGroupMember(c *gin.Context) {
 		return
 	}
 	response.Success(c, member.ID, "添加成功")
+}
+
+// RemoveGroupMember godoc
+//
+// @Summary     删除群成员
+// @Description 群主/管理员删除群成员
+// @Tags        聊天模块
+// @Security	Authorization
+// @Accept      json
+// @Produce     json
+// @Param       groupId path   int    true "群组id"
+// @Param       userId  path   string true "成员用户id"
+// @Success     200  {object} response.ResType
+// @Router      /mobile/chat/groupMembers/{groupId}/{userId} [delete]
+func (ch *Chat) RemoveGroupMember(c *gin.Context) {
+	currentUserId := model.GetUserUid(c)
+	if currentUserId == "" {
+		response.Fail(c, "用户id不能为空", nil)
+		return
+	}
+	groupId := cast.ToInt(c.Param("groupId"))
+	memberUserId := strings.TrimSpace(c.Param("userId"))
+	if groupId <= 0 || memberUserId == "" {
+		response.Fail(c, "参数错误", "groupId/userId不能为空")
+		return
+	}
+	if err := service.Chat.RemoveChatGroupMember(currentUserId, groupId, memberUserId); err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
+	response.Success(c, true, "操作成功")
 }
 
 // ExitGroupMember godoc

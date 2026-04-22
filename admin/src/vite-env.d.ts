@@ -4,6 +4,7 @@
 // Vite 环境变量类型声明：用于 import.meta.env 的 TS 提示与校验
 interface ImportMetaEnv {
   readonly VITE_BASE_URL: string;
+  readonly VITE_FILE_URL?: string;
   readonly VITE_API_PROXY_TARGET?: string;
   readonly VITE_APP_BASE?: string;
 }

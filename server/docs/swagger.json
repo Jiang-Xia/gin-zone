@@ -9,6 +9,237 @@
     "host": "localhost:9600",
     "basePath": "/api/v1",
     "paths": {
+        "/admin/chat/friends": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-好友/群聊关系列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-好友/群聊关系列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "friendId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "groupId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 20,
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "userId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/chat/friends/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-按关系主键删除（z_chat_friends.id）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-删除好友/群聊关系",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "关系id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/chat/groupMembers/{groupId}/{userId}": {
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-删除群成员（管理员）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-删除群成员",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "群组id",
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "成员用户id",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/chat/groups": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-群组列表（支持 groupName 模糊查询）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-群组列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "groupName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "example": 20,
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/chat/groups/{groupId}": {
+            "patch": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "管理端-修改群聊信息（管理员）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端-聊天模块"
+                ],
+                "summary": "管理端-修改群聊信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "群组id",
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "需要上传的json",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UpdateChatGroup"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
         "/base/auth/wxlogin": {
             "get": {
                 "description": "微信授权登录",
@@ -540,6 +771,50 @@
                 }
             }
         },
+        "/mobile/chat/groupMembers/{groupId}/{userId}": {
+            "delete": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "群主/管理员删除群成员",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "聊天模块"
+                ],
+                "summary": "删除群成员",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "群组id",
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "成员用户id",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            }
+        },
         "/mobile/chat/groups": {
             "get": {
                 "security": [
@@ -620,6 +895,41 @@
             }
         },
         "/mobile/chat/groups/{groupId}": {
+            "get": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "获取群聊信息（群主/管理员/群成员可查看）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "聊天模块"
+                ],
+                "summary": "群聊信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "群组id",
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -644,6 +954,50 @@
                         "name": "groupId",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResType"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "修改群聊信息（仅群主可修改）",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "聊天模块"
+                ],
+                "summary": "修改群聊信息",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "群组id",
+                        "name": "groupId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "需要上传的json",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UpdateChatGroup"
+                        }
                     }
                 ],
                 "responses": {
@@ -1227,6 +1581,9 @@
                 },
                 "userId": {
                     "type": "string"
+                },
+                "userInfo": {
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
@@ -1357,6 +1714,27 @@
                     "maxLength": 12,
                     "minLength": 4,
                     "example": "test"
+                }
+            }
+        },
+        "model.UpdateChatGroup": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "中文注释：群头像（可选）",
+                    "type": "string"
+                },
+                "groupName": {
+                    "description": "中文注释：群名称（可选）",
+                    "type": "string"
+                },
+                "intro": {
+                    "description": "中文注释：群介绍（可选）",
+                    "type": "string"
+                },
+                "notice": {
+                    "description": "中文注释：群公告（可选）",
+                    "type": "string"
                 }
             }
         },

@@ -40,6 +40,13 @@
                             </template>
                         </t-cell>
 
+                        <t-cell title="群聊管理" arrow @click="goGroupManage">
+                            <template #image>
+                                <uni-icons type="staff" size="20"
+                                    color="#f00057"></uni-icons>
+                            </template>
+                        </t-cell>
+
                         <t-cell title="收银台" arrow @click="goCashier">
                             <template #image>
                                 <uni-icons type="wallet" size="20"
@@ -234,6 +241,17 @@
                     url: "/packageA/pages/my/createGroup"
                 })
             },
+            goGroupManage() {
+                if (!this.ensureLogin()) return
+                // 中文注释：群聊信息管理仅开放给管理员（与“创建群聊”保持一致的入口策略）
+                if (!this.userInfo.isAdmin) {
+                    this.$toast({ title: '您不是管理员', icon: 'error' })
+                    return
+                }
+                uni.navigateTo({
+                    url: "/packageA/pages/my/groupManage"
+                })
+            },
             goCashier() {
                 if (!this.ensureLogin()) return
 
@@ -376,8 +394,8 @@
         }
 
         .avatar {
-            width: 112rpx;
-            height: 112rpx;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
         }
 

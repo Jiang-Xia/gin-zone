@@ -1,4 +1,4 @@
-import { UserCircleIcon } from 'tdesign-icons-react';
+import { UserListIcon } from 'tdesign-icons-react';
 import UserManagePage from '../../pages/user';
 import type { AppRouteItem } from '../types';
 
@@ -10,7 +10,7 @@ const userRoutes: AppRouteItem[] = [
     requiresAuth: true,
     meta: {
       title: '用户管理',
-      icon: <UserCircleIcon />,
+      icon: <UserListIcon />,
       roles: ['admin'],
       breadcrumbs: ['系统管理', '用户管理'],
     },

@@ -26,9 +26,17 @@ export function createApis(api) {
         api.del('/mobile/chat/friends/{friendId}', { friendId }),
 
       groups: (params) => api.get('/mobile/chat/groups', params),
+      groupInfo: (groupId) => api.get('/mobile/chat/groups/{groupId}', { groupId }),
       users: (params) => api.get('/base/users', params),
       addFriend: (params) => api.post('/mobile/chat/friends', params),
       createGroup: (params) => api.post('/mobile/chat/groups', params),
+      // 中文注释：修改群聊信息（仅群主可修改）
+      updateGroup: (groupId, params) =>
+        api.patch('/mobile/chat/groups/{groupId}', { ...(params || {}), groupId }),
+      groupMembers: (groupId) => api.get('/mobile/chat/groupMembers', { groupId }),
+      // 中文注释：群主/管理员删除群成员
+      removeGroupMember: (groupId, userId) =>
+        api.del('/mobile/chat/groupMembers/{groupId}/{userId}', { groupId, userId }),
 
       updateReadTime: (params) =>
         api.post('/mobile/chat/updateReadTime', params),

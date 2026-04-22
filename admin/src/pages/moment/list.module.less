@@ -9,6 +9,9 @@
   justify-content: space-between;
   color: #666;
   gap: 16px;
+  /* 中文注释：该页工具栏右侧是双输入（form-grid），在窄宽度/表格横向滚动时允许换行收缩，避免溢出卡片 */
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .toolbarLeft {
@@ -16,10 +19,15 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  /* 中文注释：允许左侧按钮区收缩，避免把右侧筛选区顶出容器 */
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .search {
   width: 280px;
+  /* 中文注释：防止固定宽度在小容器内溢出 */
+  max-width: 100%;
 }
 
 .selectedInfo {

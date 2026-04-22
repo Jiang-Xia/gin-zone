@@ -11,6 +11,7 @@ import {
   getFriendList,
   getGroupList,
   getGroupMemberList,
+  updateGroup,
 } from '../../api/modules/chat';
 
 export default function ChatManagePage() {
@@ -18,6 +19,9 @@ export default function ChatManagePage() {
   const [friendId, setFriendId] = useState('');
   const [groupId, setGroupId] = useState('');
   const [groupName, setGroupName] = useState('');
+  const [groupAvatar, setGroupAvatar] = useState('');
+  const [groupIntro, setGroupIntro] = useState('');
+  const [groupNotice, setGroupNotice] = useState('');
   const [receiverId, setReceiverId] = useState('');
   const [friends, setFriends] = useState<Array<Record<string, unknown>>>([]);
   const [groups, setGroups] = useState<Array<Record<string, unknown>>>([]);
@@ -94,7 +98,28 @@ export default function ChatManagePage() {
         <div className="form-grid inline-form">
           <Input value={groupName} onChange={setGroupName} placeholder="groupName（支持查询）" />
           <Input value={groupId} onChange={setGroupId} placeholder="groupId" />
+          <Input value={groupAvatar} onChange={setGroupAvatar} placeholder="avatar（可选）" />
+          <Input value={groupIntro} onChange={setGroupIntro} placeholder="intro（可选）" />
+          <Input value={groupNotice} onChange={setGroupNotice} placeholder="notice（可选）" />
           <Button onClick={() => run(async () => setGroups(await getGroupList(groupName)))}>刷新群组列表</Button>
+          <Button
+            theme="primary"
+            disabled={!parsedGroupId}
+            onClick={() =>
+              run(async () => {
+                await updateGroup(parsedGroupId, {
+                  groupName: groupName.trim() || undefined,
+                  avatar: groupAvatar.trim() || undefined,
+                  intro: groupIntro.trim() || undefined,
+                  notice: groupNotice.trim() || undefined,
+                });
+                message.success('更新群信息成功');
+                setGroups(await getGroupList(groupName));
+              })
+            }
+          >
+            更新群信息
+          </Button>
           <Popconfirm
             content="确认删除该群组吗？"
             onConfirm={() =>

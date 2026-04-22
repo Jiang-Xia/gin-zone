@@ -26,7 +26,7 @@ export default function SideNav({ collapsed, theme, activePath, items, onSelect 
           <img className="app-logo-img" src={logoImage} alt="Zone Admin Logo" />
           {!collapsed && <h3 className="app-logo">Zone Admin</h3>}
         </div>
-        {!collapsed && <p className="app-logo-subtitle">TDesign Console</p>}
+        {!collapsed && <p className="app-logo-subtitle">Zone Console</p>}
       </div>
       <Menu
         className="app-menu"

@@ -14,7 +14,7 @@
             :disabled="disabled"
         >
             <view class="upload-img" :style="uploadBoxStyle">
-                <view class="btn-content" v-if="!value">
+                <view class="btn-content" v-if="!hasValue">
                     <view class="placeholder" :style="placeholderStyle">
                         <!-- rect：按证件类型展示对应占位图标 -->
                         <image
@@ -101,6 +101,11 @@
             allowDelete() {
                 // 中文注释：头像场景不提供“清除”入口，避免原型观感太重
                 return this.scene !== 'avatar'
+            },
+            hasValue() {
+                // 中文注释：兼容 value 为 string/array，避免空数组也被当成“有值”
+                if (this.value instanceof Array) return (this.value || []).filter(Boolean).length > 0
+                return !!(typeof this.value === 'string' ? this.value.trim() : this.value)
             },
             // 上传框尺寸（px）：JS 侧不再使用 rpx，避免多端换算差异
             boxPx() {
@@ -199,18 +204,53 @@
                 return this.$getImg(rel)
             }
         },
+        watch: {
+            value: {
+                // 中文注释：编辑页常见为“异步回填 avatar”，必须监听 value 变化来同步回显
+                handler(val) {
+                    this.syncFileListFromValue(val)
+                },
+                immediate: true,
+            },
+        },
         created() {
-            if (this.value instanceof Array && this.value.length) {
-                this.fileList = this.value.map(v => ({
-                    url: v
-                }))
-            } else if (this.value) {
-                this.fileList = [{
-                    url: this.value
-                }]
-            }
+            // 兼容旧逻辑：created 仍保留，但实际回显以 watch.value 为准
         },
         methods: {
+            // 把 v-model 的 value（string/array）同步成 uni-file-picker 需要的 fileList 结构
+            syncFileListFromValue(val) {
+                const list = this.normalizeValueToUrlList(val)
+                // 中文注释：避免与 picker 内部更新互相打架，只有在不一致时才重置
+                const curr = (this.fileList || []).map(i => i?.url).filter(Boolean)
+                if (JSON.stringify(curr) === JSON.stringify(list)) return
+                this.fileList = list.map(url => ({ url }))
+            },
+            // 将各种可能的 value 统一成“可展示 url 列表”
+            normalizeValueToUrlList(val) {
+                if (val instanceof Array) {
+                    return (val || []).map(v => this.toDisplayUrl(v)).filter(Boolean)
+                }
+                if (typeof val === 'string') {
+                    const u = this.toDisplayUrl(val)
+                    return u ? [u] : []
+                }
+                return []
+            },
+            // value 可能是相对路径，这里统一转成可访问的完整地址用于回显
+            toDisplayUrl(raw) {
+                if (!raw) return ''
+                if (typeof raw !== 'string') return ''
+                const s = raw.trim()
+                if (!s) return ''
+                // 中文注释：base64 data uri / 绝对链接 直接使用
+                if (/^data:image\//i.test(s)) return s
+                if (/^https?:\/\//i.test(s)) return s
+                // 中文注释：如果后端只返回相对路径，这里自动补齐文件域名
+                if (this.$fileUrl && !s.startsWith(this.$fileUrl)) {
+                    return `${this.$fileUrl}${s.startsWith('/') ? '' : '/'}${s}`
+                }
+                return s
+            },
             // 兼容 uni-file-picker 在 H5/APP/小程序的回调结构，拿到“可上传源”（File 或临时路径）
             getUploadSourceFromPickerEvent(e) {
                 // 中文注释：本项目上传底层走 uni.uploadFile(filePath)，H5 传 File 会导致内部 indexOf 报错
