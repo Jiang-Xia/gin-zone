@@ -21,6 +21,7 @@
 			}
 		},
 		
+		// #ifndef MP-WEIXIN
 		{
 			"path": "pages/moment/index",
 			"style": {
@@ -50,6 +51,7 @@
 				}
 			}
 		},
+		// #endif
 
 		{
 			"path": "pages/chat/index",
@@ -114,12 +116,14 @@
 						"enablePullDownRefresh": true
 					}
 				},
+				// #ifndef MP-WEIXIN
 				{
 					"path": "pages/moment/addMoment",
 					"style": {
 						"navigationBarTitleText": "发动态"
 					}
 				},
+				// #endif
 				{
 					"path": "pages/chat/chatDetail",
 					"style": {

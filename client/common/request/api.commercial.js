@@ -18,6 +18,10 @@ import {
 } from './loading.js'
 import { toast as uiToast } from '../utils/ui.js'
 import { useUserStore } from '@/stores/user.js'
+import { useChatStore } from '@/stores/chat.js'
+
+// 中文注释：token 失效触发登录跳转时避免并发重复跳转
+let _logoutInProgress = false
 
 function showToastAfterLoading(options) {
   const toastOptions =
@@ -317,14 +321,47 @@ export class CommercialApi {
       return
     }
 
-    // 鉴权失败清空信息（兼容旧版约定：res.data.data?.reload）
-    if (body.data?.reload) {
+    // 中文注释：鉴权失败统一重登（基于业务码 code，而不是 reload 魔法字段）
+    const AUTH_LOGOUT_CODES = [20001, 20002, 20003, 20105]
+    const codeNum = Number(code)
+    if (typeof codeNum === 'number' && AUTH_LOGOUT_CODES.includes(codeNum)) {
       // 统一失效处理：清理 token + userInfo + 会话密钥
       const userStore = useUserStore()
       userStore.logout()
+
+      // 中文注释：token 失效后断开聊天长连接，避免继续心跳/接收消息
+      const chatStore = useChatStore()
+      chatStore.closeChatConnection()
+
+      // 中文注释：自动回到登录页，避免用户停留在无效鉴权页面
+      if (!_logoutInProgress) {
+        _logoutInProgress = true
+        const loginUrl = '/packageA/pages/my/login'
+        const fallbackTabUrl = '/pages/my/index'
+        try {
+          uni.reLaunch({ url: loginUrl })
+        } catch (e) {
+          try {
+            uni.redirectTo({ url: loginUrl })
+          } catch (e2) {
+            try {
+              uni.switchTab({ url: fallbackTabUrl })
+            } catch (e3) {
+              // 中文注释：兜底都失败则保持当前页，至少保证已清理登录态
+            }
+          }
+        }
+        setTimeout(() => {
+          _logoutInProgress = false
+        }, 1500)
+      }
+
+      // 中文注释：已触发登录态清理与跳转，这里直接 reject 并返回，避免额外 toast 干扰
+      reject(body)
+      return
     }
 
-    if (this.shouldOpenCrypto() && this.isCryptoSessionExpiredBody(body) && !body.data?.reload) {
+    if (this.shouldOpenCrypto() && this.isCryptoSessionExpiredBody(body)) {
       reject(this.buildSessionExpiredError({ body }))
       return
     }

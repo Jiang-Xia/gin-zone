@@ -25,6 +25,8 @@ type appModel struct {
 	PublicPath      string `ini:"public_path"`
 	PublicKey       string `ini:"public_key"`
 	PrivateKey      string `ini:"private_key"`
+	// BlogUrl 反向代理所需的第三方博客服务地址（包含到 /api/v1 前缀）
+	BlogUrl string `ini:"blog_url"`
 	// AllowedOrigins 逗号分隔，生产环境 WebSocket Origin 白名单（dev 下本机多端口见 chat 内逻辑）
 	AllowedOrigins string `ini:"allowed_origins"`
 	// SensitiveAutoRevoke 敏感词命中后是否自动撤回（默认开启）

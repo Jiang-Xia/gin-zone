@@ -39,6 +39,21 @@ export const useChatStore = defineStore('chat', {
         this.heartbeatTimer = null
       }
     },
+    // 中文注释：token 失效后统一断开 WebSocket，避免继续发送心跳/接收消息
+    closeChatConnection() {
+      this.stopHeartbeat()
+      if (this.socketTask) {
+        try {
+          // 关闭连接，避免 token 无效后仍占用连接
+          this.socketTask.close && this.socketTask.close({})
+        } catch (e) {
+          // 关闭失败不影响后续登录态清理
+        }
+      }
+      this.socketTask = null
+      // 中文注释：清空监听，避免 token 失效后旧页面回调仍被触发
+      this.messageListeners = {}
+    },
     // 启动心跳，定期向服务端保活
     startHeartbeat() {
       const userStore = useUserStore()

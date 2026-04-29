@@ -6,6 +6,7 @@ import (
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
 	"gitee.com/jiang-xia/gin-zone/server/app/service"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 )
@@ -16,7 +17,8 @@ type Chat struct{}
 func ensureAdmin(c *gin.Context) bool {
 	currentUserId := model.GetUserUid(c)
 	if currentUserId == "" {
-		response.Fail(c, "token无效", nil)
+		// 中文注释：token 鉴权失败返回业务码，前端统一按 code 清登录态
+		response.Response(c, tip.AuthCheckTokenFail, nil)
 		return false
 	}
 	ok, err := service.User.IsAdminByUserId(currentUserId)

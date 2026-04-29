@@ -15,6 +15,7 @@ import (
 	"gitee.com/jiang-xia/gin-zone/server/config"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/log"
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
+	"gitee.com/jiang-xia/gin-zone/server/pkg/tip"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/spf13/cast"
@@ -347,7 +348,8 @@ func init() {
 func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 	userId := model.GetUserUid(ctx)
 	if userId == "" {
-		response.Fail(ctx, "token无效", nil)
+		// 中文注释：token 鉴权失败返回业务码，前端统一按 code 清登录态
+		response.Response(ctx, tip.AuthCheckTokenFail, nil)
 		return
 	}
 	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)

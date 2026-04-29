@@ -56,7 +56,8 @@ func JWTAuth() gin.HandlerFunc {
 		token = strings.Replace(token, "Bearer ", "", 1)
 		// 没有token 直接中断
 		if len(token) == 0 {
-			response.Fail(c, "token不能为空", gin.H{"reload": true})
+			// 中文注释：鉴权链路 token 缺失，返回业务码供前端统一退出登录
+			response.Response(c, tip.AuthTokenNoEmpty, nil)
 			c.Abort()
 			return
 		}
@@ -67,13 +68,20 @@ func JWTAuth() gin.HandlerFunc {
 
 		if err != nil {
 			logrus.Error(err)
-			response.Fail(c, tip.Msg(tip.AuthCheckTokenFail), gin.H{"reload": true})
+			// 中文注释：token 过期/无效等情况区分业务码，前端用 code 触发统一退出登录
+			switch {
+			case errors.Is(err, TokenExpired):
+				response.Response(c, tip.AuthCheckTokenTimeout, nil)
+			default:
+				response.Response(c, tip.AuthCheckTokenFail, nil)
+			}
 			c.Abort()
 			return
 		}
 		// 以 userId 为准：微信用户 JWT 里可能暂无 user_name，但 userId 在 BeforeCreate 已生成
 		if claims.UserId == "" {
-			response.Fail(c, "token无效", gin.H{"reload": true})
+			// 中文注释：token 内缺少关键 userId 字段，视为鉴权失败
+			response.Response(c, tip.AuthCheckTokenFail, nil)
 			c.Abort()
 			return
 		}
