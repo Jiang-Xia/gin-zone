@@ -39,7 +39,7 @@ export const useChatStore = defineStore('chat', {
         this.heartbeatTimer = null
       }
     },
-    // 中文注释：token 失效后统一断开 WebSocket，避免继续发送心跳/接收消息
+    // token 失效后统一断开 WebSocket，避免继续发送心跳/接收消息
     closeChatConnection() {
       this.stopHeartbeat()
       if (this.socketTask) {
@@ -51,7 +51,7 @@ export const useChatStore = defineStore('chat', {
         }
       }
       this.socketTask = null
-      // 中文注释：清空监听，避免 token 失效后旧页面回调仍被触发
+      // 清空监听，避免 token 失效后旧页面回调仍被触发
       this.messageListeners = {}
     },
     // 启动心跳，定期向服务端保活

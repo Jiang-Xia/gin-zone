@@ -121,7 +121,7 @@ func (ch *chat) ChatLogList(Page int, PageSize int, query *model.ChatLogQuery) (
 	var list []model.ChatLog
 	var total int64
 	if query.GroupId != 0 {
-		// 中文注释：移动端聊天记录默认屏蔽已撤回/已删除消息
+		// 移动端聊天记录默认屏蔽已撤回/已删除消息
 		gSql := db.Mysql.Where("group_id = ? AND is_deleted = ? AND is_revoked = ?", query.GroupId, false, false).Session(&gorm.Session{})
 		gSql.Order("created_at desc").Offset((Page - 1) * PageSize).Limit(PageSize).Joins("User").Find(&list)
 		gSql.Model(&list).Count(&total)
@@ -160,7 +160,7 @@ func (ch *chat) ChatGroup(userId string, groupName string) []model.ChatGroup {
 	userId = strings.TrimSpace(userId)
 	groupName = strings.TrimSpace(groupName)
 
-	// 中文注释：不传 groupName 时，约定返回“我创建的群聊”（用于群管理页面）
+	// 不传 groupName 时，约定返回“我创建的群聊”（用于群管理页面）
 	if groupName == "" {
 		if userId == "" {
 			return []model.ChatGroup{}
@@ -169,7 +169,7 @@ func (ch *chat) ChatGroup(userId string, groupName string) []model.ChatGroup {
 		return list
 	}
 
-	// 中文注释：传 groupName 时，约定返回“可加入的群”（排除自己已加入/自己创建的群）
+	// 传 groupName 时，约定返回“可加入的群”（排除自己已加入/自己创建的群）
 	sql := db.Mysql.Model(&model.ChatGroup{}).Where("group_name LIKE ?", "%"+groupName+"%")
 	if userId != "" {
 		// 排除自己创建的群
@@ -203,7 +203,7 @@ func (ch *chat) getChatGroupOwnerInfoMap(userIds []string) (map[string]*model.Ch
 		return out, nil
 	}
 	var rows []model.ChatGroupOwnerInfo
-	// 中文注释：仅查询展示必要字段，避免泄漏敏感信息
+	// 仅查询展示必要字段，避免泄漏敏感信息
 	if err := db.Mysql.Table("z_user").
 		Select("user_id, user_name, nick_name, avatar").
 		Where("user_id IN (?)", uniq).
@@ -265,7 +265,7 @@ func (ch *chat) UpdateChatGroup(currentUserId string, groupId int, payload *mode
 		return errors.New("参数错误")
 	}
 
-	// 中文注释：必须校验“当前用户是否有权修改该群”（群主或管理员才允许改）
+	// 必须校验“当前用户是否有权修改该群”（群主或管理员才允许改）
 	group, err := ch.GetChatGroupByID(groupId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -303,7 +303,7 @@ func (ch *chat) UpdateChatGroup(currentUserId string, groupId int, payload *mode
 		return errors.New("没有需要更新的字段")
 	}
 
-	// 中文注释：管理员允许修改任意群；非管理员仍约束 user_id，避免越权
+	// 管理员允许修改任意群；非管理员仍约束 user_id，避免越权
 	sql := db.Mysql.Model(&model.ChatGroup{}).Where("id = ?", groupId)
 	if !isAdmin {
 		sql = sql.Where("user_id = ?", currentUserId)
@@ -385,7 +385,7 @@ func (ch *chat) RemoveChatGroupMember(currentUserId string, groupId int, memberU
 		return err
 	}
 
-	// 中文注释：群主可删成员；管理员也可操作
+	// 群主可删成员；管理员也可操作
 	if group.UserId != currentUserId {
 		admin, aErr := User.IsAdminByUserId(currentUserId)
 		if aErr != nil {
@@ -421,7 +421,7 @@ func (ch *chat) AdminChatFriendsList(page int, pageSize int, query *model.AdminC
 	if pageSize <= 0 {
 		pageSize = 20
 	}
-	// 中文注释：管理端需要展示 user/friend/group 的具体信息，这里用 join 一次性查出（避免依赖模型里不稳定的 Preload 关系）
+	// 管理端需要展示 user/friend/group 的具体信息，这里用 join 一次性查出（避免依赖模型里不稳定的 Preload 关系）
 	sql := db.Mysql.
 		Table("z_chat_friends as f").
 		Select(strings.Join([]string{
@@ -707,7 +707,7 @@ func (ch *chat) DeleteGroup(userId string, id int) bool {
 // ChatGroupMember 群成员
 func (ch *chat) ChatGroupMember(groupId int) []model.ChatGroupMember {
 	var list []model.ChatGroupMember
-	// 中文注释：预加载成员信息，便于前端展示昵称/头像等
+	// 预加载成员信息，便于前端展示昵称/头像等
 	db.Mysql.Preload("UserInfo").Where("group_id = ?", groupId).Find(&list)
 	return list
 }

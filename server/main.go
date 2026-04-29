@@ -40,7 +40,7 @@ func main() {
 	database.Setup()
 	//初始化redis
 	database.RedisInit()
-	// 中文注释：启动阶段预热敏感词词库与 matcher，降低首条消息检测延迟
+	// 启动阶段预热敏感词词库与 matcher，降低首条消息检测延迟
 	service.WarmupSensitiveMatcher()
 	//初始化定时任务
 	cron.TaskInit()

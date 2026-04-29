@@ -71,7 +71,7 @@ func (u *user) SignIn(username string, password string) (userModel *model.User, 
 	if PasswordErr != nil {
 		return userModel, 100
 	}
-	// 中文注释：被封禁用户禁止登录（MVP 先以 is_lock 控制登录）
+	// 被封禁用户禁止登录（MVP 先以 is_lock 控制登录）
 	if userModel.IsLock {
 		return userModel, 1003
 	}
@@ -122,7 +122,7 @@ func (u *user) List(Page int, PageSize int, q string) ([]model.User, int64) {
 
 // Update 修改
 func (u *user) Update(id int, model *model.UpdateUser) (err error) {
-	// 中文注释：gorm 用 struct Updates 默认不会更新零值（例如 gender=0），这里显式 Select 以保证女(0)也能写入
+	// gorm 用 struct Updates 默认不会更新零值（例如 gender=0），这里显式 Select 以保证女(0)也能写入
 	err = db.Mysql.
 		Table("z_user").
 		Where("id = ? ", id).

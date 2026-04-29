@@ -1,4 +1,4 @@
-import axios, {
+﻿import axios, {
   AxiosError,
   AxiosRequestConfig,
   AxiosResponse,
@@ -7,7 +7,7 @@ import axios, {
 import { sm2, sm4 } from 'sm-crypto';
 import { TOKEN_KEY, USER_KEY } from '../constants/auth';
 
-// 中文注释：token 失效时统一清理并跳转登录页，避免并发请求导致重复跳转
+// 注释：token 失效时统一清理并跳转登录页，避免并发请求导致重复跳转
 let _logoutInProgress = false;
 
 // 统一接口返回结构：后端约定 code=0 为成功，data 为实际业务数据
@@ -249,7 +249,7 @@ http.interceptors.response.use(
       throw new Error('服务返回格式不正确');
     }
 
-    // 中文注释：鉴权失败统一重登（基于业务码 code，而不是 reload 魔法字段）
+    // 注释：鉴权失败统一重登（基于业务码 code，而不是 reload 魔法字段）
     const AUTH_LOGOUT_CODES = [20001, 20002, 20003, 20105];
     if (AUTH_LOGOUT_CODES.includes(payload.code)) {
       if (!_logoutInProgress) {
@@ -262,10 +262,10 @@ http.interceptors.response.use(
           clearCryptoSession();
         } finally {
           try {
-            // 中文注释：跳转到登录页；用 replace 避免浏览器返回回到无效态
+            // 注释：跳转到登录页；用 replace 避免浏览器返回回到无效态
             window.location.replace('/login');
           } catch {
-            // 中文注释：兜底：跳转失败则刷新页面以触发路由兜底
+            // 注释：兜底：跳转失败则刷新页面以触发路由兜底
             window.location.href = '/login';
           }
           setTimeout(() => {

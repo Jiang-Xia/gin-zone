@@ -41,7 +41,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "中文注释：结束时间（yyyy-MM-dd HH:mm:ss）",
+                        "description": "结束时间（yyyy-MM-dd HH:mm:ss）",
                         "name": "endAt",
                         "in": "query"
                     },
@@ -64,7 +64,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "中文注释：起始时间（yyyy-MM-dd HH:mm:ss）",
+                        "description": "起始时间（yyyy-MM-dd HH:mm:ss）",
                         "name": "startAt",
                         "in": "query"
                     },
@@ -454,7 +454,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "中文注释：结束时间（yyyy-MM-dd HH:mm:ss）",
+                        "description": "结束时间（yyyy-MM-dd HH:mm:ss）",
                         "name": "endAt",
                         "in": "query"
                     },
@@ -492,7 +492,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "中文注释：起始时间（yyyy-MM-dd HH:mm:ss）",
+                        "description": "起始时间（yyyy-MM-dd HH:mm:ss）",
                         "name": "startAt",
                         "in": "query"
                     }
@@ -998,7 +998,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "中文注释：-1全部 0正常 1封禁",
+                        "description": "-1全部 0正常 1封禁",
                         "name": "status",
                         "in": "query"
                     }
@@ -2364,7 +2364,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
-                    "description": "中文注释：消息主键id",
+                    "description": "消息主键id",
                     "type": "integer"
                 }
             }
@@ -2376,7 +2376,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "targetUserId": {
-                    "description": "中文注释：目标新群主 userId",
+                    "description": "目标新群主 userId",
                     "type": "string"
                 }
             }
@@ -2385,11 +2385,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "isLock": {
-                    "description": "中文注释：true=封禁 false=解封",
+                    "description": "true=封禁 false=解封",
                     "type": "boolean"
                 },
                 "reason": {
-                    "description": "中文注释：封禁原因（可选）",
+                    "description": "封禁原因（可选）",
                     "type": "string"
                 }
             }
@@ -2510,7 +2510,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "operateBy": {
-                    "description": "中文注释：记录管理端处置操作者，便于后续审计追溯",
+                    "description": "记录管理端处置操作者，便于后续审计追溯",
                     "type": "string"
                 },
                 "receiverId": {
@@ -2689,19 +2689,19 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "avatar": {
-                    "description": "中文注释：群头像（可选）",
+                    "description": "群头像（可选）",
                     "type": "string"
                 },
                 "groupName": {
-                    "description": "中文注释：群名称（可选）",
+                    "description": "群名称（可选）",
                     "type": "string"
                 },
                 "intro": {
-                    "description": "中文注释：群介绍（可选）",
+                    "description": "群介绍（可选）",
                     "type": "string"
                 },
                 "notice": {
-                    "description": "中文注释：群公告（可选）",
+                    "description": "群公告（可选）",
                     "type": "string"
                 }
             }

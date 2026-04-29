@@ -188,7 +188,7 @@
 
                 curOption: {},
                 timer: null,
-                // 中文注释：聊天页“已读时间”上报去抖定时器，避免新消息频繁触发导致接口压力与未读口径不同步
+                // 聊天页“已读时间”上报去抖定时器，避免新消息频繁触发导致接口压力与未读口径不同步
                 readTimeUpdateTimer: null,
                 selectList: ["删除好友"],
 
@@ -227,7 +227,7 @@
                 clearTimeout(this.readTimeUpdateTimer)
                 this.readTimeUpdateTimer = null
             }
-            // 中文注释：离开详情页前兜底上报一次，避免返回列表时仍显示残留未读
+            // 离开详情页前兜底上报一次，避免返回列表时仍显示残留未读
             this.updateReadTimeNow()
             const chatStore = useChatStore()
             chatStore.unregisterMessageListener(`chat-detail-${this.userId}-${this.curOption.friendId || this.curOption.groupId || ''}`)
@@ -236,7 +236,7 @@
             innerAudioContext.destroy()
         },
         onHide() {
-            // 中文注释：切到聊天列表时兜底上报一次已读，减少“返回仍有 1 条未读”的窗口期
+            // 切到聊天列表时兜底上报一次已读，减少“返回仍有 1 条未读”的窗口期
             this.updateReadTimeNow()
             const chatStore = useChatStore()
             chatStore.unregisterMessageListener(`chat-detail-${this.userId}-${this.curOption.friendId || this.curOption.groupId || ''}`)
@@ -301,7 +301,7 @@
                             this.prefetchVoiceDurations([revObj], this.history.messages.length - 1)
                         }
                         this.resetBottom()
-                        // 中文注释：当前聊天详情可见时，新消息即视为已读，触发已读时间上报（去抖）
+                        // 当前聊天详情可见时，新消息即视为已读，触发已读时间上报（去抖）
                         this.scheduleUpdateReadTime('new-message')
                     }
                     console.log('服务端消息：', revObj);
@@ -345,7 +345,7 @@
                 const res = await this.$api.upload(file)
                 return res
             },
-            // 中文注释：立即上报已读时间（离开页面/切走页面时兜底用），由后端用 last_read_time 与 updated_at 计算未读
+            // 立即上报已读时间（离开页面/切走页面时兜底用），由后端用 last_read_time 与 updated_at 计算未读
             updateReadTimeNow() {
                 try {
                     if (!this.curOption) return
@@ -354,16 +354,16 @@
                     if (!payload) return
                     this.$apis.chat.updateReadTime(payload)
                 } catch (e) {
-                    // 中文注释：已读上报失败不影响聊天展示，允许静默兜底，避免页面逻辑阻断
+                    // 已读上报失败不影响聊天展示，允许静默兜底，避免页面逻辑阻断
                 }
             },
-            // 中文注释：已读时间上报去抖（避免消息密集时频繁打接口）
+            // 已读时间上报去抖（避免消息密集时频繁打接口）
             scheduleUpdateReadTime(reason, delayMs = 600) {
-                // 中文注释：reason 仅用于区分触发来源（不影响逻辑），避免触发 linter “未使用参数”告警
+                // reason 仅用于区分触发来源（不影响逻辑），避免触发 linter “未使用参数”告警
                 void reason
                 if (!this.curOption) return
                 if (this.readTimeUpdateTimer) clearTimeout(this.readTimeUpdateTimer)
-                // 中文注释：delayMs=0 用于“历史加载完成/切走页面前”的立即上报，避免 setTimeout(0) 竞态
+                // delayMs=0 用于“历史加载完成/切走页面前”的立即上报，避免 setTimeout(0) 竞态
                 if (delayMs <= 0) {
                     this.readTimeUpdateTimer = null
                     this.updateReadTimeNow()
@@ -744,7 +744,7 @@
                     } else {
                         this.history.page++
                     }
-                    // 中文注释：历史记录加载完成后，视为已读到当前会话时间点，避免列表口径残留未读
+                    // 历史记录加载完成后，视为已读到当前会话时间点，避免列表口径残留未读
                     this.scheduleUpdateReadTime('history-loaded', 0)
                     if (scrollToBottom) {
                         this.resetBottom()

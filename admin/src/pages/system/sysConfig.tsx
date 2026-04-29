@@ -41,7 +41,7 @@ export default function SysConfigPage() {
     initialValues: initialForm,
     enableRemountKey: true,
   });
-  // 中文注释：新增/编辑共用一个弹窗，id=0 视为新增
+  // 新增/编辑共用一个弹窗，id=0 视为新增
   const [form] = Form.useForm();
 
   const load = async () => {

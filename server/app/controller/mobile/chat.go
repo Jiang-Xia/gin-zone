@@ -156,7 +156,7 @@ func (c *Client) Read() {
 				log.Error("写入聊天记录失败: " + err.Error())
 				continue
 			}
-			// 中文注释：消息落库后再做敏感词检测，命中后自动撤回并替换广播内容
+			// 消息落库后再做敏感词检测，命中后自动撤回并替换广播内容
 			processRes, pErr := service.ProcessSensitiveMessage(chatLog)
 			if pErr != nil {
 				log.Error("写入敏感词命中日志失败: " + pErr.Error())
@@ -348,7 +348,7 @@ func init() {
 func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 	userId := model.GetUserUid(ctx)
 	if userId == "" {
-		// 中文注释：token 鉴权失败返回业务码，前端统一按 code 清登录态
+		// token 鉴权失败返回业务码，前端统一按 code 清登录态
 		response.Response(ctx, tip.AuthCheckTokenFail, nil)
 		return
 	}
@@ -662,7 +662,7 @@ func (ch *Chat) UpdateGroup(c *gin.Context) {
 		return
 	}
 
-	// 中文注释：群名不允许被更新为空字符串，其他字段允许置空（例如清空公告）
+	// 群名不允许被更新为空字符串，其他字段允许置空（例如清空公告）
 	if payload.GroupName != nil && strings.TrimSpace(*payload.GroupName) == "" {
 		response.Fail(c, "参数错误", "groupName不能为空")
 		return

@@ -28,7 +28,7 @@ export default function ChatMessagesManagePage() {
   const [keyword, setKeyword] = useState('');
   const [msgType, setMsgType] = useState<number>(0);
 
-  // 中文注释：消息检索按筛选项+分页统一走 useListPage，避免页面内重复管理请求状态
+  // 消息检索按筛选项+分页统一走 useListPage，避免页面内重复管理请求状态
   const { query, list, total, loading, reload } = useListPage<
     AdminChatMessageRow,
     { page: number; pageSize: number; senderId: string; groupId: string; keyword: string; msgType: number }

@@ -14,7 +14,7 @@ const { FormItem } = Form;
 export default function ProfilePage() {
   const { userInfo, setLogin, token } = useAuth();
   const message = useApiMessage();
-  // 中文注释：Upload 绑定字段使用 UploadFile[]，这里把头像 URL 转成单文件数组
+  // Upload 绑定字段使用 UploadFile[]，这里把头像 URL 转成单文件数组
   const buildAvatarFiles = (url?: string): UploadFile[] => {
     const resolved = String(url ?? '');
     if (!resolved) return [];
@@ -26,7 +26,7 @@ export default function ProfilePage() {
       } as UploadFile,
     ];
   };
-  // 中文注释：提交时需要把 UploadFile[] 提取为后端需要的头像 URL
+  // 提交时需要把 UploadFile[] 提取为后端需要的头像 URL
   const resolveAvatarUrl = (files?: UploadFile[]) => String(files?.[0]?.url ?? files?.[0]?.response?.url ?? '');
   // 个人资料初始值：用于首次渲染与重置
   const profileInitialData = useMemo(
@@ -48,14 +48,14 @@ export default function ProfilePage() {
     }),
     [userInfo],
   );
-  // 中文注释：FormItem 使用 name 后，字段值统一由 Form 实例管理
+  // FormItem 使用 name 后，字段值统一由 Form 实例管理
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [profileFormKey, setProfileFormKey] = useState(0);
   const [passwordFormKey, setPasswordFormKey] = useState(0);
   const [profileData, setProfileData] = useState(profileInitialData);
   const [passwordData, setPasswordData] = useState(passwordInitialData);
-  // 中文注释：头像字段用 UploadFile[]，用组件 state 保证类型稳定 + 可回显
+  // 头像字段用 UploadFile[]，用组件 state 保证类型稳定 + 可回显
   const [avatarFiles, setAvatarFiles] = useState<UploadFile[]>(profileInitialData.avatar);
   // 修改密码弹窗开关
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
@@ -66,7 +66,7 @@ export default function ProfilePage() {
   const userId = useMemo(() => Number(userInfo?.id ?? 0), [userInfo?.id]);
 
   useEffect(() => {
-    // 中文注释：userInfo 可能是异步加载；变化时回填表单，保证“回显”
+    // userInfo 可能是异步加载；变化时回填表单，保证“回显”
     setProfileData(profileInitialData);
     setPasswordData(passwordInitialData);
     setAvatarFiles(profileInitialData.avatar);
@@ -84,7 +84,7 @@ export default function ProfilePage() {
     try {
       const payload = {
         ...values,
-        // 中文注释：接口需要 string，这里把 UploadFile[] 转成 url
+        // 接口需要 string，这里把 UploadFile[] 转成 url
         avatar: resolveAvatarUrl(values.avatar),
       };
       await updateUser(userId, payload);

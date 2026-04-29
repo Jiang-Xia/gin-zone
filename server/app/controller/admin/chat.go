@@ -13,11 +13,11 @@ import (
 
 type Chat struct{}
 
-// 中文注释：管理端权限校验统一在 controller 入口做一次（避免 service 依赖 gin context）
+// 管理端权限校验统一在 controller 入口做一次（避免 service 依赖 gin context）
 func ensureAdmin(c *gin.Context) bool {
 	currentUserId := model.GetUserUid(c)
 	if currentUserId == "" {
-		// 中文注释：token 鉴权失败返回业务码，前端统一按 code 清登录态
+		// token 鉴权失败返回业务码，前端统一按 code 清登录态
 		response.Response(c, tip.AuthCheckTokenFail, nil)
 		return false
 	}

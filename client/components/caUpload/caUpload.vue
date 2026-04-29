@@ -99,11 +99,11 @@
         },
         computed: {
             allowDelete() {
-                // 中文注释：头像场景不提供“清除”入口，避免原型观感太重
+                // 头像场景不提供“清除”入口，避免原型观感太重
                 return this.scene !== 'avatar'
             },
             hasValue() {
-                // 中文注释：兼容 value 为 string/array，避免空数组也被当成“有值”
+                // 兼容 value 为 string/array，避免空数组也被当成“有值”
                 if (this.value instanceof Array) return (this.value || []).filter(Boolean).length > 0
                 return !!(typeof this.value === 'string' ? this.value.trim() : this.value)
             },
@@ -120,7 +120,7 @@
             },
             // uni-file-picker 的图片样式配置（边框/圆角/尺寸必须走这里才能稳定生效）
             pickerImageStyles() {
-                // 中文注释：avatar 场景不需要边框；rect 场景使用虚线边框
+                // avatar 场景不需要边框；rect 场景使用虚线边框
                 let style = {
                     width: `${this.boxPx}px`,
                     height: `${this.boxPx}px`,
@@ -157,7 +157,7 @@
                     with:'100%',
                     height:'100%',
                     background: '#F5F5F5',
-                    // 中文注释：rect 场景边框统一交给 uni-file-picker 的 imageStyles.border 渲染，避免双边框/不一致
+                    // rect 场景边框统一交给 uni-file-picker 的 imageStyles.border 渲染，避免双边框/不一致
                     border: 'none',
                     color: 'rgba(0, 0, 0, 0.6)',
                 }
@@ -189,7 +189,7 @@
             },
             rectIconSrc() {
                 if (this.scene !== 'rect') return ''
-                // 中文注释：rect 场景适配各类证件/文件上传占位图标
+                // rect 场景适配各类证件/文件上传占位图标
                 const map = {
                     face: '/packageA/static/images/components/upload/face.png',
                     nation: '/packageA/static/images/components/upload/nation.png',
@@ -206,7 +206,7 @@
         },
         watch: {
             value: {
-                // 中文注释：编辑页常见为“异步回填 avatar”，必须监听 value 变化来同步回显
+                // 编辑页常见为“异步回填 avatar”，必须监听 value 变化来同步回显
                 handler(val) {
                     this.syncFileListFromValue(val)
                 },
@@ -220,7 +220,7 @@
             // 把 v-model 的 value（string/array）同步成 uni-file-picker 需要的 fileList 结构
             syncFileListFromValue(val) {
                 const list = this.normalizeValueToUrlList(val)
-                // 中文注释：避免与 picker 内部更新互相打架，只有在不一致时才重置
+                // 避免与 picker 内部更新互相打架，只有在不一致时才重置
                 const curr = (this.fileList || []).map(i => i?.url).filter(Boolean)
                 if (JSON.stringify(curr) === JSON.stringify(list)) return
                 this.fileList = list.map(url => ({ url }))
@@ -242,10 +242,10 @@
                 if (typeof raw !== 'string') return ''
                 const s = raw.trim()
                 if (!s) return ''
-                // 中文注释：base64 data uri / 绝对链接 直接使用
+                // base64 data uri / 绝对链接 直接使用
                 if (/^data:image\//i.test(s)) return s
                 if (/^https?:\/\//i.test(s)) return s
-                // 中文注释：如果后端只返回相对路径，这里自动补齐文件域名
+                // 如果后端只返回相对路径，这里自动补齐文件域名
                 if (this.$fileUrl && !s.startsWith(this.$fileUrl)) {
                     return `${this.$fileUrl}${s.startsWith('/') ? '' : '/'}${s}`
                 }
@@ -253,7 +253,7 @@
             },
             // 兼容 uni-file-picker 在 H5/APP/小程序的回调结构，拿到“可上传源”（File 或临时路径）
             getUploadSourceFromPickerEvent(e) {
-                // 中文注释：本项目上传底层走 uni.uploadFile(filePath)，H5 传 File 会导致内部 indexOf 报错
+                // 本项目上传底层走 uni.uploadFile(filePath)，H5 传 File 会导致内部 indexOf 报错
                 // 因此这里统一返回 string 类型的临时路径（H5 通常是 blob/http 临时地址）
                 const filePath = e?.tempFilePaths?.[0]
                 return typeof filePath === 'string' ? filePath : ''
@@ -279,7 +279,7 @@
 
                 // output=url：上传到后端，输出可访问地址（适用于头像、群头像）
                 if (this.output === 'url') {
-                    // 中文注释：H5 用 File，其它端用临时路径，避免 H5 上传失败
+                    // H5 用 File，其它端用临时路径，避免 H5 上传失败
                     const uploadSource = this.getUploadSourceFromPickerEvent(e)
                     if (!uploadSource) return
                     const res = await this.$api.upload(uploadSource)

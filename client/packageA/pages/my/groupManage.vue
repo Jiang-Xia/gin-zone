@@ -55,14 +55,14 @@
       },
       goMembers(g) {
         if (!g?.id) return
-        // 中文注释：群成员管理单独页面（支持删除成员）
+        // 群成员管理单独页面（支持删除成员）
         uni.navigateTo({
           url: `/packageA/pages/my/groupMembers?groupId=${g.id}`,
         })
       },
       goEdit(g) {
         if (!g?.id) return
-        // 中文注释：复用 createGroup 页面做编辑模式
+        // 复用 createGroup 页面做编辑模式
         uni.navigateTo({
           url: `/packageA/pages/my/createGroup?groupId=${g.id}`,
         })

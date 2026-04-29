@@ -40,15 +40,15 @@ var sensitiveMatcherState = struct {
 
 // SensitiveProcessResult 敏感词处理结果
 type SensitiveProcessResult struct {
-	HitWords     []string // 中文注释：本次命中的敏感词集合
-	HitLevel     int      // 中文注释：本次命中词中的最高等级
-	AutoRevoked  bool     // 中文注释：是否已触发系统自动撤回
-	OriginalText string   // 中文注释：原始消息文本（用于必要时审计）
+	HitWords     []string // 本次命中的敏感词集合
+	HitLevel     int      // 本次命中词中的最高等级
+	AutoRevoked  bool     // 是否已触发系统自动撤回
+	OriginalText string   // 原始消息文本（用于必要时审计）
 }
 
 // SensitiveWordList 敏感词列表
 func SensitiveWordList(page int, pageSize int, query *model.SensitiveWordQuery) ([]model.SensitiveWord, int64, error) {
-	// 中文注释：管理端分页查询敏感词，支持按词和状态筛选
+	// 管理端分页查询敏感词，支持按词和状态筛选
 	if page <= 0 {
 		page = 1
 	}
@@ -80,7 +80,7 @@ func SensitiveWordList(page int, pageSize int, query *model.SensitiveWordQuery) 
 
 // CreateSensitiveWord 新增敏感词
 func CreateSensitiveWord(req *model.SensitiveWordCreateReq) error {
-	// 中文注释：新增后立即失效缓存，保证检测链路及时生效
+	// 新增后立即失效缓存，保证检测链路及时生效
 	word := strings.TrimSpace(req.Word)
 	status := req.Status
 	if status != 0 && status != 1 {
@@ -105,7 +105,7 @@ func CreateSensitiveWord(req *model.SensitiveWordCreateReq) error {
 
 // UpdateSensitiveWord 更新敏感词
 func UpdateSensitiveWord(id int, req *model.SensitiveWordUpdateReq) error {
-	// 中文注释：编辑后失效缓存，避免继续使用旧词库
+	// 编辑后失效缓存，避免继续使用旧词库
 	updates := map[string]interface{}{}
 	if strings.TrimSpace(req.Word) != "" {
 		updates["word"] = strings.TrimSpace(req.Word)
@@ -126,7 +126,7 @@ func UpdateSensitiveWord(id int, req *model.SensitiveWordUpdateReq) error {
 
 // DeleteSensitiveWord 删除敏感词
 func DeleteSensitiveWord(id int) error {
-	// 中文注释：删除后失效缓存，避免已删除词仍命中
+	// 删除后失效缓存，避免已删除词仍命中
 	if err := db.Mysql.Where("id = ?", id).Delete(&model.SensitiveWord{}).Error; err != nil {
 		return err
 	}
@@ -136,7 +136,7 @@ func DeleteSensitiveWord(id int) error {
 
 // SensitiveHitLogList 命中日志列表
 func SensitiveHitLogList(page int, pageSize int, query *model.SensitiveHitLogQuery) ([]model.SensitiveHitLog, int64, error) {
-	// 中文注释：分页查询命中日志，供管理端审计/回溯使用
+	// 分页查询命中日志，供管理端审计/回溯使用
 	if page <= 0 {
 		page = 1
 	}
@@ -190,7 +190,7 @@ func getEnabledSensitiveWordsFromDB() ([]sensitiveWordRule, error) {
 }
 
 func normalizeSensitiveRules(words []sensitiveWordRule) []sensitiveWordRule {
-	// 中文注释：统一去重去空并排序，便于缓存版本稳定比较
+	// 统一去重去空并排序，便于缓存版本稳定比较
 	out := make([]sensitiveWordRule, 0, len(words))
 	seen := make(map[string]int, len(words))
 	for _, item := range words {
@@ -203,7 +203,7 @@ func normalizeSensitiveRules(words []sensitiveWordRule) []sensitiveWordRule {
 			level = SensitiveLevelHigh
 		}
 		if oldLevel, ok := seen[word]; ok {
-			// 中文注释：同词取最高风险等级，确保处置策略从严
+			// 同词取最高风险等级，确保处置策略从严
 			if level > oldLevel {
 				seen[word] = level
 			}
@@ -221,7 +221,7 @@ func normalizeSensitiveRules(words []sensitiveWordRule) []sensitiveWordRule {
 }
 
 func getEnabledSensitiveWords() ([]sensitiveWordRule, error) {
-	// 中文注释：优先走 Redis 词库缓存，未命中时回源数据库并回填缓存
+	// 优先走 Redis 词库缓存，未命中时回源数据库并回填缓存
 	redisClient := db.Redis()
 	if redisClient != nil {
 		raw, err := redisClient.Get(context.Background(), sensitiveWordsRedisKey).Result()
@@ -254,7 +254,7 @@ func getSensitiveRulesVersion(rules []sensitiveWordRule) string {
 }
 
 func getOrBuildSensitiveMatcher(words []sensitiveWordRule) ([]sensitiveWordRule, *ahocorasick.Matcher) {
-	// 中文注释：词库版本不变时复用 matcher，降低高并发下重复构建开销
+	// 词库版本不变时复用 matcher，降低高并发下重复构建开销
 	normalized := normalizeSensitiveRules(words)
 	if len(normalized) == 0 {
 		return normalized, nil
@@ -345,7 +345,7 @@ func hitSensitiveWordsFromContent(content string, words []sensitiveWordRule) ([]
 
 // RecordSensitiveHitsByMessage 按消息内容记录敏感词命中日志
 func RecordSensitiveHitsByMessage(chatLog *model.ChatLog) error {
-	// 中文注释：仅记录命中日志，不做自动处置（适配只审计场景）
+	// 仅记录命中日志，不做自动处置（适配只审计场景）
 	if chatLog == nil || chatLog.ID <= 0 {
 		return nil
 	}
@@ -408,8 +408,8 @@ func ProcessSensitiveMessage(chatLog *model.ChatLog) (*SensitiveProcessResult, e
 		if err := tx.Create(&logs).Error; err != nil {
 			return err
 		}
-		// 中文注释：通过系统配置控制是否自动撤回，兼容“只记录不拦截”模式
-		// 中文注释：仅高危词（3级）且开关开启时自动撤回；中低危仅记录命中
+		// 通过系统配置控制是否自动撤回，兼容“只记录不拦截”模式
+		// 仅高危词（3级）且开关开启时自动撤回；中低危仅记录命中
 		if !getSensitiveAutoRevokeEnabled() || hitLevel < SensitiveLevelHigh {
 			return nil
 		}

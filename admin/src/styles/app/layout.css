@@ -158,7 +158,7 @@
   background: var(--td-bg-color-container-hover);
 }
 
-/* 中文注释：统一 Avatar 图片填充策略，避免头像出现“显示不满/留白” */
+/* 统一 Avatar 图片填充策略，避免头像出现“显示不满/留白” */
 .t-avatar .t-image__wrapper,
 .t-avatar .t-avatar__image {
   width: 100%;
@@ -229,7 +229,7 @@
 }
 
 .inline-form {
-  /* 中文注释：自适应列数，工具栏/弹窗等容器变宽时优先单行展示更多筛选项 */
+  /* 自适应列数，工具栏/弹窗等容器变宽时优先单行展示更多筛选项 */
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
@@ -249,7 +249,7 @@
   border-bottom: 0 !important;
 }
 
-/* 中文注释：项目统一的“表单单行”样式（label 左侧固定宽度，控件右侧自适应） */
+/* 项目统一的“表单单行”样式（label 左侧固定宽度，控件右侧自适应） */
 /* .ca-form-row .t-form__item {
   display: flex;
   align-items: flex-start;

@@ -243,7 +243,7 @@
             },
             goGroupManage() {
                 if (!this.ensureLogin()) return
-                // 中文注释：群聊信息管理仅开放给管理员（与“创建群聊”保持一致的入口策略）
+                // 群聊信息管理仅开放给管理员（与“创建群聊”保持一致的入口策略）
                 if (!this.userInfo.isAdmin) {
                     this.$toast({ title: '您不是管理员', icon: 'error' })
                     return

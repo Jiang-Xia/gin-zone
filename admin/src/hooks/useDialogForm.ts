@@ -12,14 +12,14 @@ export function useDialogForm<TForm>({ initialValues, enableRemountKey = true }:
   const [visible, setVisible] = useState(false);
   // 表单数据状态
   const [form, setForm] = useState<TForm>(initialValues);
-  // 中文注释：弹窗表单重建标记，用于强制重新挂载 Form 触发 initialData 回填
+  // 弹窗表单重建标记，用于强制重新挂载 Form 触发 initialData 回填
   const [dialogKey, setDialogKey] = useState(0);
 
   // 打开弹窗：可选合并一部分默认值（如回填当前用户）
   const openDialog = (patch?: Partial<TForm>) => {
-    // 中文注释：先更新表单数据，再打开弹窗；避免弹窗内容首次挂载时拿到旧值导致“不回显”
+    // 先更新表单数据，再打开弹窗；避免弹窗内容首次挂载时拿到旧值导致“不回显”
     if (patch) {
-      // 中文注释：不要与 prev 合并，避免上次残留字段导致回显异常
+      // 不要与 prev 合并，避免上次残留字段导致回显异常
       setForm({ ...(initialValues as object), ...(patch as object) } as TForm);
       if (enableRemountKey) {
         setDialogKey((prev) => prev + 1);

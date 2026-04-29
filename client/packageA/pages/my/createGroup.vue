@@ -79,9 +79,9 @@
 			return {
 				defaultAvatar: this.$getImg('/static/images/user.png'),
 				pageTitle: "创建群聊",
-				// 中文注释：编辑模式下需要传 groupId
+				// 编辑模式下需要传 groupId
 				groupId: 0,
-				// 中文注释：群主信息（展示用）
+				// 群主信息（展示用）
 				ownerInfo: {},
 				submitting: false,
 				// 基础表单数据

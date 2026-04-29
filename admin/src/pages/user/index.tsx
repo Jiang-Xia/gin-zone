@@ -23,7 +23,7 @@ export default function UserManagePage() {
   const [status, setStatus] = useState<number>(-1);
   const [detailVisible, setDetailVisible] = useState(false);
   const [detailUser, setDetailUser] = useState<UserInfo | null>(null);
-  // 中文注释：当前正在切换启用/禁用状态的行 uid，用于按钮 loading/disabled
+  // 当前正在切换启用/禁用状态的行 uid，用于按钮 loading/disabled
   const [togglingUid, setTogglingUid] = useState<string>('');
   // 列表页公共状态：统一管理 loading/list/total 和刷新逻辑
   const { query, list: users, loading, total, reload } = useListPage<

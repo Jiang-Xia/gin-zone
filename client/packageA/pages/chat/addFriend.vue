@@ -50,7 +50,7 @@
 				page: 1,
 				type: "",
                 title:'',
-				// 中文注释：用于“已添加”判断（好友/群）——渲染右侧按钮为勾选且禁点
+				// 用于“已添加”判断（好友/群）——渲染右侧按钮为勾选且禁点
 				addedFriendIdSet: new Set(),
 				addedGroupIdSet: new Set(),
 			}
@@ -81,7 +81,7 @@
 				uni.showToast({ title: msg, icon: 'none' })
 			},
 			async loadAddedRelations() {
-				// 中文注释：后端会在好友关系表里同时记录“群聊会话关系”（groupId!=0）
+				// 后端会在好友关系表里同时记录“群聊会话关系”（groupId!=0）
 				try {
 					const res = await this.$apis.chat.friends({})
 					const list = res?.data || []
@@ -111,7 +111,7 @@
 				const userId = userStore.userId
 				if (this.type === 'group') {
 					const gid = Number(item?.id || 0)
-					// 中文注释：自己创建的群也视为已加入（不可再次加入）
+					// 自己创建的群也视为已加入（不可再次加入）
 					if (String(item?.userId || '') === String(userId || '')) return true
 					return gid > 0 && this.addedGroupIdSet.has(gid)
 				}
@@ -151,7 +151,7 @@
 						list = (res?.data?.list || []).filter(v => v.userId !== userId)
 					}
 					this.addList = this.withAddedFlag(list)
-					// 中文注释：有关键词但结果为空时，提示用户“未搜索到”
+					// 有关键词但结果为空时，提示用户“未搜索到”
 					if (keyword && (!list || list.length === 0)) {
 						this.showToast('未搜索到相关结果')
 					}
@@ -160,7 +160,7 @@
 				}
 			},
 			async clickUserItem(item) {
-				// 中文注释：已添加/已加入的项不可点击，避免重复请求与后端报错提示
+				// 已添加/已加入的项不可点击，避免重复请求与后端报错提示
 				if (item?._isAdded) return
 				const userStore = useUserStore()
 				const userId = userStore.userId
@@ -177,7 +177,7 @@
 				uni.showToast({
 					title: res.msg,
 				});
-				// 中文注释：本地立刻标记为已添加，提升交互；并刷新“已添加集合”避免下次搜索状态不一致
+				// 本地立刻标记为已添加，提升交互；并刷新“已添加集合”避免下次搜索状态不一致
 				item._isAdded = true
 				await this.loadAddedRelations()
 			}

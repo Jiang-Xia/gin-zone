@@ -28,7 +28,7 @@ export default function SensitiveWordsPage() {
   const [word, setWord] = useState('');
   const [status, setStatus] = useState<number>(-1);
   const [level, setLevel] = useState<number>(-1);
-  // 中文注释：当前正在切换启用/禁用状态的行 id，用于按钮 loading/disabled
+  // 当前正在切换启用/禁用状态的行 id，用于按钮 loading/disabled
   const [togglingId, setTogglingId] = useState<number>(0);
   const initialForm = useMemo<SensitiveWordForm>(() => ({ id: 0, word: '', status: 1, level: 3, remark: '' }), []);
   const { visible, form: dialogData, dialogKey, openDialog, closeDialog, resetForm } = useDialogForm<SensitiveWordForm>({

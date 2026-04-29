@@ -44,7 +44,7 @@
 			}
 		},
 		onLoad(option) {
-			// 中文注释：群成员管理需要 groupId 参数
+			// 群成员管理需要 groupId 参数
 			this.groupId = Number(option?.groupId || 0)
 		},
 		onShow() {
@@ -88,7 +88,7 @@
 					this.$toast({ title: '删除成功', icon: 'success' })
 					await this.loadMembers()
 				} catch (e) {
-					// 中文注释：错误提示由请求层统一处理；这里做兜底避免静默失败
+					// 错误提示由请求层统一处理；这里做兜底避免静默失败
 					this.$toast({ title: '删除失败', icon: 'none' })
 				} finally {
 					this.deletingKey = ''

@@ -5,11 +5,11 @@ import { uploadFile, type UploadResult } from '../../api/modules/base';
 import { useApiMessage } from '../../hooks/useApiMessage';
 
 export interface CaImageUploadProps {
-  // 中文注释：兼容后端直接返回头像 URL（string）与表单绑定值（UploadFile[]）
+  // 兼容后端直接返回头像 URL（string）与表单绑定值（UploadFile[]）
   value?: UploadFile[] | string;
   onChange?: (files: UploadFile[]) => void;
   disabled?: boolean;
-  // 中文注释：允许业务侧注入上传实现（便于后续扩展到不同目录/不同鉴权）
+  // 允许业务侧注入上传实现（便于后续扩展到不同目录/不同鉴权）
   uploader?: (file: File) => Promise<UploadResult>;
 }
 
@@ -17,11 +17,11 @@ export default function CaImageUpload({ value, onChange, disabled, uploader }: C
   const message = useApiMessage();
   const [uploading, setUploading] = useState(false);
 
-  // 中文注释：仅开发环境调试用，避免无意间刷屏/污染生产日志
+  // 仅开发环境调试用，避免无意间刷屏/污染生产日志
   // 开启方式：localStorage.setItem('zoneAdminUploadDebug', '1')
   const isUploadDebugEnabled = () => import.meta.env.DEV && localStorage.getItem('zoneAdminUploadDebug') === '1';
 
-  // 中文注释：后端可能返回相对路径，这里统一补全为可访问的绝对地址（仅使用文件域名 VITE_FILE_URL）
+  // 后端可能返回相对路径，这里统一补全为可访问的绝对地址（仅使用文件域名 VITE_FILE_URL）
   const baseUrl = String(import.meta.env.VITE_FILE_URL || '');
   const toAbsoluteUrl = useCallback((url?: string) => {
     const resolved = String(url ?? '');
@@ -82,7 +82,7 @@ export default function CaImageUpload({ value, onChange, disabled, uploader }: C
     <Upload
       theme="image"
       accept="image/*"
-      // 中文注释：交给 Upload 自己处理“点击触发选择文件 + 上传流程”，我们只接管实际上传请求
+      // 交给 Upload 自己处理“点击触发选择文件 + 上传流程”，我们只接管实际上传请求
       autoUpload
       multiple={false}
       disabled={disabled || uploading}
@@ -92,7 +92,7 @@ export default function CaImageUpload({ value, onChange, disabled, uploader }: C
       tips="请选择单张图片文件上传"
       showImageFileName={false}
       onRemove={() => {
-        // 中文注释：受控模式下需要手动同步删除结果
+        // 受控模式下需要手动同步删除结果
         onChange?.([]);
       }}
       requestMethod={async (nextFiles: UploadFile | UploadFile[]) => {

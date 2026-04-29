@@ -9,7 +9,7 @@
 }
 
 .listPage {
-  /* 中文注释：列表页容器改为纵向 flex，避免 grid 在宽度收缩/溢出场景下出现布局异常 */
+  /* 列表页容器改为纵向 flex，避免 grid 在宽度收缩/溢出场景下出现布局异常 */
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -22,7 +22,7 @@
   justify-content: space-between;
   color: #666;
   gap: 16px;
-  /* 中文注释：工具栏两侧内容在窄宽度/表格横向滚动时允许换行，避免把右侧搜索框“顶出”卡片容器 */
+  /* 工具栏两侧内容在窄宽度/表格横向滚动时允许换行，避免把右侧搜索框“顶出”卡片容器 */
   flex-wrap: wrap;
   min-width: 0;
 }
@@ -32,7 +32,7 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  /* 中文注释：允许左侧区域收缩，避免与右侧搜索框互相挤压导致溢出 */
+  /* 允许左侧区域收缩，避免与右侧搜索框互相挤压导致溢出 */
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -52,7 +52,7 @@
 
 .search {
   width: 280px;
-  /* 中文注释：防止固定宽度搜索框在小容器内溢出 */
+  /* 防止固定宽度搜索框在小容器内溢出 */
   max-width: 100%;
 }
 

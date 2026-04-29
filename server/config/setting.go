@@ -91,7 +91,7 @@ func loadInI() {
 
 func setApp() {
 	App = new(appModel)
-	// 中文注释：敏感词策略默认“记录命中+自动撤回+广播拦截提示”
+	// 敏感词策略默认“记录命中+自动撤回+广播拦截提示”
 	App.SensitiveAutoRevoke = true
 	Database = new(databaseModel)
 	Docs = new(docsModel)

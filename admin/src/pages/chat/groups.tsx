@@ -30,7 +30,7 @@ const { FormItem } = Form;
 export default function ChatGroupsManagePage() {
   const message = useApiMessage();
   const [groupName, setGroupName] = useState('');
-  // 中文注释：编辑群弹窗的表单初始值（不依赖 hook，便于排查回显问题）
+  // 编辑群弹窗的表单初始值（不依赖 hook，便于排查回显问题）
   const initialEditForm = useMemo(
     () => ({
       id: 0,
@@ -52,7 +52,7 @@ export default function ChatGroupsManagePage() {
     initialValues: initialEditForm,
     enableRemountKey: true,
   });
-  // 中文注释：TDesign Form 采用“表单实例”管理字段值，提交读取统一走 getFieldsValue
+  // TDesign Form 采用“表单实例”管理字段值，提交读取统一走 getFieldsValue
   const [editForm] = Form.useForm();
 
   const { query, list, total, loading, reload } = useListPage<
@@ -82,7 +82,7 @@ export default function ChatGroupsManagePage() {
   const [transferDialogVisible, setTransferDialogVisible] = useState(false);
   const [transferGroupId, setTransferGroupId] = useState(0);
   const [targetOwnerId, setTargetOwnerId] = useState('');
-  // 中文注释：群成员是“列表型弹窗”，默认给更大宽度，避免内容挤压
+  // 群成员是“列表型弹窗”，默认给更大宽度，避免内容挤压
   const membersDialogWidth = useMemo(() => '60%', []);
 
   const membersTitle = useMemo(() => (membersGroupId ? `群成员（群ID：${membersGroupId}）` : '群成员'), [membersGroupId]);
@@ -199,7 +199,7 @@ export default function ChatGroupsManagePage() {
             theme="primary"
             variant="text"
             onClick={() => {
-              // 中文注释：openDialog 支持 patch 回填；避免 setState 异步导致弹窗打开时未回显
+              // openDialog 支持 patch 回填；避免 setState 异步导致弹窗打开时未回显
               openEditDialog({
                 id: Number(row.id),
                 groupName: row.groupName || '',

@@ -11,7 +11,7 @@ export default function AuditLogsPage() {
   const [operatorUserId, setOperatorUserId] = useState('');
   const [action, setAction] = useState('');
 
-  // 中文注释：审计日志查询统一走列表 Hook，保持分页与刷新行为一致
+  // 审计日志查询统一走列表 Hook，保持分页与刷新行为一致
   const { query, list, total, loading, reload } = useListPage<
     AdminAuditLogRow,
     { page: number; pageSize: number; operatorUserId: string; action: string }

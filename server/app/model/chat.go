@@ -42,16 +42,16 @@ type ChatGroup struct {
 
 // ChatGroupOwnerInfo 群主信息（用于群组信息展示）
 type ChatGroupOwnerInfo struct {
-	UserId   string `json:"userId,omitempty"`   // 中文注释：群主用户id
-	UserName string `json:"userName,omitempty"` // 中文注释：群主用户名
-	NickName string `json:"nickName,omitempty"` // 中文注释：群主昵称
-	Avatar   string `json:"avatar,omitempty"`   // 中文注释：群主头像
+	UserId   string `json:"userId,omitempty"`   // 群主用户id
+	UserName string `json:"userName,omitempty"` // 群主用户名
+	NickName string `json:"nickName,omitempty"` // 群主昵称
+	Avatar   string `json:"avatar,omitempty"`   // 群主头像
 }
 
 // ChatGroupRes 群组信息返回结构（在 ChatGroup 基础上补充群主信息）
 type ChatGroupRes struct {
 	ChatGroup
-	OwnerInfo *ChatGroupOwnerInfo `json:"ownerInfo,omitempty"` // 中文注释：群主信息（展示用）
+	OwnerInfo *ChatGroupOwnerInfo `json:"ownerInfo,omitempty"` // 群主信息（展示用）
 }
 
 // ChatGroupMember 群成员表
@@ -73,7 +73,7 @@ type ChatLog struct {
 	MsgType    int8   `gorm:"comment:消息类型 1-文本 2-图片 3-视频 4-音频; 5-其他" json:"msgType"`
 	IsRevoked  bool   `gorm:"comment:是否已撤回;default:0" json:"isRevoked"`
 	IsDeleted  bool   `gorm:"comment:是否已删除(软删除);default:0" json:"isDeleted"`
-	// 中文注释：记录管理端处置操作者，便于后续审计追溯
+	// 记录管理端处置操作者，便于后续审计追溯
 	OperateBy string `gorm:"type:varchar(20);comment:最近一次处置操作者userId;" json:"operateBy,omitempty"`
 	User       User   `gorm:"foreignKey:UserId;references:SenderId;comment:用户数据;" json:"userInfo"`
 }
@@ -95,10 +95,10 @@ type UpdateReadTime struct {
 
 // UpdateChatGroup 修改群聊信息（PATCH 语义：字段可选）
 type UpdateChatGroup struct {
-	Avatar    *string `json:"avatar,omitempty"`    // 中文注释：群头像（可选）
-	GroupName *string `json:"groupName,omitempty"` // 中文注释：群名称（可选）
-	Intro     *string `json:"intro,omitempty"`     // 中文注释：群介绍（可选）
-	Notice    *string `json:"notice,omitempty"`    // 中文注释：群公告（可选）
+	Avatar    *string `json:"avatar,omitempty"`    // 群头像（可选）
+	GroupName *string `json:"groupName,omitempty"` // 群名称（可选）
+	Intro     *string `json:"intro,omitempty"`     // 群介绍（可选）
+	Notice    *string `json:"notice,omitempty"`    // 群公告（可选）
 }
 
 // AdminChatFriendsQuery 管理端好友/群聊关系查询
@@ -144,7 +144,7 @@ type AdminChatGroupRow struct {
 
 // AdminTransferGroupOwnerReq 管理端-转移群主请求
 type AdminTransferGroupOwnerReq struct {
-	TargetUserId string `json:"targetUserId" binding:"required"` // 中文注释：目标新群主 userId
+	TargetUserId string `json:"targetUserId" binding:"required"` // 目标新群主 userId
 }
 
 // AdminChatMessageQuery 管理端-消息检索查询
@@ -154,8 +154,8 @@ type AdminChatMessageQuery struct {
 	GroupId   int    `json:"groupId"`
 	Keyword   string `json:"keyword"`
 	MsgType   int    `json:"msgType"`
-	StartAt   string `json:"startAt"` // 中文注释：起始时间（yyyy-MM-dd HH:mm:ss）
-	EndAt     string `json:"endAt"`   // 中文注释：结束时间（yyyy-MM-dd HH:mm:ss）
+	StartAt   string `json:"startAt"` // 起始时间（yyyy-MM-dd HH:mm:ss）
+	EndAt     string `json:"endAt"`   // 结束时间（yyyy-MM-dd HH:mm:ss）
 }
 
 // AdminChatMessageRow 管理端-消息检索结果
@@ -174,5 +174,5 @@ type AdminChatMessageRow struct {
 
 // AdminMessageOperateReq 管理端-消息处置请求
 type AdminMessageOperateReq struct {
-	ID int `json:"id" binding:"required"` // 中文注释：消息主键id
+	ID int `json:"id" binding:"required"` // 消息主键id
 }
