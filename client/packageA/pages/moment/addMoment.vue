@@ -7,10 +7,9 @@
                     placeholder="说说这一刻的想法…" />
                 <!-- show-word-limit -->
                 <div class="uploader-wrap">
-                    <uni-file-picker v-model="fileLists" limit="9" title="" :imageStyles="imageStyles"
-                        @delete="deleteHandle" @select="select" ref="files">
-                        <div class="zc-uploader-setting"></div>
-                    </uni-file-picker>
+                    <!-- 统一上传组件：输出后端可访问 URL -->
+                    <!-- 动态发布页上传图标沿用历史视觉资源 -->
+                    <caUpload v-model:value="imageUrl" type="moment" output="url" />
                 </div>
 
                 <div class="footer-bar" @click="chooseLocation">
@@ -43,16 +42,12 @@
                     latitude: 0,
                     longitude: 0
                 },
-                imageStyles: {
-                    border: {
-                        color: 'transparent',
-                        width: 1,
-                        style: 'dashed',
-                        radius: 2
-                    }
-                },
-                fileLists: [],
-                uploadList: []
+                // 发布动态图片地址（caUpload 返回上传后的可访问 URL）
+                imageUrl: '',
+                locationInfo:{
+                    latitude: 0,
+                    longitude: 0
+                }
             }
         },
         onLoad(option) {
@@ -72,6 +67,7 @@
                             district,
                             street
                         } = res.locationInfo.address
+                        this.locationInfo = res.locationInfo
                         this.info.address = province + city + district + street
                         console.log('success', this.info.address);
                     }
@@ -80,6 +76,9 @@
             // 选择位置
             chooseLocation() {
                 uni.chooseLocation({
+                    useSecureNetwork: true,
+                    latitude: this.locationInfo.latitude,
+                    longitude: this.locationInfo.longitude,
                     success: (res) => {
                         const {
                             latitude,
@@ -95,42 +94,29 @@
             },
             // 打开地图
             openMap() {},
-            select(imageRes) {
-                imageRes.tempFilePaths.forEach((path, index) => {
-                    this.uploadFile(path)
-                })
-            },
-            deleteHandle(opt) {
-                this.uploadList.splice(this.uploadList.findIndex(v => v.path === opt.tempFilePath), 1)
-                // console.log(opt,this.uploadList)
-            },
-            async uploadFile(file) {
-                const res = await this.$api.upload(file)
-                this.uploadList.push({
-                    path: file,
-                    ...res.data
-                })
-                // console.log(this.uploadList)
-                return res
-            },
             async addMoment() {
                 try {
                     const userStore = useUserStore()
-                    const userId = userStore.userId
+                    if (!userStore?.token) {
+                        // 注释：发布动态需要登录（与后端鉴权保持一致）
+                        this.$common && this.$common.showLoginModal && this.$common.showLoginModal()
+                        return
+                    }
                     const params = {
                         content: this.info.content,
                         location: this.info.address,
-                        urls: this.uploadList.map(v => v.url).join(),
-                        userId: userId,
+                        urls: this.imageUrl,
                     }
-                    if (!this.info.content || !this.fileLists.length) {
-                        uni.showToast({
-                            title: "请填写完整数据",
-                            icon: "none"
-                        })
+                    if (!this.info.content) {
+                        this.$toast("请填写动态内容")
+                        return
+                    }
+                    if (!this.imageUrl) {
+                        this.$toast("请上传图片")
+                        return
                     }
                     // 发布动态：通过接口层创建
-                    const res = await this.$apis.moment.create(params)
+                    await this.$apis.moment.create(params)
                     uni.showToast({
                         title: "发表成功",
                         icon: "none"
@@ -139,7 +125,10 @@
                         url: "/pages/moment/index"
                     })
                 } catch (e) {
-
+                    uni.showToast({
+                        title: (e && e.msg) ? e.msg : '发表失败，请稍后重试',
+                        icon: "none"
+                    })
                 }
 
             }
@@ -188,22 +177,8 @@
                 }
             }
 
-            .uni-file-picker__header {
-                .file-title {
-                    font-size: 24rpx;
-                    color: #666;
-                }
-            }
-
-            .file-picker__box-content {
-                border: none !important;
-            }
-
-            .zc-uploader-setting {
-                height: 100%;
-                width: 100%;
-                background-image: url(@/packageA/static/images/moment/ico_sc_tpsp@2x.png);
-                background-size: contain;
+            .uploader-wrap {
+                margin-top: 24rpx;
             }
         }
 

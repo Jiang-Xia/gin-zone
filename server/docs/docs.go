@@ -2029,7 +2029,7 @@ const docTemplate = `{
             }
         },
         "/mobile/moments/UpdateMoment": {
-            "get": {
+            "post": {
                 "security": [
                     {
                         "Authorization": []
@@ -2048,18 +2048,22 @@ const docTemplate = `{
                 "summary": "更新动态数据",
                 "parameters": [
                     {
-                        "type": "string",
                         "description": "Moment.ID",
                         "name": "id",
-                        "in": "query",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     },
                     {
-                        "type": "string",
                         "description": "like或者view",
                         "name": "t",
-                        "in": "query",
-                        "required": true
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {

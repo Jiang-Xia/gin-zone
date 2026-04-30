@@ -1,7 +1,7 @@
 <template>
     <pageConfig title="动态" :left="false">
         <view class="container moment-card-wrap">
-        	<section class="moment-card" v-for="(item, index) in cardList" :key="cardList.id">
+        	<section class="moment-card" v-for="(item, index) in cardList" :key="item.id || index">
         		<div class="card-top">
         			<image class="avatar" :src="item.userInfo.avatar" />
         			<div class="middle">
@@ -103,7 +103,7 @@
 					this.status = "loading"
 					// 是否滚动
 					if (!isScoll) {
-						this.articleList = []
+						this.cardList = []
 						this.page = 1
 					} else {
 						this.page++
@@ -117,7 +117,7 @@
 					}
 					// 动态列表：走接口层统一入口
 					const res = await this.$apis.moment.list(params)
-					const list = res.data.list.map(v => {
+					const list = (res?.data?.list || []).map(v => {
 						v.images = v.urls.split(',')
 						v.date = formatDate(v.createdAt)
 						return v
@@ -129,12 +129,23 @@
 					}
 					this.loading = false
 					this.cardList = this.cardList.concat(list)
+				} catch (e) {
+					// 注释：网络/鉴权失败等情况给出明确提示
+					uni.showToast({
+						title: (e && e.msg) ? e.msg : '加载失败，请稍后重试',
+						icon: "none"
+					})
 				} finally {
 					this.loading = false
 					uni.stopPullDownRefresh()
 				}
 			},
 			dianzanHandle(item) {
+				if (item.dianzaned) return
+				if (!this.$common.getUserId()) {
+					this.$common.showLoginModal()
+					return
+				}
 				item.dianzaned = true
 				this.optHandle(item,'like')
 			},
@@ -149,6 +160,11 @@
 			},
 			// 查看动态图片
 			previewImage(item) {
+				// 浏览也要求登录（与后端鉴权保持一致）
+				if (!this.$common.getUserId()) {
+					this.$common.showLoginModal()
+					return
+				}
 				this.optHandle(item,'view')
 				uni.previewImage({
 					loop: true,
@@ -159,16 +175,25 @@
 			},
 			// 更新动态数据
 			async optHandle(item, type) {
-				if (type === 'like') {
-					item.likes++
-				} else {
-					item.views++
+				// 注释：乐观更新 + 失败回滚，避免接口失败导致本地数据漂移
+				const prevLikes = item.likes
+				const prevViews = item.views
+				if (type === 'like') item.likes++
+				if (type === 'view') item.views++
+				try {
+					await this.$apis.moment.update({
+						id: item.id,
+						t: type
+					})
+				} catch (e) {
+					item.likes = prevLikes
+					item.views = prevViews
+					if (type === 'like') item.dianzaned = false
+					uni.showToast({
+						title: (e && e.msg) ? e.msg : '操作失败，请稍后重试',
+						icon: "none"
+					})
 				}
-				// 点赞/浏览更新：走接口层
-				const res = await this.$apis.moment.update({
-					id: item.id,
-					t:type
-				})
 			}
 		}
 	}

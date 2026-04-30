@@ -1,13 +1,15 @@
 package mobile
 
 import (
-	"crypto/md5"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/app/model"
@@ -67,8 +69,40 @@ type Client struct {
 	UserId     string
 	Socket     *websocket.Conn
 	SendChan   chan []byte
-	Start      time.Time
+	LastActiveAtNano int64 // 最近一次心跳/消息时间（纳秒），用于连接保活与过期判断
 	ExpireTime time.Duration // 一段时间没有接收到心跳则过期
+
+	unregisterOnce sync.Once // 只允许触发一次注销，避免 Read/Write/Check 重复注销
+	closeOnce      sync.Once // 连接资源只释放一次，避免重复 close 引发 panic
+	closedFlag     int32     // 连接是否已关闭（1=已关闭）
+}
+
+func (c *Client) unregister() {
+	// 连接退出统一走注销通道，由 Manager.Quit() 负责清理资源与更新在线人数
+	if c == nil {
+		return
+	}
+	c.unregisterOnce.Do(func() {
+		Manager.UnRegisterChan <- c
+	})
+}
+
+func (c *Client) Close() {
+	// 统一释放连接资源，避免 goroutine 泄漏（只执行一次）
+	if c == nil {
+		return
+	}
+	c.closeOnce.Do(func() {
+		atomic.StoreInt32(&c.closedFlag, 1)
+		// 先关 socket，避免继续读写阻塞
+		if c.Socket != nil {
+			_ = c.Socket.Close()
+		}
+		// 再关发送通道，唤醒 Write() 退出
+		if c.SendChan != nil {
+			close(c.SendChan)
+		}
+	})
 }
 
 // ClientManager 客户端管理结构体
@@ -91,19 +125,18 @@ type WsMessage struct {
 // Manager 管理实例声明
 var Manager = ClientManager{
 	Clients:        make(map[string]*Client), // 初始化chan(实例化)
-	BroadcastChan:  make(chan []byte),
-	RegisterChan:   make(chan *Client),
-	UnRegisterChan: make(chan *Client),
+	// 带缓冲避免高并发下 Register/UnRegister/Broadcast 相互阻塞卡死
+	BroadcastChan:  make(chan []byte, 1024),
+	RegisterChan:   make(chan *Client, 256),
+	UnRegisterChan: make(chan *Client, 256),
 }
 
 // Read 读取客户端发送过来的消息
 func (c *Client) Read() {
 	// 出现故障后把当前客户端注销(即不是无限循环 阻塞着就关闭)
 	defer func() {
-		fmt.Println("用户:", c.UserId, "关闭Socket连接")
-		_ = c.Socket.Close()
-		// 退出
-		Manager.UnRegisterChan <- c
+		log.Info("用户关闭Socket连接 userId=" + c.UserId)
+		c.unregister()
 	}()
 	//sum := 0
 	// 无限循环 应用服务器常用于监听
@@ -133,17 +166,21 @@ func (c *Client) Read() {
 			hMsg["senderId"] = msg.SenderId
 			// 如果是心跳监测消息（利用心跳监测来判断对应客户端是否在线）
 			resp, _ := json.Marshal(hMsg)
-			c.Start = time.Now() // 重新刷新时间
-			// 发送变量到 SendChan 通道中
-			c.SendChan <- resp
+			atomic.StoreInt64(&c.LastActiveAtNano, time.Now().UnixNano()) // 刷新最后活跃时间
+			// 发送变量到 SendChan 通道中（非阻塞，避免慢连接卡死读协程）
+			trySend(c, resp)
 		case "online":
 			// 获取在线人数
+			Manager.mu.RLock()
 			count := len(Manager.Clients)
+			Manager.mu.RUnlock()
 			msg.Count = count
 			resp, _ := json.Marshal(msg)
-			c.SendChan <- resp
+			// 在线人数回包同样走非阻塞投递，避免慢连接拖住
+			trySend(c, resp)
 		case "text":
 			// 发送文本消息
+			atomic.StoreInt64(&c.LastActiveAtNano, time.Now().UnixNano()) // 非心跳消息也算活跃
 			chatLog := &model.ChatLog{
 				SenderId:   c.UserId,
 				ReceiverId: msg.ReceiverId,
@@ -171,7 +208,8 @@ func (c *Client) Read() {
 			msg.UserInfo = UserInfo
 			UserInfo.Password = ""
 			resp, _ := json.Marshal(msg)
-			Manager.BroadcastChan <- resp
+			// 广播队列满时不应阻塞当前读协程
+			tryBroadcast(resp)
 		case "recall":
 			// 你的撤回消息的操作
 			c.SendChan <- []byte("回复消息")
@@ -184,26 +222,16 @@ func (c *Client) Read() {
 // Write 把对应消息写回客户端
 func (c *Client) Write() {
 	defer func() {
-		_ = c.Socket.Close()
-		Manager.UnRegisterChan <- c
+		c.unregister()
 	}()
 	for {
 		select {
 		//监听是否有消息发送
 		case msg, ok := <-c.SendChan:
 			if !ok {
-				// 没有消息则发送空响应
-				err := c.Socket.WriteMessage(websocket.CloseMessage, []byte{})
-				if err != nil {
-					log.Error(err.Error())
-					return
-				}
 				return
 			}
-			var wsMsg WsMessage
-			err := json.Unmarshal(msg, &wsMsg)
-			//fmt.Printf("服务端所发信息:%+v ", wsMsg)
-			err = c.Socket.WriteMessage(websocket.TextMessage, msg)
+			err := c.Socket.WriteMessage(websocket.TextMessage, msg)
 			if err != nil {
 				log.Error(err.Error())
 				return
@@ -218,12 +246,17 @@ func (c *Client) Check() {
 	defer ticker.Stop()
 	for {
 		<-ticker.C
-		now := time.Now()
-		var duration = now.Sub(c.Start)
+		last := atomic.LoadInt64(&c.LastActiveAtNano)
+		// 刚建连但尚未收到心跳/消息时，兜底按当前时间
+		if last == 0 {
+			last = time.Now().UnixNano()
+			atomic.StoreInt64(&c.LastActiveAtNano, last)
+		}
+		duration := time.Since(time.Unix(0, last))
 		if duration >= c.ExpireTime {
 			// 过期退出
-			Manager.UnRegisterChan <- c
-			break
+			c.unregister()
+			return
 		}
 	}
 }
@@ -247,7 +280,46 @@ func (manager *ClientManager) Start() {
 func (manager *ClientManager) InitSend(cur *Client, count int) {
 	// 初始化时发送在线人数
 	resp, _ := json.Marshal(&WsMessage{Cmd: "online", Count: count})
-	Manager.BroadcastChan <- resp
+	tryBroadcast(resp)
+}
+
+func newConnID() string {
+	// 连接 ID 不能用 ip+ua，否则同网段/同设备多开会互相覆盖；这里用随机值避免冲突
+	b := make([]byte, 16)
+	if _, err := rand.Read(b); err != nil {
+		return fmt.Sprintf("%d", time.Now().UnixNano())
+	}
+	return hex.EncodeToString(b)
+}
+
+func trySend(conn *Client, msg []byte) {
+	// 非阻塞投递：慢连接不应拖垮全局广播协程
+	if conn == nil {
+		return
+	}
+	// 已关闭连接直接跳过；极端并发下仍可能出现 send on closed channel，这里用 recover 兜底
+	if atomic.LoadInt32(&conn.closedFlag) == 1 {
+		return
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			// 并发竞态导致的 panic（例如 send on closed channel），直接吞掉避免影响广播主循环
+		}
+	}()
+	select {
+	case conn.SendChan <- msg:
+	default:
+		log.Warn("聊天投递丢弃：连接发送队列已满 userId=" + conn.UserId)
+	}
+}
+
+func tryBroadcast(msg []byte) {
+	// BroadcastChan 写入也可能在高峰期阻塞，这里做非阻塞兜底，避免 Start/Quit 被卡死
+	select {
+	case Manager.BroadcastChan <- msg:
+	default:
+		log.Warn("聊天广播丢弃：广播队列已满")
+	}
 }
 
 // BroadcastSend 群发消息
@@ -287,8 +359,8 @@ func (manager *ClientManager) BroadcastSend() {
 						}
 						if member.UserId == conn.UserId {
 							// fmt.Println("群组成员：", conn.UserId)
-							conn.SendChan <- msg
-							break
+							// 同一用户可能多端在线，这里全部投递
+							trySend(conn, msg)
 						}
 					}
 				}
@@ -301,12 +373,10 @@ func (manager *ClientManager) BroadcastSend() {
 				}
 				Manager.mu.RUnlock()
 				for _, conn := range connections {
-					//掉线了可能就找不到对应的在线实例
-					fmt.Println("找到对应接受者用户", wsMsg.ReceiverId, conn.UserId)
 					//接受者is和当前连接实例相等时
 					if wsMsg.ReceiverId == conn.UserId {
-						conn.SendChan <- msg
-						break
+						// 私聊接收方多端在线时全部投递
+						trySend(conn, msg)
 					}
 				}
 			}
@@ -324,7 +394,8 @@ func (manager *ClientManager) Quit() {
 	for {
 		select {
 		case conn := <-Manager.UnRegisterChan:
-			//删除对应在线客户端
+			// 删除对应在线客户端，并统一释放资源，避免 goroutine 残留
+			conn.Close()
 			manager.mu.Lock()
 			delete(Manager.Clients, conn.ID)
 			count := len(Manager.Clients)
@@ -332,7 +403,7 @@ func (manager *ClientManager) Quit() {
 			// 给客户端刷新在线人数
 			resp, _ := json.Marshal(&WsMessage{Cmd: "online", Count: count})
 			//有人退出时 广播刷新在线人数
-			manager.BroadcastChan <- resp
+			tryBroadcast(resp)
 		}
 	}
 }
@@ -360,22 +431,21 @@ func (ch *Chat) WebSocketHandle(ctx *gin.Context) {
 	}
 	ip := ctx.ClientIP()
 	ua := ctx.GetHeader("User-Agent")
-	id := ip + ua
-	idMd5 := fmt.Sprintf("%x", md5.Sum([]byte(id)))
+	_ = ua
 	//新用户(新的客户端) 连上就新建一个客户端实例
 	client := &Client{
-		ID:         idMd5,
+		ID:         newConnID(),
 		Socket:     conn,
-		SendChan:   make(chan []byte),
+		// 加缓冲避免慢连接阻塞全局广播
+		SendChan:   make(chan []byte, 64),
 		IpAddress:  ip,
 		IpSource:   "未知",
 		UserId:     userId,
-		Start:      time.Now(),
+		LastActiveAtNano: time.Now().UnixNano(),
 		ExpireTime: time.Minute * 1,
 	}
 	// 使用通道Register发送变量client
 	Manager.RegisterChan <- client
-	fmt.Printf("client%v\n", client)
 	go client.Read() // 以goroutine的方式调用Client的Read、Write、Check方法
 	go client.Write()
 	go client.Check()
@@ -404,7 +474,11 @@ func (ch *Chat) FriendList(c *gin.Context) {
 		response.Fail(c, "用户id不能为空", []string{})
 		return
 	}
-	friends := service.Chat.ChatFriends(userId)
+	friends, err := service.Chat.ChatFriends(userId)
+	if err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
 	response.Success(c, friends, "")
 }
 
@@ -473,7 +547,6 @@ func (ch *Chat) AddFriend(c *gin.Context) {
 func (ch *Chat) DelFriend(c *gin.Context) {
 	userId := model.GetUserUid(c)
 	friendId := c.Param("friendId")
-	fmt.Println(userId, "friendId", friendId)
 	bool := service.Chat.DeleteChatFriends(userId, friendId)
 	//互删
 	bool = service.Chat.DeleteChatFriends(friendId, userId)
@@ -542,6 +615,18 @@ func (ch *Chat) ChatLogList(c *gin.Context) {
 		return
 	}
 	query.SenderId = currentUserId
+	// 群聊记录必须校验当前用户是群主/管理员/群成员，避免越权读取
+	if query.GroupId != 0 {
+		ok, err := service.Chat.CanAccessChatGroup(currentUserId, query.GroupId)
+		if err != nil {
+			response.Fail(c, err.Error(), nil)
+			return
+		}
+		if !ok {
+			response.Fail(c, "无权限查看该群聊天记录", nil)
+			return
+		}
+	}
 	// fmt.Printf("ChatLogList查询参数: %+v", query)
 	list, total := service.Chat.ChatLogList(query.Page, query.PageSize, query)
 	data := model.ListRes{List: list, Total: total}
@@ -710,7 +795,27 @@ func (ch *Chat) DelGroup(c *gin.Context) {
 // @Router      /mobile/chat/groupMembers [get]
 func (ch *Chat) GroupMemberList(c *gin.Context) {
 	groupId := c.Query("groupId")
-	list := service.Chat.ChatGroupMember(cast.ToInt(groupId))
+	currentUserId := model.GetUserUid(c)
+	if currentUserId == "" {
+		response.Fail(c, "用户id不能为空", nil)
+		return
+	}
+	gid := cast.ToInt(groupId)
+	if gid <= 0 {
+		response.Fail(c, "参数错误", "groupId不能为空")
+		return
+	}
+	// 群成员列表必须校验权限，避免群成员被枚举
+	ok, err := service.Chat.CanAccessChatGroup(currentUserId, gid)
+	if err != nil {
+		response.Fail(c, err.Error(), nil)
+		return
+	}
+	if !ok {
+		response.Fail(c, "无权限查看该群成员", nil)
+		return
+	}
+	list := service.Chat.ChatGroupMember(gid)
 	response.Success(c, list, "")
 }
 

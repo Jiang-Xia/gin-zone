@@ -112,7 +112,8 @@ func App() (r *gin.Engine) {
 		{
 			app.GET("/moments", momentController.MomentList)
 			app.POST("/moments", middleware.JWTAuth(), momentController.AddMoment)
-			app.GET("/moments/UpdateMoment", momentController.UpdateMoment)
+			// 注释：点赞/浏览更新属于写操作，改为 POST 并要求登录，防止被匿名刷量
+			app.POST("/moments/UpdateMoment", middleware.JWTAuth(), momentController.UpdateMoment)
 		}
 		//聊天模块
 		chatController := new(mobile.Chat)

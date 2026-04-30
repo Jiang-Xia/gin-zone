@@ -26,7 +26,8 @@ export interface MomentListQuery extends PageQuery {
 export interface AddMomentPayload {
   content: string;
   urls: string;
-  userId: string;
+  // 注释：后端以 token 身份为准，前端不应依赖/传入 userId（保留字段仅为兼容旧调用）
+  userId?: string;
   location: string;
 }
 
@@ -42,7 +43,9 @@ export function addMoment(params: AddMomentPayload) {
 
 // 更新动态统计：点赞/浏览量（示例接口，后端使用 t=like/view 区分）
 export function updateMoment(id: number, type: 'like' | 'view') {
-  return get<boolean>('/mobile/moments/UpdateMoment', {
-    params: { id, t: type },
+  // 注释：写操作改为 POST，避免 GET 被预取/缓存导致误触发
+  return post<boolean, { id: number; t: 'like' | 'view' }>('/mobile/moments/UpdateMoment', {
+    id,
+    t: type,
   });
 }

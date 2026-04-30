@@ -18,7 +18,17 @@ type chat struct {
 var Chat *chat
 
 // ChatFriends 获取好友列表
-func (ch *chat) ChatFriends(userId string) []model.ChatFriends {
+func (ch *chat) ChatFriends(userId string) ([]model.ChatFriends, error) {
+	userId = strings.TrimSpace(userId)
+	if userId == "" {
+		return []model.ChatFriends{}, errors.New("用户id不能为空")
+	}
+
+	// 兼容修复：历史数据里可能存在“群已创建但群主没有会话/成员关系”的情况
+	// 这里在读取聊天列表前补齐一次，确保群主创建的群一定能出现在列表里
+	if err := ch.ensureOwnerGroupSession(userId); err != nil {
+		return nil, err
+	}
 
 	var friends []model.ChatFriends
 	//一对一预加载
@@ -27,8 +37,12 @@ func (ch *chat) ChatFriends(userId string) []model.ChatFriends {
 		var chatLogs []model.ChatLog
 		hasMsg := true // 用于判断是否有未读消息
 		if friend.GroupId != 0 {
-			groupSql := db.Mysql.Where("group_id = ? AND is_deleted = ? AND is_revoked = ?", friend.GroupId, false, false).Session(&gorm.Session{})
-			//查询群组未读消息
+			// 群聊未读口径：只统计“别人发的消息”，避免自己发群消息导致红点一直存在
+			groupSql := db.Mysql.
+				Where("group_id = ? AND is_deleted = ? AND is_revoked = ?", friend.GroupId, false, false).
+				Where("sender_id <> ?", userId).
+				Session(&gorm.Session{})
+			// 查询群组未读消息
 			groupSql.Where("updated_at > ?", friend.LastReadTime).Order("updated_at desc").Find(&chatLogs)
 			if len(chatLogs) == 0 {
 				hasMsg = false
@@ -61,7 +75,83 @@ func (ch *chat) ChatFriends(userId string) []model.ChatFriends {
 
 	}
 
-	return friends
+	return friends, nil
+}
+
+// ensureOwnerGroupSession 补齐群主的默认群成员与会话关系（用于修复历史漏数据）
+func (ch *chat) ensureOwnerGroupSession(userId string) error {
+	var groupIDs []int
+	if err := db.Mysql.Model(&model.ChatGroup{}).
+		Select("id").
+		Where("user_id = ?", userId).
+		Scan(&groupIDs).Error; err != nil {
+		return err
+	}
+	if len(groupIDs) == 0 {
+		return nil
+	}
+
+	return db.Mysql.Transaction(func(tx *gorm.DB) error {
+		// 1) 补齐群成员关系
+		var memberIDs []int
+		if err := tx.Model(&model.ChatGroupMember{}).
+			Select("group_id").
+			Where("user_id = ? AND group_id IN (?)", userId, groupIDs).
+			Scan(&memberIDs).Error; err != nil {
+			return err
+		}
+		memberSet := make(map[int]struct{}, len(memberIDs))
+		for _, id := range memberIDs {
+			memberSet[id] = struct{}{}
+		}
+		missingMembers := make([]model.ChatGroupMember, 0)
+		for _, gid := range groupIDs {
+			if _, ok := memberSet[gid]; ok {
+				continue
+			}
+			missingMembers = append(missingMembers, model.ChatGroupMember{
+				UserId:  userId,
+				GroupId: gid,
+			})
+		}
+		if len(missingMembers) > 0 {
+			if err := tx.Create(&missingMembers).Error; err != nil {
+				return err
+			}
+		}
+
+		// 2) 补齐群聊会话关系（聊天列表依赖 z_chat_friends）
+		var friendGroupIDs []int
+		if err := tx.Model(&model.ChatFriends{}).
+			Select("group_id").
+			Where("user_id = ? AND group_id IN (?)", userId, groupIDs).
+			Scan(&friendGroupIDs).Error; err != nil {
+			return err
+		}
+		friendSet := make(map[int]struct{}, len(friendGroupIDs))
+		for _, id := range friendGroupIDs {
+			friendSet[id] = struct{}{}
+		}
+		missingFriends := make([]model.ChatFriends, 0)
+		for _, gid := range groupIDs {
+			if _, ok := friendSet[gid]; ok {
+				continue
+			}
+			missingFriends = append(missingFriends, model.ChatFriends{
+				UserId:       userId,
+				GroupId:      gid,
+				LastReadTime: model.Time{},
+				LastInfoTime: model.Time{},
+			})
+		}
+		if len(missingFriends) > 0 {
+			if err := tx.Create(&missingFriends).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
 
 // CreateChatFriends 新增好友关系
@@ -690,12 +780,56 @@ func BuildChatAuditTargetID(prefix string, id int) string {
 }
 
 // CreateGroup 新增
-func (ch *chat) CreateGroup(model *model.ChatGroup) (err error) {
-	res := db.Mysql.Create(model)
-	if res.Error != nil { //判断是否插入数据出错
-		fmt.Println(res.Error)
+func (ch *chat) CreateGroup(group *model.ChatGroup) (err error) {
+	// 创建群聊时，群主必须同时成为群成员，并且生成一条会话关系，否则聊天列表（z_chat_friends）里查不到该群
+	if group == nil {
+		return errors.New("参数错误")
 	}
-	return
+	if strings.TrimSpace(group.UserId) == "" {
+		return errors.New("群主用户id不能为空")
+	}
+
+	return db.Mysql.Transaction(func(tx *gorm.DB) error {
+		// 1) 创建群聊
+		if err := tx.Create(group).Error; err != nil {
+			return err
+		}
+
+		// 2) 群主默认入群（幂等：已存在则跳过）
+		var memberCount int64
+		if err := tx.Model(&model.ChatGroupMember{}).
+			Where("user_id = ? AND group_id = ?", group.UserId, group.ID).
+			Count(&memberCount).Error; err != nil {
+			return err
+		}
+		if memberCount == 0 {
+			if err := tx.Create(&model.ChatGroupMember{
+				UserId:  group.UserId,
+				GroupId: int(group.ID),
+			}).Error; err != nil {
+				return err
+			}
+		}
+
+		// 3) 群聊会话关系（幂等：已存在则跳过）
+		var friendCount int64
+		if err := tx.Model(&model.ChatFriends{}).
+			Where("user_id = ? AND group_id = ?", group.UserId, group.ID).
+			Count(&friendCount).Error; err != nil {
+			return err
+		}
+		if friendCount == 0 {
+			if err := tx.Create(&model.ChatFriends{
+				UserId:       group.UserId,
+				GroupId:      int(group.ID),
+				LastReadTime: model.Time{},
+				LastInfoTime: model.Time{},
+			}).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 // DeleteGroup 删除

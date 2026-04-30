@@ -109,12 +109,14 @@
             },
             // 上传框尺寸（px）：JS 侧不再使用 rpx，避免多端换算差异
             boxPx() {
+                // 发动态上传位使用固定 122x122，保持历史样式尺寸
+                if (this.type === 'moment') return 122
                 return this.scene === 'avatar' ? 78 : 192
             },
             uploadBoxStyle() {
                 return {
                     width: `${this.boxPx}px`,
-                    height: this.scene === 'avatar' ? `${this.boxPx}px` : '110px',
+                    height: (this.scene === 'avatar' || this.type === 'moment') ? `${this.boxPx}px` : '110px',
                     borderRadius: '4px',
                 }
             },
@@ -125,7 +127,8 @@
                     width: `${this.boxPx}px`,
                     height: `${this.boxPx}px`,
                 }
-                if(this.scene === 'avatar'){
+                if(this.scene === 'avatar' || this.type === 'moment'){
+                    // 动态发布页占位图本身已有视觉边框，这里关闭组件边框避免叠加
                     style.border = false
                 }else{
                     style.border = {
@@ -134,7 +137,8 @@
                         color: '#bdbdbd',
                         radius: 4,
                     }
-                    style.height = `110px`
+                    // 发动态保持正方形，其它 rect 场景维持 110 高
+                    style.height = this.type === 'moment' ? `${this.boxPx}px` : `110px`
                 }
                 return style
             },
@@ -180,6 +184,7 @@
                     face: '上传身份证人像面',
                     nation: '上传身份证国徽面',
                     photo: '上传照片',
+                    moment: '上传照片',
                     yyzz: '上传营业执照',
                     dnz: '上传许可/证明',
                     mtz: '上传门头照',
@@ -194,6 +199,8 @@
                     face: '/packageA/static/images/components/upload/face.png',
                     nation: '/packageA/static/images/components/upload/nation.png',
                     photo: '/packageA/static/images/components/upload/photo.png',
+                    // 动态发布页保持历史上传占位图，不改变视觉
+                    moment: '/packageA/static/images/moment/ico_sc_tpsp@2x.png',
                     file: '/packageA/static/images/components/upload/file.png',
                     yyzz: '/packageA/static/images/components/upload/yyzz.jpg',
                     dnz: '/packageA/static/images/components/upload/dnz.jpg',

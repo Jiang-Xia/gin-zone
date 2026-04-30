@@ -1735,21 +1735,23 @@ paths:
       tags:
       - 动态模块
   /mobile/moments/UpdateMoment:
-    get:
+    post:
       consumes:
       - application/json
       description: 更新点赞或者浏览数
       parameters:
       - description: Moment.ID
-        in: query
+        in: body
         name: id
         required: true
-        type: string
+        schema:
+          type: string
       - description: like或者view
-        in: query
+        in: body
         name: t
         required: true
-        type: string
+        schema:
+          type: string
       produces:
       - application/json
       responses:

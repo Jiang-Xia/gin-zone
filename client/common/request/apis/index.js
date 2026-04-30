@@ -58,8 +58,8 @@ export function createApis(api) {
 
     moment: {
       list: (params) => api.get('/mobile/moments', params),
-      update: (params) =>
-        api.get('/mobile/moments/UpdateMoment', params || {}),
+      // 点赞/浏览更新：后端改为 POST（写操作，避免 GET 误触发）
+      update: (params) => api.post('/mobile/moments/UpdateMoment', params || {}),
       create: (params) => api.post('/mobile/moments', params),
     },
 
