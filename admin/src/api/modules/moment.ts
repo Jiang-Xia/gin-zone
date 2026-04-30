@@ -1,4 +1,4 @@
-import { get, post } from '../http';
+import { del, get, patch, post } from '../http';
 import type { PageQuery, PageResult } from '../types';
 
 // 动态条目（列表页展示使用）
@@ -9,6 +9,9 @@ export interface MomentItem {
   location: string;
   likes: number;
   views: number;
+  allowComment: boolean;
+  allowReply: boolean;
+  commentCount: number;
   createdAt: string;
   updatedAt: string;
   userInfo: {
@@ -29,11 +32,31 @@ export interface AddMomentPayload {
   // 注释：后端以 token 身份为准，前端不应依赖/传入 userId（保留字段仅为兼容旧调用）
   userId?: string;
   location: string;
+  allowComment?: boolean;
+  allowReply?: boolean;
+}
+
+export interface MomentCommentItem {
+  id: number;
+  momentId: number;
+  parentId: number;
+  content: string;
+  userId: string;
+  replyToUserId: string;
+  createdAt: string;
+  userInfo?: {
+    nickName: string;
+    avatar: string;
+  };
+  replyToUserInfo?: {
+    nickName: string;
+    avatar: string;
+  };
 }
 
 // 动态列表查询：分页/关键字等都放在 params 中
 export function getMomentList(params: MomentListQuery) {
-  return get<PageResult<MomentItem>>('/mobile/moments', { params });
+  return get<PageResult<MomentItem>>('/admin/moments', { params });
 }
 
 // 发布动态
@@ -48,4 +71,19 @@ export function updateMoment(id: number, type: 'like' | 'view') {
     id,
     t: type,
   });
+}
+
+// 管理端-更新动态互动开关
+export function updateMomentInteraction(id: number, params: { allowComment: boolean; allowReply: boolean }) {
+  return patch<boolean>(`/admin/moments/${id}/interaction`, params);
+}
+
+// 管理端-评论/回复列表
+export function getMomentCommentList(params: { page: number; pageSize: number; keyword?: string; momentId?: number }) {
+  return get<PageResult<MomentCommentItem>>('/admin/momentComments', { params });
+}
+
+// 管理端-删除评论/回复
+export function deleteMomentComment(id: number) {
+  return del<boolean>(`/admin/momentComments/${id}`);
 }

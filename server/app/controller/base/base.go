@@ -1,8 +1,11 @@
 package base
 
 import (
+	"fmt"
 	"gitee.com/jiang-xia/gin-zone/server/config"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"gitee.com/jiang-xia/gin-zone/server/pkg/response"
@@ -13,8 +16,11 @@ type Base struct {
 }
 
 type FileInfo struct {
+	// 原始文件名：用于业务侧检索和人工排查
 	Filename string `json:"filename"`
-	Url      string `json:"url"`
+	// 存储文件名：服务端落盘后的唯一文件名
+	SavedName string `json:"savedName"`
+	Url       string `json:"url"`
 }
 
 //	godoc
@@ -34,8 +40,22 @@ func (t *Base) Upload(c *gin.Context) {
 	}
 	//fmt.Printf("fileInfo%+v", file)
 	date := time.Now().Format("2006-01")
+	// 原始文件名：保持兼容并用于回显/检索
+	originalName := strings.TrimSpace(file.Filename)
+	if originalName == "" {
+		response.Fail(c, "文件名无效", nil)
+		return
+	}
+	// 生成唯一落盘文件名：避免同名覆盖历史文件
+	safeName := filepath.Base(originalName)
+	ext := strings.ToLower(filepath.Ext(safeName))
+	nameOnly := strings.TrimSuffix(safeName, ext)
+	if nameOnly == "" {
+		nameOnly = "file"
+	}
+	storedName := fmt.Sprintf("%d_%s%s", time.Now().UnixMilli(), nameOnly, ext)
 	//当前文件路径加文件名
-	pathName := "/uploads/" + date + "/" + file.Filename
+	pathName := "/uploads/" + date + "/" + storedName
 	//目录路径
 	dirName := config.App.PublicPath + "/uploads/" + date
 	//fmt.Println(dirName)
@@ -50,8 +70,9 @@ func (t *Base) Upload(c *gin.Context) {
 	//保存到本地的文件路径
 	savePathName := config.App.PublicPath + pathName
 	fileInfo := &FileInfo{
-		Filename: file.Filename,
-		Url:      urlPathName,
+		Filename:  originalName,
+		SavedName: storedName,
+		Url:       urlPathName,
 	}
 
 	// 根据路劲保存文件

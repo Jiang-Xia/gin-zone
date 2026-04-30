@@ -61,6 +61,12 @@ export function createApis(api) {
       // 点赞/浏览更新：后端改为 POST（写操作，避免 GET 误触发）
       update: (params) => api.post('/mobile/moments/UpdateMoment', params || {}),
       create: (params) => api.post('/mobile/moments', params),
+      // 动态评论列表
+      comments: (momentId) => api.get('/mobile/moments/{id}/comments', { id: momentId }),
+      // 新增评论/回复（parentId=0 为评论，>0 为回复）
+      createComment: (momentId, params) => api.post('/mobile/moments/{id}/comments', { ...(params || {}), id: momentId }),
+      // 删除评论/回复（仅本人或动态作者）
+      deleteComment: (momentId, commentId) => api.del('/mobile/moments/{id}/comments/{commentId}', { id: momentId, commentId }),
     },
 
     third: {

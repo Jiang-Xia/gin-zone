@@ -70,7 +70,10 @@ func App() (r *gin.Engine) {
 		// baseGroup.Use(middleware.JWTAuth())
 		{
 			momentController := new(admin.Moment)
-			back.GET("moments", momentController.GetList)
+			back.GET("moments", middleware.JWTAuth(), momentController.GetList)
+			back.PATCH("moments/:id/interaction", middleware.JWTAuth(), momentController.UpdateInteraction)
+			back.GET("momentComments", middleware.JWTAuth(), momentController.CommentList)
+			back.DELETE("momentComments/:id", middleware.JWTAuth(), momentController.DeleteComment)
 			back.Use(middleware.JWTAuth())
 
 			systemController := new(admin.System)
@@ -112,6 +115,9 @@ func App() (r *gin.Engine) {
 		{
 			app.GET("/moments", momentController.MomentList)
 			app.POST("/moments", middleware.JWTAuth(), momentController.AddMoment)
+			app.GET("/moments/:id/comments", momentController.CommentList)
+			app.POST("/moments/:id/comments", middleware.JWTAuth(), momentController.AddComment)
+			app.DELETE("/moments/:id/comments/:commentId", middleware.JWTAuth(), momentController.DeleteComment)
 			// 注释：点赞/浏览更新属于写操作，改为 POST 并要求登录，防止被匿名刷量
 			app.POST("/moments/UpdateMoment", middleware.JWTAuth(), momentController.UpdateMoment)
 		}

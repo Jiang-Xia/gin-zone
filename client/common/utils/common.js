@@ -14,10 +14,6 @@ export class Common {
     }
 	getUserId() {
 		const userStore = useUserStore()
-		const userInfo = userStore.userInfo
-		console.log({
-			用户信息: userInfo
-		})
 		return userStore.userId
 	}
 	showLoginModal() {

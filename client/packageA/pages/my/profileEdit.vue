@@ -123,8 +123,8 @@
 			},
 			async uploadFile(file) {
 				const res = await this.$api.upload(file)
-				const finalUrl = this.$fileUrl + res.data.url
-				this.baseFormData.avatar = finalUrl
+				// 头像字段持久化相对路径，展示时由 computed.avatar 统一补全域名
+				this.baseFormData.avatar = res?.data?.url || ''
 			},
 			async submit() {
 				const userStore = useUserStore()

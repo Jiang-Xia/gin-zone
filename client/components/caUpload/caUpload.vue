@@ -284,15 +284,17 @@
                 // 头像/图片上传：支持输出 base64 或上传后 URL
                 const tempFilePath = e?.tempFilePaths?.[0] || ''
 
-                // output=url：上传到后端，输出可访问地址（适用于头像、群头像）
+                // output=url：上传到后端，输出相对路径（持久化时不存完整域名）
                 if (this.output === 'url') {
                     // H5 用 File，其它端用临时路径，避免 H5 上传失败
                     const uploadSource = this.getUploadSourceFromPickerEvent(e)
                     if (!uploadSource) return
                     const res = await this.$api.upload(uploadSource)
-                    const finalUrl = this.$fileUrl + res.data.url
-                    this.fileList = [{ url: finalUrl }]
-                    this.innerValue = finalUrl
+                    const relativeUrl = res?.data?.url || ''
+                    if (!relativeUrl) return
+                    // 回显使用完整地址，存储值使用相对路径（项目约定）
+                    this.fileList = [{ url: this.toDisplayUrl(relativeUrl) }]
+                    this.innerValue = relativeUrl
                     return
                 }
 

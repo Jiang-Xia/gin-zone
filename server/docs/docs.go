@@ -2252,6 +2252,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "filename": {
+                    "description": "原始文件名：用于业务侧检索和人工排查",
+                    "type": "string"
+                },
+                "savedName": {
+                    "description": "存储文件名：服务端落盘后的唯一文件名",
                     "type": "string"
                 },
                 "url": {
@@ -2347,6 +2352,12 @@ const docTemplate = `{
         "model.AddMoment": {
             "type": "object",
             "properties": {
+                "allowComment": {
+                    "type": "boolean"
+                },
+                "allowReply": {
+                    "type": "boolean"
+                },
                 "content": {
                     "type": "string"
                 },

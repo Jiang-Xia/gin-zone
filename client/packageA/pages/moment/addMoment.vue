@@ -21,6 +21,14 @@
                     </text>
                     <uni-icons type="right" color="#999"></uni-icons>
                 </div>
+                <div class="switch-row">
+                    <text>允许评论</text>
+                    <t-switch v-model:value="info.allowComment" />
+                </div>
+                <div class="switch-row">
+                    <text>允许回复</text>
+                    <t-switch v-model:value="info.allowReply" :disabled="!info.allowComment" />
+                </div>
                 <view class="btn-submit">
                     <t-button theme="primary" variant="base" block @click="addMoment">提交</t-button>
                 </view>
@@ -40,7 +48,10 @@
                     content: '',
                     address: '选择位置',
                     latitude: 0,
-                    longitude: 0
+                    longitude: 0,
+                    // 动态交互开关：默认允许评论和回复
+                    allowComment: true,
+                    allowReply: true
                 },
                 // 发布动态图片地址（caUpload 返回上传后的可访问 URL）
                 imageUrl: '',
@@ -106,6 +117,9 @@
                         content: this.info.content,
                         location: this.info.address,
                         urls: this.imageUrl,
+                        // 发布时把互动开关同步到后端，便于客户端和管理台统一治理
+                        allowComment: this.info.allowComment,
+                        allowReply: this.info.allowComment ? this.info.allowReply : false,
                     }
                     if (!this.info.content) {
                         this.$toast("请填写动态内容")
@@ -179,6 +193,14 @@
 
             .uploader-wrap {
                 margin-top: 24rpx;
+            }
+
+            .switch-row {
+                margin-top: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                color: #333;
             }
         }
 

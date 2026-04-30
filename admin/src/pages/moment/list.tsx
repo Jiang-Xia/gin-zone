@@ -1,19 +1,21 @@
 import { useMemo, useState } from 'react';
-import { Avatar, Button, Dialog, Input, Table, Tag } from 'tdesign-react';
+import { Avatar, Button, Dialog, Input, Switch, Table, Tag } from 'tdesign-react';
 import { SearchIcon } from 'tdesign-icons-react';
-import { getMomentList, MomentItem } from '../../api/modules/moment';
+import { getMomentList, MomentItem, updateMomentInteraction } from '../../api/modules/moment';
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../../constants/pagination';
 import styles from './list.module.less';
 import { useListPage } from '../../hooks/useListPage';
 import { useApiMessage } from '../../hooks/useApiMessage';
 import PageContainer from '../../components/PageContainer';
 import ListToolbar from '../../components/ListToolbar';
+import { useNavigate } from 'react-router-dom';
 
 // 静态资源前缀（用于拼接图片完整访问地址）
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 export default function MomentListPage() {
   const message = useApiMessage();
+  const navigate = useNavigate();
   // 关键字搜索
   const [keyword, setKeyword] = useState('');
   const [riskOnly, setRiskOnly] = useState(false);
@@ -124,6 +126,44 @@ export default function MomentListPage() {
         </Tag>
       ),
     },
+    {
+      colKey: 'allowComment',
+      title: '允许评论',
+      width: 110,
+      cell: ({ row }: { row: MomentItem }) => (
+        <Switch
+          value={row.allowComment}
+          onChange={async (value) => {
+            try {
+              await updateMomentInteraction(row.id, { allowComment: value, allowReply: value ? row.allowReply : false });
+              await reload();
+            } catch (error) {
+              message.error(error, '更新评论开关失败');
+            }
+          }}
+        />
+      ),
+    },
+    {
+      colKey: 'allowReply',
+      title: '允许回复',
+      width: 110,
+      cell: ({ row }: { row: MomentItem }) => (
+        <Switch
+          value={row.allowReply}
+          disabled={!row.allowComment}
+          onChange={async (value) => {
+            try {
+              await updateMomentInteraction(row.id, { allowComment: row.allowComment, allowReply: value });
+              await reload();
+            } catch (error) {
+              message.error(error, '更新回复开关失败');
+            }
+          }}
+        />
+      ),
+    },
+    { colKey: 'commentCount', title: '评论数', width: 90 },
   ];
 
   return (
@@ -145,6 +185,9 @@ export default function MomentListPage() {
               }}
             >
               刷新列表
+            </Button>
+            <Button theme="primary" variant="outline" onClick={() => navigate('/moment/comments')}>
+              管理评论/回复
             </Button>
             <Button
               theme={riskOnly ? 'warning' : 'default'}

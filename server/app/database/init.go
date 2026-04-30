@@ -26,6 +26,7 @@ func InitTable() {
 	err = db.AutoMigrate(&model.SensitiveWord{})
 	err = db.AutoMigrate(&model.SensitiveHitLog{})
 	err = db.AutoMigrate(&model.Moment{})
+	err = db.AutoMigrate(&model.MomentComment{})
 	if err != nil {
 		log.Info("建表失败==================>", err.Error())
 		return
