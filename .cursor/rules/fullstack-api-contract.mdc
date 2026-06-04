@@ -1,6 +1,6 @@
 ---
 description: 前后端接口协作契约（client 请求层 + server 接口层）
-globs: "{client/common/request/**/*.js,server/router/**/*.go,server/app/controller/**/*.go,server/pkg/response/**/*.go,server/docs/**/*.go}"
+globs: "{client/src/common/request/**/*.js,server/router/**/*.go,server/app/controller/**/*.go,server/pkg/response/**/*.go,server/docs/**/*.go}"
 alwaysApply: false
 ---
 

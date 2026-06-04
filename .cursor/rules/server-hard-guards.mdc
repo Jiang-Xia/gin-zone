@@ -3,7 +3,7 @@ description: server 强制守护规则（高风险红线，始终应用）
 globs:
   - server/**/*.go
   - admin/src/api/**/*.ts
-  - client/common/request/**/*.js
+  - client/src/common/request/**/*.js
 alwaysApply: true
 ---
 
@@ -35,7 +35,7 @@ alwaysApply: true
 
 - 改 server 接口（路径/method/参数/返回）时，必须同步检查：
   - `admin/src/api/modules/*`
-  - `client/common/request/apis/*`
+  - `client/src/common/request/apis/*`
 - 非兼容改动未完成双端适配前，不应合并。
 
 ## 红线 6：错误不可吞

@@ -6,7 +6,14 @@
 		globalData: {
 		},
 		data() {
-			return {}
+			return {
+				appName: 'ZONE',
+				slogan: '便捷、安全的服务平台',
+				desc: 'ZONE 致力于为用户提供更安全、更高效的使用体验，支持多种功能模块与便捷服务能力。',
+				version: 'v1.0.0',
+				servicePhone: '0000-10000',
+				serviceEmail: 'service@zone.com',
+			}
 		},
 		/* 应用生命周期 */
 		onLaunch: function() {

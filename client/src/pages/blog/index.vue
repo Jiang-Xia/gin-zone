@@ -46,7 +46,7 @@
 				<view class="menu-grid-h5">
 					<view class="menu-item" v-for="(item, index) in menuList" :key="index" @click="clickMenuItem({ detail: { index } })">
 						<uni-icons :type="item.icon" :color="item.color" size="24"></uni-icons>
-						<text class="menu-text">{{ item.text }}</text>
+						<text class="menu-text" :class="{ 'menu-text-red': index === 0 }">{{ item.text }}</text>
 					</view>
 				</view>
 				<!-- #endif -->
@@ -57,7 +57,7 @@
 					<uni-grid-item v-for="(item, index) in menuList" :index="index" :key="index">
 						<view class="menu-item">
 							<uni-icons :type="item.icon" :color="item.color" size="24"></uni-icons>
-							<text class="menu-text">{{ item.text }}</text>
+							<text class="menu-text" :class="{ 'menu-text-red': index === 0 }">{{ item.text }}</text>
 						</view>
 					</uni-grid-item>
 				</uni-grid>
@@ -341,6 +341,10 @@
 						font-size: 24rpx;
 						color: #333;
 						margin-top: 12rpx;
+					}
+
+					.menu-text-red {
+						color: #ff0000;
 					}
 				}
 			}

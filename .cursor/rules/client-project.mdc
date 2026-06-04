@@ -6,6 +6,8 @@ alwaysApply: false
 
 # 项目架构（client）
 
+> **uni-app CLI 脚手架**：业务源码在 **`client/src/`**；根目录仅保留 `package.json`、`vite.config.js`、`index.html` 等构建配置。
+
 ## 技术栈
 
 - **uni-app（Vue 3，`createSSRApp`）** + **Pinia**
@@ -16,18 +18,18 @@ alwaysApply: false
 
 | 区域 | 职责 |
 |------|------|
-| `pages/` | 主包页面（与 `tabBar` 强相关，冷启动首屏由 `pages.json.pages[0]` 决定） |
-| `packageA/` / `packageB/` | 分包页面（新增页先在 `pages.json.subPackages` 注册） |
-| `components/` | 全局可复用业务组件；跨分包复用优先放这里 |
-| `common/request/` | 请求与环境配置（`config.js`、`loading.js`、`session.js`） |
-| `common/request/apis/index.js` | **API 语义层**：集中维护 `$apis.xxx.yyy()`，页面不要散落 URL |
-| `common/utils/` | 通用工具与 mixins（`common.js`、`tool.js`、`ui.js`、`location.js` 等） |
-| `stores/` | Pinia stores（例如 `user.js`） |
-| `static/` | 静态资源（注意资源体积与可直接访问性） |
-| `uni_modules/` | 第三方 uni 模块 |
-| `unpackage/` | 编译产物（不要手改） |
+| `src/pages/` | 主包页面（与 `tabBar` 强相关，冷启动首屏由 `pages.json.pages[0]` 决定） |
+| `src/packageA/` / `src/packageB/` | 分包页面（新增页先在 `pages.json.subPackages` 注册） |
+| `src/components/` | 全局可复用业务组件；跨分包复用优先放这里 |
+| `src/common/request/` | 请求与环境配置（`config.js`、`loading.js`、`session.js`） |
+| `src/common/request/apis/index.js` | **API 语义层**：集中维护 `$apis.xxx.yyy()`，页面不要散落 URL |
+| `src/common/utils/` | 通用工具与 mixins（`common.js`、`tool.js`、`ui.js`、`location.js` 等） |
+| `src/stores/` | Pinia stores（例如 `user.js`） |
+| `src/static/` | 静态资源（注意资源体积与可直接访问性） |
+| `src/uni_modules/` | 第三方 uni 模块 |
+| `dist/` / `unpackage/` | 编译产物（不要手改） |
 
-## 全局注入（`main.js`）
+## 全局注入（`src/main.js`）
 
 在页面/组件中通过 `this` 使用：
 

@@ -25,9 +25,9 @@ if (env === 'production') {
   wsUrl = 'wss://jiang-xia.top/x-zone/api/v1'
   imageUrl = ''
   // 本地
-  fileUrl = "http://127.0.0.1:9600"
-  baseUrl = "http://127.0.0.1:9600/api/v1"
-  wsUrl = "ws://127.0.0.1:9600/api/v1"
+  // fileUrl = "http://127.0.0.1:9600"
+  // baseUrl = "http://127.0.0.1:9600/api/v1"
+  // wsUrl = "ws://127.0.0.1:9600/api/v1"
  
 }
 

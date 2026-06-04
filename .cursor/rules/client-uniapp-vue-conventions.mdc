@@ -1,6 +1,6 @@
 ---
 description: uni-app Vue 页面与组件约定（多端、导航、TDesign、easycom）
-globs: client/**/*.vue
+globs: client/src/**/*.vue
 alwaysApply: false
 ---
 

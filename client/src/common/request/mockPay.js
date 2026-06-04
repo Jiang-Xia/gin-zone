@@ -1,12 +1,13 @@
 // 支付 Mock：把静态 JSON 的模拟请求从 common/utils/tool.js 收敛到请求层
 
 // #ifdef MP-ALIPAY||MP-WEIXIN||APP
-import data1 from '/static/data/json/pay/ACalculateActivity.json'
-import data2 from '/static/data/json/pay/admin.qrcode.GetQrcodeInfo.json'
-import data3 from '/static/data/json/pay/ApplyOrder.json'
-import data4 from '/static/data/json/pay/PayOrder.json'
-import data5 from '/static/data/json/pay/pub.checkActivity.queryCActivityByMcht.json'
-import data6 from '/static/data/json/pay/QueryOrder.json'
+// CLI 工程 static 在 src/static，须用 @/ 别名；HBuilderX 根目录也可用相对路径
+import data1 from '@/static/data/json/pay/ACalculateActivity.json'
+import data2 from '@/static/data/json/pay/admin.qrcode.GetQrcodeInfo.json'
+import data3 from '@/static/data/json/pay/ApplyOrder.json'
+import data4 from '@/static/data/json/pay/PayOrder.json'
+import data5 from '@/static/data/json/pay/pub.checkActivity.queryCActivityByMcht.json'
+import data6 from '@/static/data/json/pay/QueryOrder.json'
 // #endif
 
 function sleep(ms) {

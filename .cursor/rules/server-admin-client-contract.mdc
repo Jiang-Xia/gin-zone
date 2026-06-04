@@ -5,7 +5,7 @@ globs:
   - server/app/controller/**/*.go
   - server/docs/**/*.go
   - admin/src/api/**/*.ts
-  - client/common/request/**/*.js
+  - client/src/common/request/**/*.js
 alwaysApply: false
 ---
 
@@ -13,7 +13,7 @@ alwaysApply: false
 
 ## 变更联动清单
 
-- 改了 server 路径、method、参数或返回结构：必须同步检查并更新 `admin/src/api/modules/*` 与 `client/common/request/apis/*` 调用层。
+- 改了 server 路径、method、参数或返回结构：必须同步检查并更新 `admin/src/api/modules/*` 与 `client/src/common/request/apis/*` 调用层。
 - 改了鉴权逻辑：同步检查 `admin` 的 token 读写与 `client` 的登录态处理。
 - 改了加密链路：同步检查 `Jx-Security`、`Jx-SessionId` 传递与解密流程。
 
