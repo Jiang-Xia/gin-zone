@@ -243,7 +243,43 @@ go build -o zone-server main.go
 
 #### 4. 部署说明
 
-##### 4.1 生产环境部署
+##### 4.1 一键远程部署（推荐）
+
+对齐 `blog-server/deploy/pm2/`，Windows 本地一条命令完成：**交叉编译 → 打 tar → SSH 上传 → releases/current 切流 → PM2 reload**。
+
+**首次配置**
+
+```powershell
+cd server
+cp deploy/pm2/deploy.local.env.example deploy/pm2/deploy.local.env
+cp deploy/pm2/env.production.example deploy/pm2/env.production
+# 填写 deploy.local.env（SSH）与 env.production（DB/Redis/密钥）
+```
+
+服务器一次性准备：
+
+- nvm + pm2（与 blog-server 共用即可）
+- 目录：`/opt/jxapp/server/zone-server/logs`、`public/uploads`
+
+生产配置 **`deploy/pm2/env.production`** 在本地维护（gitignore），部署时打进 release 的 `config/env.production`，随 `current` 原子切换。
+
+**发布**
+
+```powershell
+make deploy
+# 或：powershell -ExecutionPolicy Bypass -File deploy/pm2/deploy.ps1
+```
+
+**回滚**
+
+```powershell
+make rollback:list
+make rollback
+```
+
+详见 [`deploy/pm2/README.md`](./deploy/pm2/README.md)。
+
+##### 4.2 手动生产环境部署
 
 **1. 编译项目**
 ```bash
@@ -257,9 +293,8 @@ go build -o zone-server.exe main.go
 **注意（Linux）**：二进制放到服务器上后若没有执行权限，运行 `./zone-server` 或 `./main` 会出现 `Permission denied`，需先执行 `chmod +x ./zone-server`（或与 `-o` 输出名一致），再启动。
 
 **2. 配置文件**
-- 修改 `config/env.prod.ini` 生产环境配置
-- 确保数据库、Redis连接信息正确
-- 设置正确的文件路径和域名
+- 生产：`deploy/pm2/env.production`（本地打包进 release，见一键部署）
+- 开发：`config/env.ini`
 
 **3. 系统服务（Linux）**
 ```bash
@@ -330,10 +365,10 @@ lsof -ti:9600 | xargs kill -9
 ```
 
 ##### 5.2 配置文件路径
-请根据实际环境修改 `config/setting.go` 中的配置文件路径：
-- Windows：`D:/study/config/env.ini`
-- Linux：`/opt/jxapp/config/zone_env.ini`
+请根据实际环境选择配置文件：
 - 开发环境：`config/env.ini`
+- 生产 release：`config/env.production`（PM2 cwd 为 `current`）
+- 覆盖路径：环境变量 `ZONE_CONFIG_FILE`
 
 ##### 5.3 文件权限
 确保以下目录有写权限：

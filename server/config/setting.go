@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 
 	"gopkg.in/ini.v1"
@@ -70,21 +71,36 @@ func InitLoadInIConfig() {
 	loadInI()
 }
 
+// resolveConfigPath 按运行环境选择 ini 路径；生产 release 内打包 config/env.production
+func resolveConfigPath() string {
+	if override := os.Getenv("ZONE_CONFIG_FILE"); override != "" {
+		return override
+	}
+
+	candidates := []string{"config/env.ini"}
+	if runtime.GOOS == "linux" {
+		// PM2 cwd 为 current -> releases/xxx，配置随 release 原子切换
+		candidates = []string{"config/env.production", "config/env.ini"}
+	} else if runtime.GOOS == "windows" {
+		candidates = []string{"config/env.ini", "D:/study/config/env.ini"}
+	}
+
+	for _, path := range candidates {
+		if _, err := os.Stat(path); err == nil {
+			return path
+		}
+	}
+	return candidates[0]
+}
+
 // LoadInI 载入配置
 func loadInI() {
-	//服务器和本地配置分开，不然取git的配置有些密钥容易过期
-	filePath := "config/env.ini"
-	if runtime.GOOS == "linux" {
-		filePath = "/opt/jxapp/config/zone_env.ini"
-	} else if runtime.GOOS == "windows" {
-		// 切换电脑需要根据配置文件修改和增加public和logs目录
-		filePath = "D:/study/config/env.ini"
-	}
+	filePath := resolveConfigPath()
 	fmt.Println("配置文件路径:", filePath)
 	var err error
 	AllConfig, err = ini.Load(filePath)
 	if err != nil {
-		panic(fmt.Sprintf("Fail to parse 'conf/env.ini': %v", err))
+		panic(fmt.Sprintf("Fail to parse config '%s': %v", filePath, err))
 	}
 	setApp()
 }

@@ -1,0 +1,46 @@
+---
+description: Git 提交信息格式（标题 + 空行 + 要点列表）
+alwaysApply: true
+---
+
+# Git 提交信息格式（强制）
+
+生成或撰写 commit message 时，**必须**使用以下结构（与 commitlint conventional 兼容）：
+
+```
+type: 简短标题（说明本次变更主题）
+
+- 具体改动 1：说明改了什么、为什么改。
+- 具体改动 2：可含文件/方法名，突出行为变化。
+- 具体改动 3（可选）：小改动可 2 条，大改动 3–5 条。
+```
+
+## 格式要求
+
+- **第一行**：`feat` / `fix` / `docs` / `refactor` / `chore` / `build` / `ci` / `perf` / `test` 等 + 中文或英文简短描述。
+- **空一行**：header 与 body 之间必须有空行（`body-leading-blank`）。
+- **Body**：每条以 `- ` 开头；写**具体改动**（文件/模块/行为），并简要说明目的或影响。
+- **禁止**仅写一行标题就结束（除非改动极小且用户明确要求单行）。
+- **禁止**用「1–2 句笼统概括」替代要点列表。
+
+## 示例
+
+```
+fix: 更新订单号轮询逻辑以支持 tradeNo 和 oriOrderNo 处理
+
+- 修改 completePay.vue 中的 startOrderPolling 方法，确保在没有订单号和交易号时不进行轮询。
+- 优化 API 请求参数构建，支持同时使用订单号和交易号进行查询，提高支付流程的灵活性与准确性。
+```
+
+```
+feat: 添加一键远程部署和回滚功能，支持 Windows 和 Linux 环境
+
+- 新增 client/server deploy/pm2 脚本，Windows 本地 PowerShell 入口 + Linux 远程 bash 切流。
+- server 侧集成 PM2 reload 与 config/env.production 随 release 打包切换。
+- 补充 Makefile、package.json 快捷命令与部署文档。
+```
+
+## 与 Agent 协作
+
+- 用户要求创建 git commit 时：先 `git diff` / `git status`，再按本格式起草完整 message（含 body 列表）。
+- 使用 HEREDOC 传递多行 commit message，保留空行与 `- ` 列表。

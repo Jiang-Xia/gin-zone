@@ -6,3 +6,10 @@ server/main.exe
 server/tmp/build-errors.log
 server/public/uploads
 /public/
+
+# deploy 本地凭据与打包缓存（勿提交）
+server/deploy/pm2/deploy.local.env
+server/deploy/pm2/env.production
+server/deploy/pm2/.pack/
+client/deploy/pm2/deploy.local.env
+client/deploy/pm2/.pack/
