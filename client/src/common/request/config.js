@@ -9,10 +9,15 @@ let wsUrl = ''
 // 默认与 fileUrl 一致；如需区分，可单独改这里
 let imageUrl = ''
 
+// 生产主域：zone.jiang-xia.top 的 API 前缀是 /api/v1（不是 /x-zone）
+// 旧主机 jiang-xia.top/x-zone 仅 Nginx 保留，供无法发版的线上小程序
+const ZONE_API = 'https://zone.jiang-xia.top/api/v1'
+const ZONE_WS = 'wss://zone.jiang-xia.top/api/v1'
+
 if (env === 'production') {
-  fileUrl = 'https://jiang-xia.top/x-zone/api/v1'
-  baseUrl = 'https://jiang-xia.top/x-zone/api/v1'
-  wsUrl = 'wss://jiang-xia.top/x-zone/api/v1'
+  fileUrl = ZONE_API
+  baseUrl = ZONE_API
+  wsUrl = ZONE_WS
   imageUrl = ''
   /* ubuntu 服务器
   fileUrl = "http://43.139.16.164/x-zone/api/v1"
@@ -20,9 +25,9 @@ if (env === 'production') {
   wsUrl = "wss://43.139.16.164/x-zone/api/v1"
   */
 } else {
-  fileUrl = 'https://jiang-xia.top/x-zone/api/v1'
-  baseUrl = 'https://jiang-xia.top/x-zone/api/v1'
-  wsUrl = 'wss://jiang-xia.top/x-zone/api/v1'
+  fileUrl = ZONE_API
+  baseUrl = ZONE_API
+  wsUrl = ZONE_WS
   imageUrl = ''
   // 本地
   // fileUrl = "http://127.0.0.1:9600"
@@ -75,4 +80,3 @@ export {
   isCryptoEnabled,
   enableRequestCryptoDebugLog,
 }
-

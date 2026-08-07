@@ -193,7 +193,7 @@
 				const userStore = useUserStore()
 				const userInfo = userStore.userInfo
 				return userInfo.avatar ||
-					"https://jiang-xia.top/x-api/blog-server/static/uploads/2022-08-10/8ojhda8gzvyx3rdhgyq378-头像.jpg"
+					"https://zone.jiang-xia.top/x-api/blog-server/static/uploads/2022-08-10/8ojhda8gzvyx3rdhgyq378-头像.jpg"
 			},
 			rightWidth() {
 				return "90px"

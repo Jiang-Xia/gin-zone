@@ -231,14 +231,15 @@ npm run dev:mp-weixin
 ## 📱 在线预览
 
 ### 🌐 在线体验
-- **H5版本**: [Gin Zone](https://jiang-xia.top/zone/#/pages/blog/index)
+- **H5版本**: [Gin Zone](https://zone.jiang-xia.top/zone/#/pages/blog/index)
 - **管理后台**: [Zone Admin](https://admin.jiang-xia.top)
-- **API文档**: [Swagger文档](https://jiang-xia.top/x-zone/api/v1/swagger/index.html)
+- **API文档**: [Swagger文档](https://zone.jiang-xia.top/api/v1/swagger/index.html)
+- **旧路径兼容**（仅线上小程序，Nginx 保留）：`https://jiang-xia.top/x-zone/api/v1`
 
 ### 📱 移动端体验
 | APP下载 | H5页面 | 微信小程序 | 支付宝小程序 |
 |-----------|--------|-----------|--------|
-| <img src="https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/2e5d10df027b4cf28545b44901f7e8a4-app-code.png" width="120"> | <img src="https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/ea68358e78fd433fb5d2123e2cc0763b-h5.png" width="120"> | <img src="https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/1d6c3ffe42c3498a820965d9a46e0e2b-mini-program-code.jpg" width="120"> | <img src="https://jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/68a238667168490ea59c417e7f438b4b-circle_blue_slogan_50cm.png" width="120"> |
+| <img src="https://zone.jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/2e5d10df027b4cf28545b44901f7e8a4-app-code.png" width="120"> | <img src="https://zone.jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/ea68358e78fd433fb5d2123e2cc0763b-h5.png" width="120"> | <img src="https://zone.jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/1d6c3ffe42c3498a820965d9a46e0e2b-mini-program-code.jpg" width="120"> | <img src="https://zone.jiang-xia.top/x-blog/api/v1/static/uploads/2025-11/68a238667168490ea59c417e7f438b4b-circle_blue_slogan_50cm.png" width="120"> |
 | 扫码下载APP | 扫码体验H5页面| 扫码体验小程序 | 扫码体验小程序 |
 
 ## 📚 详细文档
@@ -353,7 +354,7 @@ chore: 构建/工具
 
 **jiang-xia**
 - 邮箱：963798512@qq.com
-- 博客：[https://jiang-xia.top](https://jiang-xia.top)
+- 博客：[https://zone.jiang-xia.top](https://zone.jiang-xia.top)
 - Gitee：[https://gitee.com/jiang-xia](https://gitee.com/jiang-xia)
 
 ---

@@ -231,14 +231,15 @@ npm run dev:mp-weixin
 ## 📱 Online Preview
 
 ### 🌐 Online Experience
-- **H5 Version**: [Gin Zone](https://jiang-xia.top/zone/#/pages/blog/index)
+- **H5 Version**: [Gin Zone](https://zone.jiang-xia.top/zone/#/pages/blog/index)
 - **Management Dashboard**: [Zone Admin](https://admin.jiang-xia.top)
-- **API Documentation**: [Swagger Docs](https://jiang-xia.top/x-zone/api/v1/swagger/index.html)
+- **API Documentation**: [Swagger Docs](https://zone.jiang-xia.top/api/v1/swagger/index.html)
+- **Legacy paths** (online mini-program only, Nginx): `https://jiang-xia.top/x-zone/api/v1`
 
 ### 📱 Mobile Experience
 | WeChat Mini Program | APP Download |
 |-------------------|-------------|
-| <img src="https://jiang-xia.top/_nuxt/mini-program-code.7wTjEkFg.jpg" width="120"> | <img src="https://jiang-xia.top/_nuxt/app-code.Bsz8QBxF.png" width="120"> |
+| <img src="https://zone.jiang-xia.top/_nuxt/mini-program-code.7wTjEkFg.jpg" width="120"> | <img src="https://zone.jiang-xia.top/_nuxt/app-code.Bsz8QBxF.png" width="120"> |
 | Scan for Mini Program | Scan to Download APP |
 
 ## 📚 Detailed Documentation
@@ -347,7 +348,7 @@ This project is licensed under the [MIT](./LICENSE) License.
 
 **jiang-xia**
 - Email: 963798512@qq.com
-- Blog: [https://jiang-xia.top](https://jiang-xia.top)
+- Blog: [https://zone.jiang-xia.top](https://zone.jiang-xia.top)
 - Gitee: [https://gitee.com/jiang-xia](https://gitee.com/jiang-xia)
 
 ---

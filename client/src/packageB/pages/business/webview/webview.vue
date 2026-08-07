@@ -33,7 +33,8 @@
 
 <script>
     const fileUrl = 'https://admin.jiang-xia.top/test-front/files/'
-    const webviewBaseUrl = 'https://jiang-xia.top'
+    // 业务 H5 回跳主站
+    const webviewBaseUrl = 'https://zone.jiang-xia.top'
     export default {
         components: {},
         data() {

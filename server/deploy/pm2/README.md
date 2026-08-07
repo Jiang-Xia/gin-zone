@@ -75,13 +75,17 @@ make rollback
 │       ├── config/env.production
 │       └── public -> ../../public
 ├── logs/
-└── public/uploads/          # 共享，跨 release 保留
+└── public/uploads/          # 共享，跨 release 保留（禁止被 prune 删除）
 ```
 
 ## Nginx
 
-- `/x-zone/api/v1/` → `localhost:9600`
-- `/x-zone/api/v1/mobile/chat` → WebSocket
+- 主站：`zone.jiang-xia.top/api/v1/` → `localhost:9600`
+- 旧主机（仅线上小程序）：`jiang-xia.top/x-zone/api/v1/` → 同一 upstream，新构建勿依赖
+- WebSocket：`/api/v1/mobile/chat`（旧：`/x-zone/api/v1/mobile/chat`）
+- 博客反代目标：`blog_url=https://jiang-xia.top/x-blog/api/v1`（博客仍在主域）
+
+生产 ini：`allowed_origins` 含主站；可保留 `https://jiang-xia.top` 仅供旧路径页面 Origin。
 
 ## 故障排查
 

@@ -378,8 +378,9 @@ lsof -ti:9600 | xargs kill -9
 
 #### 6. 在线演示
 
-- **API文档**：[https://jiang-xia.top/x-zone/api/v1/swagger/index.html](https://jiang-xia.top/x-zone/api/v1/swagger/index.html)
-- **项目主页**：[https://jiang-xia.top/zone/#/](https://jiang-xia.top/zone/#/)
+- **API文档**：[https://zone.jiang-xia.top/api/v1/swagger/index.html](https://zone.jiang-xia.top/api/v1/swagger/index.html)
+- **项目主页**：[https://zone.jiang-xia.top/](https://zone.jiang-xia.top/)
+- **旧路径**（仅线上小程序 Nginx 兼容）：`https://jiang-xia.top/x-zone/api/v1`
 
 #### 7. 贡献指南
 
@@ -399,7 +400,7 @@ lsof -ti:9600 | xargs kill -9
 
 **开发者：jiang-xia**
 - 邮箱：963798512@qq.com
-- 博客：[https://jiang-xia.top](https://jiang-xia.top)
+- 博客：[https://zone.jiang-xia.top](https://zone.jiang-xia.top)
 - Gitee：[https://gitee.com/jiang-xia](https://gitee.com/jiang-xia)
 
 ---

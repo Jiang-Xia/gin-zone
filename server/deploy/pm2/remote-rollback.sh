@@ -81,7 +81,11 @@ echo "==> extract backup -> ${release_path}"
 tar -xzf "${BACKUP_FILE}" -C "$release_path"
 
 chmod +x "${release_path}/${BINARY_NAME}"
+# 共享 uploads 落在部署根；先清掉 backup 里解出的真实 public 再挂软链
 mkdir -p "${DEPLOY_REMOTE_DIR}/public/uploads"
+if [[ -e "${release_path}/public" && ! -L "${release_path}/public" ]]; then
+  rm -rf "${release_path}/public"
+fi
 ln -sfn "${DEPLOY_REMOTE_DIR}/public" "${release_path}/public"
 
 echo "==> activate rollback release"

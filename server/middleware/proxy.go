@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// https://jiang-xia.top/x-doc/blog-doc/ 文档地址
+// 博客反向代理目标见 config.App.BlogUrl（主域 zone.jiang-xia.top）
 
 func ReverseProxy() gin.HandlerFunc {
 	//反向代理网关

@@ -173,10 +173,11 @@ release_pm2_verify() {
 }
 
 # 方案 B 启用后，删除部署根下残留扁平产物，避免 PM2 误读旧二进制
+# 注意：不可清理 public——它是跨 release 共享的 uploads 目录
 release_prune_legacy_root() {
   [[ -L "$CURRENT_LINK" ]] || return 0
   local item
-  for item in zone-server bin dist package.json package-lock.json ecosystem.config.js ecosystem.config.cjs config .env.production node_modules output public; do
+  for item in zone-server bin dist package.json package-lock.json ecosystem.config.js ecosystem.config.cjs config .env.production node_modules output; do
     if [[ -e "${DEPLOY_REMOTE_DIR}/${item}" && ! -L "${DEPLOY_REMOTE_DIR}/${item}" ]]; then
       echo "==> remove legacy root item: ${item}"
       rm -rf "${DEPLOY_REMOTE_DIR}/${item}"

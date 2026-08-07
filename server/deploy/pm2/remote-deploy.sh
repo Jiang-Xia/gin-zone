@@ -71,7 +71,12 @@ backup_before_deploy() {
 
 link_shared_public() {
   local release_path="$1"
+  # 共享 uploads 落在部署根；release 内只挂软链，发版/回滚不丢文件
   mkdir -p "${DEPLOY_REMOTE_DIR}/public/uploads"
+  # 若 tar 解出了真实 public/（如 public/data），须先删掉再软链，否则 ln 会链进目录内
+  if [[ -e "${release_path}/public" && ! -L "${release_path}/public" ]]; then
+    rm -rf "${release_path}/public"
+  fi
   ln -sfn "${DEPLOY_REMOTE_DIR}/public" "${release_path}/public"
 }
 

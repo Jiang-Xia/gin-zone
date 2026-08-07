@@ -57,7 +57,8 @@ type BlogArticleListResponse = {
   pagination: BlogPagination;
 };
 
-const BLOG_DETAIL_URL_PREFIX = 'https://jiang-xia.top/detail/';
+// 博客详情外链主域
+const BLOG_DETAIL_URL_PREFIX = 'https://zone.jiang-xia.top/detail/';
 const TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 // 统一时间展示格式，避免列表显示 ISO 原始串

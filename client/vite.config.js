@@ -21,7 +21,8 @@ export default defineConfig({
     port: 9100,
     proxy: {
       '/prod-api': {
-        target: 'https://jiang-xia.top/x-zone/api/v1/',
+        // 开发代理对齐生产主域 zone.jiang-xia.top（API 前缀 /api/v1）
+        target: 'https://zone.jiang-xia.top/api/v1/',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/prod-api/, ''),
@@ -33,7 +34,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/dev-api/, ''),
       },
       '/prod-ws': {
-        target: 'wss://jiang-xia.top/x-zone/api/v1/',
+        target: 'wss://zone.jiang-xia.top/api/v1/',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/prod-ws/, ''),
