@@ -85,6 +85,10 @@
                     if (cache.storeName) this.storeName = cache.storeName
                     this.orderNo = cache.orderNo || ''
                     this.mchtNo = cache.mchtNo || ''
+                    // 博客充值：Zone 无单号时用 trade/create 写入的 payOutTradeNo
+                    if (!this.orderNo) {
+                        this.orderNo = uni.getStorageSync('payOutTradeNo') || ''
+                    }
                 }
             } catch (e) {}
 

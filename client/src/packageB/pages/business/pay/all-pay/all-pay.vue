@@ -129,6 +129,8 @@
                     storeBrief: ''
                 },
                 userAuthCode: '',
+                /** 博客钻石充值等外部商户单号（扫码 query：out_trade_no） */
+                externalOutTradeNo: '',
                 // options: ''
             };
         },
@@ -137,13 +139,14 @@
             const payType = this.$tool.isWxOrAli() /* || 'ALIPAY' */
             this.payType = payType
             // this.options = options
-            this.pageInfo = {
-                amount: Number(options.amount),
-                remark: options.remark || '',
-            }
+            this.applyExternalPayQuery(options || {})
             const qrcode = uni.getStorageSync('qrcode_no')
             this.getQrcodeInfo(qrcode || 'SE00001602')
-            console.log('this.pageInfo', this.pageInfo)
+            console.log('this.pageInfo', this.pageInfo, 'out_trade_no', this.externalOutTradeNo)
+            // #ifdef MP-ALIPAY || MP-WEIXIN
+            // 博客扫码直达本页时需自行换 openId（cashier 入口才有）
+            this.ensureOpenId()
+            // #endif
             // #ifdef H5
             // 获取授权码
             this.userAuthCode = this.$tool.getQueryVariable('code') || options.auth_code || uni.getStorageSync(
@@ -160,6 +163,10 @@
             },
             isWx() {
                 return this.payType === 'WXPAY'
+            },
+            /** 是否博客等外部意向单（须透传 out_trade_no 调 blog-server） */
+            isExternalOrder() {
+                return Boolean(this.externalOutTradeNo)
             },
             payTypeList() {
                 let list = [{
@@ -213,6 +220,55 @@
             }
         },
         methods: {
+            /** 解析扫码/外链入参：兼容博客 recharge query（out_trade_no、total_amount、amount、remark） */
+            applyExternalPayQuery(options) {
+                const decode = (v) => {
+                    if (v === undefined || v === null || v === '') return ''
+                    try {
+                        return decodeURIComponent(String(v))
+                    } catch (e) {
+                        return String(v)
+                    }
+                }
+                const outTradeNo = decode(options.out_trade_no || options.outTradeNo)
+                const amountRaw = decode(options.total_amount || options.amount)
+                const remark = decode(options.remark || options.subject)
+                this.externalOutTradeNo = outTradeNo
+                this.pageInfo = {
+                    amount: Number(amountRaw) || 0,
+                    remark: remark || '',
+                }
+            },
+            /** 小程序内确保已有 buyer openId，供 trade/create 使用 */
+            ensureOpenId() {
+                return new Promise((resolve) => {
+                    const cached = uni.getStorageSync('userOpenId')
+                    if (cached) {
+                        resolve(cached)
+                        return
+                    }
+                    uni.login({
+                        onlyAuthorize: true,
+                        success: async (event) => {
+                            try {
+                                const res = await this.$apis.pay.openid(event.code, 'alipay')
+                                const openId = res?.data?.openId || res?.data?.open_id || res?.data?.userId || ''
+                                if (openId) uni.setStorageSync('userOpenId', openId)
+                                if (res?.data?.accessToken || res?.data?.access_token) {
+                                    uni.setStorageSync(
+                                        'userAccessToken',
+                                        res.data.accessToken || res.data.access_token,
+                                    )
+                                }
+                                resolve(openId)
+                            } catch (e) {
+                                resolve('')
+                            }
+                        },
+                        fail: () => resolve(''),
+                    })
+                })
+            },
             // 支付方式列表， wxpay 非支付宝和微信中传
             dealPay(list, wxpay = []) {
                 const am = this.pageInfo.amount
@@ -265,7 +321,10 @@
                         url: '/packageB/pages/business/pay/host-pay/host-pay?qrCodeInfo=' + JSON.stringify(
                             params)
                     });
-                }else{
+                } else if (this.isExternalOrder && this.isAli) {
+                    // 博客钻石充值：已有意向单，跳过 Zone ApplyOrder，直连 blog-server trade/create
+                    this.payMini()
+                } else {
                     this.applyOrder()
                 }
             },
@@ -358,13 +417,14 @@
             },
             goto(status = 'PROCESSING') {
                 // 跳转逻辑
+                const outTradeNo = this.externalOutTradeNo || uni.getStorageSync('payOutTradeNo') || ''
                 try {
                     savePayOrderParams({
                         status,
-                        orderNo: this.orderInfo.orderNo,
+                        orderNo: this.orderInfo.orderNo || outTradeNo,
                         mchtNo: this.qrCodeInfo.mchtNo,
                         amount: this.realAmt ? this.realAmt : this.pageInfo.amount,
-                        storeName: this.qrCodeInfo.storeBrief || this.qrCodeInfo.storeName || ''
+                        storeName: this.qrCodeInfo.storeBrief || this.qrCodeInfo.storeName || this.pageInfo.remark || ''
                     })
                 } catch (e) {}
                 uni.redirectTo({
@@ -443,31 +503,60 @@
                         return false;
                 }
             },
-            // 小程序内支付
+            // 小程序内支付（支付宝：调 blog-server /pay/trade/create，支持外部 out_trade_no）
             async payMini(type) {
                 uni.showLoading({title: '加载中'})
                 if (this.isAli) {
-                    const params = {
-                        out_trade_no: this.$tool.getYesterday('', 0) + this.$tool.guid(3),
-                        subject: '商品',
-                        buyer_open_id: uni.getStorageSync('userOpenId'),
-                        total_amount: String(this.pageInfo.amount)
-                    }
-                    const res = await this.$apis.pay.tradeCreate(params)
-                    uni.setStorageSync('payOutTradeNo', params.out_trade_no)
-                    uni.requestPayment({
-                        tradeNO: res.data.tradeNo,
-                        success: (res) => {
-                            if(res.resultCode === '9000'){
-                                this.goto('SUCCESS')
-                            }else{
-                                this.goto('PROCESSING')   
-                            }
-                        },
-                        complete: (res) => {
+                    try {
+                        const openId = await this.ensureOpenId()
+                        if (!openId) {
                             uni.hideLoading()
-                        },
-                    });
+                            uni.showToast({ title: '授权失败，请重试', icon: 'none' })
+                            return
+                        }
+                        const payAmount = this.realAmt ? this.realAmt : this.pageInfo.amount
+                        // 博客充值必须用意向单号；普通收银仍本地生成
+                        const outTradeNo = this.externalOutTradeNo ||
+                            (this.$tool.getYesterday('', 0) + this.$tool.guid(3))
+                        const params = {
+                            out_trade_no: outTradeNo,
+                            subject: this.pageInfo.remark || '商品',
+                            buyer_open_id: openId,
+                            total_amount: Number(payAmount).toFixed(2),
+                        }
+                        const res = await this.$apis.pay.tradeCreate(params)
+                        const tradeNo = res?.data?.tradeNo || res?.data?.trade_no
+                        if (!tradeNo) {
+                            uni.hideLoading()
+                            uni.showModal({
+                                title: '提示',
+                                content: res?.data?.message || '创建支付订单失败',
+                                showCancel: false,
+                            })
+                            return
+                        }
+                        uni.setStorageSync('payOutTradeNo', params.out_trade_no)
+                        uni.requestPayment({
+                            tradeNO: tradeNo,
+                            success: (payRes) => {
+                                if(payRes.resultCode === '9000'){
+                                    this.goto('SUCCESS')
+                                }else{
+                                    this.goto('PROCESSING')
+                                }
+                            },
+                            complete: () => {
+                                uni.hideLoading()
+                            },
+                        });
+                    } catch (e) {
+                        uni.hideLoading()
+                        uni.showModal({
+                            title: '提示',
+                            content: (e && e.message) || '支付发起失败',
+                            showCancel: false,
+                        })
+                    }
                 }
             },
             getIp() {
@@ -542,9 +631,18 @@
             async h5OpenMini (type){
                 try {
                     uni.showLoading({title: '加载中'})
+                    const query = {
+                        amount: this.pageInfo.amount,
+                        remark: this.pageInfo.remark,
+                    }
+                    // H5 再拉小程序时继续透传外部单号，保证博客充值关联
+                    if (this.externalOutTradeNo) {
+                        query.out_trade_no = this.externalOutTradeNo
+                        query.total_amount = Number(this.pageInfo.amount).toFixed(2)
+                    }
                     const params = {
                         page: '/packageB/pages/business/pay/all-pay/all-pay',
-                        query: {amount:this.pageInfo.amount,remark: this.pageInfo.remark}
+                        query,
                     }
                     const res = await this.$apis.pay.h5OpenMini(params)
                     uni.hideLoading()

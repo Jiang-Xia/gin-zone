@@ -74,7 +74,9 @@
                 orderInfo: {},
                 options: {},
                 ip: '',
-                keyboard:true
+                keyboard:true,
+                /** 博客钻石充值等外部商户单号（扫码 query 透传） */
+                outTradeNo: '',
             };
         },
         onShow: function() {},
@@ -83,11 +85,56 @@
             console.log('cashier-userAuthCode', userAuthCode)
             that = this
             this.getQrcodeInfo(options.qrcode||'SE00001602')
+            // 兼容博客扫码充值：out_trade_no + amount/total_amount + remark
+            this.applyExternalPayQuery(options || {})
             // #ifdef MP-ALIPAY|| MP-WEIXIN
             this.getOpenId()
             // #endif
+            // 外部单号+金额已齐：直达支付页（避免二次输入）
+            if (this.outTradeNo && this.inputamt) {
+                this.goAllPay(true)
+            }
         },
         methods: {
+            /** 解析博客/外部扫码入参：预填金额备注并锁定键盘 */
+            applyExternalPayQuery(options) {
+                const decode = (v) => {
+                    if (v === undefined || v === null || v === '') return ''
+                    try {
+                        return decodeURIComponent(String(v))
+                    } catch (e) {
+                        return String(v)
+                    }
+                }
+                const outTradeNo = decode(options.out_trade_no || options.outTradeNo)
+                const amountRaw = decode(options.total_amount || options.amount)
+                const remark = decode(options.remark || options.subject)
+                if (outTradeNo) this.outTradeNo = outTradeNo
+                if (remark) this.mark = remark
+                if (amountRaw && !isNaN(Number(amountRaw)) && Number(amountRaw) > 0) {
+                    const amountText = String(amountRaw)
+                    // amount 有值时键盘不可改（与原有 nubTap/backTap 逻辑一致）
+                    this.amount = amountText
+                    this.inputamt = amountText
+                    amt = amountText
+                }
+            },
+            /** 跳转支付确认页，透传外部订单号；redirect=true 用于扫码直达 */
+            goAllPay(redirect = false) {
+                const amount = this.inputamt || this.amount
+                let url = '/packageB/pages/business/pay/all-pay/all-pay?amount=' +
+                    encodeURIComponent(amount) +
+                    '&remark=' + encodeURIComponent(this.mark || '')
+                if (this.outTradeNo) {
+                    url += '&out_trade_no=' + encodeURIComponent(this.outTradeNo)
+                    url += '&total_amount=' + encodeURIComponent(amount)
+                }
+                if (redirect) {
+                    uni.redirectTo({ url })
+                } else {
+                    uni.navigateTo({ url })
+                }
+            },
             getOpenId(){
                 uni.login({
                 	"onlyAuthorize": true, // 微信登录仅请求授权认证
@@ -96,8 +143,9 @@
                 		console.log("event.code", event.code)
                         const res = await this.$apis.pay.openid(code, 'alipay')
                 		// console.log('----->',  res.data)
-                		uni.setStorageSync('userOpenId', res.data.openId)
-                        uni.setStorageSync('userAccessToken', res.data.accessToken)
+                        const openId = res?.data?.openId || res?.data?.open_id || res?.data?.userId || ''
+                		uni.setStorageSync('userOpenId', openId)
+                        uni.setStorageSync('userAccessToken', res?.data?.accessToken || res?.data?.access_token || '')
                 	},
                 	fail: (err) => {
                 		this.$toast({ title: '授权失败', icon: 'error' })
@@ -159,9 +207,7 @@
                     });
                     return;
                 }
-                uni.navigateTo({
-                    url: '/packageB/pages/business/pay/all-pay/all-pay?amount=' + this.inputamt + '&remark=' + this.mark
-                })
+                this.goAllPay()
             },
             onCommonBlur: function(e) {
                 var key = e.target.id;
